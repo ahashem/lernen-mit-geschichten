@@ -24,5 +24,8 @@
   "skills": "Fähigkeiten",
   "print": "Drucken",
   "downloadPDF": "PDF herunterladen",
-  "interactive": "Interaktiv"
+  "interactive": "Interaktiv",
+  "autoPlay": "Auto-Weiter",
+  "volume": "Lautstärke",
+  "speed": "Tempo"
 }

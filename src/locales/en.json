@@ -24,5 +24,8 @@
   "skills": "Skills",
   "print": "Print",
   "downloadPDF": "Download PDF",
-  "interactive": "Interactive"
+  "interactive": "Interactive",
+  "autoPlay": "Auto-Play",
+  "volume": "Volume",
+  "speed": "Speed"
 }

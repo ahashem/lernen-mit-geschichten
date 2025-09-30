@@ -24,5 +24,8 @@
   "skills": "مہارتیں",
   "print": "پرنٹ کریں",
   "downloadPDF": "PDF ڈاؤن لوڈ کریں",
-  "interactive": "انٹرایکٹو"
+  "interactive": "انٹرایکٹو",
+  "autoPlay": "خودکار",
+  "volume": "آواز",
+  "speed": "رفتار"
 }

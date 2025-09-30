@@ -24,5 +24,8 @@
   "skills": "المهارات",
   "print": "طباعة",
   "downloadPDF": "تحميل PDF",
-  "interactive": "تفاعلي"
+  "interactive": "تفاعلي",
+  "autoPlay": "تلقائي",
+  "volume": "الصوت",
+  "speed": "السرعة"
 }

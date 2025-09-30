@@ -24,5 +24,8 @@
   "skills": "Beceriler",
   "print": "Yazdır",
   "downloadPDF": "PDF İndir",
-  "interactive": "Etkileşimli"
+  "interactive": "Etkileşimli",
+  "autoPlay": "Otomatik",
+  "volume": "Ses",
+  "speed": "Hız"
 }

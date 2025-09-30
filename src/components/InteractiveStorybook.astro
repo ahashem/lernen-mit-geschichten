@@ -1,5 +1,6 @@
 ---
 import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
 
 export interface StoryPage {
   text: string;
@@ -14,6 +15,13 @@ interface Props {
 }
 
 const { pages, storyId, locale, title } = Astro.props;
+
+// Translations
+const t = {
+  autoPlay: getTranslation(locale, 'autoPlay'),
+  volume: getTranslation(locale, 'volume'),
+  speed: getTranslation(locale, 'speed'),
+};
 ---
 
 <div class="interactive-storybook" data-story-id={storyId} data-locale={locale}>
@@ -42,36 +50,56 @@ const { pages, storyId, locale, title } = Astro.props;
     <div class="swiper-button-next">→</div>
   </div>
 
-  <div class="audio-controls">
-    <button class="btn play-pause" data-action="play">
-      <span class="icon">▶️</span>
-      <span class="label">{locale === 'de' ? 'Vorlesen' : locale === 'ar' ? 'اقرأ' : locale === 'en' ? 'Read Aloud' : locale === 'tr' ? 'Oku' : 'پڑھیں'}</span>
-    </button>
+  <!-- Floating Control Island -->
+  <div class="control-island">
+    <div class="control-island-content">
+      <!-- Primary Controls -->
+      <div class="primary-controls">
+        <button class="control-btn play-pause" data-action="play" aria-label="Play/Pause">
+          <span class="icon">▶️</span>
+        </button>
 
-    <button class="btn auto-play" data-enabled="false">
-      <span class="icon">🔄</span>
-      <span class="label">{locale === 'de' ? 'Auto-Weiter' : locale === 'ar' ? 'تلقائي' : locale === 'en' ? 'Auto-Play' : locale === 'tr' ? 'Otomatik' : 'خودکار'}</span>
-    </button>
+        <button class="control-btn auto-play" data-enabled="false" aria-label="Auto-play" title={t.autoPlay}>
+          <span class="icon">🔄</span>
+        </button>
 
-    <div class="volume-control">
-      <span class="icon">🔊</span>
-      <input type="range" class="volume-slider" min="0" max="100" value="80" aria-label="Volume" />
+        <div class="page-indicator">
+          <span class="current-page">1</span>
+          <span class="separator">/</span>
+          <span class="total-pages">{pages.length}</span>
+        </div>
+      </div>
+
+      <!-- Expandable Settings -->
+      <button class="control-btn settings-toggle" aria-label="Settings">
+        <span class="icon">⚙️</span>
+      </button>
     </div>
 
-    <div class="speed-control">
-      <label>{locale === 'de' ? 'Geschwindigkeit:' : locale === 'ar' ? 'السرعة:' : locale === 'en' ? 'Speed:' : locale === 'tr' ? 'Hız:' : 'رفتار:'}</label>
-      <select class="speed-select">
-        <option value="0.75">0.75x</option>
-        <option value="0.85" selected>0.85x</option>
-        <option value="1.0">1.0x</option>
-        <option value="1.2">1.2x</option>
-      </select>
-    </div>
-  </div>
+    <!-- Settings Panel (Hidden by default) -->
+    <div class="settings-panel" hidden>
+      <div class="setting-row">
+        <label class="setting-label">
+          <span class="icon">🔊</span>
+          <span class="text">{t.volume}</span>
+        </label>
+        <input type="range" class="volume-slider" min="0" max="100" value="80" aria-label={t.volume} />
+        <span class="value-display">80%</span>
+      </div>
 
-  <div class="progress-indicator">
-    <span class="progress-text">{locale === 'de' ? 'Seite' : locale === 'ar' ? 'صفحة' : locale === 'en' ? 'Page' : locale === 'tr' ? 'Sayfa' : 'صفحہ'}</span>
-    <span class="current-page">1</span> / <span class="total-pages">{pages.length}</span>
+      <div class="setting-row">
+        <label class="setting-label">
+          <span class="icon">⏱️</span>
+          <span class="text">{t.speed}</span>
+        </label>
+        <select class="speed-select" aria-label={t.speed}>
+          <option value="0.75">0.75x</option>
+          <option value="0.85" selected>0.85x</option>
+          <option value="1.0">1.0x</option>
+          <option value="1.2">1.2x</option>
+        </select>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -133,6 +161,9 @@ const { pages, storyId, locale, title } = Astro.props;
     const volumeSlider = storybookEl.querySelector('.volume-slider') as HTMLInputElement;
     const speedSelect = storybookEl.querySelector('.speed-select') as HTMLSelectElement;
     const currentPageEl = storybookEl.querySelector('.current-page');
+    const settingsToggle = storybookEl.querySelector('.settings-toggle');
+    const settingsPanel = storybookEl.querySelector('.settings-panel') as HTMLElement;
+    const valueDisplay = storybookEl.querySelector('.value-display');
 
     function updatePageIndicator() {
       if (currentPageEl) {
@@ -244,6 +275,23 @@ const { pages, storyId, locale, title } = Astro.props;
 
     volumeSlider?.addEventListener('input', (e) => {
       currentVolume = parseInt((e.target as HTMLInputElement).value) / 100;
+      if (valueDisplay) {
+        valueDisplay.textContent = `${(e.target as HTMLInputElement).value}%`;
+      }
+    });
+
+    // Settings toggle
+    settingsToggle?.addEventListener('click', () => {
+      if (settingsPanel) {
+        const isHidden = settingsPanel.hasAttribute('hidden');
+        if (isHidden) {
+          settingsPanel.removeAttribute('hidden');
+          settingsToggle.setAttribute('aria-expanded', 'true');
+        } else {
+          settingsPanel.setAttribute('hidden', '');
+          settingsToggle.setAttribute('aria-expanded', 'false');
+        }
+      }
     });
 
     speedSelect?.addEventListener('change', (e) => {
@@ -360,78 +408,187 @@ const { pages, storyId, locale, title } = Astro.props;
     bottom: 0;
   }
 
-  .audio-controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-    align-items: center;
-    padding: 1.5rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  /* Floating Control Island */
+  .control-island {
+    position: sticky;
+    bottom: 20px;
+    margin: 2rem auto 1rem;
+    max-width: fit-content;
+    z-index: 100;
   }
 
-  .btn {
+  .control-island-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .primary-controls {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    border: 2px solid var(--color-primary);
-    background: white;
-    color: var(--color-text);
-    border-radius: 8px;
+  }
+
+  .control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
     cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 1.3rem;
     transition: all 0.2s ease;
   }
 
-  .btn:hover {
-    background: var(--color-primary);
-    color: white;
-    transform: translateY(-2px);
+  .control-btn:hover {
+    background: rgba(247, 151, 49, 0.1);
+    transform: scale(1.1);
   }
 
-  .btn .icon {
-    font-size: 1.2rem;
+  .control-btn:active {
+    transform: scale(0.95);
+  }
+
+  .control-btn .icon {
+    line-height: 1;
+  }
+
+  .play-pause[data-action="pause"] .icon {
+    content: '⏸️';
   }
 
   .auto-play[data-enabled="true"] {
-    background: var(--color-primary);
-    color: white;
+    background: rgba(247, 151, 49, 0.2);
   }
 
-  .volume-control,
-  .speed-control {
+  .page-indicator {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.25rem;
+    padding: 0 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 0 0.5rem;
   }
 
-  .volume-slider {
-    width: 100px;
-    cursor: pointer;
-  }
-
-  .speed-select {
-    padding: 0.5rem;
-    border: 2px solid #ddd;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    cursor: pointer;
-  }
-
-  .progress-indicator {
-    text-align: center;
-    margin-top: 1rem;
-    font-size: 1.1rem;
-    color: var(--color-text-light);
+  .separator {
+    opacity: 0.5;
   }
 
   .current-page {
-    font-weight: bold;
     color: var(--color-primary);
+  }
+
+  /* Settings Panel */
+  .settings-panel {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 10px;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    min-width: 280px;
+    animation: slideUp 0.2s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  .settings-panel[hidden] {
+    display: none;
+  }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .setting-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .setting-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 80px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .setting-label .icon {
+    font-size: 1.1rem;
+  }
+
+  .volume-slider {
+    flex: 1;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ddd;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+
+  .value-display {
+    min-width: 45px;
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+  }
+
+  .speed-select {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    background: white;
   }
 
   @media (max-width: 768px) {
