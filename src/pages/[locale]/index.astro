@@ -80,6 +80,7 @@ const hero = heroContent[locale];
                 estimatedReadTime={story.data.estimatedReadTime}
                 locale={locale}
                 slug={story.slug.replace(`${locale}/`, '')}
+                isInteractive={story.data.storyFormat === 'interactive'}
               />
             ))}
           </div>

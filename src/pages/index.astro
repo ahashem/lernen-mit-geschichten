@@ -42,6 +42,7 @@ const stories = await getCollection('stories', ({ id }) => id.startsWith('de/'))
               estimatedReadTime={story.data.estimatedReadTime}
               locale={locale}
               slug={story.slug.replace('de/', '')}
+              isInteractive={story.data.storyFormat === 'interactive'}
             />
           ))}
         </div>

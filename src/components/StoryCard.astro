@@ -1,6 +1,7 @@
 ---
 import type { Locale } from '../utils/i18n';
 import { getSkillsByIds } from '../utils/skills-taxonomy';
+import { getTranslation } from '../utils/i18n';
 
 interface Props {
   title: string;
@@ -10,9 +11,10 @@ interface Props {
   estimatedReadTime?: number;
   locale: Locale;
   slug: string;
+  isInteractive?: boolean;
 }
 
-const { title, emoji, skills, storyId, estimatedReadTime, locale, slug } = Astro.props;
+const { title, emoji, skills, storyId, estimatedReadTime, locale, slug, isInteractive } = Astro.props;
 
 const skillObjects = getSkillsByIds(skills);
 const storyUrl = locale === 'de' ? `/stories/${slug}` : `/${locale}/stories/${slug}`;
@@ -20,6 +22,11 @@ const storyUrl = locale === 'de' ? `/stories/${slug}` : `/${locale}/stories/${sl
 
 <article class="story-card">
   <a href={storyUrl} class="card-link">
+    {isInteractive && (
+      <div class="interactive-badge">
+        {getTranslation(locale, 'interactive')}
+      </div>
+    )}
     <div class="card-header">
       <span class="emoji-icon">{emoji}</span>
       <h3 class="story-title">{title}</h3>
@@ -51,6 +58,7 @@ const storyUrl = locale === 'de' ? `/stories/${slug}` : `/${locale}/stories/${sl
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     overflow: hidden;
+    position: relative;
   }
 
   .story-card:hover {
@@ -118,6 +126,25 @@ const storyUrl = locale === 'de' ? `/stories/${slug}` : `/${locale}/stories/${sl
 
   .read-time svg {
     flex-shrink: 0;
+  }
+
+  .interactive-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 1;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+  }
+
+  [dir="rtl"] .interactive-badge {
+    right: auto;
+    left: 10px;
   }
 
   @media (max-width: 768px) {
