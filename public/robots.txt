@@ -1,0 +1,10 @@
+# Lernen mit Geschichten - Robots.txt
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://lernen-mit-geschichten.de/sitemap.xml
+
+# Disallow crawling of testing/dev assets
+Disallow: /CLAUDE-assets/

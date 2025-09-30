@@ -272,4 +272,135 @@ const quizQuestions: QuizQuestion[] = [
       gap: 0.75rem;
     }
   }
+
+  /* Print Styles - Booklet Mode */
+  @media print {
+    /* Hide non-printable elements */
+    nav,
+    .back-link,
+    .activities-section,
+    .story-footer,
+    .interactive-storybook {
+      display: none !important;
+    }
+
+    /* Reset layout for print */
+    .story-detail {
+      max-width: 100%;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 100%;
+      padding: 0;
+    }
+
+    .story-header {
+      border-bottom: 2px solid #333;
+      padding: 1rem 0;
+      margin-bottom: 1.5rem;
+      page-break-after: avoid;
+    }
+
+    .story-header h1 {
+      font-size: 1.8rem;
+      color: #000;
+    }
+
+    .emoji-large {
+      font-size: 3rem;
+    }
+
+    .story-content {
+      background: none;
+      box-shadow: none;
+      padding: 0;
+      color: #000;
+    }
+
+    .story-content :global(h2) {
+      color: #000;
+      font-size: 1.3rem;
+      margin-top: 1.5rem;
+      page-break-after: avoid;
+    }
+
+    .story-content :global(p) {
+      line-height: 1.6;
+      font-size: 11pt;
+      orphans: 3;
+      widows: 3;
+    }
+
+    .story-content :global(ul),
+    .story-content :global(ol) {
+      page-break-inside: avoid;
+    }
+
+    /* Booklet mode - prepare for duplex printing */
+    @page {
+      size: A5;
+      margin: 15mm 10mm;
+    }
+
+    /* For booklet: left pages (even) have wider right margin */
+    @page :left {
+      margin-right: 20mm;
+      margin-left: 10mm;
+    }
+
+    /* For booklet: right pages (odd) have wider left margin */
+    @page :right {
+      margin-left: 20mm;
+      margin-right: 10mm;
+    }
+
+    /* RTL support for Arabic/Urdu booklets */
+    [dir="rtl"] .story-content {
+      direction: rtl;
+      text-align: right;
+    }
+
+    [dir="rtl"] @page :left {
+      margin-left: 20mm;
+      margin-right: 10mm;
+    }
+
+    [dir="rtl"] @page :right {
+      margin-right: 20mm;
+      margin-left: 10mm;
+    }
+
+    /* Add page numbers */
+    .story-content::after {
+      content: counter(page);
+      position: fixed;
+      bottom: 10mm;
+      font-size: 9pt;
+      color: #666;
+    }
+
+    [dir="ltr"] .story-content::after {
+      right: 10mm;
+    }
+
+    [dir="rtl"] .story-content::after {
+      left: 10mm;
+    }
+
+    /* Ensure images don't break across pages */
+    img {
+      max-width: 100%;
+      page-break-inside: avoid;
+    }
+
+    /* Keep skill badges visible but simplified */
+    .skill-badge {
+      background: #f0f0f0;
+      color: #000;
+      border: 1px solid #ddd;
+      padding: 0.25rem 0.5rem;
+      font-size: 8pt;
+    }
+  }
 </style>
