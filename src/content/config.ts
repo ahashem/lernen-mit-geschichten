@@ -1,0 +1,26 @@
+import { defineCollection, z } from 'astro:content';
+
+const storiesCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    titleAr: z.string().optional(),
+    titleEn: z.string().optional(),
+    titleTr: z.string().optional(),
+    titleUr: z.string().optional(),
+    emoji: z.string(),
+    skills: z.array(z.string()),
+    ageGroup: z.string().default('3-7'),
+    languages: z.array(z.enum(['de', 'ar', 'en', 'tr', 'ur'])),
+    storyId: z.string(),
+    publishDate: z.date().optional(),
+    author: z.string().optional(),
+    characterType: z.string().optional(),
+    difficulty: z.enum(['beginner', 'intermediate']).optional(),
+    estimatedReadTime: z.number().optional(),
+  }),
+});
+
+export const collections = {
+  stories: storiesCollection,
+};

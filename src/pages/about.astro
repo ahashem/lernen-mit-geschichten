@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const locale = 'de';
+---
+
+<BaseLayout title="Über uns" locale={locale}>
+  <div class="container">
+    <article class="about-content">
+      <h1>Über Lernen mit Geschichten</h1>
+
+      <section>
+        <h2>Unsere Mission</h2>
+        <p>
+          Wir bieten zugängliche, lehrreiche Geschichten, die Kindern im Alter von 3-7 Jahren
+          wichtige Lebensfähigkeiten und Werte durch ansprechende Erzählungen vermitteln.
+        </p>
+      </section>
+
+      <section>
+        <h2>Für wen ist diese Seite?</h2>
+        <p>
+          Diese Website richtet sich an Eltern, Lehrer und KiTA-Betreuer in Deutschland.
+          Alle Inhalte sind in 5 Sprachen verfügbar: Deutsch, Arabisch, Englisch, Türkisch und Urdu.
+        </p>
+      </section>
+
+      <section>
+        <h2>Was bieten wir?</h2>
+        <ul>
+          <li>Geschichten mit wertvollen Lebenslektionen</li>
+          <li>Interaktive Lernaktivitäten</li>
+          <li>Mehrsprachige Inhalte</li>
+          <li>Kostenlos und werbefrei</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Lizenz</h2>
+        <p>
+          Alle Geschichten stehen unter der
+          <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">
+            Creative Commons BY-NC-SA 4.0 Lizenz
+          </a>.
+          Das bedeutet: Kostenlose Nutzung für nicht-kommerzielle Zwecke mit Namensnennung.
+        </p>
+      </section>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .about-content {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 3rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .about-content h1 {
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+  }
+
+  .about-content section {
+    margin-bottom: 2rem;
+  }
+
+  .about-content h2 {
+    color: var(--color-text);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .about-content p {
+    line-height: 1.8;
+    color: var(--color-text-light);
+  }
+
+  .about-content ul {
+    padding-left: 2rem;
+    line-height: 1.8;
+    color: var(--color-text-light);
+  }
+
+  .about-content li {
+    margin-bottom: 0.5rem;
+  }
+
+  .about-content a {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .about-content {
+      padding: 2rem 1.5rem;
+    }
+  }
+</style>

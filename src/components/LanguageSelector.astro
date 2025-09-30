@@ -1,0 +1,90 @@
+---
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  currentLocale: Locale;
+  currentPath?: string;
+}
+
+const { currentLocale, currentPath = '/' } = Astro.props;
+
+const languages = [
+  { code: 'de' as Locale, name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'ar' as Locale, name: 'العربية', flag: '🇸🇦' },
+  { code: 'en' as Locale, name: 'English', flag: '🇬🇧' },
+  { code: 'tr' as Locale, name: 'Türkçe', flag: '🇹🇷' },
+  { code: 'ur' as Locale, name: 'اردو', flag: '🇵🇰' },
+];
+---
+
+<div class="language-selector">
+  {languages.map(lang => (
+    <a
+      href={lang.code === 'de' ? currentPath : `/${lang.code}${currentPath}`}
+      class:list={['lang-option', { active: currentLocale === lang.code }]}
+      aria-label={`Switch to ${lang.name}`}
+    >
+      <span class="flag">{lang.flag}</span>
+      <span class="lang-name">{lang.name}</span>
+    </a>
+  ))}
+</div>
+
+<style>
+  .language-selector {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .lang-option {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+  }
+
+  .lang-option:hover {
+    border-color: #FF9F40;
+    background: #FFF5E6;
+    transform: translateY(-2px);
+  }
+
+  .lang-option.active {
+    border-color: #FF9F40;
+    background: #FF9F40;
+    color: white;
+    font-weight: 600;
+  }
+
+  .flag {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+
+  .lang-name {
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 768px) {
+    .lang-option {
+      padding: 0.4rem 0.6rem;
+    }
+
+    .lang-name {
+      display: none;
+    }
+
+    .flag {
+      font-size: 1.4rem;
+    }
+  }
+</style>

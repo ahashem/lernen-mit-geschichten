@@ -1,0 +1,361 @@
+---
+import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
+
+export interface QuizQuestion {
+  id: string;
+  text: string;
+  type: 'truefalse' | 'multiplechoice' | 'fillinblank';
+  correctAnswer: string | string[];
+  options?: string[];
+}
+
+interface Props {
+  questions: QuizQuestion[];
+  language: Locale;
+  storyId: string;
+  title?: string;
+}
+
+const { questions, language, storyId, title } = Astro.props;
+---
+
+<div class="quiz-interactive" data-story-id={storyId} data-language={language}>
+  {title && <h3 class="quiz-title">{title}</h3>}
+
+  <div class="quiz-header">
+    <span class="progress-label">{getTranslation(language, 'progress')}:</span>
+    <span class="progress-count">0</span> / {questions.length}
+  </div>
+
+  {questions.map((q, idx) => (
+    <div class="quiz-question" data-question-id={q.id} data-answer={JSON.stringify(q.correctAnswer)}>
+      <p class="question-text">{idx + 1}. {q.text}</p>
+
+      {q.type === 'truefalse' && (
+        <div class="answer-options">
+          <button class="option-btn" data-value="true">
+            ✓ {language === 'ar' ? 'صح' : language === 'ur' ? 'صحیح' : language === 'tr' ? 'Doğru' : language === 'en' ? 'True' : 'Richtig'}
+          </button>
+          <button class="option-btn" data-value="false">
+            ✗ {language === 'ar' ? 'خطأ' : language === 'ur' ? 'غلط' : language === 'tr' ? 'Yanlış' : language === 'en' ? 'False' : 'Falsch'}
+          </button>
+        </div>
+      )}
+
+      {q.type === 'multiplechoice' && q.options && (
+        <div class="answer-options">
+          {q.options.map((opt, i) => (
+            <button class="option-btn" data-value={opt}>
+              {String.fromCharCode(97 + i)}) {opt}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {q.type === 'fillinblank' && (
+        <div class="answer-input">
+          <input type="text" placeholder="..." class="fill-blank-input" />
+          <button class="check-btn">{getTranslation(language, 'correct').replace('!', '')}</button>
+        </div>
+      )}
+
+      <div class="feedback" style="display: none;">
+        <span class="feedback-text"></span>
+      </div>
+    </div>
+  ))}
+
+  <button class="show-all-answers-btn">{getTranslation(language, 'showAnswers')}</button>
+</div>
+
+<script>
+  document.querySelectorAll('.quiz-interactive').forEach(quiz => {
+    let correctCount = 0;
+    const totalQuestions = quiz.querySelectorAll('.quiz-question').length;
+    const progressSpan = quiz.querySelector('.progress-count');
+    const language = quiz.getAttribute('data-language') || 'de';
+
+    const labels = {
+      de: { correct: "Richtig!", incorrect: "Nicht ganz", answer: "Antwort" },
+      ar: { correct: "صحيح!", incorrect: "غير صحيح", answer: "الإجابة" },
+      en: { correct: "Correct!", incorrect: "Try again", answer: "Answer" },
+      tr: { correct: "Doğru!", incorrect: "Yanlış", answer: "Cevap" },
+      ur: { correct: "صحیح!", incorrect: "غلط", answer: "جواب" }
+    };
+
+    const label = labels[language as keyof typeof labels] || labels.de;
+
+    const updateProgress = () => {
+      if (progressSpan) {
+        progressSpan.textContent = correctCount.toString();
+      }
+
+      const storyId = quiz.getAttribute('data-story-id');
+      if (storyId) {
+        localStorage.setItem(`quiz-progress-${storyId}`, correctCount.toString());
+      }
+    };
+
+    // Load saved progress
+    const storyId = quiz.getAttribute('data-story-id');
+    if (storyId) {
+      const saved = localStorage.getItem(`quiz-progress-${storyId}`);
+      if (saved) {
+        correctCount = parseInt(saved, 10) || 0;
+        updateProgress();
+      }
+    }
+
+    quiz.querySelectorAll('.quiz-question').forEach(question => {
+      const correctAnswer = JSON.parse(question.getAttribute('data-answer') || '""');
+      const feedbackDiv = question.querySelector('.feedback') as HTMLElement;
+      const feedbackText = question.querySelector('.feedback-text') as HTMLElement;
+
+      // Handle True/False and Multiple Choice buttons
+      question.querySelectorAll('.option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const userAnswer = btn.getAttribute('data-value');
+          const isCorrect = Array.isArray(correctAnswer)
+            ? correctAnswer.includes(userAnswer)
+            : userAnswer === correctAnswer.toString();
+
+          // Show feedback
+          if (feedbackDiv && feedbackText) {
+            feedbackDiv.style.display = 'block';
+            feedbackText.textContent = isCorrect ? `✓ ${label.correct}` : `✗ ${label.incorrect}`;
+            feedbackDiv.className = isCorrect ? 'feedback correct' : 'feedback incorrect';
+          }
+
+          // Update progress if correct
+          if (isCorrect && !question.classList.contains('answered-correctly')) {
+            question.classList.add('answered-correctly');
+            correctCount++;
+            updateProgress();
+          }
+
+          // Disable buttons after correct answer
+          if (isCorrect) {
+            question.querySelectorAll('.option-btn').forEach(b => (b as HTMLButtonElement).disabled = true);
+          }
+        });
+      });
+
+      // Handle Fill-in-the-Blank
+      const checkBtn = question.querySelector('.check-btn');
+      if (checkBtn) {
+        checkBtn.addEventListener('click', () => {
+          const input = question.querySelector('.fill-blank-input') as HTMLInputElement;
+          if (!input) return;
+
+          const userAnswer = input.value.trim().toLowerCase();
+          const correctAnswers = Array.isArray(correctAnswer)
+            ? correctAnswer.map(a => a.toLowerCase())
+            : [correctAnswer.toString().toLowerCase()];
+
+          const isCorrect = correctAnswers.some(ans => userAnswer.includes(ans) || ans.includes(userAnswer));
+
+          if (feedbackDiv && feedbackText) {
+            feedbackDiv.style.display = 'block';
+            feedbackText.textContent = isCorrect
+              ? `✓ ${label.correct}`
+              : `✗ ${label.incorrect}`;
+            feedbackDiv.className = isCorrect ? 'feedback correct' : 'feedback incorrect';
+          }
+
+          if (isCorrect && !question.classList.contains('answered-correctly')) {
+            question.classList.add('answered-correctly');
+            correctCount++;
+            updateProgress();
+            input.disabled = true;
+            (checkBtn as HTMLButtonElement).disabled = true;
+          }
+        });
+      }
+    });
+
+    // Show all answers button
+    const showAllBtn = quiz.querySelector('.show-all-answers-btn');
+    if (showAllBtn) {
+      showAllBtn.addEventListener('click', () => {
+        quiz.querySelectorAll('.quiz-question').forEach(q => {
+          const feedback = q.querySelector('.feedback') as HTMLElement;
+          const feedbackText = q.querySelector('.feedback-text') as HTMLElement;
+          const correctAnswer = JSON.parse(q.getAttribute('data-answer') || '""');
+
+          if (feedback && feedbackText) {
+            feedback.style.display = 'block';
+            feedback.className = 'feedback answer-revealed';
+            feedbackText.textContent = `${label.answer}: ${Array.isArray(correctAnswer) ? correctAnswer.join(' / ') : correctAnswer}`;
+          }
+        });
+      });
+    }
+  });
+</script>
+
+<style>
+  .quiz-interactive {
+    background: #f9f9f9;
+    padding: 2rem;
+    border-radius: 12px;
+    margin: 2rem 0;
+  }
+
+  .quiz-title {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+
+  .quiz-header {
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+  }
+
+  .progress-count {
+    color: #4CAF50;
+    font-weight: bold;
+  }
+
+  .quiz-question {
+    background: white;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .question-text {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #333;
+    line-height: 1.5;
+  }
+
+  .answer-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .option-btn {
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    font-size: 1rem;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: #4CAF50;
+    background: #f0f8f0;
+  }
+
+  .option-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .answer-input {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .fill-blank-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+
+  .check-btn {
+    padding: 0.75rem 1.5rem;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .check-btn:hover:not(:disabled) {
+    background: #45a049;
+  }
+
+  .check-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .feedback {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+  }
+
+  .feedback.correct {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .feedback.incorrect {
+    background: #f8d7da;
+    color: #721c24;
+  }
+
+  .feedback.answer-revealed {
+    background: #d1ecf1;
+    color: #0c5460;
+  }
+
+  .show-all-answers-btn {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .show-all-answers-btn:hover {
+    background: #0056b3;
+  }
+
+  /* RTL support */
+  [dir="rtl"] .answer-options,
+  [dir="rtl"] .option-btn {
+    text-align: right;
+  }
+
+  @media (max-width: 768px) {
+    .quiz-interactive {
+      padding: 1.5rem;
+    }
+
+    .quiz-question {
+      padding: 1rem;
+    }
+
+    .question-text {
+      font-size: 1rem;
+    }
+
+    .answer-input {
+      flex-direction: column;
+    }
+
+    .fill-blank-input {
+      min-width: 100%;
+    }
+  }
+</style>

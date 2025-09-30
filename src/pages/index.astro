@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StoryCard from '../components/StoryCard.astro';
+import { getCollection } from 'astro:content';
+
+const locale = 'de';
+const stories = await getCollection('stories', ({ id }) => id.startsWith('de/'));
+---
+
+<BaseLayout title="Startseite" locale={locale}>
+  <div class="container">
+    <section class="hero">
+      <h1>Willkommen bei Lernen mit Geschichten</h1>
+      <p class="hero-text">
+        Entdecke spannende Geschichten, die Kindern wichtige Werte und Fähigkeiten vermitteln.
+        Für Eltern, Lehrer und Erzieher.
+      </p>
+    </section>
+
+    <section class="stories-section">
+      <h2>Alle Geschichten</h2>
+
+      {stories.length === 0 ? (
+        <div class="no-stories">
+          <p>Noch keine Geschichten verfügbar. Bald kommen die ersten Geschichten!</p>
+        </div>
+      ) : (
+        <div class="stories-grid">
+          {stories.map(story => (
+            <StoryCard
+              title={story.data.title}
+              emoji={story.data.emoji}
+              skills={story.data.skills}
+              storyId={story.data.storyId}
+              estimatedReadTime={story.data.estimatedReadTime}
+              locale={locale}
+              slug={story.slug.replace('de/', '')}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .hero {
+    text-align: center;
+    padding: 3rem 0;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+
+  .hero-text {
+    font-size: 1.25rem;
+    color: var(--color-text-light);
+    line-height: 1.6;
+  }
+
+  .stories-section {
+    margin-top: 3rem;
+  }
+
+  .stories-section h2 {
+    margin-bottom: 2rem;
+    color: var(--color-text);
+  }
+
+  .stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .no-stories {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: var(--border-radius);
+    color: var(--color-text-light);
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 {
+      font-size: 2rem;
+    }
+
+    .hero-text {
+      font-size: 1.1rem;
+    }
+
+    .stories-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+</style>

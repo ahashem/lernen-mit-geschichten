@@ -1,0 +1,154 @@
+---
+import '../styles/global.css';
+import '../styles/rtl.css';
+import LanguageSelector from '../components/LanguageSelector.astro';
+import type { Locale } from '../utils/i18n';
+import { getTranslation, isRTL } from '../utils/i18n';
+
+interface Props {
+  title: string;
+  description?: string;
+  locale?: Locale;
+}
+
+const { title, description, locale = 'de' } = Astro.props;
+const dir = isRTL(locale) ? 'rtl' : 'ltr';
+const siteName = getTranslation(locale, 'siteName');
+---
+
+<!DOCTYPE html>
+<html lang={locale} dir={dir}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description || getTranslation(locale, 'tagline')} />
+    <title>{title} | {siteName}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <a href="#main-content" class="visually-hidden">Skip to main content</a>
+
+    <header>
+      <div class="container">
+        <nav>
+          <div class="nav-brand">
+            <a href={locale === 'de' ? '/' : `/${locale}`}>
+              <h1 class="site-title">{siteName}</h1>
+              <p class="site-tagline">{getTranslation(locale, 'tagline')}</p>
+            </a>
+          </div>
+
+          <div class="nav-links">
+            <a href={locale === 'de' ? '/' : `/${locale}`}>{getTranslation(locale, 'home')}</a>
+            <a href={locale === 'de' ? '/about' : `/${locale}/about`}>{getTranslation(locale, 'about')}</a>
+          </div>
+
+          <LanguageSelector currentLocale={locale} currentPath={Astro.url.pathname} />
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>&copy; {new Date().getFullYear()} {siteName}</p>
+        <p>
+          <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">
+            CC BY-NC-SA 4.0
+          </a>
+        </p>
+      </div>
+    </footer>
+
+    <style>
+      header {
+        background: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .nav-brand a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .site-title {
+        font-size: 1.5rem;
+        margin: 0;
+        color: var(--color-primary);
+      }
+
+      .site-tagline {
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+        margin: 0;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+
+      .nav-links a {
+        font-weight: 500;
+        color: var(--color-text);
+        transition: color 0.2s;
+      }
+
+      .nav-links a:hover {
+        color: var(--color-primary);
+      }
+
+      main {
+        min-height: calc(100vh - 200px);
+        padding: 2rem 0;
+      }
+
+      footer {
+        background: var(--color-text);
+        color: white;
+        padding: 2rem 0;
+        margin-top: 4rem;
+        text-align: center;
+      }
+
+      footer p {
+        margin: 0.25rem 0;
+      }
+
+      footer a {
+        color: var(--color-secondary);
+      }
+
+      @media (max-width: 768px) {
+        nav {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .nav-links {
+          justify-content: center;
+        }
+
+        .site-title {
+          font-size: 1.25rem;
+        }
+      }
+    </style>
+  </body>
+</html>
