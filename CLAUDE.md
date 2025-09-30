@@ -54,41 +54,51 @@ This is a multilingual, non-profit educational microwebsite teaching children (a
 ```
 src/
 ├── components/           # Reusable Astro components
-│   ├── QuizInteractive.astro     # Main interactive quiz component
-│   ├── StoryCard.astro           # Story preview cards
-│   ├── LanguageSelector.astro    # Language switcher
-│   ├── FilterSidebar.astro       # Filter by skill/language
-│   └── SearchBar.astro           # Search functionality
+│   ├── QuizInteractive.astro        # Main interactive quiz component
+│   ├── StoryCard.astro              # Story preview cards (with interactive badges)
+│   ├── InteractiveStorybook.astro   # Swiper + TTS narration
+│   ├── LanguageSelector.astro       # Language switcher (dropdown)
+│   ├── FilterSidebar.astro          # Filter by skill/language
+│   └── SearchBar.astro              # Search functionality
 ├── content/
-│   ├── config.ts                 # Content collections schema
+│   ├── config.ts                    # Content collections schema (supports interactive format)
 │   └── stories/
-│       ├── de/                   # German stories
-│       ├── ar/                   # Arabic stories
-│       ├── en/                   # English stories
-│       ├── tr/                   # Turkish stories
-│       └── ur/                   # Urdu stories
+│       ├── de/                      # German stories
+│       ├── ar/                      # Arabic stories
+│       ├── en/                      # English stories
+│       ├── tr/                      # Turkish stories
+│       └── ur/                      # Urdu stories
 ├── layouts/
-│   ├── BaseLayout.astro          # Base template with nav
-│   └── StoryLayout.astro         # Story detail page template
+│   ├── BaseLayout.astro             # Base template with nav
+│   └── StoryLayout.astro            # Story detail page template
+├── locales/                         # i18n JSON files for Crowdin
+│   ├── de.json
+│   ├── ar.json
+│   ├── en.json
+│   ├── tr.json
+│   └── ur.json
 ├── pages/
-│   ├── index.astro               # Homepage
-│   ├── about.astro
-│   ├── how-to-use.astro
+│   ├── index.astro                  # Homepage (DE)
+│   ├── [locale]/index.astro         # Localized homepages
+│   ├── about.astro                  # About page (DE)
+│   ├── [locale]/about.astro         # Localized about pages
 │   └── stories/
-│       └── [lang]/
-│           └── [slug].astro      # Dynamic story pages
+│       └── [...slug].astro          # Dynamic story pages
 ├── styles/
-│   ├── global.css                # Global styles
-│   └── rtl.css                   # RTL overrides for AR/UR
+│   ├── global.css                   # Global styles
+│   └── rtl.css                      # RTL overrides for AR/UR
 └── utils/
-    ├── i18n.ts                   # Translation utilities
-    ├── skills-taxonomy.ts        # 58 skills definitions
-    └── search.ts                 # Search logic
+    ├── i18n.ts                      # Translation utilities (loads JSON files)
+    ├── skills-taxonomy.ts           # 58 skills definitions
+    ├── text-to-speech.ts            # StoryNarrator class for TTS
+    └── search.ts                    # Search logic
 ```
 
 ## Content Format
 
 ### Story Markdown Structure
+
+#### Standard Format
 ```markdown
 ---
 title: "Brunos bunte Gefühle"
@@ -99,12 +109,13 @@ titleUr: "برونو کے رنگین جذبات"
 emoji: "🐻"
 skills: ["self-awareness", "emotional-regulation"]
 ageGroup: "3-7"
-languages: ["de", "ar", "en", "tr", "ur"]
+languages: ["de"]
 storyId: "001-bruno"
 characterType: "bear"
 difficulty: "beginner"
 estimatedReadTime: 3
 publishDate: 2024-01-15
+storyFormat: "standard"  # default
 ---
 
 ## Story Content
@@ -124,6 +135,31 @@ publishDate: 2024-01-15
 ### Fill-in-the-Blank
 [questions data structure]
 ```
+
+#### Interactive Format (with TTS & Page Flipping)
+```markdown
+---
+title: "Brunos bunte Gefühle"
+# ... other frontmatter
+storyFormat: "interactive"
+pages:
+  - text: "Es war einmal ein kleiner Bär namens Bruno..."
+    image: "https://via.placeholder.com/800x600"
+  - text: "Eines Tages wollte Bruno..."
+    image: "https://via.placeholder.com/800x600"
+---
+
+## Key Message
+[Text after all interactive pages]
+```
+
+**Interactive Features:**
+- Swiper.js page flipping with creative 3D transitions
+- Web Speech API (TTS) narration with word-by-word highlighting
+- Floating control island (sticky, glassmorphic design)
+- Expandable settings panel (volume, speed)
+- Auto-play mode for continuous reading
+- Progress tracking via localStorage
 
 ## Development Guidelines
 
@@ -270,15 +306,27 @@ npm run astro add    # Add Astro integrations
 
 ## Priority Features (MVP)
 
+### ✅ Completed
 1. Homepage with story grid and filters
 2. Story detail pages with interactive quizzes
-3. Language selector working on all pages
+3. Language selector working on all pages (dropdown)
 4. Search by keyword/skill
-5. 5 German stories fully converted
+5. 5 German stories fully converted (1 interactive format)
 6. Mobile-responsive design
 7. RTL support for Arabic/Urdu
-8. Print-friendly CSS
-9. Deployment to Netlify
+8. Interactive storytelling with TTS and page flipping
+9. Floating control island for audio controls
+10. Separate i18n JSON files for Crowdin integration
+11. Enhanced About page with usage guides (all languages)
+12. Interactive story badges on cards
+
+### 🚧 In Progress
+- Print-friendly CSS
+- SEO (sitemap.xml, robots.txt, meta tags)
+
+### 📋 Pending
+- Story format selector (toggle between standard/interactive)
+- Deployment to Netlify
 
 ## Phase 2 Features
 
