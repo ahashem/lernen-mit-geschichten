@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import StoryCard from '../components/StoryCard.astro';
+import SearchBar from '../components/SearchBar.astro';
+import FilterSidebar from '../components/FilterSidebar.astro';
 import { getCollection } from 'astro:content';
 
 const locale = 'de';
@@ -17,8 +19,13 @@ const stories = await getCollection('stories', ({ id }) => id.startsWith('de/'))
       </p>
     </section>
 
-    <section class="stories-section">
-      <h2>Alle Geschichten</h2>
+    <SearchBar locale={locale} />
+
+    <div class="content-wrapper">
+      <FilterSidebar locale={locale} />
+
+      <section class="stories-section">
+        <h2>Alle Geschichten</h2>
 
       {stories.length === 0 ? (
         <div class="no-stories">
@@ -39,9 +46,56 @@ const stories = await getCollection('stories', ({ id }) => id.startsWith('de/'))
           ))}
         </div>
       )}
-    </section>
+      </section>
+    </div>
   </div>
 </BaseLayout>
+
+<script>
+  // Client-side filtering and search
+  window.addEventListener('DOMContentLoaded', () => {
+    const storiesGrid = document.querySelector('.stories-grid');
+    if (!storiesGrid) return;
+
+    const storyCards = Array.from(storiesGrid.querySelectorAll('.story-card'));
+
+    const filterStories = () => {
+      const searchQuery = localStorage.getItem('search-query') || '';
+      const selectedSkills = JSON.parse(localStorage.getItem('filters-skills') || '[]');
+      const selectedLanguages = JSON.parse(localStorage.getItem('filters-languages') || '[]');
+
+      storyCards.forEach(card => {
+        const cardEl = card as HTMLElement;
+        const title = cardEl.querySelector('.story-title')?.textContent?.toLowerCase() || '';
+        const skills = Array.from(cardEl.querySelectorAll('.skill-tag')).map(
+          tag => tag.textContent?.toLowerCase() || ''
+        );
+
+        // Search filter
+        const matchesSearch = !searchQuery || title.includes(searchQuery.toLowerCase());
+
+        // Skills filter
+        const matchesSkills = selectedSkills.length === 0 ||
+          selectedSkills.some((skill: string) =>
+            skills.some(s => s.includes(skill))
+          );
+
+        // Show/hide card
+        if (matchesSearch && matchesSkills) {
+          cardEl.style.display = '';
+        } else {
+          cardEl.style.display = 'none';
+        }
+      });
+    };
+
+    window.addEventListener('searchChanged', filterStories);
+    window.addEventListener('filtersChanged', filterStories);
+
+    // Initial filter
+    filterStories();
+  });
+</script>
 
 <style>
   .hero {
@@ -63,8 +117,15 @@ const stories = await getCollection('stories', ({ id }) => id.startsWith('de/'))
     line-height: 1.6;
   }
 
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
   .stories-section {
-    margin-top: 3rem;
+    min-width: 0;
   }
 
   .stories-section h2 {
@@ -93,6 +154,11 @@ const stories = await getCollection('stories', ({ id }) => id.startsWith('de/'))
 
     .hero-text {
       font-size: 1.1rem;
+    }
+
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
     }
 
     .stories-grid {

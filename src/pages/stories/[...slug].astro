@@ -1,0 +1,265 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import QuizInteractive, { type QuizQuestion } from '../../components/QuizInteractive.astro';
+import type { Locale } from '../../utils/i18n';
+import { getTranslation } from '../../utils/i18n';
+import { getSkillsByIds } from '../../utils/skills-taxonomy';
+
+export async function getStaticPaths() {
+  const stories = await getCollection('stories');
+
+  return stories.map(story => {
+    const slug = story.slug.replace(/^[a-z]{2}\//, '');
+    return {
+      params: { slug },
+      props: { story },
+    };
+  });
+}
+
+interface Props {
+  story: CollectionEntry<'stories'>;
+}
+
+const { story } = Astro.props;
+const { Content } = await story.render();
+const locale: Locale = 'de';
+
+const skillObjects = getSkillsByIds(story.data.skills);
+
+// Sample quiz questions - will be in frontmatter later
+const quizQuestions: QuizQuestion[] = [
+  {
+    id: 'q1',
+    text: 'Bruno ist ein kleiner Hund.',
+    type: 'truefalse',
+    correctAnswer: 'false'
+  },
+  {
+    id: 'q2',
+    text: 'Bruno liebt Honig.',
+    type: 'truefalse',
+    correctAnswer: 'true'
+  },
+  {
+    id: 'q3',
+    text: 'Wie heißt Brunos Freundin?',
+    type: 'multiplechoice',
+    options: ['Lina', 'Mila', 'Nina'],
+    correctAnswer: 'Mila'
+  },
+  {
+    id: 'q4',
+    text: 'Bruno ist ein kleiner ________.',
+    type: 'fillinblank',
+    correctAnswer: ['Bär', 'baer']
+  }
+];
+---
+
+<BaseLayout title={story.data.title} locale={locale}>
+  <article class="story-detail">
+    <div class="container">
+      <header class="story-header">
+        <div class="emoji-large">{story.data.emoji}</div>
+        <h1>{story.data.title}</h1>
+
+        <div class="story-meta">
+          <div class="skills-list">
+            {skillObjects.map(skill => (
+              <span class="skill-badge">{skill[locale]}</span>
+            ))}
+          </div>
+
+          {story.data.estimatedReadTime && (
+            <div class="read-time">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm0 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.5 2.5v4.793l2.854 2.853-.708.708-3-3A.5.5 0 0 1 7.5 8.5v-5h1z"/>
+              </svg>
+              <span>{story.data.estimatedReadTime} {getTranslation(locale, 'minutesRead')}</span>
+            </div>
+          )}
+
+          <div class="age-group">
+            <span>{getTranslation(locale, 'ageGroup')}: {story.data.ageGroup}</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="story-content">
+        <Content />
+      </div>
+
+      {story.data.storyId === '001-bruno' && (
+        <section class="activities-section">
+          <h2>{getTranslation(locale, 'activities')}</h2>
+
+          <QuizInteractive
+            questions={quizQuestions}
+            language={locale}
+            storyId={story.data.storyId}
+            title={getTranslation(locale, 'trueFalse')}
+          />
+        </section>
+      )}
+
+      <footer class="story-footer">
+        <a href="/" class="back-link">← {getTranslation(locale, 'allStories')}</a>
+      </footer>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .story-detail {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .story-header {
+    text-align: center;
+    padding: 2rem 0;
+    border-bottom: 2px solid #FFD93D;
+    margin-bottom: 3rem;
+  }
+
+  .emoji-large {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+  }
+
+  .story-header h1 {
+    color: var(--color-primary);
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .story-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+  }
+
+  .skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .skill-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--color-secondary);
+    color: var(--color-text);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .read-time,
+  .age-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+  }
+
+  .story-content {
+    background: white;
+    padding: 3rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 3rem;
+  }
+
+  .story-content :global(h2) {
+    color: var(--color-primary);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-size: 1.75rem;
+  }
+
+  .story-content :global(h3) {
+    color: var(--color-text);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .story-content :global(p) {
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+
+  .story-content :global(ul) {
+    padding-left: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .story-content :global(li) {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+    font-size: 1.05rem;
+  }
+
+  .activities-section {
+    margin-bottom: 3rem;
+  }
+
+  .activities-section h2 {
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+  }
+
+  .story-footer {
+    padding: 2rem 0;
+    text-align: center;
+  }
+
+  .back-link {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+
+  .back-link:hover {
+    background: #e88f30;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .emoji-large {
+      font-size: 4rem;
+    }
+
+    .story-header h1 {
+      font-size: 2rem;
+    }
+
+    .story-content {
+      padding: 2rem 1.5rem;
+    }
+
+    .story-content :global(p),
+    .story-content :global(li) {
+      font-size: 1rem;
+    }
+
+    .story-meta {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+  }
+</style>

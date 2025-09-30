@@ -1,0 +1,229 @@
+---
+import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
+import { skillsCategories } from '../utils/skills-taxonomy';
+
+interface Props {
+  locale: Locale;
+  currentSkills?: string[];
+  currentLanguages?: string[];
+}
+
+const { locale, currentSkills = [], currentLanguages = [] } = Astro.props;
+
+const languages = [
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+  { code: 'ur', name: 'اردو', flag: '🇵🇰' },
+];
+---
+
+<aside class="filter-sidebar">
+  <h3>{getTranslation(locale, 'filterBySkill')}</h3>
+
+  <div class="filter-section">
+    {Object.entries(skillsCategories).map(([categoryId, category]) => (
+      <details class="category-group" open>
+        <summary>{category[locale]}</summary>
+        <div class="skills-checkboxes">
+          {category.skills.map(skill => (
+            <label class="skill-checkbox">
+              <input
+                type="checkbox"
+                name="skill"
+                value={skill.id}
+                checked={currentSkills.includes(skill.id)}
+              />
+              <span>{skill[locale]}</span>
+            </label>
+          ))}
+        </div>
+      </details>
+    ))}
+  </div>
+
+  <h3>{getTranslation(locale, 'filterByLanguage')}</h3>
+
+  <div class="filter-section">
+    <div class="language-checkboxes">
+      {languages.map(lang => (
+        <label class="language-checkbox">
+          <input
+            type="checkbox"
+            name="language"
+            value={lang.code}
+            checked={currentLanguages.includes(lang.code)}
+          />
+          <span class="flag">{lang.flag}</span>
+          <span>{lang.name}</span>
+        </label>
+      ))}
+    </div>
+  </div>
+
+  <button type="button" class="clear-filters">{locale === 'de' ? 'Filter zurücksetzen' : 'Clear filters'}</button>
+</aside>
+
+<script>
+  document.querySelectorAll('.filter-sidebar').forEach(sidebar => {
+    const checkboxes = sidebar.querySelectorAll('input[type="checkbox"]');
+    const clearBtn = sidebar.querySelector('.clear-filters');
+
+    const updateFilters = () => {
+      const selectedSkills = Array.from(
+        sidebar.querySelectorAll('input[name="skill"]:checked')
+      ).map(cb => (cb as HTMLInputElement).value);
+
+      const selectedLanguages = Array.from(
+        sidebar.querySelectorAll('input[name="language"]:checked')
+      ).map(cb => (cb as HTMLInputElement).value);
+
+      // Store in localStorage
+      localStorage.setItem('filters-skills', JSON.stringify(selectedSkills));
+      localStorage.setItem('filters-languages', JSON.stringify(selectedLanguages));
+
+      // Dispatch custom event
+      window.dispatchEvent(new CustomEvent('filtersChanged', {
+        detail: { skills: selectedSkills, languages: selectedLanguages }
+      }));
+    };
+
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', updateFilters);
+    });
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        checkboxes.forEach(cb => {
+          (cb as HTMLInputElement).checked = false;
+        });
+        localStorage.removeItem('filters-skills');
+        localStorage.removeItem('filters-languages');
+        window.dispatchEvent(new CustomEvent('filtersChanged', {
+          detail: { skills: [], languages: [] }
+        }));
+      });
+    }
+
+    // Load saved filters
+    const savedSkills = localStorage.getItem('filters-skills');
+    const savedLanguages = localStorage.getItem('filters-languages');
+
+    if (savedSkills) {
+      const skills = JSON.parse(savedSkills);
+      skills.forEach((skillId: string) => {
+        const cb = sidebar.querySelector(`input[name="skill"][value="${skillId}"]`) as HTMLInputElement;
+        if (cb) cb.checked = true;
+      });
+    }
+
+    if (savedLanguages) {
+      const languages = JSON.parse(savedLanguages);
+      languages.forEach((langCode: string) => {
+        const cb = sidebar.querySelector(`input[name="language"][value="${langCode}"]`) as HTMLInputElement;
+        if (cb) cb.checked = true;
+      });
+    }
+  });
+</script>
+
+<style>
+  .filter-sidebar {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 100px;
+  }
+
+  .filter-sidebar h3 {
+    font-size: 1.1rem;
+    color: var(--color-text);
+    margin-bottom: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .filter-sidebar h3:first-child {
+    margin-top: 0;
+  }
+
+  .filter-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .category-group {
+    margin-bottom: 1rem;
+  }
+
+  .category-group summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--color-primary);
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+
+  .category-group summary:hover {
+    background: var(--color-background);
+  }
+
+  .skills-checkboxes,
+  .language-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem 0 0.75rem 1rem;
+  }
+
+  .skill-checkbox,
+  .language-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+
+  .skill-checkbox:hover,
+  .language-checkbox:hover {
+    background: var(--color-background);
+  }
+
+  .skill-checkbox input,
+  .language-checkbox input {
+    cursor: pointer;
+  }
+
+  .language-checkbox .flag {
+    font-size: 1.2rem;
+  }
+
+  .clear-filters {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--color-text-light);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+
+  .clear-filters:hover {
+    background: var(--color-text);
+  }
+
+  @media (max-width: 768px) {
+    .filter-sidebar {
+      position: static;
+      margin-bottom: 2rem;
+    }
+  }
+</style>

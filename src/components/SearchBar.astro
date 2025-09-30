@@ -1,0 +1,128 @@
+---
+import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
+
+interface Props {
+  locale: Locale;
+  placeholder?: string;
+}
+
+const { locale, placeholder } = Astro.props;
+const searchPlaceholder = placeholder || getTranslation(locale, 'search');
+---
+
+<div class="search-bar">
+  <input
+    type="search"
+    class="search-input"
+    placeholder={searchPlaceholder}
+    aria-label={searchPlaceholder}
+  />
+  <button type="button" class="search-button" aria-label="Search">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll('.search-bar').forEach(searchBar => {
+    const input = searchBar.querySelector('.search-input') as HTMLInputElement;
+    const button = searchBar.querySelector('.search-button');
+
+    let debounceTimeout: number;
+
+    const performSearch = () => {
+      const query = input.value.trim().toLowerCase();
+
+      // Store in localStorage
+      localStorage.setItem('search-query', query);
+
+      // Dispatch custom event
+      window.dispatchEvent(new CustomEvent('searchChanged', {
+        detail: { query }
+      }));
+    };
+
+    input.addEventListener('input', () => {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = window.setTimeout(performSearch, 300);
+    });
+
+    button?.addEventListener('click', performSearch);
+
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+
+    // Load saved search
+    const savedQuery = localStorage.getItem('search-query');
+    if (savedQuery) {
+      input.value = savedQuery;
+    }
+  });
+</script>
+
+<style>
+  .search-bar {
+    display: flex;
+    gap: 0.5rem;
+    background: white;
+    padding: 0.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    align-items: center;
+  }
+
+  .search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+
+  .search-input::placeholder {
+    color: var(--color-text-light);
+  }
+
+  .search-button {
+    padding: 0.75rem 1rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .search-button:hover {
+    background: #e88f30;
+  }
+
+  .search-button svg {
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .search-bar {
+      flex-direction: column;
+    }
+
+    .search-input,
+    .search-button {
+      width: 100%;
+    }
+  }
+</style>

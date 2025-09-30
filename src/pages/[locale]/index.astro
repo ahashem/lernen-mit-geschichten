@@ -1,0 +1,197 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import StoryCard from '../../components/StoryCard.astro';
+import SearchBar from '../../components/SearchBar.astro';
+import FilterSidebar from '../../components/FilterSidebar.astro';
+import { getCollection } from 'astro:content';
+import type { Locale } from '../../utils/i18n';
+import { getTranslation } from '../../utils/i18n';
+
+export async function getStaticPaths() {
+  return [
+    { params: { locale: 'ar' } },
+    { params: { locale: 'en' } },
+    { params: { locale: 'tr' } },
+    { params: { locale: 'ur' } },
+  ];
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const stories = await getCollection('stories', ({ id }) => id.startsWith(`${locale}/`));
+
+const heroContent = {
+  de: {
+    title: 'Willkommen bei Lernen mit Geschichten',
+    text: 'Entdecke spannende Geschichten, die Kindern wichtige Werte und Fähigkeiten vermitteln. Für Eltern, Lehrer und Erzieher.'
+  },
+  ar: {
+    title: 'مرحباً بكم في التعلم من خلال القصص',
+    text: 'اكتشف القصص المثيرة التي تعلم الأطفال القيم والمهارات المهمة. للآباء والمعلمين ومقدمي الرعاية في رياض الأطفال.'
+  },
+  en: {
+    title: 'Welcome to Learning with Stories',
+    text: 'Discover exciting stories that teach children important values and skills. For parents, teachers and educators.'
+  },
+  tr: {
+    title: 'Hikayelerle Öğrenmeye Hoş Geldiniz',
+    text: 'Çocuklara önemli değerleri ve becerileri öğreten heyecan verici hikayeleri keşfedin. Ebeveynler, öğretmenler ve eğitimciler için.'
+  },
+  ur: {
+    title: 'کہانیوں کے ساتھ سیکھنے میں خوش آمدید',
+    text: 'ایسی دلچسپ کہانیاں دریافت کریں جو بچوں کو اہم اقدار اور مہارتیں سکھاتی ہیں۔ والدین، اساتذہ اور معلمین کے لیے۔'
+  }
+};
+
+const hero = heroContent[locale];
+---
+
+<BaseLayout title={getTranslation(locale, 'home')} locale={locale}>
+  <div class="container">
+    <section class="hero">
+      <h1>{hero.title}</h1>
+      <p class="hero-text">{hero.text}</p>
+    </section>
+
+    <SearchBar locale={locale} />
+
+    <div class="content-wrapper">
+      <FilterSidebar locale={locale} />
+
+      <section class="stories-section">
+        <h2>{getTranslation(locale, 'allStories')}</h2>
+
+        {stories.length === 0 ? (
+          <div class="no-stories">
+            <p>
+              {locale === 'ar' && 'لا توجد قصص متاحة حتى الآن. قريباً ستأتي القصص الأولى!'}
+              {locale === 'en' && 'No stories available yet. The first stories are coming soon!'}
+              {locale === 'tr' && 'Henüz hikaye yok. İlk hikayeler yakında geliyor!'}
+              {locale === 'ur' && 'ابھی تک کوئی کہانیاں دستیاب نہیں ہیں۔ پہلی کہانیاں جلد آ رہی ہیں!'}
+            </p>
+          </div>
+        ) : (
+          <div class="stories-grid">
+            {stories.map(story => (
+              <StoryCard
+                title={story.data[`title${locale.charAt(0).toUpperCase() + locale.slice(1)}` as keyof typeof story.data] as string || story.data.title}
+                emoji={story.data.emoji}
+                skills={story.data.skills}
+                storyId={story.data.storyId}
+                estimatedReadTime={story.data.estimatedReadTime}
+                locale={locale}
+                slug={story.slug.replace(`${locale}/`, '')}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const storiesGrid = document.querySelector('.stories-grid');
+    if (!storiesGrid) return;
+
+    const storyCards = Array.from(storiesGrid.querySelectorAll('.story-card'));
+
+    const filterStories = () => {
+      const searchQuery = localStorage.getItem('search-query') || '';
+      const selectedSkills = JSON.parse(localStorage.getItem('filters-skills') || '[]');
+
+      storyCards.forEach(card => {
+        const cardEl = card as HTMLElement;
+        const title = cardEl.querySelector('.story-title')?.textContent?.toLowerCase() || '';
+        const skills = Array.from(cardEl.querySelectorAll('.skill-tag')).map(
+          tag => tag.textContent?.toLowerCase() || ''
+        );
+
+        const matchesSearch = !searchQuery || title.includes(searchQuery.toLowerCase());
+        const matchesSkills = selectedSkills.length === 0 ||
+          selectedSkills.some((skill: string) => skills.some(s => s.includes(skill)));
+
+        if (matchesSearch && matchesSkills) {
+          cardEl.style.display = '';
+        } else {
+          cardEl.style.display = 'none';
+        }
+      });
+    };
+
+    window.addEventListener('searchChanged', filterStories);
+    window.addEventListener('filtersChanged', filterStories);
+    filterStories();
+  });
+</script>
+
+<style>
+  .hero {
+    text-align: center;
+    padding: 3rem 0;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+
+  .hero-text {
+    font-size: 1.25rem;
+    color: var(--color-text-light);
+    line-height: 1.6;
+  }
+
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .stories-section {
+    min-width: 0;
+  }
+
+  .stories-section h2 {
+    margin-bottom: 2rem;
+    color: var(--color-text);
+  }
+
+  .stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .no-stories {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: var(--border-radius);
+    color: var(--color-text-light);
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 {
+      font-size: 2rem;
+    }
+
+    .hero-text {
+      font-size: 1.1rem;
+    }
+
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .stories-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+</style>

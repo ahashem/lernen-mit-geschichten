@@ -1,0 +1,142 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Locale } from '../../utils/i18n';
+import { getTranslation } from '../../utils/i18n';
+
+export async function getStaticPaths() {
+  return [
+    { params: { locale: 'ar' } },
+    { params: { locale: 'en' } },
+    { params: { locale: 'tr' } },
+    { params: { locale: 'ur' } },
+  ];
+}
+
+const { locale } = Astro.params as { locale: Locale };
+
+const content = {
+  ar: {
+    title: 'عن التعلم من خلال القصص',
+    mission: { title: 'مهمتنا', text: 'نقدم قصصًا تعليمية يمكن الوصول إليها تعلم الأطفال الذين تتراوح أعمارهم بين 3-7 سنوات مهارات وقيم الحياة المهمة من خلال سرد القصص الجذابة.' },
+    audience: { title: 'لمن هذا الموقع؟', text: 'يستهدف هذا الموقع الآباء والمعلمين ومقدمي الرعاية في رياض الأطفال في ألمانيا. جميع المحتويات متاحة بـ 5 لغات: الألمانية والعربية والإنجليزية والتركية والأوردو.' },
+    offer: { title: 'ماذا نقدم؟', items: ['قصص ذات دروس حياتية قيمة', 'أنشطة تعليمية تفاعلية', 'محتوى متعدد اللغات', 'مجاني وبدون إعلانات'] },
+    license: { title: 'الترخيص', text: 'جميع القصص مرخصة بموجب' }
+  },
+  en: {
+    title: 'About Learning with Stories',
+    mission: { title: 'Our Mission', text: 'We provide accessible, educational stories that teach children aged 3-7 important life skills and values through engaging narratives.' },
+    audience: { title: 'Who is this for?', text: 'This website is for parents, teachers and kindergarten caregivers in Germany. All content is available in 5 languages: German, Arabic, English, Turkish and Urdu.' },
+    offer: { title: 'What do we offer?', items: ['Stories with valuable life lessons', 'Interactive learning activities', 'Multilingual content', 'Free and ad-free'] },
+    license: { title: 'License', text: 'All stories are licensed under' }
+  },
+  tr: {
+    title: 'Hikayelerle Öğrenme Hakkında',
+    mission: { title: 'Misyonumuz', text: '3-7 yaş arası çocuklara önemli yaşam becerilerini ve değerleri ilgi çekici anlatılarla öğreten erişilebilir, eğitici hikayeler sunuyoruz.' },
+    audience: { title: 'Bu kim için?', text: 'Bu web sitesi Almanya\'daki ebeveynler, öğretmenler ve kreş bakıcıları içindir. Tüm içerik 5 dilde mevcuttur: Almanca, Arapça, İngilizce, Türkçe ve Urduca.' },
+    offer: { title: 'Ne sunuyoruz?', items: ['Değerli hayat dersleri içeren hikayeler', 'Etkileşimli öğrenme etkinlikleri', 'Çok dilli içerik', 'Ücretsiz ve reklamsız'] },
+    license: { title: 'Lisans', text: 'Tüm hikayeler şu lisans altındadır' }
+  },
+  ur: {
+    title: 'کہانیوں کے ساتھ سیکھنے کے بارے میں',
+    mission: { title: 'ہمارا مشن', text: 'ہم قابل رسائی، تعلیمی کہانیاں فراہم کرتے ہیں جو 3-7 سال کی عمر کے بچوں کو دلچسپ بیانیے کے ذریعے اہم زندگی کی مہارتیں اور اقدار سکھاتی ہیں۔' },
+    audience: { title: 'یہ کس کے لیے ہے؟', text: 'یہ ویب سائٹ جرمنی میں والدین، اساتذہ اور کنڈرگارٹن دیکھ بھال کرنے والوں کے لیے ہے۔ تمام مواد 5 زبانوں میں دستیاب ہے: جرمن، عربی، انگریزی، ترکی اور اردو۔' },
+    offer: { title: 'ہم کیا پیش کرتے ہیں؟', items: ['قیمتی زندگی کے اسباق کے ساتھ کہانیاں', 'تفاعلی سیکھنے کی سرگرمیاں', 'کثیر لسانی مواد', 'مفت اور اشتہار سے پاک'] },
+    license: { title: 'لائسنس', text: 'تمام کہانیاں اس لائسنس کے تحت ہیں' }
+  }
+};
+
+const pageContent = content[locale];
+---
+
+<BaseLayout title={getTranslation(locale, 'about')} locale={locale}>
+  <div class="container">
+    <article class="about-content">
+      <h1>{pageContent.title}</h1>
+
+      <section>
+        <h2>{pageContent.mission.title}</h2>
+        <p>{pageContent.mission.text}</p>
+      </section>
+
+      <section>
+        <h2>{pageContent.audience.title}</h2>
+        <p>{pageContent.audience.text}</p>
+      </section>
+
+      <section>
+        <h2>{pageContent.offer.title}</h2>
+        <ul>
+          {pageContent.offer.items.map((item: string) => <li>{item}</li>)}
+        </ul>
+      </section>
+
+      <section>
+        <h2>{pageContent.license.title}</h2>
+        <p>
+          {pageContent.license.text}
+          <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">
+            Creative Commons BY-NC-SA 4.0
+          </a>.
+        </p>
+      </section>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .about-content {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 3rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .about-content h1 {
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+  }
+
+  .about-content section {
+    margin-bottom: 2rem;
+  }
+
+  .about-content h2 {
+    color: var(--color-text);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .about-content p {
+    line-height: 1.8;
+    color: var(--color-text-light);
+  }
+
+  .about-content ul {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    line-height: 1.8;
+    color: var(--color-text-light);
+  }
+
+  [dir="rtl"] .about-content ul {
+    padding-left: 0;
+    padding-right: 2rem;
+  }
+
+  .about-content li {
+    margin-bottom: 0.5rem;
+  }
+
+  .about-content a {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .about-content {
+      padding: 2rem 1.5rem;
+    }
+  }
+</style>

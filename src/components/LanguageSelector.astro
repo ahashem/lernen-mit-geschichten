@@ -18,73 +18,70 @@ const languages = [
 ---
 
 <div class="language-selector">
-  {languages.map(lang => (
-    <a
-      href={lang.code === 'de' ? currentPath : `/${lang.code}${currentPath}`}
-      class:list={['lang-option', { active: currentLocale === lang.code }]}
-      aria-label={`Switch to ${lang.name}`}
-    >
-      <span class="flag">{lang.flag}</span>
-      <span class="lang-name">{lang.name}</span>
-    </a>
-  ))}
+  <select class="lang-dropdown" aria-label="Select language">
+    {languages.map(lang => (
+      <option
+        value={lang.code === 'de' ? currentPath : `/${lang.code}${currentPath}`}
+        selected={currentLocale === lang.code}
+      >
+        {lang.flag} {lang.name}
+      </option>
+    ))}
+  </select>
 </div>
+
+<script>
+  document.querySelectorAll('.lang-dropdown').forEach(select => {
+    select.addEventListener('change', (e) => {
+      const target = e.target as HTMLSelectElement;
+      window.location.href = target.value;
+    });
+  });
+</script>
 
 <style>
   .language-selector {
     display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
     align-items: center;
   }
 
-  .lang-option {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.5rem 0.75rem;
+  .lang-dropdown {
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
     border: 2px solid #ddd;
     border-radius: 8px;
     background: white;
     color: #333;
-    text-decoration: none;
+    font-size: 0.95rem;
+    font-family: inherit;
+    cursor: pointer;
     transition: all 0.2s ease;
-    font-size: 0.9rem;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 12px;
   }
 
-  .lang-option:hover {
-    border-color: #FF9F40;
-    background: #FFF5E6;
-    transform: translateY(-2px);
+  .lang-dropdown:hover {
+    border-color: var(--color-primary);
+    background-color: #FFF5E6;
   }
 
-  .lang-option.active {
-    border-color: #FF9F40;
-    background: #FF9F40;
-    color: white;
-    font-weight: 600;
+  .lang-dropdown:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(255, 159, 64, 0.1);
   }
 
-  .flag {
-    font-size: 1.2rem;
-    line-height: 1;
-  }
-
-  .lang-name {
-    font-size: 0.85rem;
+  .lang-dropdown option {
+    padding: 0.5rem;
+    font-size: 1rem;
   }
 
   @media (max-width: 768px) {
-    .lang-option {
-      padding: 0.4rem 0.6rem;
-    }
-
-    .lang-name {
-      display: none;
-    }
-
-    .flag {
-      font-size: 1.4rem;
+    .lang-dropdown {
+      font-size: 0.9rem;
+      padding: 0.4rem 1.75rem 0.4rem 0.6rem;
     }
   }
 </style>
