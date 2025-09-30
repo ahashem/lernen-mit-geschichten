@@ -8,6 +8,9 @@ interface Props {
 
 const { currentLocale, currentPath = '/' } = Astro.props;
 
+// Strip locale prefix from currentPath
+const cleanPath = currentPath.replace(/^\/(ar|en|tr|ur)/, '') || '/';
+
 const languages = [
   { code: 'de' as Locale, name: 'Deutsch', flag: '🇩🇪' },
   { code: 'ar' as Locale, name: 'العربية', flag: '🇸🇦' },
@@ -15,13 +18,20 @@ const languages = [
   { code: 'tr' as Locale, name: 'Türkçe', flag: '🇹🇷' },
   { code: 'ur' as Locale, name: 'اردو', flag: '🇵🇰' },
 ];
+
+const getLocalizedPath = (langCode: Locale) => {
+  if (langCode === 'de') {
+    return cleanPath;
+  }
+  return `/${langCode}${cleanPath}`;
+};
 ---
 
 <div class="language-selector">
   <select class="lang-dropdown" aria-label="Select language">
     {languages.map(lang => (
       <option
-        value={lang.code === 'de' ? currentPath : `/${lang.code}${currentPath}`}
+        value={getLocalizedPath(lang.code)}
         selected={currentLocale === lang.code}
       >
         {lang.flag} {lang.name}
