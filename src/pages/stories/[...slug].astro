@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import QuizInteractive, { type QuizQuestion } from '../../components/QuizInteractive.astro';
+import InteractiveStorybook from '../../components/InteractiveStorybook.astro';
 import type { Locale } from '../../utils/i18n';
 import { getTranslation } from '../../utils/i18n';
 import { getSkillsByIds } from '../../utils/skills-taxonomy';
@@ -87,11 +88,20 @@ const quizQuestions: QuizQuestion[] = [
         </div>
       </header>
 
-      <div class="story-content">
-        <Content />
-      </div>
+      {story.data.storyFormat === 'interactive' && story.data.pages ? (
+        <InteractiveStorybook
+          pages={story.data.pages}
+          storyId={story.data.storyId}
+          locale={locale}
+          title={story.data.title}
+        />
+      ) : (
+        <div class="story-content">
+          <Content />
+        </div>
+      )}
 
-      {story.data.storyId === '001-bruno' && (
+      {story.data.storyId === '001-bruno' && story.data.storyFormat !== 'interactive' && (
         <section class="activities-section">
           <h2>{getTranslation(locale, 'activities')}</h2>
 

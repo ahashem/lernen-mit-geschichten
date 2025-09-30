@@ -1,0 +1,467 @@
+---
+import type { Locale } from '../utils/i18n';
+
+export interface StoryPage {
+  text: string;
+  image?: string;
+}
+
+interface Props {
+  pages: StoryPage[];
+  storyId: string;
+  locale: Locale;
+  title: string;
+}
+
+const { pages, storyId, locale, title } = Astro.props;
+---
+
+<div class="interactive-storybook" data-story-id={storyId} data-locale={locale}>
+  <h2 class="story-title">{title}</h2>
+
+  <div class="swiper storybook-swiper">
+    <div class="swiper-wrapper">
+      {pages.map((page, index) => (
+        <div class="swiper-slide">
+          <div class="story-page">
+            {page.image && (
+              <div class="page-image">
+                <img src={page.image} alt={`Page ${index + 1}`} loading="lazy" />
+              </div>
+            )}
+            <div class="page-text" data-page={index}>
+              {page.text}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="swiper-pagination"></div>
+    <div class="swiper-button-prev">←</div>
+    <div class="swiper-button-next">→</div>
+  </div>
+
+  <div class="audio-controls">
+    <button class="btn play-pause" data-action="play">
+      <span class="icon">▶️</span>
+      <span class="label">{locale === 'de' ? 'Vorlesen' : locale === 'ar' ? 'اقرأ' : locale === 'en' ? 'Read Aloud' : locale === 'tr' ? 'Oku' : 'پڑھیں'}</span>
+    </button>
+
+    <button class="btn auto-play" data-enabled="false">
+      <span class="icon">🔄</span>
+      <span class="label">{locale === 'de' ? 'Auto-Weiter' : locale === 'ar' ? 'تلقائي' : locale === 'en' ? 'Auto-Play' : locale === 'tr' ? 'Otomatik' : 'خودکار'}</span>
+    </button>
+
+    <div class="volume-control">
+      <span class="icon">🔊</span>
+      <input type="range" class="volume-slider" min="0" max="100" value="80" aria-label="Volume" />
+    </div>
+
+    <div class="speed-control">
+      <label>{locale === 'de' ? 'Geschwindigkeit:' : locale === 'ar' ? 'السرعة:' : locale === 'en' ? 'Speed:' : locale === 'tr' ? 'Hız:' : 'رفتار:'}</label>
+      <select class="speed-select">
+        <option value="0.75">0.75x</option>
+        <option value="0.85" selected>0.85x</option>
+        <option value="1.0">1.0x</option>
+        <option value="1.2">1.2x</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="progress-indicator">
+    <span class="progress-text">{locale === 'de' ? 'Seite' : locale === 'ar' ? 'صفحة' : locale === 'en' ? 'Page' : locale === 'tr' ? 'Sayfa' : 'صفحہ'}</span>
+    <span class="current-page">1</span> / <span class="total-pages">{pages.length}</span>
+  </div>
+</div>
+
+<script>
+  import Swiper from 'swiper';
+  import { Navigation, Pagination, EffectCreative, Keyboard } from 'swiper/modules';
+  import 'swiper/css';
+  import 'swiper/css/navigation';
+  import 'swiper/css/pagination';
+  import { StoryNarrator, getTTSLocale } from '../utils/text-to-speech';
+
+  document.querySelectorAll('.interactive-storybook').forEach((storybookEl) => {
+    const storyId = storybookEl.getAttribute('data-story-id');
+    const locale = storybookEl.getAttribute('data-locale') || 'de';
+    const ttsLocale = getTTSLocale(locale);
+
+    const narrator = new StoryNarrator(ttsLocale);
+    let autoPlayEnabled = false;
+    let currentRate = 0.85;
+    let currentVolume = 0.8;
+
+    const swiper = new Swiper('.storybook-swiper', {
+      modules: [Navigation, Pagination, EffectCreative, Keyboard],
+      effect: 'creative',
+      creativeEffect: {
+        prev: {
+          translate: ['-100%', 0, -400],
+          rotate: [0, 0, -15],
+        },
+        next: {
+          translate: ['100%', 0, -400],
+          rotate: [0, 0, 15],
+        },
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      pagination: {
+        el: '.swiper-pagination',
+        type: 'progressbar',
+      },
+      keyboard: {
+        enabled: true,
+      },
+      grabCursor: true,
+      on: {
+        slideChange: function() {
+          updatePageIndicator();
+          if (autoPlayEnabled) {
+            setTimeout(() => readCurrentPage(), 300);
+          }
+        },
+      },
+    });
+
+    const playPauseBtn = storybookEl.querySelector('.play-pause');
+    const autoPlayBtn = storybookEl.querySelector('.auto-play');
+    const volumeSlider = storybookEl.querySelector('.volume-slider') as HTMLInputElement;
+    const speedSelect = storybookEl.querySelector('.speed-select') as HTMLSelectElement;
+    const currentPageEl = storybookEl.querySelector('.current-page');
+
+    function updatePageIndicator() {
+      if (currentPageEl) {
+        currentPageEl.textContent = (swiper.activeIndex + 1).toString();
+      }
+    }
+
+    function readCurrentPage() {
+      const currentSlide = swiper.slides[swiper.activeIndex];
+      const pageText = currentSlide.querySelector('.page-text');
+      if (!pageText) return;
+
+      const text = pageText.textContent?.trim() || '';
+
+      // Remove previous highlights
+      pageText.querySelectorAll('.word').forEach(el => {
+        const textNode = document.createTextNode(el.textContent || '');
+        el.replaceWith(textNode);
+      });
+
+      // Split text into words for highlighting
+      const words = text.split(/(\s+)/);
+      pageText.innerHTML = '';
+      words.forEach(word => {
+        if (word.trim()) {
+          const span = document.createElement('span');
+          span.className = 'word';
+          span.textContent = word;
+          pageText.appendChild(span);
+        } else {
+          pageText.appendChild(document.createTextNode(word));
+        }
+      });
+
+      let currentWordIndex = 0;
+      const wordElements = pageText.querySelectorAll('.word');
+
+      narrator.speak(text, {
+        rate: currentRate,
+        volume: currentVolume,
+        onWordHighlight: (word) => {
+          // Highlight current word
+          wordElements.forEach(el => el.classList.remove('highlight'));
+          if (wordElements[currentWordIndex]) {
+            wordElements[currentWordIndex].classList.add('highlight');
+            currentWordIndex++;
+          }
+        },
+        onEnd: () => {
+          // Clear highlights
+          wordElements.forEach(el => el.classList.remove('highlight'));
+
+          if (autoPlayEnabled && swiper.activeIndex < swiper.slides.length - 1) {
+            setTimeout(() => {
+              swiper.slideNext();
+            }, 1000);
+          } else {
+            updatePlayPauseButton(false);
+          }
+        },
+        onStart: () => {
+          updatePlayPauseButton(true);
+        },
+      });
+    }
+
+    function updatePlayPauseButton(isPlaying: boolean) {
+      if (!playPauseBtn) return;
+
+      const icon = playPauseBtn.querySelector('.icon');
+      const label = playPauseBtn.querySelector('.label');
+
+      if (isPlaying) {
+        playPauseBtn.setAttribute('data-action', 'pause');
+        if (icon) icon.textContent = '⏸️';
+        if (label) label.textContent = locale === 'de' ? 'Pause' : locale === 'ar' ? 'إيقاف' : locale === 'en' ? 'Pause' : locale === 'tr' ? 'Duraklat' : 'روکیں';
+      } else {
+        playPauseBtn.setAttribute('data-action', 'play');
+        if (icon) icon.textContent = '▶️';
+        if (label) label.textContent = locale === 'de' ? 'Vorlesen' : locale === 'ar' ? 'اقرأ' : locale === 'en' ? 'Read Aloud' : locale === 'tr' ? 'Oku' : 'پڑھیں';
+      }
+    }
+
+    // Event Listeners
+    playPauseBtn?.addEventListener('click', () => {
+      const action = playPauseBtn.getAttribute('data-action');
+
+      if (action === 'play') {
+        readCurrentPage();
+      } else {
+        narrator.stop();
+        updatePlayPauseButton(false);
+      }
+    });
+
+    autoPlayBtn?.addEventListener('click', () => {
+      autoPlayEnabled = !autoPlayEnabled;
+      autoPlayBtn.setAttribute('data-enabled', autoPlayEnabled.toString());
+
+      const icon = autoPlayBtn.querySelector('.icon');
+      if (icon) {
+        icon.textContent = autoPlayEnabled ? '⏸️' : '🔄';
+      }
+
+      if (autoPlayEnabled) {
+        readCurrentPage();
+      }
+    });
+
+    volumeSlider?.addEventListener('input', (e) => {
+      currentVolume = parseInt((e.target as HTMLInputElement).value) / 100;
+    });
+
+    speedSelect?.addEventListener('change', (e) => {
+      currentRate = parseFloat((e.target as HTMLSelectElement).value);
+    });
+
+    // Save progress to localStorage
+    swiper.on('slideChange', () => {
+      if (storyId) {
+        localStorage.setItem(`story-progress-${storyId}`, swiper.activeIndex.toString());
+      }
+    });
+
+    // Load saved progress
+    if (storyId) {
+      const saved = localStorage.getItem(`story-progress-${storyId}`);
+      if (saved) {
+        swiper.slideTo(parseInt(saved, 10), 0);
+      }
+    }
+
+    updatePageIndicator();
+  });
+</script>
+
+<style>
+  .interactive-storybook {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 0;
+  }
+
+  .story-title {
+    text-align: center;
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+    font-size: 2rem;
+  }
+
+  .storybook-swiper {
+    background: #f5f5f5;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    margin-bottom: 2rem;
+  }
+
+  .story-page {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-image {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    background: #e0e0e0;
+  }
+
+  .page-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .page-text {
+    padding: 2rem;
+    font-size: 1.3rem;
+    line-height: 1.8;
+    color: var(--color-text);
+    text-align: center;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .page-text .word {
+    display: inline;
+    transition: all 0.2s ease;
+    padding: 2px;
+    border-radius: 3px;
+  }
+
+  .page-text .word.highlight {
+    background: var(--color-secondary);
+    font-weight: 600;
+    transform: scale(1.05);
+  }
+
+  .swiper-button-prev,
+  .swiper-button-next {
+    color: var(--color-primary);
+    font-size: 2rem;
+    font-weight: bold;
+    width: 50px;
+    height: 50px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .swiper-button-prev::after,
+  .swiper-button-next::after {
+    content: none;
+  }
+
+  .swiper-pagination {
+    bottom: 0;
+  }
+
+  .audio-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid var(--color-primary);
+    background: white;
+    color: var(--color-text);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .btn:hover {
+    background: var(--color-primary);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .btn .icon {
+    font-size: 1.2rem;
+  }
+
+  .auto-play[data-enabled="true"] {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  .volume-control,
+  .speed-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .volume-slider {
+    width: 100px;
+    cursor: pointer;
+  }
+
+  .speed-select {
+    padding: 0.5rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .progress-indicator {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+  }
+
+  .current-page {
+    font-weight: bold;
+    color: var(--color-primary);
+  }
+
+  @media (max-width: 768px) {
+    .storybook-swiper {
+      padding: 1rem;
+    }
+
+    .page-text {
+      padding: 1.5rem;
+      font-size: 1.1rem;
+    }
+
+    .audio-controls {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .volume-control,
+    .speed-control {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .volume-slider {
+      flex: 1;
+    }
+  }
+</style>

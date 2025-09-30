@@ -1,5 +1,10 @@
 import { defineCollection, z } from 'astro:content';
 
+const storyPageSchema = z.object({
+  text: z.string(),
+  image: z.string().optional(),
+});
+
 const storiesCollection = defineCollection({
   type: 'content',
   schema: z.object({
@@ -18,6 +23,9 @@ const storiesCollection = defineCollection({
     characterType: z.string().optional(),
     difficulty: z.enum(['beginner', 'intermediate']).optional(),
     estimatedReadTime: z.number().optional(),
+    // Interactive format fields
+    storyFormat: z.enum(['standard', 'interactive']).default('standard'),
+    pages: z.array(storyPageSchema).optional(),
   }),
 });
 
