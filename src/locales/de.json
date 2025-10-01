@@ -27,5 +27,11 @@
   "interactive": "Interaktiv",
   "autoPlay": "Auto-Weiter",
   "volume": "Lautstärke",
-  "speed": "Tempo"
+  "speed": "Tempo",
+  "textFormat": "Text",
+  "interactiveFormat": "Interaktiv",
+  "new": "Neu",
+  "exportBooklet": "Als Heft exportieren",
+  "exportingBooklet": "Heft wird erstellt...",
+  "bookletReady": "Heft ist fertig zum Download!"
 }

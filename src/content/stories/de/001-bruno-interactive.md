@@ -16,7 +16,7 @@ publishDate: 2024-01-15
 storyFormat: "interactive"
 pages:
   - text: "Es war einmal ein kleiner Bär namens Bruno. Bruno liebte Honig, Spielen im Wald und – ganz besonders – Klettern auf Bäume."
-    image: "https://via.placeholder.com/800x600/FFE5B4/8B4513?text=Bruno+der+Bär"
+    image: "/public/assets/stories/bruno-bunte-gefuhle/cover.png"
   - text: "Eines Tages wollte Bruno seiner Freundin, der Eule Mila, zeigen, wie hoch er klettern konnte. Er kletterte… höher… und noch höher…"
     image: "https://via.placeholder.com/800x600/87CEEB/228B22?text=Bruno+klettert"
   - text: "Doch plötzlich rutschte er aus! Oh nein!, rief Bruno. Sein Herz klopfte laut wie eine Trommel."

@@ -7,9 +7,10 @@ import { getCollection } from 'astro:content';
 
 const locale = 'de';
 const stories = await getCollection('stories', ({ id }) => id.startsWith('de/'));
+const description = "Entdecke spannende Geschichten, die Kindern wichtige Werte und Fähigkeiten vermitteln. Für Eltern, Lehrer und Erzieher.";
 ---
 
-<BaseLayout title="Startseite" locale={locale}>
+<BaseLayout title="Startseite" locale={locale} description={description}>
   <div class="container">
     <section class="hero">
       <h1>Willkommen bei Lernen mit Geschichten</h1>
@@ -43,6 +44,9 @@ const stories = await getCollection('stories', ({ id }) => id.startsWith('de/'))
               locale={locale}
               slug={story.slug.replace('de/', '')}
               isInteractive={story.data.storyFormat === 'interactive'}
+              provider={story.data.provider}
+              providerUrl={story.data.providerUrl}
+              publishDate={story.data.publishDate}
             />
           ))}
         </div>

@@ -9,12 +9,18 @@
 # testing
 /coverage
 
-# next.js
-/.next/
+# build
 /out/
+dist
+backup
 
 # production
 /build
+
+# Astro
+.astro/
+dist/
+node_modules/
 
 # misc
 .DS_Store
@@ -43,12 +49,10 @@ next-env.d.ts
 # MCP
 .claude
 .cursor
+CLAUDE*
+TODO*
+*GUIDE*
 
-# Astro
-.astro/
-dist/
-node_modules/
+# Keystatic
+.keystatic/
 
-# OS
-.DS_Store
-CLAUDE-assets/

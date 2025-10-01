@@ -9,11 +9,22 @@ interface Props {
   title: string;
   description?: string;
   locale?: Locale;
+  image?: string;
+  type?: 'website' | 'article';
 }
 
-const { title, description, locale = 'de' } = Astro.props;
+const { title, description, locale = 'de', image, type = 'website' } = Astro.props;
 const dir = isRTL(locale) ? 'rtl' : 'ltr';
 const siteName = getTranslation(locale, 'siteName');
+const siteUrl = 'https://lernen-mit-geschichten.de';
+const pageUrl = `${siteUrl}${Astro.url.pathname}`;
+const defaultDescription = getTranslation(locale, 'tagline');
+const ogDescription = description || defaultDescription;
+const ogImage = image || `${siteUrl}/og-image.png`;
+const pageTitle = `${title} | ${siteName}`;
+
+// Google Tag Manager ID from environment variable
+const gtmId = import.meta.env.PUBLIC_GTM_ID;
 ---
 
 <!DOCTYPE html>
@@ -21,11 +32,60 @@ const siteName = getTranslation(locale, 'siteName');
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description || getTranslation(locale, 'tagline')} />
-    <title>{title} | {siteName}</title>
+
+    {gtmId && (
+      <!-- Google Tag Manager -->
+      <script type="text/partytown" define:vars={{ gtmId }}>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer',gtmId);
+      </script>
+      <!-- End Google Tag Manager -->
+    )}
+
+    <!-- Primary Meta Tags -->
+    <title>{pageTitle}</title>
+    <meta name="title" content={pageTitle} />
+    <meta name="description" content={ogDescription} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={locale === 'de' ? 'de_DE' : locale === 'ar' ? 'ar_AR' : locale === 'tr' ? 'tr_TR' : locale === 'ur' ? 'ur_PK' : 'en_US'} />
+    <meta property="og:site_name" content={siteName} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={pageUrl} />
+    <meta property="twitter:title" content={pageTitle} />
+    <meta property="twitter:description" content={ogDescription} />
+    <meta property="twitter:image" content={ogImage} />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={pageUrl} />
+
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
+    {gtmId && (
+      <!-- Google Tag Manager (noscript) -->
+      <noscript>
+        <iframe
+          src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+          height="0"
+          width="0"
+          style="display:none;visibility:hidden"
+        ></iframe>
+      </noscript>
+      <!-- End Google Tag Manager (noscript) -->
+    )}
+
     <a href="#main-content" class="visually-hidden">Skip to main content</a>
 
     <header>

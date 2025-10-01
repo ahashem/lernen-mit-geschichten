@@ -43,9 +43,10 @@ const heroContent = {
 };
 
 const hero = heroContent[locale];
+const description = hero.text;
 ---
 
-<BaseLayout title={getTranslation(locale, 'home')} locale={locale}>
+<BaseLayout title={getTranslation(locale, 'home')} locale={locale} description={description}>
   <div class="container">
     <section class="hero">
       <h1>{hero.title}</h1>
@@ -81,6 +82,9 @@ const hero = heroContent[locale];
                 locale={locale}
                 slug={story.slug.replace(`${locale}/`, '')}
                 isInteractive={story.data.storyFormat === 'interactive'}
+                provider={story.data.provider}
+                providerUrl={story.data.providerUrl}
+                publishDate={story.data.publishDate}
               />
             ))}
           </div>

@@ -12,9 +12,15 @@ interface Props {
   locale: Locale;
   slug: string;
   isInteractive?: boolean;
+  provider?: 'local' | 'google-drive' | 'external';
+  providerUrl?: string;
+  publishDate?: Date;
 }
 
-const { title, emoji, skills, storyId, estimatedReadTime, locale, slug, isInteractive } = Astro.props;
+const { title, emoji, skills, storyId, estimatedReadTime, locale, slug, isInteractive, provider, providerUrl, publishDate } = Astro.props;
+
+// Check if story is new (published within last 7 days)
+const isNew = publishDate ? (Date.now() - publishDate.getTime()) / (1000 * 60 * 60 * 24) <= 7 : false;
 
 const skillObjects = getSkillsByIds(skills);
 const storyUrl = locale === 'de' ? `/stories/${slug}` : `/${locale}/stories/${slug}`;
@@ -22,11 +28,23 @@ const storyUrl = locale === 'de' ? `/stories/${slug}` : `/${locale}/stories/${sl
 
 <article class="story-card">
   <a href={storyUrl} class="card-link">
-    {isInteractive && (
-      <div class="interactive-badge">
-        {getTranslation(locale, 'interactive')}
-      </div>
-    )}
+    <div class="badges">
+      {isNew && (
+        <div class="new-badge">
+          ✨ {getTranslation(locale, 'new')}
+        </div>
+      )}
+      {isInteractive && (
+        <div class="interactive-badge">
+          {getTranslation(locale, 'interactive')}
+        </div>
+      )}
+      {provider && provider !== 'local' && (
+        <div class={`provider-badge provider-${provider}`}>
+          {provider === 'google-drive' ? '📁 Drive' : '🔗 External'}
+        </div>
+      )}
+    </div>
     <div class="card-header">
       <span class="emoji-icon">{emoji}</span>
       <h3 class="story-title">{title}</h3>
@@ -128,23 +146,80 @@ const storyUrl = locale === 'de' ? `/stories/${slug}` : `/${locale}/stories/${sl
     flex-shrink: 0;
   }
 
-  .interactive-badge {
+  .badges {
     position: absolute;
     top: 10px;
     right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+    z-index: 2;
+    max-width: calc(100% - 20px);
+  }
+
+  [dir="rtl"] .badges {
+    right: auto;
+    left: 10px;
+    align-items: flex-start;
+  }
+
+  /* Ensure badges don't overlap with title */
+  .card-header {
+    padding-right: 90px;
+  }
+
+  [dir="rtl"] .card-header {
+    padding-right: 0;
+    padding-left: 90px;
+  }
+
+  .interactive-badge {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     padding: 0.35rem 0.75rem;
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 600;
-    z-index: 1;
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
   }
 
-  [dir="rtl"] .interactive-badge {
-    right: auto;
-    left: 10px;
+  .provider-badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  .provider-google-drive {
+    background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+    color: white;
+  }
+
+  .provider-external {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: white;
+  }
+
+  .new-badge {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    color: white;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(255, 107, 107, 0.4);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
   }
 
   @media (max-width: 768px) {

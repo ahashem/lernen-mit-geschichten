@@ -20,6 +20,8 @@ const storiesCollection = defineCollection({
     storyId: z.string(),
     publishDate: z.date().optional(),
     author: z.string().optional(),
+    provider: z.enum(['local', 'google-drive', 'external']).default('local'),
+    providerUrl: z.string().optional(),
     characterType: z.string().optional(),
     difficulty: z.enum(['beginner', 'intermediate']).optional(),
     estimatedReadTime: z.number().optional(),
