@@ -36,5 +36,8 @@
   "exportingBooklet": "کتابچہ بنایا جا رہا ہے...",
   "bookletReady": "کتابچہ ڈاؤن لوڈ کے لیے تیار ہے!",
   "readIn": "میں پڑھیں",
-  "bilingualMode": "دو لسانی موڈ"
+  "bilingualMode": "دو لسانی موڈ",
+  "fontSize": "فونٹ سائز",
+  "textToSpeech": "بلند آواز میں پڑھیں",
+  "settings": "ترتیبات"
 }

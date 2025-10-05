@@ -36,5 +36,8 @@
   "exportingBooklet": "Kitapçık oluşturuluyor...",
   "bookletReady": "Kitapçık indirmeye hazır!",
   "readIn": "Dilinde oku",
-  "bilingualMode": "İki Dilli Mod"
+  "bilingualMode": "İki Dilli Mod",
+  "fontSize": "Yazı Boyutu",
+  "textToSpeech": "Sesli Oku",
+  "settings": "Ayarlar"
 }

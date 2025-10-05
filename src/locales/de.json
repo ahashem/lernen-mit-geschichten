@@ -36,5 +36,8 @@
   "exportingBooklet": "Heft wird erstellt...",
   "bookletReady": "Heft ist fertig zum Download!",
   "readIn": "Lesen auf",
-  "bilingualMode": "Zweisprachiger Modus"
+  "bilingualMode": "Zweisprachiger Modus",
+  "fontSize": "Schriftgröße",
+  "textToSpeech": "Vorlesen",
+  "settings": "Einstellungen"
 }

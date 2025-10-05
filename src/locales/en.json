@@ -36,5 +36,8 @@
   "exportingBooklet": "Creating booklet...",
   "bookletReady": "Booklet is ready to download!",
   "readIn": "Read in",
-  "bilingualMode": "Bilingual Mode"
+  "bilingualMode": "Bilingual Mode",
+  "fontSize": "Font Size",
+  "textToSpeech": "Read Aloud",
+  "settings": "Settings"
 }

@@ -4,5 +4,5 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://ahashem.github.io/lernen-mit-geschichten/sitemap.xml
+Sitemap: https://ahashem.github.io/lernen-mit-geschichten/sitemap-index.xml
 

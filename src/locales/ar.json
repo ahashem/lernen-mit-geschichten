@@ -36,5 +36,8 @@
   "exportingBooklet": "جاري إنشاء الكتيب...",
   "bookletReady": "الكتيب جاهز للتحميل!",
   "readIn": "اقرأ في",
-  "bilingualMode": "وضع ثنائي اللغة"
+  "bilingualMode": "وضع ثنائي اللغة",
+  "fontSize": "حجم الخط",
+  "textToSpeech": "القراءة بصوت عالٍ",
+  "settings": "الإعدادات"
 }

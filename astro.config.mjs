@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import partytown from '@astrojs/partytown';
+import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   integrations: [
@@ -10,6 +11,18 @@ export default defineConfig({
     partytown({
       config: {
         forward: ['dataLayer.push'],
+      },
+    }),
+    sitemap({
+      i18n: {
+        defaultLocale: 'de',
+        locales: {
+          de: 'de',
+          ar: 'ar',
+          en: 'en',
+          tr: 'tr',
+          ur: 'ur',
+        },
       },
     }),
   ],
