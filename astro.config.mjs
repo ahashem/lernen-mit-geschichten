@@ -22,5 +22,8 @@ export default defineConfig({
     routing: {
       prefixDefaultLocale: false
     }
+  },
+  experimental: {
+    clientPrerender: true,
   }
 });
