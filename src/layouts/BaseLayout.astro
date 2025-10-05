@@ -1,9 +1,10 @@
 ---
-import '../styles/global.css';
-import '../styles/rtl.css';
-import LanguageSelector from '../components/LanguageSelector.astro';
-import type { Locale } from '../utils/i18n';
-import { getTranslation, isRTL } from '../utils/i18n';
+import '@styles/global.css';
+import '@styles/rtl.css';
+import LanguageSelector from '@components/LanguageSelector.astro';
+import GTMTracking from '@components/GTMTracking.astro';
+import type { Locale } from '@utils/i18n';
+import { getTranslation, isRTL } from '@utils/i18n';
 
 interface Props {
   title: string;
@@ -28,23 +29,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const gtmId = import.meta.env.PUBLIC_GTM_ID;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang={locale} dir={dir}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    {gtmId && (
-      <!-- Google Tag Manager -->
-      <script type="text/partytown" define:vars={{ gtmId }}>
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer',gtmId);
-      </script>
-      <!-- End Google Tag Manager -->
-    )}
+    <GTMTracking gtmId={gtmId} />
 
     <!-- Primary Meta Tags -->
     <title>{pageTitle}</title>
@@ -57,7 +48,18 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={ogDescription} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:locale" content={locale === 'de' ? 'de_DE' : locale === 'ar' ? 'ar_AR' : locale === 'tr' ? 'tr_TR' : locale === 'ur' ? 'ur_PK' : 'en_US'} />
+    <meta
+      property="og:locale"
+      content={locale === 'de'
+        ? 'de_DE'
+        : locale === 'ar'
+          ? 'ar_AR'
+          : locale === 'tr'
+            ? 'tr_TR'
+            : locale === 'ur'
+              ? 'ur_PK'
+              : 'en_US'}
+    />
     <meta property="og:site_name" content={siteName} />
 
     <!-- Twitter -->
@@ -74,19 +76,6 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
-    {gtmId && (
-      <!-- Google Tag Manager (noscript) -->
-      <noscript>
-        <iframe
-          src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
-          height="0"
-          width="0"
-          style="display:none;visibility:hidden"
-        ></iframe>
-      </noscript>
-      <!-- End Google Tag Manager (noscript) -->
-    )}
-
     <a href="#main-content" class="visually-hidden">Skip to main content</a>
 
     <header>
@@ -100,8 +89,12 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
           </div>
 
           <div class="nav-links">
-            <a href={locale === 'de' ? `${base}/` : `${base}/${locale}`}>{getTranslation(locale, 'home')}</a>
-            <a href={locale === 'de' ? `${base}/about` : `${base}/${locale}/about`}>{getTranslation(locale, 'about')}</a>
+            <a href={locale === 'de' ? `${base}/` : `${base}/${locale}`}
+              >{getTranslation(locale, 'home')}</a
+            >
+            <a href={locale === 'de' ? `${base}/about` : `${base}/${locale}/about`}
+              >{getTranslation(locale, 'about')}</a
+            >
           </div>
 
           <LanguageSelector currentLocale={locale} currentPath={Astro.url.pathname} />
@@ -117,7 +110,11 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
       <div class="container">
         <p>&copy; {new Date().getFullYear()} {siteName}</p>
         <p>
-          <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">
+          <a
+            href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+            target="_blank"
+            rel="noopener"
+          >
             CC BY-NC-SA 4.0
           </a>
         </p>

@@ -11,9 +11,8 @@ const { currentLocale, currentPath = '/' } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 // Strip locale prefix and base path from currentPath
-const cleanPath = currentPath
-  .replace(new RegExp(`^${base}`), '')
-  .replace(/^\/(ar|en|tr|ur)/, '') || '/';
+const cleanPath =
+  currentPath.replace(new RegExp(`^${base}`), '').replace(/^\/(ar|en|tr|ur)/, '') || '/';
 
 const languages = [
   { code: 'de' as Locale, name: 'Deutsch', flag: '🇩🇪' },
@@ -42,20 +41,19 @@ const getLocalizedPath = (langCode: Locale) => {
 
 <div class="language-selector">
   <select class="lang-dropdown" aria-label="Select language">
-    {languages.map(lang => (
-      <option
-        value={getLocalizedPath(lang.code)}
-        selected={currentLocale === lang.code}
-      >
-        {lang.flag} {lang.name}
-      </option>
-    ))}
+    {
+      languages.map(lang => (
+        <option value={getLocalizedPath(lang.code)} selected={currentLocale === lang.code}>
+          {lang.flag} {lang.name}
+        </option>
+      ))
+    }
   </select>
 </div>
 
 <script>
   document.querySelectorAll('.lang-dropdown').forEach(select => {
-    select.addEventListener('change', (e) => {
+    select.addEventListener('change', e => {
       const target = e.target as HTMLSelectElement;
       window.location.href = target.value;
     });
@@ -87,7 +85,7 @@ const getLocalizedPath = (langCode: Locale) => {
 
   .lang-dropdown:hover {
     border-color: var(--color-primary);
-    background-color: #FFF5E6;
+    background-color: #fff5e6;
   }
 
   .lang-dropdown:focus {

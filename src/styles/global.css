@@ -7,15 +7,15 @@
 }
 
 :root {
-  --color-primary: #FF9F40;
-  --color-secondary: #FFD93D;
-  --color-accent: #6BCF7F;
-  --color-background: #F9F9F9;
+  --color-primary: #ff9f40;
+  --color-secondary: #ffd93d;
+  --color-accent: #6bcf7f;
+  --color-background: #f9f9f9;
   --color-text: #333333;
   --color-text-light: #666666;
-  --color-success: #4CAF50;
-  --color-error: #E57373;
-  --color-white: #FFFFFF;
+  --color-success: #4caf50;
+  --color-error: #e57373;
+  --color-white: #ffffff;
 
   --font-base: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-arabic: 'Noto Sans Arabic', 'Noto Sans', sans-serif;
@@ -47,12 +47,17 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-body[lang="ar"],
-body[lang="ur"] {
+body[lang='ar'],
+body[lang='ur'] {
   font-family: var(--font-arabic);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
   line-height: 1.3;
   margin-bottom: var(--spacing-md);
@@ -209,7 +214,12 @@ img {
     page-break-inside: avoid;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     page-break-after: avoid;
     page-break-inside: avoid;
     color: black;
@@ -236,14 +246,15 @@ img {
     text-decoration: underline;
   }
 
-  a[href^="http"]::after {
-    content: " (" attr(href) ")";
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
     font-size: 9pt;
     font-style: italic;
   }
 
   /* Ensure lists print correctly */
-  ul, ol {
+  ul,
+  ol {
     page-break-inside: avoid;
   }
 
@@ -254,11 +265,14 @@ img {
     page-break-inside: avoid;
   }
 
-  table, th, td {
+  table,
+  th,
+  td {
     border: 1px solid black;
   }
 
-  th, td {
+  th,
+  td {
     padding: 0.5rem;
   }
 

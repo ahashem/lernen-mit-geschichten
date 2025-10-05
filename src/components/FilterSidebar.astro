@@ -25,46 +25,52 @@ const languages = [
   <h3>{getTranslation(locale, 'filterBySkill')}</h3>
 
   <div class="filter-section">
-    {Object.entries(skillsCategories).map(([categoryId, category]) => (
-      <details class="category-group" open>
-        <summary>{category[locale]}</summary>
-        <div class="skills-checkboxes">
-          {category.skills.map(skill => (
-            <label class="skill-checkbox">
-              <input
-                type="checkbox"
-                name="skill"
-                value={skill.id}
-                checked={currentSkills.includes(skill.id)}
-              />
-              <span>{skill[locale]}</span>
-            </label>
-          ))}
-        </div>
-      </details>
-    ))}
+    {
+      Object.entries(skillsCategories).map(([categoryId, category]) => (
+        <details class="category-group" open>
+          <summary>{category[locale]}</summary>
+          <div class="skills-checkboxes">
+            {category.skills.map(skill => (
+              <label class="skill-checkbox">
+                <input
+                  type="checkbox"
+                  name="skill"
+                  value={skill.id}
+                  checked={currentSkills.includes(skill.id)}
+                />
+                <span>{skill[locale]}</span>
+              </label>
+            ))}
+          </div>
+        </details>
+      ))
+    }
   </div>
 
   <h3>{getTranslation(locale, 'filterByLanguage')}</h3>
 
   <div class="filter-section">
     <div class="language-checkboxes">
-      {languages.map(lang => (
-        <label class="language-checkbox">
-          <input
-            type="checkbox"
-            name="language"
-            value={lang.code}
-            checked={currentLanguages.includes(lang.code)}
-          />
-          <span class="flag">{lang.flag}</span>
-          <span>{lang.name}</span>
-        </label>
-      ))}
+      {
+        languages.map(lang => (
+          <label class="language-checkbox">
+            <input
+              type="checkbox"
+              name="language"
+              value={lang.code}
+              checked={currentLanguages.includes(lang.code)}
+            />
+            <span class="flag">{lang.flag}</span>
+            <span>{lang.name}</span>
+          </label>
+        ))
+      }
     </div>
   </div>
 
-  <button type="button" class="clear-filters">{locale === 'de' ? 'Filter zurücksetzen' : 'Clear filters'}</button>
+  <button type="button" class="clear-filters"
+    >{locale === 'de' ? 'Filter zurücksetzen' : 'Clear filters'}</button
+  >
 </aside>
 
 <script>
@@ -100,9 +106,11 @@ const languages = [
       window.history.replaceState({}, '', url);
 
       // Dispatch custom event
-      window.dispatchEvent(new CustomEvent('filtersChanged', {
-        detail: { skills: selectedSkills, languages: selectedLanguages }
-      }));
+      window.dispatchEvent(
+        new CustomEvent('filtersChanged', {
+          detail: { skills: selectedSkills, languages: selectedLanguages },
+        })
+      );
     };
 
     checkboxes.forEach(cb => {
@@ -123,9 +131,11 @@ const languages = [
         url.searchParams.delete('languages');
         window.history.replaceState({}, '', url);
 
-        window.dispatchEvent(new CustomEvent('filtersChanged', {
-          detail: { skills: [], languages: [] }
-        }));
+        window.dispatchEvent(
+          new CustomEvent('filtersChanged', {
+            detail: { skills: [], languages: [] },
+          })
+        );
       });
     }
 
@@ -144,11 +154,15 @@ const languages = [
     if (hasUrlParams) {
       // Apply URL params to checkboxes
       urlSkills.forEach((skillId: string) => {
-        const cb = sidebar.querySelector(`input[name="skill"][value="${skillId}"]`) as HTMLInputElement;
+        const cb = sidebar.querySelector(
+          `input[name="skill"][value="${skillId}"]`
+        ) as HTMLInputElement;
         if (cb) cb.checked = true;
       });
       urlLanguages.forEach((langCode: string) => {
-        const cb = sidebar.querySelector(`input[name="language"][value="${langCode}"]`) as HTMLInputElement;
+        const cb = sidebar.querySelector(
+          `input[name="language"][value="${langCode}"]`
+        ) as HTMLInputElement;
         if (cb) cb.checked = true;
       });
       // Sync to localStorage
@@ -166,7 +180,9 @@ const languages = [
       if (savedSkills) {
         const skills = JSON.parse(savedSkills);
         skills.forEach((skillId: string) => {
-          const cb = sidebar.querySelector(`input[name="skill"][value="${skillId}"]`) as HTMLInputElement;
+          const cb = sidebar.querySelector(
+            `input[name="skill"][value="${skillId}"]`
+          ) as HTMLInputElement;
           if (cb) cb.checked = true;
         });
       }
@@ -174,12 +190,16 @@ const languages = [
       if (savedLanguages) {
         const languages = JSON.parse(savedLanguages);
         languages.forEach((langCode: string) => {
-          const cb = sidebar.querySelector(`input[name="language"][value="${langCode}"]`) as HTMLInputElement;
+          const cb = sidebar.querySelector(
+            `input[name="language"][value="${langCode}"]`
+          ) as HTMLInputElement;
           if (cb) cb.checked = true;
         });
       } else if (shouldAutoSelect && currentLocale) {
         // Auto-select current locale if no saved languages and auto-select is enabled
-        const cb = sidebar.querySelector(`input[name="language"][value="${currentLocale}"]`) as HTMLInputElement;
+        const cb = sidebar.querySelector(
+          `input[name="language"][value="${currentLocale}"]`
+        ) as HTMLInputElement;
         if (cb) {
           cb.checked = true;
           // Save to localStorage and update URL

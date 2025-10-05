@@ -25,15 +25,16 @@ export function matchesFilter(story: StoryFilterData, criteria: FilterCriteria):
   const { searchQuery = '', selectedSkills = [], selectedLanguages = [] } = criteria;
 
   // Search filter (match in title)
-  const matchesSearch = !searchQuery ||
-    story.title.toLowerCase().includes(searchQuery.toLowerCase());
+  const matchesSearch =
+    !searchQuery || story.title.toLowerCase().includes(searchQuery.toLowerCase());
 
   // Skills filter (OR logic within skills)
-  const matchesSkills = selectedSkills.length === 0 ||
-    selectedSkills.some(skill => story.skills.includes(skill));
+  const matchesSkills =
+    selectedSkills.length === 0 || selectedSkills.some(skill => story.skills.includes(skill));
 
   // Languages filter (OR logic within languages)
-  const matchesLanguages = selectedLanguages.length === 0 ||
+  const matchesLanguages =
+    selectedLanguages.length === 0 ||
     selectedLanguages.some(lang => story.languages.includes(lang));
 
   // AND logic between filter types

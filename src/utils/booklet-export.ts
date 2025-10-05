@@ -60,22 +60,26 @@ function calculateImposition(totalPages: number, isRTL: boolean): number[][] {
   const numSheets = pagesNeeded / 4;
 
   for (let i = 0; i < numSheets; i++) {
-    const frontLeft = pagesNeeded - (i * 2);
-    const frontRight = (i * 2) + 1;
-    const backLeft = (i * 2) + 2;
-    const backRight = pagesNeeded - (i * 2) - 1;
+    const frontLeft = pagesNeeded - i * 2;
+    const frontRight = i * 2 + 1;
+    const backLeft = i * 2 + 2;
+    const backRight = pagesNeeded - i * 2 - 1;
 
     if (isRTL) {
       // RTL: Flip the order for right-to-left reading
       sheets.push([
-        frontRight, frontLeft,  // Front of sheet (swapped)
-        backRight, backLeft     // Back of sheet (swapped)
+        frontRight,
+        frontLeft, // Front of sheet (swapped)
+        backRight,
+        backLeft, // Back of sheet (swapped)
       ]);
     } else {
       // LTR: Standard left-to-right order
       sheets.push([
-        frontLeft, frontRight,  // Front of sheet
-        backLeft, backRight     // Back of sheet
+        frontLeft,
+        frontRight, // Front of sheet
+        backLeft,
+        backRight, // Back of sheet
       ]);
     }
   }
@@ -99,12 +103,7 @@ async function captureElement(element: HTMLElement): Promise<HTMLCanvasElement> 
 /**
  * Create a cover page
  */
-function addCoverPage(
-  pdf: jsPDF,
-  title: string,
-  dimensions: PageDimensions,
-  isRTL: boolean
-): void {
+function addCoverPage(pdf: jsPDF, title: string, dimensions: PageDimensions, isRTL: boolean): void {
   const { width, height } = dimensions;
   const centerX = width / 2;
   const centerY = height / 2;
@@ -209,11 +208,17 @@ export async function exportAsBooklet(
     if (!ctx) continue;
 
     // Draw slice of original canvas
-    const sy = (i * pageCanvas.height);
+    const sy = i * pageCanvas.height;
     ctx.drawImage(
       canvas,
-      0, sy, canvas.width, pageCanvas.height,
-      0, 0, canvas.width, pageCanvas.height
+      0,
+      sy,
+      canvas.width,
+      pageCanvas.height,
+      0,
+      0,
+      canvas.width,
+      pageCanvas.height
     );
 
     pages.push(pageCanvas.toDataURL('image/png'));
@@ -247,7 +252,8 @@ export async function exportAsBooklet(
           pdf.addImage(
             pages[pageIdx],
             'PNG',
-            15, 15,
+            15,
+            15,
             dimensions.width - 30,
             dimensions.height - 30,
             undefined,
@@ -275,7 +281,8 @@ export async function exportAsBooklet(
           pdf.addImage(
             pages[pageIdx],
             'PNG',
-            15, 15,
+            15,
+            15,
             dimensions.width - 30,
             dimensions.height - 30,
             undefined,
@@ -326,8 +333,9 @@ export function hideExportProgress(overlay: HTMLElement): void {
  * Detect language orientation from element
  */
 export function detectOrientation(element: HTMLElement): BookletOrientation {
-  const dir = element.getAttribute('dir') ||
-               element.closest('[dir]')?.getAttribute('dir') ||
-               document.documentElement.getAttribute('dir');
+  const dir =
+    element.getAttribute('dir') ||
+    element.closest('[dir]')?.getAttribute('dir') ||
+    document.documentElement.getAttribute('dir');
   return dir === 'rtl' ? 'rtl' : 'ltr';
 }

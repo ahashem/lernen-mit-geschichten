@@ -29,6 +29,7 @@ This project and everyone participating in it is governed by our Code of Conduct
 ### Translating Stories
 
 We need help translating stories into our supported languages:
+
 - 🇩🇪 German (Deutsch)
 - 🇸🇦 Arabic (العربية)
 - 🇬🇧 English
@@ -36,12 +37,14 @@ We need help translating stories into our supported languages:
 - 🇵🇰 Urdu (اردو)
 
 **Translation Requirements:**
+
 - Professional or native-level proficiency in both source and target languages
 - Understanding of child-appropriate language (ages 3-7)
 - Cultural sensitivity and adaptation where necessary
 - **No machine translation** - all translations must be human-reviewed
 
 **Translation Process:**
+
 1. Check existing stories in `src/content/stories/de/` for stories needing translation
 2. Translate the full story content (narrative, key messages, quiz questions)
 3. Add translated frontmatter fields (titleAr, titleEn, titleTr, titleUr)
@@ -53,6 +56,7 @@ We need help translating stories into our supported languages:
 We welcome original stories that teach children important life skills!
 
 **Story Requirements:**
+
 - Target age: 3-7 years
 - Length: 2-5 minutes reading time
 - Must map to 1-3 skills from our [58-skill taxonomy](./src/utils/skills-taxonomy.ts)
@@ -62,6 +66,7 @@ We welcome original stories that teach children important life skills!
   - Fill-in-the-blank questions (2-3)
 
 **Story Submission Process:**
+
 1. Review existing stories for format and structure
 2. Create your story in Markdown format
 3. Add appropriate frontmatter metadata
@@ -74,6 +79,7 @@ See [Story Content Guidelines](#story-content-guidelines) below for detailed req
 ### Improving Code
 
 Technical contributions are welcome! Areas where you can help:
+
 - **Accessibility improvements** - WCAG compliance, keyboard navigation, screen reader support
 - **Performance optimization** - Faster load times, smaller bundle sizes
 - **New features** - Interactive elements, learning games, progress tracking
@@ -83,11 +89,13 @@ Technical contributions are welcome! Areas where you can help:
 ### Reporting Bugs
 
 Before creating a bug report:
+
 1. Check the [issue tracker](https://github.com/ahashem/lernen-mit-geschichten/issues) for existing reports
 2. Test with the latest version
 3. Try to reproduce the bug consistently
 
 **Bug Report Template:**
+
 - **Description**: Clear description of the bug
 - **Steps to Reproduce**: Numbered steps to reproduce the behavior
 - **Expected Behavior**: What should happen
@@ -99,6 +107,7 @@ Before creating a bug report:
 ### Suggesting Features
 
 We love new ideas! When suggesting a feature:
+
 1. Check if it already exists or has been suggested
 2. Explain the problem your feature would solve
 3. Describe your proposed solution
@@ -108,6 +117,7 @@ We love new ideas! When suggesting a feature:
 ## Development Setup
 
 ### Prerequisites
+
 - Node.js 22.x or higher
 - npm or yarn
 - Git
@@ -141,6 +151,7 @@ npm run preview
 ```
 
 ### Project Structure
+
 ```
 src/
 ├── components/       # Reusable Astro components
@@ -162,33 +173,35 @@ src/
 
 ```yaml
 ---
-title: "Story Title in German"
-titleAr: "عنوان القصة بالعربية"
-titleEn: "Story Title in English"
-titleTr: "Hikaye Başlığı Türkçe"
-titleUr: "اردو میں کہانی کا عنوان"
-emoji: "🐻"
-skills: ["emotional-regulation", "self-awareness"]
-ageGroup: "3-7"
-languages: ["de"]  # Add language codes as translated
-storyId: "unique-id-###-character"
-characterType: "bear"  # or "child", "animal", etc.
-difficulty: "beginner"  # or "intermediate"
+title: 'Story Title in German'
+titleAr: 'عنوان القصة بالعربية'
+titleEn: 'Story Title in English'
+titleTr: 'Hikaye Başlığı Türkçe'
+titleUr: 'اردو میں کہانی کا عنوان'
+emoji: '🐻'
+skills: ['emotional-regulation', 'self-awareness']
+ageGroup: '3-7'
+languages: ['de'] # Add language codes as translated
+storyId: 'unique-id-###-character'
+characterType: 'bear' # or "child", "animal", etc.
+difficulty: 'beginner' # or "intermediate"
 estimatedReadTime: 3
 publishDate: 2024-01-15
-storyFormat: "standard"  # or "interactive"
+storyFormat: 'standard' # or "interactive"
 ---
 ```
 
 ### Story Structure
 
 **Standard Format:**
+
 ```markdown
 ## [Story Title]
 
 [Narrative text in paragraphs]
 
 ## Kernbotschaft (Key Message)
+
 - First lesson learned
 - Second lesson learned
 - Third lesson learned
@@ -196,16 +209,19 @@ storyFormat: "standard"  # or "interactive"
 ## Interaktive Aktivitäten (Interactive Activities)
 
 ### Richtig oder Falsch? (True/False)
+
 1. [Statement] ✓/✗
 2. [Statement] ✓/✗
 
 ### Multiple Choice
+
 1. [Question]
    - Option A
    - Option B (correct)
    - Option C
 
 ### Lückentext (Fill-in-the-Blank)
+
 1. [Sentence with ____ blank]
    Answer: [word]
 ```
@@ -306,6 +322,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 ```
 
 ### Types
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -316,6 +333,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 - `content`: Story or translation additions
 
 ### Examples
+
 ```
 feat(stories): add new story about teamwork
 
@@ -343,6 +361,7 @@ with RTL layout verification.
 ### Before Submitting
 
 1. **Test Your Changes**
+
    ```bash
    npm run build
    npm run preview
@@ -378,9 +397,11 @@ with RTL layout verification.
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Story/Translation
@@ -388,15 +409,18 @@ Brief description of changes
 - [ ] Refactoring
 
 ## Testing
+
 How the changes were tested
 
 ## Checklist
+
 - [ ] Code follows style guidelines
 - [ ] Accessibility verified
 - [ ] Documentation updated
 - [ ] No breaking changes
 
 ## Screenshots (if applicable)
+
 Add screenshots for UI changes
 ```
 
@@ -411,6 +435,7 @@ Add screenshots for UI changes
 ## Recognition
 
 Contributors will be recognized in:
+
 - GitHub Contributors page
 - Project acknowledgments
 - Translation credits (if applicable)
@@ -424,6 +449,7 @@ Contributors will be recognized in:
 ## License
 
 By contributing, you agree that your contributions will be licensed under:
+
 - **Code**: MIT License
 - **Content (Stories)**: CC BY-NC-SA 4.0
 

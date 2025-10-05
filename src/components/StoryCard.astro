@@ -18,34 +18,51 @@ interface Props {
   publishDate?: Date;
 }
 
-const { title, emoji, skills, languages, storyId, estimatedReadTime, locale, slug, isInteractive, provider, providerUrl, publishDate } = Astro.props;
+const {
+  title,
+  emoji,
+  skills,
+  languages,
+  storyId,
+  estimatedReadTime,
+  locale,
+  slug,
+  isInteractive,
+  provider,
+  providerUrl,
+  publishDate,
+} = Astro.props;
 
 // Check if story is new (published within last 7 days)
-const isNew = publishDate ? (Date.now() - publishDate.getTime()) / (1000 * 60 * 60 * 24) <= 7 : false;
+const isNew = publishDate
+  ? (Date.now() - publishDate.getTime()) / (1000 * 60 * 60 * 24) <= 7
+  : false;
 
 const skillObjects = getSkillsByIds(skills);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const storyUrl = locale === 'de' ? `${base}/stories/${slug}` : `${base}/${locale}/stories/${slug}`;
 ---
 
-<article class="story-card" data-skills={JSON.stringify(skills)} data-languages={JSON.stringify(languages)}>
+<article
+  class="story-card"
+  data-skills={JSON.stringify(skills)}
+  data-languages={JSON.stringify(languages)}
+>
   <a href={storyUrl} class="card-link">
     <div class="badges">
-      {isNew && (
-        <div class="new-badge">
-          ✨ {getTranslation(locale, 'new')}
-        </div>
-      )}
-      {isInteractive && (
-        <div class="interactive-badge">
-          {getTranslation(locale, 'interactive')}
-        </div>
-      )}
-      {provider && provider !== 'local' && (
-        <div class={`provider-badge provider-${provider}`}>
-          {provider === 'google-drive' ? '📁 Drive' : '🔗 External'}
-        </div>
-      )}
+      {isNew && <div class="new-badge">✨ {getTranslation(locale, 'new')}</div>}
+      {
+        isInteractive && (
+          <div class="interactive-badge">{getTranslation(locale, 'interactive')}</div>
+        )
+      }
+      {
+        provider && provider !== 'local' && (
+          <div class={`provider-badge provider-${provider}`}>
+            {provider === 'google-drive' ? '📁 Drive' : '🔗 External'}
+          </div>
+        )
+      }
     </div>
     <div class="card-header">
       <span class="emoji-icon">{emoji}</span>
@@ -54,19 +71,21 @@ const storyUrl = locale === 'de' ? `${base}/stories/${slug}` : `${base}/${locale
 
     <div class="card-body">
       <div class="skills-tags">
-        {skillObjects.slice(0, 3).map(skill => (
-          <span class="skill-tag">{skill[locale]}</span>
-        ))}
+        {skillObjects.slice(0, 3).map(skill => <span class="skill-tag">{skill[locale]}</span>)}
       </div>
 
-      {estimatedReadTime && (
-        <div class="read-time">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm0 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.5 2.5v4.793l2.854 2.853-.708.708-3-3A.5.5 0 0 1 7.5 8.5v-5h1z"/>
-          </svg>
-          <span>{estimatedReadTime} {getTranslation(locale, 'minutes')}</span>
-        </div>
-      )}
+      {
+        estimatedReadTime && (
+          <div class="read-time">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm0 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.5 2.5v4.793l2.854 2.853-.708.708-3-3A.5.5 0 0 1 7.5 8.5v-5h1z" />
+            </svg>
+            <span>
+              {estimatedReadTime} {getTranslation(locale, 'minutes')}
+            </span>
+          </div>
+        )
+      }
     </div>
   </a>
 </article>
@@ -129,7 +148,7 @@ const storyUrl = locale === 'de' ? `${base}/stories/${slug}` : `${base}/${locale
   .skill-tag {
     display: inline-block;
     padding: 0.25rem 0.75rem;
-    background: #FFD93D;
+    background: #ffd93d;
     color: #333;
     border-radius: 16px;
     font-size: 0.8rem;
@@ -160,7 +179,7 @@ const storyUrl = locale === 'de' ? `${base}/stories/${slug}` : `${base}/${locale
     max-width: calc(100% - 20px);
   }
 
-  [dir="rtl"] .badges {
+  [dir='rtl'] .badges {
     right: auto;
     left: 10px;
     align-items: flex-start;
@@ -171,7 +190,7 @@ const storyUrl = locale === 'de' ? `${base}/stories/${slug}` : `${base}/${locale
     padding-right: 90px;
   }
 
-  [dir="rtl"] .card-header {
+  [dir='rtl'] .card-header {
     padding-right: 0;
     padding-left: 90px;
   }
@@ -216,7 +235,8 @@ const storyUrl = locale === 'de' ? `${base}/stories/${slug}` : `${base}/${locale
   }
 
   @keyframes pulse {
-    0%, 100% {
+    0%,
+    100% {
       transform: scale(1);
     }
     50% {

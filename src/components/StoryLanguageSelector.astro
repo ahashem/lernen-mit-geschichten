@@ -29,51 +29,54 @@ const hasMultipleLanguages = availableLanguages.length > 1;
 const canCompare = availableLanguages.length >= 2;
 ---
 
-{hasMultipleLanguages && (
-  <div class="story-language-selector">
-    <div class="selector-label">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-        <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 10.5v-5H6v5h2zm6 0v-5h-2v5h2zm-6 1v4l4-2-4-2z"/>
-      </svg>
-      <span>{getTranslation(currentLocale, 'readIn')}:</span>
-    </div>
-
-    <div class="language-badges">
-      {availableLanguages.map(lang => {
-        const storyUrl = lang.locale === 'de'
-          ? `${base}/stories/${lang.slug}`
-          : `${base}/${lang.locale}/stories/${lang.slug}`;
-        return (
-          <a
-            href={storyUrl}
-            class={`lang-badge ${lang.locale === currentLocale ? 'active' : ''}`}
-            data-locale={lang.locale}
-          >
-            <span class="flag">{languageNames[lang.locale].flag}</span>
-            <span class="name">{languageNames[lang.locale].name}</span>
-          </a>
-        );
-      })}
-    </div>
-
-    {canCompare && (
-      <div class="bilingual-section">
-        <button
-          class="bilingual-btn"
-          data-story-id={storyId}
-          data-current-locale={currentLocale}
-          data-current-slug={currentSlug}
-          data-available-languages={JSON.stringify(availableLanguages)}
-        >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M3 4h6v12H3V4zm8 0h6v12h-6V4z"/>
-          </svg>
-          <span>{getTranslation(currentLocale, 'bilingualMode')}</span>
-        </button>
+{
+  hasMultipleLanguages && (
+    <div class="story-language-selector">
+      <div class="selector-label">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 10.5v-5H6v5h2zm6 0v-5h-2v5h2zm-6 1v4l4-2-4-2z" />
+        </svg>
+        <span>{getTranslation(currentLocale, 'readIn')}:</span>
       </div>
-    )}
-  </div>
-)}
+
+      <div class="language-badges">
+        {availableLanguages.map(lang => {
+          const storyUrl =
+            lang.locale === 'de'
+              ? `${base}/stories/${lang.slug}`
+              : `${base}/${lang.locale}/stories/${lang.slug}`;
+          return (
+            <a
+              href={storyUrl}
+              class={`lang-badge ${lang.locale === currentLocale ? 'active' : ''}`}
+              data-locale={lang.locale}
+            >
+              <span class="flag">{languageNames[lang.locale].flag}</span>
+              <span class="name">{languageNames[lang.locale].name}</span>
+            </a>
+          );
+        })}
+      </div>
+
+      {canCompare && (
+        <div class="bilingual-section">
+          <button
+            class="bilingual-btn"
+            data-story-id={storyId}
+            data-current-locale={currentLocale}
+            data-current-slug={currentSlug}
+            data-available-languages={JSON.stringify(availableLanguages)}
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M3 4h6v12H3V4zm8 0h6v12h-6V4z" />
+            </svg>
+            <span>{getTranslation(currentLocale, 'bilingualMode')}</span>
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
 
 <script>
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -81,7 +84,11 @@ const canCompare = availableLanguages.length >= 2;
   // Common bilingual pairs that have static routes
   const commonPairs = ['ar-de', 'en-de', 'tr-de', 'ur-de', 'de-en', 'de-ar'];
 
-  function getBilingualUrl(currentSlug: string, currentLocale: string, targetLocale: string): string {
+  function getBilingualUrl(
+    currentSlug: string,
+    currentLocale: string,
+    targetLocale: string
+  ): string {
     const pairKey = `${currentLocale}-${targetLocale}`;
 
     // Use static route for common pairs
@@ -91,9 +98,10 @@ const canCompare = availableLanguages.length >= 2;
     }
 
     // Fall back to query parameter for uncommon pairs
-    const baseUrl = currentLocale === 'de'
-      ? `${base}/stories/${currentSlug}`
-      : `${base}/${currentLocale}/stories/${currentSlug}`;
+    const baseUrl =
+      currentLocale === 'de'
+        ? `${base}/stories/${currentSlug}`
+        : `${base}/${currentLocale}/stories/${currentSlug}`;
     return `${baseUrl}?bilingual=${targetLocale}`;
   }
 
@@ -121,12 +129,16 @@ const canCompare = availableLanguages.length >= 2;
         <div class="modal-content">
           <h3>Select second language</h3>
           <div class="lang-options">
-            ${otherLangs.map((l: any) => `
+            ${otherLangs
+              .map(
+                (l: any) => `
               <button class="lang-option" data-locale="${l.locale}">
                 <span class="flag">${getFlag(l.locale)}</span>
                 <span>${getLangName(l.locale)}</span>
               </button>
-            `).join('')}
+            `
+              )
+              .join('')}
           </div>
           <button class="close-modal">Cancel</button>
         </div>
@@ -145,7 +157,7 @@ const canCompare = availableLanguages.length >= 2;
         modal.remove();
       });
 
-      modal.addEventListener('click', (e) => {
+      modal.addEventListener('click', e => {
         if (e.target === modal) modal.remove();
       });
     });
@@ -153,14 +165,22 @@ const canCompare = availableLanguages.length >= 2;
 
   function getFlag(locale: string): string {
     const flags: Record<string, string> = {
-      de: '🇩🇪', ar: '🇸🇦', en: '🇬🇧', tr: '🇹🇷', ur: '🇵🇰'
+      de: '🇩🇪',
+      ar: '🇸🇦',
+      en: '🇬🇧',
+      tr: '🇹🇷',
+      ur: '🇵🇰',
     };
     return flags[locale] || '';
   }
 
   function getLangName(locale: string): string {
     const names: Record<string, string> = {
-      de: 'Deutsch', ar: 'العربية', en: 'English', tr: 'Türkçe', ur: 'اردو'
+      de: 'Deutsch',
+      ar: 'العربية',
+      en: 'English',
+      tr: 'Türkçe',
+      ur: 'اردو',
     };
     return names[locale] || locale;
   }
@@ -212,7 +232,7 @@ const canCompare = availableLanguages.length >= 2;
 
   .lang-badge:hover {
     border-color: var(--color-primary);
-    background: #FFF5E6;
+    background: #fff5e6;
   }
 
   .lang-badge.active {
@@ -308,7 +328,7 @@ const canCompare = availableLanguages.length >= 2;
 
   :global(.lang-option:hover) {
     border-color: var(--color-primary);
-    background: #FFF5E6;
+    background: #fff5e6;
   }
 
   :global(.lang-option .flag) {

@@ -33,9 +33,7 @@ export const GET: APIRoute = async () => {
   // Add homepage and static pages for each locale
   locales.forEach(locale => {
     staticPages.forEach(page => {
-      const path = locale === 'de'
-        ? `/${page.path}`
-        : `/${locale}/${page.path}`;
+      const path = locale === 'de' ? `/${page.path}` : `/${locale}/${page.path}`;
 
       sitemap += `  <url>
     <loc>${SITE_URL}${path}</loc>
@@ -45,9 +43,7 @@ export const GET: APIRoute = async () => {
 
       // Add alternate language links
       locales.forEach(altLocale => {
-        const altPath = altLocale === 'de'
-          ? `/${page.path}`
-          : `/${altLocale}/${page.path}`;
+        const altPath = altLocale === 'de' ? `/${page.path}` : `/${altLocale}/${page.path}`;
 
         sitemap += `    <xhtml:link rel="alternate" hreflang="${altLocale}" href="${SITE_URL}${altPath}" />
 `;
@@ -61,9 +57,7 @@ export const GET: APIRoute = async () => {
   // Add story pages
   storyMap.forEach((languages, slug) => {
     languages.forEach(lang => {
-      const path = lang === 'de'
-        ? `/stories/${slug}`
-        : `/${lang}/stories/${slug}`;
+      const path = lang === 'de' ? `/stories/${slug}` : `/${lang}/stories/${slug}`;
 
       sitemap += `  <url>
     <loc>${SITE_URL}${path}</loc>
@@ -73,9 +67,7 @@ export const GET: APIRoute = async () => {
 
       // Add alternate language links for available translations
       languages.forEach(altLang => {
-        const altPath = altLang === 'de'
-          ? `/stories/${slug}`
-          : `/${altLang}/stories/${slug}`;
+        const altPath = altLang === 'de' ? `/stories/${slug}` : `/${altLang}/stories/${slug}`;
 
         sitemap += `    <xhtml:link rel="alternate" hreflang="${altLang}" href="${SITE_URL}${altPath}" />
 `;

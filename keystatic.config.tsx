@@ -36,13 +36,10 @@ export default config({
           description: 'Single emoji character',
         }),
 
-        skills: fields.array(
-          fields.text({ label: 'Skill' }),
-          {
-            label: 'Skills Taught',
-            itemLabel: props => props.value,
-          }
-        ),
+        skills: fields.array(fields.text({ label: 'Skill' }), {
+          label: 'Skills Taught',
+          itemLabel: props => props.value,
+        }),
 
         ageGroup: fields.text({
           label: 'Age Group',

@@ -5,12 +5,18 @@ import { getTranslation } from '../utils/i18n';
 interface Props {
   locale: Locale;
   storyId: string;
-  availableLanguages?: Array<{locale: Locale; slug: string}>;
+  availableLanguages?: Array<{ locale: Locale; slug: string }>;
   currentSlug?: string;
   showBilingualToggle?: boolean;
 }
 
-const { locale, storyId, availableLanguages = [], currentSlug = '', showBilingualToggle = false } = Astro.props;
+const {
+  locale,
+  storyId,
+  availableLanguages = [],
+  currentSlug = '',
+  showBilingualToggle = false,
+} = Astro.props;
 
 // Translations
 const t = {
@@ -48,17 +54,28 @@ const t = {
         </div>
 
         <!-- TTS Controls -->
-        <button class="control-btn tts-toggle" data-playing="false" aria-label={t.tts} title={t.tts}>
+        <button
+          class="control-btn tts-toggle"
+          data-playing="false"
+          aria-label={t.tts}
+          title={t.tts}
+        >
           <span class="icon play-icon">🔊</span>
           <span class="icon pause-icon" style="display: none;">⏸️</span>
         </button>
 
         <!-- Bilingual Toggle (if available) -->
-        {showBilingualToggle && availableLanguages.length >= 2 && (
-          <button class="control-btn bilingual-toggle" aria-label={t.bilingual} title={t.bilingual}>
-            <span class="icon">🌐</span>
-          </button>
-        )}
+        {
+          showBilingualToggle && availableLanguages.length >= 2 && (
+            <button
+              class="control-btn bilingual-toggle"
+              aria-label={t.bilingual}
+              title={t.bilingual}
+            >
+              <span class="icon">🌐</span>
+            </button>
+          )
+        }
       </div>
 
       <!-- Settings Toggle -->
@@ -74,7 +91,14 @@ const t = {
           <span class="icon">🔊</span>
           <span class="text">{t.volume}</span>
         </label>
-        <input type="range" class="volume-slider" min="0" max="100" value="80" aria-label={t.volume} />
+        <input
+          type="range"
+          class="volume-slider"
+          min="0"
+          max="100"
+          value="80"
+          aria-label={t.volume}
+        />
         <span class="value-display">80%</span>
       </div>
 
@@ -142,7 +166,9 @@ const t = {
 
         // Hide toggle button when expanded
         if (this.toggleBtn) {
-          (this.toggleBtn as HTMLElement).style.transform = this.isExpanded ? 'translateX(100%)' : 'translateX(0)';
+          (this.toggleBtn as HTMLElement).style.transform = this.isExpanded
+            ? 'translateX(100%)'
+            : 'translateX(0)';
           (this.toggleBtn as HTMLElement).style.opacity = this.isExpanded ? '0' : '1';
           (this.toggleBtn as HTMLElement).style.pointerEvents = this.isExpanded ? 'none' : 'all';
         }
@@ -150,7 +176,7 @@ const t = {
     }
 
     private setupClickOutside() {
-      document.addEventListener('click', (e) => {
+      document.addEventListener('click', e => {
         const target = e.target as HTMLElement;
         const controls = document.querySelector('.reading-controls');
 
@@ -234,7 +260,8 @@ const t = {
     private startTTS() {
       if (!this.storyContent) return;
 
-      const locale = document.querySelector('.reading-controls')?.getAttribute('data-locale') || 'de';
+      const locale =
+        document.querySelector('.reading-controls')?.getAttribute('data-locale') || 'de';
       const ttsLocale = getTTSLocale(locale);
       const text = this.storyContent.innerText;
 
@@ -259,7 +286,7 @@ const t = {
           if (ttsBtn) ttsBtn.setAttribute('data-playing', 'false');
           if (playIcon) (playIcon as HTMLElement).style.display = '';
           if (pauseIcon) (pauseIcon as HTMLElement).style.display = 'none';
-        }
+        },
       });
     }
 
@@ -328,7 +355,7 @@ const t = {
     position: absolute;
     right: 0;
     top: 0;
-    background: linear-gradient(135deg, var(--color-primary) 0%, #FF6B9D 100%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, #ff6b9d 100%);
     color: white;
     border: none;
     cursor: pointer;
@@ -376,14 +403,14 @@ const t = {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .control-island[data-expanded="true"] {
+  .control-island[data-expanded='true'] {
     transform: translateX(0);
     opacity: 1;
     pointer-events: all;
     margin-right: 0;
   }
 
-  .control-island[data-expanded="true"]:hover {
+  .control-island[data-expanded='true']:hover {
     box-shadow: -12px 0 48px rgba(0, 0, 0, 0.15);
   }
 

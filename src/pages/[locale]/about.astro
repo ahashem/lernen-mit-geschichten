@@ -17,17 +17,43 @@ const { locale } = Astro.params as { locale: Locale };
 const content = {
   ar: {
     title: 'عن التعلم من خلال القصص',
-    mission: { title: 'مهمتنا', text: 'نقدم قصصًا تعليمية يمكن الوصول إليها تعلم الأطفال الذين تتراوح أعمارهم بين 3-7 سنوات مهارات وقيم الحياة المهمة من خلال سرد القصص الجذابة.' },
-    audience: { title: 'لمن هذا الموقع؟', text: 'يستهدف هذا الموقع الآباء والمعلمين ومقدمي الرعاية في رياض الأطفال في ألمانيا. جميع المحتويات متاحة بـ 5 لغات: الألمانية والعربية والإنجليزية والتركية والأوردو.' },
-    offer: { title: 'ماذا نقدم؟', items: ['قصص ذات دروس حياتية قيمة', 'أنشطة تعليمية تفاعلية', 'محتوى متعدد اللغات', 'مجاني وبدون إعلانات'] },
+    mission: {
+      title: 'مهمتنا',
+      text: 'نقدم قصصًا تعليمية يمكن الوصول إليها تعلم الأطفال الذين تتراوح أعمارهم بين 3-7 سنوات مهارات وقيم الحياة المهمة من خلال سرد القصص الجذابة.',
+    },
+    audience: {
+      title: 'لمن هذا الموقع؟',
+      text: 'يستهدف هذا الموقع الآباء والمعلمين ومقدمي الرعاية في رياض الأطفال في ألمانيا. جميع المحتويات متاحة بـ 5 لغات: الألمانية والعربية والإنجليزية والتركية والأوردو.',
+    },
+    offer: {
+      title: 'ماذا نقدم؟',
+      items: [
+        'قصص ذات دروس حياتية قيمة',
+        'أنشطة تعليمية تفاعلية',
+        'محتوى متعدد اللغات',
+        'مجاني وبدون إعلانات',
+      ],
+    },
     usage: {
       title: 'كيف أستخدم هذا الموقع؟',
       steps: [
-        { title: '1. اختر قصة', text: 'تصفح الصفحة الرئيسية للقصص. قم بالتصفية حسب المهارات (مثل التعاطف والصبر) أو اللغة.' },
-        { title: '2. اقرأ القصة', text: 'اختر بين التنسيق القياسي (قصة نصية) أو التنسيق التفاعلي (صفحات للتقليب مع وظيفة القراءة).' },
-        { title: '3. نفذ الأنشطة', text: 'بعد القصة ستجد أسئلة اختبار تفاعلية وأسئلة مناقشة وأنشطة عملية.' },
-        { title: '4. أجرِ محادثات', text: 'استخدم أسئلة المناقشة للتحدث مع الأطفال حول القصة ورسالتها.' }
-      ]
+        {
+          title: '1. اختر قصة',
+          text: 'تصفح الصفحة الرئيسية للقصص. قم بالتصفية حسب المهارات (مثل التعاطف والصبر) أو اللغة.',
+        },
+        {
+          title: '2. اقرأ القصة',
+          text: 'اختر بين التنسيق القياسي (قصة نصية) أو التنسيق التفاعلي (صفحات للتقليب مع وظيفة القراءة).',
+        },
+        {
+          title: '3. نفذ الأنشطة',
+          text: 'بعد القصة ستجد أسئلة اختبار تفاعلية وأسئلة مناقشة وأنشطة عملية.',
+        },
+        {
+          title: '4. أجرِ محادثات',
+          text: 'استخدم أسئلة المناقشة للتحدث مع الأطفال حول القصة ورسالتها.',
+        },
+      ],
     },
     features: {
       title: 'الميزات التفاعلية',
@@ -36,8 +62,8 @@ const content = {
         'تمييز الكلمات: يتم تمييز الكلمات عند القراءة',
         'منظم السرعة: اضبط سرعة القراءة (0.75x إلى 1.2x)',
         'حفظ التقدم: يتم حفظ موضعك تلقائيًا',
-        'التصفية والبحث: ابحث عن القصص حسب المهارات أو اللغة أو الفئة العمرية'
-      ]
+        'التصفية والبحث: ابحث عن القصص حسب المهارات أو اللغة أو الفئة العمرية',
+      ],
     },
     tips: {
       title: 'نصائح للآباء والمعلمين',
@@ -47,24 +73,50 @@ const content = {
         'خذ وقتًا للمحادثات بعد القصة',
         'كرر القصص لتعميق آثار التعلم',
         'اربط القصص بالمواقف الحقيقية في الحياة اليومية',
-        'استخدم أسئلة الاختبار التفاعلية للتعميق بطريقة مرحة'
-      ]
+        'استخدم أسئلة الاختبار التفاعلية للتعميق بطريقة مرحة',
+      ],
     },
-    license: { title: 'الترخيص', text: 'جميع القصص مرخصة بموجب' }
+    license: { title: 'الترخيص', text: 'جميع القصص مرخصة بموجب' },
   },
   en: {
     title: 'About Learning with Stories',
-    mission: { title: 'Our Mission', text: 'We provide accessible, educational stories that teach children aged 3-7 important life skills and values through engaging narratives.' },
-    audience: { title: 'Who is this for?', text: 'This website is for parents, teachers and kindergarten caregivers in Germany. All content is available in 5 languages: German, Arabic, English, Turkish and Urdu.' },
-    offer: { title: 'What do we offer?', items: ['Stories with valuable life lessons', 'Interactive learning activities', 'Multilingual content', 'Free and ad-free'] },
+    mission: {
+      title: 'Our Mission',
+      text: 'We provide accessible, educational stories that teach children aged 3-7 important life skills and values through engaging narratives.',
+    },
+    audience: {
+      title: 'Who is this for?',
+      text: 'This website is for parents, teachers and kindergarten caregivers in Germany. All content is available in 5 languages: German, Arabic, English, Turkish and Urdu.',
+    },
+    offer: {
+      title: 'What do we offer?',
+      items: [
+        'Stories with valuable life lessons',
+        'Interactive learning activities',
+        'Multilingual content',
+        'Free and ad-free',
+      ],
+    },
     usage: {
       title: 'How to use this website?',
       steps: [
-        { title: '1. Choose a story', text: 'Browse the homepage for stories. Filter by skills (e.g. empathy, patience) or language.' },
-        { title: '2. Read the story', text: 'Choose between standard format (text story) or interactive format (pages to flip with read-aloud function).' },
-        { title: '3. Complete activities', text: 'After the story you will find interactive quiz questions, discussion questions and practical activities.' },
-        { title: '4. Have conversations', text: 'Use the discussion questions to talk with children about the story and its message.' }
-      ]
+        {
+          title: '1. Choose a story',
+          text: 'Browse the homepage for stories. Filter by skills (e.g. empathy, patience) or language.',
+        },
+        {
+          title: '2. Read the story',
+          text: 'Choose between standard format (text story) or interactive format (pages to flip with read-aloud function).',
+        },
+        {
+          title: '3. Complete activities',
+          text: 'After the story you will find interactive quiz questions, discussion questions and practical activities.',
+        },
+        {
+          title: '4. Have conversations',
+          text: 'Use the discussion questions to talk with children about the story and its message.',
+        },
+      ],
     },
     features: {
       title: 'Interactive Features',
@@ -73,35 +125,61 @@ const content = {
         'Word highlighting: Words are highlighted during reading',
         'Speed control: Adjust reading speed (0.75x to 1.2x)',
         'Progress saving: Your position is automatically saved',
-        'Filter & Search: Find stories by skills, language or age group'
-      ]
+        'Filter & Search: Find stories by skills, language or age group',
+      ],
     },
     tips: {
       title: 'Tips for Parents and Educators',
       items: [
         'Read the story yourself first to get familiar with it',
-        'Adapt discussion questions to the child\'s age and understanding',
+        "Adapt discussion questions to the child's age and understanding",
         'Take time for conversations after the story',
         'Repeat stories to deepen learning effects',
         'Connect stories to real situations in everyday life',
-        'Use interactive quiz questions for playful deepening'
-      ]
+        'Use interactive quiz questions for playful deepening',
+      ],
     },
-    license: { title: 'License', text: 'All stories are licensed under' }
+    license: { title: 'License', text: 'All stories are licensed under' },
   },
   tr: {
     title: 'Hikayelerle Öğrenme Hakkında',
-    mission: { title: 'Misyonumuz', text: '3-7 yaş arası çocuklara önemli yaşam becerilerini ve değerleri ilgi çekici anlatılarla öğreten erişilebilir, eğitici hikayeler sunuyoruz.' },
-    audience: { title: 'Bu kim için?', text: 'Bu web sitesi Almanya\'daki ebeveynler, öğretmenler ve kreş bakıcıları içindir. Tüm içerik 5 dilde mevcuttur: Almanca, Arapça, İngilizce, Türkçe ve Urduca.' },
-    offer: { title: 'Ne sunuyoruz?', items: ['Değerli hayat dersleri içeren hikayeler', 'Etkileşimli öğrenme etkinlikleri', 'Çok dilli içerik', 'Ücretsiz ve reklamsız'] },
+    mission: {
+      title: 'Misyonumuz',
+      text: '3-7 yaş arası çocuklara önemli yaşam becerilerini ve değerleri ilgi çekici anlatılarla öğreten erişilebilir, eğitici hikayeler sunuyoruz.',
+    },
+    audience: {
+      title: 'Bu kim için?',
+      text: "Bu web sitesi Almanya'daki ebeveynler, öğretmenler ve kreş bakıcıları içindir. Tüm içerik 5 dilde mevcuttur: Almanca, Arapça, İngilizce, Türkçe ve Urduca.",
+    },
+    offer: {
+      title: 'Ne sunuyoruz?',
+      items: [
+        'Değerli hayat dersleri içeren hikayeler',
+        'Etkileşimli öğrenme etkinlikleri',
+        'Çok dilli içerik',
+        'Ücretsiz ve reklamsız',
+      ],
+    },
     usage: {
       title: 'Bu web sitesini nasıl kullanırım?',
       steps: [
-        { title: '1. Bir hikaye seç', text: 'Ana sayfadaki hikayelere göz atın. Becerilere (örn. empati, sabır) veya dile göre filtreleyin.' },
-        { title: '2. Hikayeyi oku', text: 'Standart format (metin hikaye) veya etkileşimli format (sesli okuma fonksiyonlu sayfalar) arasında seçim yapın.' },
-        { title: '3. Etkinlikleri tamamla', text: 'Hikayeden sonra etkileşimli test soruları, tartışma soruları ve pratik etkinlikler bulacaksınız.' },
-        { title: '4. Sohbet et', text: 'Hikaye ve mesajı hakkında çocuklarla konuşmak için tartışma sorularını kullanın.' }
-      ]
+        {
+          title: '1. Bir hikaye seç',
+          text: 'Ana sayfadaki hikayelere göz atın. Becerilere (örn. empati, sabır) veya dile göre filtreleyin.',
+        },
+        {
+          title: '2. Hikayeyi oku',
+          text: 'Standart format (metin hikaye) veya etkileşimli format (sesli okuma fonksiyonlu sayfalar) arasında seçim yapın.',
+        },
+        {
+          title: '3. Etkinlikleri tamamla',
+          text: 'Hikayeden sonra etkileşimli test soruları, tartışma soruları ve pratik etkinlikler bulacaksınız.',
+        },
+        {
+          title: '4. Sohbet et',
+          text: 'Hikaye ve mesajı hakkında çocuklarla konuşmak için tartışma sorularını kullanın.',
+        },
+      ],
     },
     features: {
       title: 'Etkileşimli Özellikler',
@@ -110,8 +188,8 @@ const content = {
         'Kelime vurgulama: Okuma sırasında kelimeler vurgulanır',
         'Hız kontrolü: Okuma hızını ayarlayın (0.75x ile 1.2x arası)',
         'İlerleme kaydetme: Pozisyonunuz otomatik olarak kaydedilir',
-        'Filtre ve Arama: Becerilere, dile veya yaş grubuna göre hikayeler bulun'
-      ]
+        'Filtre ve Arama: Becerilere, dile veya yaş grubuna göre hikayeler bulun',
+      ],
     },
     tips: {
       title: 'Ebeveynler ve Eğitimciler için İpuçları',
@@ -121,24 +199,50 @@ const content = {
         'Hikayeden sonra sohbet için zaman ayırın',
         'Öğrenme etkilerini derinleştirmek için hikayeleri tekrarlayın',
         'Hikayeleri günlük yaşamdaki gerçek durumlarla ilişkilendirin',
-        'Oyuncu bir şekilde derinleştirmek için etkileşimli test sorularını kullanın'
-      ]
+        'Oyuncu bir şekilde derinleştirmek için etkileşimli test sorularını kullanın',
+      ],
     },
-    license: { title: 'Lisans', text: 'Tüm hikayeler şu lisans altındadır' }
+    license: { title: 'Lisans', text: 'Tüm hikayeler şu lisans altındadır' },
   },
   ur: {
     title: 'کہانیوں کے ساتھ سیکھنے کے بارے میں',
-    mission: { title: 'ہمارا مشن', text: 'ہم قابل رسائی، تعلیمی کہانیاں فراہم کرتے ہیں جو 3-7 سال کی عمر کے بچوں کو دلچسپ بیانیے کے ذریعے اہم زندگی کی مہارتیں اور اقدار سکھاتی ہیں۔' },
-    audience: { title: 'یہ کس کے لیے ہے؟', text: 'یہ ویب سائٹ جرمنی میں والدین، اساتذہ اور کنڈرگارٹن دیکھ بھال کرنے والوں کے لیے ہے۔ تمام مواد 5 زبانوں میں دستیاب ہے: جرمن، عربی، انگریزی، ترکی اور اردو۔' },
-    offer: { title: 'ہم کیا پیش کرتے ہیں؟', items: ['قیمتی زندگی کے اسباق کے ساتھ کہانیاں', 'تفاعلی سیکھنے کی سرگرمیاں', 'کثیر لسانی مواد', 'مفت اور اشتہار سے پاک'] },
+    mission: {
+      title: 'ہمارا مشن',
+      text: 'ہم قابل رسائی، تعلیمی کہانیاں فراہم کرتے ہیں جو 3-7 سال کی عمر کے بچوں کو دلچسپ بیانیے کے ذریعے اہم زندگی کی مہارتیں اور اقدار سکھاتی ہیں۔',
+    },
+    audience: {
+      title: 'یہ کس کے لیے ہے؟',
+      text: 'یہ ویب سائٹ جرمنی میں والدین، اساتذہ اور کنڈرگارٹن دیکھ بھال کرنے والوں کے لیے ہے۔ تمام مواد 5 زبانوں میں دستیاب ہے: جرمن، عربی، انگریزی، ترکی اور اردو۔',
+    },
+    offer: {
+      title: 'ہم کیا پیش کرتے ہیں؟',
+      items: [
+        'قیمتی زندگی کے اسباق کے ساتھ کہانیاں',
+        'تفاعلی سیکھنے کی سرگرمیاں',
+        'کثیر لسانی مواد',
+        'مفت اور اشتہار سے پاک',
+      ],
+    },
     usage: {
       title: 'اس ویب سائٹ کو کیسے استعمال کریں؟',
       steps: [
-        { title: '۱۔ ایک کہانی منتخب کریں', text: 'کہانیوں کے لیے ہوم پیج براؤز کریں۔ مہارتوں (مثلاً ہمدردی، صبر) یا زبان کے مطابق فلٹر کریں۔' },
-        { title: '۲۔ کہانی پڑھیں', text: 'معیاری فارمیٹ (متن کہانی) یا انٹرایکٹو فارمیٹ (پڑھنے کی آواز کے ساتھ صفحات) میں سے انتخاب کریں۔' },
-        { title: '۳۔ سرگرمیاں مکمل کریں', text: 'کہانی کے بعد آپ کو انٹرایکٹو کوئز سوالات، بحث کے سوالات اور عملی سرگرمیاں ملیں گی۔' },
-        { title: '۴۔ گفتگو کریں', text: 'بچوں کے ساتھ کہانی اور اس کے پیغام کے بارے میں بات کرنے کے لیے بحث کے سوالات استعمال کریں۔' }
-      ]
+        {
+          title: '۱۔ ایک کہانی منتخب کریں',
+          text: 'کہانیوں کے لیے ہوم پیج براؤز کریں۔ مہارتوں (مثلاً ہمدردی، صبر) یا زبان کے مطابق فلٹر کریں۔',
+        },
+        {
+          title: '۲۔ کہانی پڑھیں',
+          text: 'معیاری فارمیٹ (متن کہانی) یا انٹرایکٹو فارمیٹ (پڑھنے کی آواز کے ساتھ صفحات) میں سے انتخاب کریں۔',
+        },
+        {
+          title: '۳۔ سرگرمیاں مکمل کریں',
+          text: 'کہانی کے بعد آپ کو انٹرایکٹو کوئز سوالات، بحث کے سوالات اور عملی سرگرمیاں ملیں گی۔',
+        },
+        {
+          title: '۴۔ گفتگو کریں',
+          text: 'بچوں کے ساتھ کہانی اور اس کے پیغام کے بارے میں بات کرنے کے لیے بحث کے سوالات استعمال کریں۔',
+        },
+      ],
     },
     features: {
       title: 'انٹرایکٹو خصوصیات',
@@ -147,8 +251,8 @@ const content = {
         'الفاظ کی نمایاں کاری: پڑھنے کے دوران الفاظ نمایاں ہوجاتے ہیں',
         'رفتار کنٹرول: پڑھنے کی رفتار ایڈجسٹ کریں (۰.۷۵x سے ۱.۲x)',
         'پیش رفت محفوظ کرنا: آپ کی پوزیشن خودکار طور پر محفوظ ہوجاتی ہے',
-        'فلٹر اور تلاش: مہارتوں، زبان یا عمر گروپ کے مطابق کہانیاں تلاش کریں'
-      ]
+        'فلٹر اور تلاش: مہارتوں، زبان یا عمر گروپ کے مطابق کہانیاں تلاش کریں',
+      ],
     },
     tips: {
       title: 'والدین اور معلمین کے لیے تجاویز',
@@ -158,11 +262,11 @@ const content = {
         'کہانی کے بعد گفتگو کے لیے وقت نکالیں',
         'سیکھنے کے اثرات کو گہرا کرنے کے لیے کہانیاں دہرائیں',
         'کہانیوں کو روزمرہ زندگی کے حقیقی حالات سے جوڑیں',
-        'کھیل کے انداز میں گہرائی کے لیے انٹرایکٹو کوئز سوالات استعمال کریں'
-      ]
+        'کھیل کے انداز میں گہرائی کے لیے انٹرایکٹو کوئز سوالات استعمال کریں',
+      ],
     },
-    license: { title: 'لائسنس', text: 'تمام کہانیاں اس لائسنس کے تحت ہیں' }
-  }
+    license: { title: 'لائسنس', text: 'تمام کہانیاں اس لائسنس کے تحت ہیں' },
+  },
 };
 
 const pageContent = content[locale];
@@ -195,7 +299,11 @@ const description = pageContent.mission.text;
         <h2>{pageContent.license.title}</h2>
         <p>
           {pageContent.license.text}
-          <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">
+          <a
+            href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+            target="_blank"
+            rel="noopener"
+          >
             Creative Commons BY-NC-SA 4.0
           </a>.
         </p>
@@ -241,7 +349,7 @@ const description = pageContent.mission.text;
     color: var(--color-text-light);
   }
 
-  [dir="rtl"] .about-content ul {
+  [dir='rtl'] .about-content ul {
     padding-left: 0;
     padding-right: 2rem;
   }

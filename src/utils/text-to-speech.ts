@@ -31,7 +31,7 @@ export class StoryNarrator {
 
     // Word boundary event for highlighting
     if (options.onWordHighlight) {
-      this.currentUtterance.addEventListener('boundary', (event) => {
+      this.currentUtterance.addEventListener('boundary', event => {
         if (event.name === 'word') {
           const word = text.slice(event.charIndex, event.charIndex + (event.charLength || 0));
           options.onWordHighlight?.(word, event.charIndex);

@@ -28,43 +28,71 @@ const { questions, language, storyId, title } = Astro.props;
     <span class="progress-count">0</span> / {questions.length}
   </div>
 
-  {questions.map((q, idx) => (
-    <div class="quiz-question" data-question-id={q.id} data-answer={JSON.stringify(q.correctAnswer)}>
-      <p class="question-text">{idx + 1}. {q.text}</p>
+  {
+    questions.map((q, idx) => (
+      <div
+        class="quiz-question"
+        data-question-id={q.id}
+        data-answer={JSON.stringify(q.correctAnswer)}
+      >
+        <p class="question-text">
+          {idx + 1}. {q.text}
+        </p>
 
-      {q.type === 'truefalse' && (
-        <div class="answer-options">
-          <button class="option-btn" data-value="true">
-            ✓ {language === 'ar' ? 'صح' : language === 'ur' ? 'صحیح' : language === 'tr' ? 'Doğru' : language === 'en' ? 'True' : 'Richtig'}
-          </button>
-          <button class="option-btn" data-value="false">
-            ✗ {language === 'ar' ? 'خطأ' : language === 'ur' ? 'غلط' : language === 'tr' ? 'Yanlış' : language === 'en' ? 'False' : 'Falsch'}
-          </button>
-        </div>
-      )}
-
-      {q.type === 'multiplechoice' && q.options && (
-        <div class="answer-options">
-          {q.options.map((opt, i) => (
-            <button class="option-btn" data-value={opt}>
-              {String.fromCharCode(97 + i)}) {opt}
+        {q.type === 'truefalse' && (
+          <div class="answer-options">
+            <button class="option-btn" data-value="true">
+              ✓{' '}
+              {language === 'ar'
+                ? 'صح'
+                : language === 'ur'
+                  ? 'صحیح'
+                  : language === 'tr'
+                    ? 'Doğru'
+                    : language === 'en'
+                      ? 'True'
+                      : 'Richtig'}
             </button>
-          ))}
-        </div>
-      )}
+            <button class="option-btn" data-value="false">
+              ✗{' '}
+              {language === 'ar'
+                ? 'خطأ'
+                : language === 'ur'
+                  ? 'غلط'
+                  : language === 'tr'
+                    ? 'Yanlış'
+                    : language === 'en'
+                      ? 'False'
+                      : 'Falsch'}
+            </button>
+          </div>
+        )}
 
-      {q.type === 'fillinblank' && (
-        <div class="answer-input">
-          <input type="text" placeholder="..." class="fill-blank-input" />
-          <button class="check-btn">{getTranslation(language, 'correct').replace('!', '')}</button>
-        </div>
-      )}
+        {q.type === 'multiplechoice' && q.options && (
+          <div class="answer-options">
+            {q.options.map((opt, i) => (
+              <button class="option-btn" data-value={opt}>
+                {String.fromCharCode(97 + i)}) {opt}
+              </button>
+            ))}
+          </div>
+        )}
 
-      <div class="feedback" style="display: none;">
-        <span class="feedback-text"></span>
+        {q.type === 'fillinblank' && (
+          <div class="answer-input">
+            <input type="text" placeholder="..." class="fill-blank-input" />
+            <button class="check-btn">
+              {getTranslation(language, 'correct').replace('!', '')}
+            </button>
+          </div>
+        )}
+
+        <div class="feedback" style="display: none;">
+          <span class="feedback-text" />
+        </div>
       </div>
-    </div>
-  ))}
+    ))
+  }
 
   <button class="show-all-answers-btn">{getTranslation(language, 'showAnswers')}</button>
 </div>
@@ -77,11 +105,11 @@ const { questions, language, storyId, title } = Astro.props;
     const language = quiz.getAttribute('data-language') || 'de';
 
     const labels = {
-      de: { correct: "Richtig!", incorrect: "Nicht ganz", answer: "Antwort" },
-      ar: { correct: "صحيح!", incorrect: "غير صحيح", answer: "الإجابة" },
-      en: { correct: "Correct!", incorrect: "Try again", answer: "Answer" },
-      tr: { correct: "Doğru!", incorrect: "Yanlış", answer: "Cevap" },
-      ur: { correct: "صحیح!", incorrect: "غلط", answer: "جواب" }
+      de: { correct: 'Richtig!', incorrect: 'Nicht ganz', answer: 'Antwort' },
+      ar: { correct: 'صحيح!', incorrect: 'غير صحيح', answer: 'الإجابة' },
+      en: { correct: 'Correct!', incorrect: 'Try again', answer: 'Answer' },
+      tr: { correct: 'Doğru!', incorrect: 'Yanlış', answer: 'Cevap' },
+      ur: { correct: 'صحیح!', incorrect: 'غلط', answer: 'جواب' },
     };
 
     const label = labels[language as keyof typeof labels] || labels.de;
@@ -136,7 +164,9 @@ const { questions, language, storyId, title } = Astro.props;
 
           // Disable buttons after correct answer
           if (isCorrect) {
-            question.querySelectorAll('.option-btn').forEach(b => (b as HTMLButtonElement).disabled = true);
+            question
+              .querySelectorAll('.option-btn')
+              .forEach(b => ((b as HTMLButtonElement).disabled = true));
           }
         });
       });
@@ -153,13 +183,13 @@ const { questions, language, storyId, title } = Astro.props;
             ? correctAnswer.map(a => a.toLowerCase())
             : [correctAnswer.toString().toLowerCase()];
 
-          const isCorrect = correctAnswers.some(ans => userAnswer.includes(ans) || ans.includes(userAnswer));
+          const isCorrect = correctAnswers.some(
+            ans => userAnswer.includes(ans) || ans.includes(userAnswer)
+          );
 
           if (feedbackDiv && feedbackText) {
             feedbackDiv.style.display = 'block';
-            feedbackText.textContent = isCorrect
-              ? `✓ ${label.correct}`
-              : `✗ ${label.incorrect}`;
+            feedbackText.textContent = isCorrect ? `✓ ${label.correct}` : `✗ ${label.incorrect}`;
             feedbackDiv.className = isCorrect ? 'feedback correct' : 'feedback incorrect';
           }
 
@@ -215,7 +245,7 @@ const { questions, language, storyId, title } = Astro.props;
   }
 
   .progress-count {
-    color: #4CAF50;
+    color: #4caf50;
     font-weight: bold;
   }
 
@@ -224,7 +254,7 @@ const { questions, language, storyId, title } = Astro.props;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .question-text {
@@ -252,7 +282,7 @@ const { questions, language, storyId, title } = Astro.props;
   }
 
   .option-btn:hover:not(:disabled) {
-    border-color: #4CAF50;
+    border-color: #4caf50;
     background: #f0f8f0;
   }
 
@@ -278,7 +308,7 @@ const { questions, language, storyId, title } = Astro.props;
 
   .check-btn {
     padding: 0.75rem 1.5rem;
-    background: #4CAF50;
+    background: #4caf50;
     color: white;
     border: none;
     border-radius: 6px;
@@ -332,8 +362,8 @@ const { questions, language, storyId, title } = Astro.props;
   }
 
   /* RTL support */
-  [dir="rtl"] .answer-options,
-  [dir="rtl"] .option-btn {
+  [dir='rtl'] .answer-options,
+  [dir='rtl'] .option-btn {
     text-align: right;
   }
 

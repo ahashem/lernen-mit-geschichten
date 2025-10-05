@@ -41,7 +41,7 @@ interface GoogleDriveCredentials {
 async function getAccessToken(credentials: GoogleDriveCredentials): Promise<string> {
   const jwtHeader = {
     alg: 'RS256',
-    typ: 'JWT'
+    typ: 'JWT',
   };
 
   const now = Math.floor(Date.now() / 1000);
@@ -50,30 +50,29 @@ async function getAccessToken(credentials: GoogleDriveCredentials): Promise<stri
     scope: 'https://www.googleapis.com/auth/drive.readonly',
     aud: 'https://oauth2.googleapis.com/token',
     exp: now + 3600,
-    iat: now
+    iat: now,
   };
 
   // Note: For production, use a proper JWT library like 'jsonwebtoken'
   // This is a simplified version that requires the Google API client library
-  throw new Error('Google Drive loader requires googleapis package. Install with: npm install googleapis');
+  throw new Error(
+    'Google Drive loader requires googleapis package. Install with: npm install googleapis'
+  );
 }
 
 /**
  * List files in a Google Drive folder
  * Supports both Markdown (.md) files and Google Docs
  */
-async function listFiles(
-  folderId: string,
-  accessToken: string
-): Promise<GoogleDriveFile[]> {
+async function listFiles(folderId: string, accessToken: string): Promise<GoogleDriveFile[]> {
   // Query for both markdown files and Google Docs
   const query = `'${folderId}' in parents and (mimeType='text/markdown' or mimeType='application/vnd.google-apps.document') and trashed=false`;
   const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id,name,mimeType,modifiedTime)`;
 
   const response = await fetch(url, {
     headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
 
   if (!response.ok) {
@@ -106,8 +105,8 @@ async function downloadFile(
 
   const response = await fetch(url, {
     headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
 
   if (!response.ok) {
@@ -163,14 +162,19 @@ function parseFrontmatter(content: string): { data: Record<string, any>; body: s
     let value: any = line.substring(colonIndex + 1).trim();
 
     // Remove quotes
-    if ((value.startsWith('"') && value.endsWith('"')) ||
-        (value.startsWith("'") && value.endsWith("'"))) {
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
       value = value.slice(1, -1);
     }
 
     // Parse arrays
     if (value.startsWith('[') && value.endsWith(']')) {
-      value = value.slice(1, -1).split(',').map((v: string) => v.trim().replace(/['"]/g, ''));
+      value = value
+        .slice(1, -1)
+        .split(',')
+        .map((v: string) => v.trim().replace(/['"]/g, ''));
     }
 
     // Parse numbers
@@ -258,7 +262,7 @@ export function googleDriveLoader(config: GoogleDriveLoaderConfig): Loader {
         logger.error(`Failed to load from Google Drive: ${error}`);
         throw error;
       }
-    }
+    },
   };
 }
 
@@ -320,6 +324,6 @@ export function publicGoogleDriveLoader(config: { fileUrls: string[]; locale?: s
           logger.error(`Error loading file from ${url}: ${error}`);
         }
       }
-    }
+    },
   };
 }

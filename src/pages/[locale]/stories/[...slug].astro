@@ -47,15 +47,19 @@ const locale: Locale = storyLocale as Locale;
 const skillObjects = getSkillsByIds(story.data.skills);
 
 // Generate meta description from story
-const metaDescription = `${story.data.title} - ${skillObjects.slice(0, 2).map(s => s[locale]).join(' و ')}`;
+const metaDescription = `${story.data.title} - ${skillObjects
+  .slice(0, 2)
+  .map(s => s[locale])
+  .join(' و ')}`;
 
 // Check if both standard and interactive versions exist
 const allStories = await getCollection('stories');
 const baseStoryId = story.data.storyId.replace(/-interactive$/, '');
 const alternativeFormat = story.data.storyFormat === 'interactive' ? 'standard' : 'interactive';
-const alternativeStory = allStories.find(s =>
-  s.data.storyId.replace(/-interactive$/, '') === baseStoryId &&
-  s.data.storyFormat === alternativeFormat
+const alternativeStory = allStories.find(
+  s =>
+    s.data.storyId.replace(/-interactive$/, '') === baseStoryId &&
+    s.data.storyFormat === alternativeFormat
 );
 const hasAlternativeFormat = !!alternativeStory;
 
@@ -77,10 +81,10 @@ const bilingualMode = bilingualWith && availableLanguages.some(l => l.locale ===
 let bilingualStory: CollectionEntry<'stories'> | null = null;
 let BilingualContent: any = null;
 if (bilingualMode) {
-  bilingualStory = allStories.find(s =>
-    s.data.storyId === story.data.storyId &&
-    s.slug.startsWith(bilingualWith + '/')
-  ) || null;
+  bilingualStory =
+    allStories.find(
+      s => s.data.storyId === story.data.storyId && s.slug.startsWith(bilingualWith + '/')
+    ) || null;
   if (bilingualStory) {
     const rendered = await bilingualStory.render();
     BilingualContent = rendered.Content;
@@ -88,12 +92,7 @@ if (bilingualMode) {
 }
 ---
 
-<BaseLayout
-  title={story.data.title}
-  locale={uiLocale}
-  description={metaDescription}
-  type="article"
->
+<BaseLayout title={story.data.title} locale={uiLocale} description={metaDescription} type="article">
   <article class="story-detail">
     <div class="container">
       <header class="story-header">
@@ -102,19 +101,21 @@ if (bilingualMode) {
 
         <div class="story-meta">
           <div class="skills-list">
-            {skillObjects.map(skill => (
-              <span class="skill-badge">{skill[locale]}</span>
-            ))}
+            {skillObjects.map(skill => <span class="skill-badge">{skill[locale]}</span>)}
           </div>
 
-          {story.data.estimatedReadTime && (
-            <div class="read-time">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm0 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.5 2.5v4.793l2.854 2.853-.708.708-3-3A.5.5 0 0 1 7.5 8.5v-5h1z"/>
-              </svg>
-              <span>{story.data.estimatedReadTime} {getTranslation(uiLocale, 'minutesRead')}</span>
-            </div>
-          )}
+          {
+            story.data.estimatedReadTime && (
+              <div class="read-time">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm0 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.5 2.5v4.793l2.854 2.853-.708.708-3-3A.5.5 0 0 1 7.5 8.5v-5h1z" />
+                </svg>
+                <span>
+                  {story.data.estimatedReadTime} {getTranslation(uiLocale, 'minutesRead')}
+                </span>
+              </div>
+            )
+          }
 
           <div class="age-group">
             <span>{getTranslation(uiLocale, 'ageGroup')}: {story.data.ageGroup}</span>
@@ -129,35 +130,33 @@ if (bilingualMode) {
         storyId={story.data.storyId}
       />
 
-      {bilingualMode && bilingualStory && BilingualContent ? (
-        <BilingualView
-          primaryStory={story}
-          primaryContent={Content}
-          primaryLocale={locale}
-          secondaryStory={bilingualStory}
-          secondaryContent={BilingualContent}
-          secondaryLocale={bilingualWith as Locale}
-        />
-      ) : story.data.storyFormat === 'interactive' && story.data.pages ? (
-        <InteractiveStorybook
-          pages={story.data.pages}
-          title={story.data.title}
-          locale={locale}
-        />
-      ) : (
-        <>
-          <div class="story-content">
-            <Content />
-          </div>
-          <ReadingControls
-            locale={locale}
-            storyId={story.data.storyId}
-            availableLanguages={availableLanguages}
-            currentSlug={currentStorySlug}
-            showBilingualToggle={availableLanguages.length >= 2}
+      {
+        bilingualMode && bilingualStory && BilingualContent ? (
+          <BilingualView
+            primaryStory={story}
+            primaryContent={Content}
+            primaryLocale={locale}
+            secondaryStory={bilingualStory}
+            secondaryContent={BilingualContent}
+            secondaryLocale={bilingualWith as Locale}
           />
-        </>
-      )}
+        ) : story.data.storyFormat === 'interactive' && story.data.pages ? (
+          <InteractiveStorybook pages={story.data.pages} title={story.data.title} locale={locale} />
+        ) : (
+          <>
+            <div class="story-content">
+              <Content />
+            </div>
+            <ReadingControls
+              locale={locale}
+              storyId={story.data.storyId}
+              availableLanguages={availableLanguages}
+              currentSlug={currentStorySlug}
+              showBilingualToggle={availableLanguages.length >= 2}
+            />
+          </>
+        )
+      }
     </div>
   </article>
 </BaseLayout>
@@ -170,7 +169,7 @@ if (bilingualMode) {
   .story-header {
     text-align: center;
     padding: 1rem 0;
-    border-bottom: 2px solid #FFD93D;
+    border-bottom: 2px solid #ffd93d;
     margin-bottom: 1.5rem;
   }
 
@@ -202,7 +201,7 @@ if (bilingualMode) {
   }
 
   .skill-badge {
-    background: linear-gradient(135deg, var(--color-primary) 0%, #FF6B9D 100%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, #ff6b9d 100%);
     color: white;
     padding: 0.4rem 0.8rem;
     border-radius: 20px;
@@ -210,7 +209,8 @@ if (bilingualMode) {
     font-weight: 500;
   }
 
-  .read-time, .age-group {
+  .read-time,
+  .age-group {
     display: flex;
     align-items: center;
     gap: 0.5rem;

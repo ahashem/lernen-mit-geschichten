@@ -18,7 +18,7 @@ const {
   primaryLocale,
   secondaryStory,
   secondaryContent: SecondaryContent,
-  secondaryLocale
+  secondaryLocale,
 } = Astro.props;
 
 const primaryIsRTL = isRTL(primaryLocale);
@@ -51,7 +51,19 @@ const languageNames = {
     >
       <div class="column-header">
         <h4>{primaryStory.data.title}</h4>
-        <span class="flag">{primaryLocale === 'de' ? '🇩🇪' : primaryLocale === 'ar' ? '🇸🇦' : primaryLocale === 'en' ? '🇬🇧' : primaryLocale === 'tr' ? '🇹🇷' : '🇵🇰'}</span>
+        <span class="flag"
+          >{
+            primaryLocale === 'de'
+              ? '🇩🇪'
+              : primaryLocale === 'ar'
+                ? '🇸🇦'
+                : primaryLocale === 'en'
+                  ? '🇬🇧'
+                  : primaryLocale === 'tr'
+                    ? '🇹🇷'
+                    : '🇵🇰'
+          }</span
+        >
       </div>
       <div class="story-content">
         <PrimaryContent />
@@ -67,7 +79,19 @@ const languageNames = {
     >
       <div class="column-header">
         <h4>{secondaryStory.data.title}</h4>
-        <span class="flag">{secondaryLocale === 'de' ? '🇩🇪' : secondaryLocale === 'ar' ? '🇸🇦' : secondaryLocale === 'en' ? '🇬🇧' : secondaryLocale === 'tr' ? '🇹🇷' : '🇵🇰'}</span>
+        <span class="flag"
+          >{
+            secondaryLocale === 'de'
+              ? '🇩🇪'
+              : secondaryLocale === 'ar'
+                ? '🇸🇦'
+                : secondaryLocale === 'en'
+                  ? '🇬🇧'
+                  : secondaryLocale === 'tr'
+                    ? '🇹🇷'
+                    : '🇵🇰'
+          }</span
+        >
       </div>
       <div class="story-content">
         <SecondaryContent />
@@ -88,18 +112,26 @@ const languageNames = {
     primaryColumn.addEventListener('scroll', () => {
       if (!isSecondaryScrolling) {
         isPrimaryScrolling = true;
-        const scrollPercentage = primaryColumn.scrollTop / (primaryColumn.scrollHeight - primaryColumn.clientHeight);
-        secondaryColumn.scrollTop = scrollPercentage * (secondaryColumn.scrollHeight - secondaryColumn.clientHeight);
-        setTimeout(() => { isPrimaryScrolling = false; }, 50);
+        const scrollPercentage =
+          primaryColumn.scrollTop / (primaryColumn.scrollHeight - primaryColumn.clientHeight);
+        secondaryColumn.scrollTop =
+          scrollPercentage * (secondaryColumn.scrollHeight - secondaryColumn.clientHeight);
+        setTimeout(() => {
+          isPrimaryScrolling = false;
+        }, 50);
       }
     });
 
     secondaryColumn.addEventListener('scroll', () => {
       if (!isPrimaryScrolling) {
         isSecondaryScrolling = true;
-        const scrollPercentage = secondaryColumn.scrollTop / (secondaryColumn.scrollHeight - secondaryColumn.clientHeight);
-        primaryColumn.scrollTop = scrollPercentage * (primaryColumn.scrollHeight - primaryColumn.clientHeight);
-        setTimeout(() => { isSecondaryScrolling = false; }, 50);
+        const scrollPercentage =
+          secondaryColumn.scrollTop / (secondaryColumn.scrollHeight - secondaryColumn.clientHeight);
+        primaryColumn.scrollTop =
+          scrollPercentage * (primaryColumn.scrollHeight - primaryColumn.clientHeight);
+        setTimeout(() => {
+          isSecondaryScrolling = false;
+        }, 50);
       }
     });
   }
@@ -181,7 +213,7 @@ const languageNames = {
     justify-content: space-between;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid #FFD93D;
+    border-bottom: 2px solid #ffd93d;
   }
 
   .column-header h4 {

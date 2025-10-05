@@ -30,20 +30,22 @@ const t = {
 
   <div class="swiper storybook-swiper">
     <div class="swiper-wrapper">
-      {pages.map((page, index) => (
-        <div class="swiper-slide">
-          <div class="story-page">
-            {page.image && (
-              <div class="page-image">
-                <img src={page.image} alt={`Page ${index + 1}`} loading="lazy" />
+      {
+        pages.map((page, index) => (
+          <div class="swiper-slide">
+            <div class="story-page">
+              {page.image && (
+                <div class="page-image">
+                  <img src={page.image} alt={`Page ${index + 1}`} loading="lazy" />
+                </div>
+              )}
+              <div class="page-text" data-page={index}>
+                {page.text}
               </div>
-            )}
-            <div class="page-text" data-page={index}>
-              {page.text}
             </div>
           </div>
-        </div>
-      ))}
+        ))
+      }
     </div>
 
     <div class="swiper-pagination"></div>
@@ -60,7 +62,12 @@ const t = {
           <span class="icon">▶️</span>
         </button>
 
-        <button class="control-btn auto-play" data-enabled="false" aria-label="Auto-play" title={t.autoPlay}>
+        <button
+          class="control-btn auto-play"
+          data-enabled="false"
+          aria-label="Auto-play"
+          title={t.autoPlay}
+        >
           <span class="icon">🔄</span>
         </button>
 
@@ -84,7 +91,14 @@ const t = {
           <span class="icon">🔊</span>
           <span class="text">{t.volume}</span>
         </label>
-        <input type="range" class="volume-slider" min="0" max="100" value="80" aria-label={t.volume} />
+        <input
+          type="range"
+          class="volume-slider"
+          min="0"
+          max="100"
+          value="80"
+          aria-label={t.volume}
+        />
         <span class="value-display">80%</span>
       </div>
 
@@ -109,7 +123,11 @@ const t = {
       </div>
 
       <div class="setting-row action-row">
-        <button class="action-btn export-booklet-interactive" data-story-title={title} data-locale={locale}>
+        <button
+          class="action-btn export-booklet-interactive"
+          data-story-title={title}
+          data-locale={locale}
+        >
           <span class="icon">📖</span>
           <span class="text">{getTranslation(locale, 'exportBooklet')}</span>
         </button>
@@ -126,7 +144,7 @@ const t = {
   import 'swiper/css/pagination';
   import { StoryNarrator, getTTSLocale } from '../utils/text-to-speech';
 
-  document.querySelectorAll('.interactive-storybook').forEach((storybookEl) => {
+  document.querySelectorAll('.interactive-storybook').forEach(storybookEl => {
     const storyId = storybookEl.getAttribute('data-story-id');
     const locale = storybookEl.getAttribute('data-locale') || 'de';
     const ttsLocale = getTTSLocale(locale);
@@ -162,7 +180,7 @@ const t = {
       },
       grabCursor: true,
       on: {
-        slideChange: function() {
+        slideChange: function () {
           updatePageIndicator();
           if (autoPlayEnabled) {
             setTimeout(() => readCurrentPage(), 300);
@@ -222,7 +240,7 @@ const t = {
       narrator.speak(text, {
         rate: currentRate,
         volume: currentVolume,
-        onWordHighlight: (word) => {
+        onWordHighlight: word => {
           // Highlight current word
           wordElements.forEach(el => el.classList.remove('highlight'));
           if (wordElements[currentWordIndex]) {
@@ -257,11 +275,31 @@ const t = {
       if (isPlaying) {
         playPauseBtn.setAttribute('data-action', 'pause');
         if (icon) icon.textContent = '⏸️';
-        if (label) label.textContent = locale === 'de' ? 'Pause' : locale === 'ar' ? 'إيقاف' : locale === 'en' ? 'Pause' : locale === 'tr' ? 'Duraklat' : 'روکیں';
+        if (label)
+          label.textContent =
+            locale === 'de'
+              ? 'Pause'
+              : locale === 'ar'
+                ? 'إيقاف'
+                : locale === 'en'
+                  ? 'Pause'
+                  : locale === 'tr'
+                    ? 'Duraklat'
+                    : 'روکیں';
       } else {
         playPauseBtn.setAttribute('data-action', 'play');
         if (icon) icon.textContent = '▶️';
-        if (label) label.textContent = locale === 'de' ? 'Vorlesen' : locale === 'ar' ? 'اقرأ' : locale === 'en' ? 'Read Aloud' : locale === 'tr' ? 'Oku' : 'پڑھیں';
+        if (label)
+          label.textContent =
+            locale === 'de'
+              ? 'Vorlesen'
+              : locale === 'ar'
+                ? 'اقرأ'
+                : locale === 'en'
+                  ? 'Read Aloud'
+                  : locale === 'tr'
+                    ? 'Oku'
+                    : 'پڑھیں';
       }
     }
 
@@ -291,7 +329,7 @@ const t = {
       }
     });
 
-    volumeSlider?.addEventListener('input', (e) => {
+    volumeSlider?.addEventListener('input', e => {
       currentVolume = parseInt((e.target as HTMLInputElement).value) / 100;
       if (valueDisplay) {
         valueDisplay.textContent = `${(e.target as HTMLInputElement).value}%`;
@@ -309,13 +347,16 @@ const t = {
     if (exportBookletBtn) {
       exportBookletBtn.addEventListener('click', async () => {
         // Dynamically import the export utility
-        const { exportAsBooklet, showExportProgress, hideExportProgress, detectOrientation } = await import('../utils/booklet-export');
+        const { exportAsBooklet, showExportProgress, hideExportProgress, detectOrientation } =
+          await import('../utils/booklet-export');
 
         const storyTitle = exportBookletBtn.getAttribute('data-story-title') || 'Story';
         const btnLocale = exportBookletBtn.getAttribute('data-locale') || 'de';
 
         // For interactive stories, we need to capture the storybook container
-        const storybookContainer = exportBookletBtn.closest('.interactive-storybook') as HTMLElement;
+        const storybookContainer = exportBookletBtn.closest(
+          '.interactive-storybook'
+        ) as HTMLElement;
         if (!storybookContainer) {
           alert('Story content not found');
           return;
@@ -330,9 +371,11 @@ const t = {
           ar: 'جاري إنشاء الكتيب... يرجى الانتظار.',
           en: 'Creating booklet... Please wait.',
           tr: 'Kitapçık oluşturuluyor... Lütfen bekleyin.',
-          ur: 'کتابچہ بنایا جا رہا ہے... براہ کرم انتظار کریں۔'
+          ur: 'کتابچہ بنایا جا رہا ہے... براہ کرم انتظار کریں۔',
         };
-        const overlay = showExportProgress(translations[btnLocale as keyof typeof translations] || translations.en);
+        const overlay = showExportProgress(
+          translations[btnLocale as keyof typeof translations] || translations.en
+        );
 
         try {
           // Export with proper settings
@@ -352,9 +395,12 @@ const t = {
             ar: 'تم إنشاء الكتيب بنجاح!',
             en: 'Booklet created successfully!',
             tr: 'Kitapçık başarıyla oluşturuldu!',
-            ur: 'کتابچہ کامیابی سے بنایا گیا!'
+            ur: 'کتابچہ کامیابی سے بنایا گیا!',
           };
-          alert(successTranslations[btnLocale as keyof typeof successTranslations] || successTranslations.en);
+          alert(
+            successTranslations[btnLocale as keyof typeof successTranslations] ||
+              successTranslations.en
+          );
         } catch (error) {
           hideExportProgress(overlay);
           console.error('Booklet export failed:', error);
@@ -377,7 +423,7 @@ const t = {
       }
     });
 
-    speedSelect?.addEventListener('change', (e) => {
+    speedSelect?.addEventListener('change', e => {
       currentRate = parseFloat((e.target as HTMLSelectElement).value);
     });
 
@@ -550,11 +596,11 @@ const t = {
     line-height: 1;
   }
 
-  .play-pause[data-action="pause"] .icon {
+  .play-pause[data-action='pause'] .icon {
     content: '⏸️';
   }
 
-  .auto-play[data-enabled="true"] {
+  .auto-play[data-enabled='true'] {
     background: rgba(247, 151, 49, 0.2);
   }
 

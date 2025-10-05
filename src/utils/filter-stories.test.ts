@@ -4,25 +4,25 @@ import { matchesFilter, filterStories, type StoryFilterData } from './filter-sto
 describe('matchesFilter', () => {
   const testStories: StoryFilterData[] = [
     {
-      title: 'Bruno\'s Colorful Feelings',
+      title: "Bruno's Colorful Feelings",
       skills: ['self-awareness', 'emotional-regulation'],
-      languages: ['de', 'en', 'ar']
+      languages: ['de', 'en', 'ar'],
     },
     {
       title: 'Fritz and the Angry Squirrel',
       skills: ['patience', 'empathy', 'emotional-regulation'],
-      languages: ['de', 'ar']
+      languages: ['de', 'ar'],
     },
     {
       title: 'Lina Learns to Share',
       skills: ['cooperation', 'empathy'],
-      languages: ['de', 'en', 'tr', 'ur']
+      languages: ['de', 'en', 'tr', 'ur'],
     },
     {
-      title: 'Tobi\'s Big Decision',
+      title: "Tobi's Big Decision",
       skills: ['decision-making', 'responsibility'],
-      languages: ['de', 'en', 'ur']
-    }
+      languages: ['de', 'en', 'ur'],
+    },
   ];
 
   describe('Search filtering', () => {
@@ -48,19 +48,25 @@ describe('matchesFilter', () => {
 
     it('should return true when story has at least one selected skill', () => {
       expect(matchesFilter(testStories[0], { selectedSkills: ['self-awareness'] })).toBe(true);
-      expect(matchesFilter(testStories[0], { selectedSkills: ['emotional-regulation'] })).toBe(true);
+      expect(matchesFilter(testStories[0], { selectedSkills: ['emotional-regulation'] })).toBe(
+        true
+      );
     });
 
     it('should return true when story has any of multiple selected skills (OR logic)', () => {
-      expect(matchesFilter(testStories[1], {
-        selectedSkills: ['patience', 'cooperation']
-      })).toBe(true);
+      expect(
+        matchesFilter(testStories[1], {
+          selectedSkills: ['patience', 'cooperation'],
+        })
+      ).toBe(true);
     });
 
     it('should return false when story has none of the selected skills', () => {
-      expect(matchesFilter(testStories[0], {
-        selectedSkills: ['patience', 'empathy']
-      })).toBe(false);
+      expect(
+        matchesFilter(testStories[0], {
+          selectedSkills: ['patience', 'empathy'],
+        })
+      ).toBe(false);
     });
   });
 
@@ -75,56 +81,70 @@ describe('matchesFilter', () => {
     });
 
     it('should return true when story has any of multiple selected languages (OR logic)', () => {
-      expect(matchesFilter(testStories[2], {
-        selectedLanguages: ['tr', 'ar']
-      })).toBe(true);
+      expect(
+        matchesFilter(testStories[2], {
+          selectedLanguages: ['tr', 'ar'],
+        })
+      ).toBe(true);
     });
 
     it('should return false when story has none of the selected languages', () => {
-      expect(matchesFilter(testStories[1], {
-        selectedLanguages: ['en', 'tr', 'ur']
-      })).toBe(false);
+      expect(
+        matchesFilter(testStories[1], {
+          selectedLanguages: ['en', 'tr', 'ur'],
+        })
+      ).toBe(false);
     });
   });
 
   describe('Combined filtering (AND logic between types)', () => {
     it('should return true when all criteria match', () => {
-      expect(matchesFilter(testStories[0], {
-        searchQuery: 'bruno',
-        selectedSkills: ['self-awareness'],
-        selectedLanguages: ['de']
-      })).toBe(true);
+      expect(
+        matchesFilter(testStories[0], {
+          searchQuery: 'bruno',
+          selectedSkills: ['self-awareness'],
+          selectedLanguages: ['de'],
+        })
+      ).toBe(true);
     });
 
     it('should return false when search matches but skills do not', () => {
-      expect(matchesFilter(testStories[0], {
-        searchQuery: 'bruno',
-        selectedSkills: ['patience'],
-        selectedLanguages: ['de']
-      })).toBe(false);
+      expect(
+        matchesFilter(testStories[0], {
+          searchQuery: 'bruno',
+          selectedSkills: ['patience'],
+          selectedLanguages: ['de'],
+        })
+      ).toBe(false);
     });
 
     it('should return false when skills match but languages do not', () => {
-      expect(matchesFilter(testStories[1], {
-        selectedSkills: ['patience'],
-        selectedLanguages: ['en', 'tr']
-      })).toBe(false);
+      expect(
+        matchesFilter(testStories[1], {
+          selectedSkills: ['patience'],
+          selectedLanguages: ['en', 'tr'],
+        })
+      ).toBe(false);
     });
 
     it('should return false when search does not match', () => {
-      expect(matchesFilter(testStories[0], {
-        searchQuery: 'fritz',
-        selectedSkills: ['self-awareness'],
-        selectedLanguages: ['de']
-      })).toBe(false);
+      expect(
+        matchesFilter(testStories[0], {
+          searchQuery: 'fritz',
+          selectedSkills: ['self-awareness'],
+          selectedLanguages: ['de'],
+        })
+      ).toBe(false);
     });
 
     it('should apply OR within skills AND OR within languages', () => {
       // Fritz has: patience, empathy, emotional-regulation; languages: de, ar
-      expect(matchesFilter(testStories[1], {
-        selectedSkills: ['patience', 'cooperation'], // has patience (OR match)
-        selectedLanguages: ['ar', 'en'] // has ar (OR match)
-      })).toBe(true);
+      expect(
+        matchesFilter(testStories[1], {
+          selectedSkills: ['patience', 'cooperation'], // has patience (OR match)
+          selectedLanguages: ['ar', 'en'], // has ar (OR match)
+        })
+      ).toBe(true);
     });
   });
 });
@@ -132,20 +152,20 @@ describe('matchesFilter', () => {
 describe('filterStories', () => {
   const testStories: StoryFilterData[] = [
     {
-      title: 'Bruno\'s Colorful Feelings',
+      title: "Bruno's Colorful Feelings",
       skills: ['self-awareness', 'emotional-regulation'],
-      languages: ['de', 'en', 'ar']
+      languages: ['de', 'en', 'ar'],
     },
     {
       title: 'Fritz and the Angry Squirrel',
       skills: ['patience', 'empathy', 'emotional-regulation'],
-      languages: ['de', 'ar']
+      languages: ['de', 'ar'],
     },
     {
       title: 'Lina Learns to Share',
       skills: ['cooperation', 'empathy'],
-      languages: ['de', 'en', 'tr', 'ur']
-    }
+      languages: ['de', 'en', 'tr', 'ur'],
+    },
   ];
 
   it('should return all stories when no filters applied', () => {
@@ -168,7 +188,7 @@ describe('filterStories', () => {
 
   it('should filter by multiple skills (OR logic)', () => {
     const result = filterStories(testStories, {
-      selectedSkills: ['self-awareness', 'cooperation']
+      selectedSkills: ['self-awareness', 'cooperation'],
     });
     expect(result).toHaveLength(2);
   });
@@ -181,7 +201,7 @@ describe('filterStories', () => {
 
   it('should filter by multiple languages (OR logic)', () => {
     const result = filterStories(testStories, {
-      selectedLanguages: ['ar', 'ur']
+      selectedLanguages: ['ar', 'ur'],
     });
     expect(result).toHaveLength(3); // Bruno & Fritz have ar, Lina has ur
   });
@@ -189,7 +209,7 @@ describe('filterStories', () => {
   it('should apply AND logic between filter types', () => {
     const result = filterStories(testStories, {
       selectedSkills: ['empathy'], // Fritz & Lina
-      selectedLanguages: ['ar'] // Bruno & Fritz
+      selectedLanguages: ['ar'], // Bruno & Fritz
     });
     expect(result).toHaveLength(1); // Only Fritz matches both
     expect(result[0].title).toBe('Fritz and the Angry Squirrel');
@@ -199,7 +219,7 @@ describe('filterStories', () => {
     const result = filterStories(testStories, {
       searchQuery: 'fritz',
       selectedSkills: ['patience', 'empathy'],
-      selectedLanguages: ['de', 'ar']
+      selectedLanguages: ['de', 'ar'],
     });
     expect(result).toHaveLength(1);
     expect(result[0].title).toBe('Fritz and the Angry Squirrel');
@@ -208,7 +228,7 @@ describe('filterStories', () => {
   it('should return empty array when no matches', () => {
     const result = filterStories(testStories, {
       selectedSkills: ['decision-making'],
-      selectedLanguages: ['ar']
+      selectedLanguages: ['ar'],
     });
     expect(result).toHaveLength(0);
   });

@@ -7,7 +7,8 @@ import { getCollection } from 'astro:content';
 
 const locale = 'de';
 const stories = await getCollection('stories', ({ id }) => id.startsWith('de/'));
-const description = "Entdecke spannende Geschichten, die Kindern wichtige Werte und Fähigkeiten vermitteln. Für Eltern, Lehrer und Erzieher.";
+const description =
+  'Entdecke spannende Geschichten, die Kindern wichtige Werte und Fähigkeiten vermitteln. Für Eltern, Lehrer und Erzieher.';
 
 // Get filter params from URL
 const urlSkills = Astro.url.searchParams.get('skills')?.split(',').filter(Boolean) || [];
@@ -19,8 +20,8 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
     <section class="hero">
       <h1>Willkommen bei Lernen mit Geschichten</h1>
       <p class="hero-text">
-        Entdecke spannende Geschichten, die Kindern wichtige Werte und Fähigkeiten vermitteln.
-        Für Eltern, Lehrer und Erzieher.
+        Entdecke spannende Geschichten, die Kindern wichtige Werte und Fähigkeiten vermitteln. Für
+        Eltern, Lehrer und Erzieher.
       </p>
     </section>
 
@@ -32,30 +33,32 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
       <section class="stories-section">
         <h2>Alle Geschichten</h2>
 
-      {stories.length === 0 ? (
-        <div class="no-stories">
-          <p>Noch keine Geschichten verfügbar. Bald kommen die ersten Geschichten!</p>
-        </div>
-      ) : (
-        <div class="stories-grid">
-          {stories.map(story => (
-            <StoryCard
-              title={story.data.title}
-              emoji={story.data.emoji}
-              skills={story.data.skills}
-              languages={story.data.languages}
-              storyId={story.data.storyId}
-              estimatedReadTime={story.data.estimatedReadTime}
-              locale={locale}
-              slug={story.slug.replace('de/', '')}
-              isInteractive={story.data.storyFormat === 'interactive'}
-              provider={story.data.provider}
-              providerUrl={story.data.providerUrl}
-              publishDate={story.data.publishDate}
-            />
-          ))}
-        </div>
-      )}
+        {
+          stories.length === 0 ? (
+            <div class="no-stories">
+              <p>Noch keine Geschichten verfügbar. Bald kommen die ersten Geschichten!</p>
+            </div>
+          ) : (
+            <div class="stories-grid">
+              {stories.map(story => (
+                <StoryCard
+                  title={story.data.title}
+                  emoji={story.data.emoji}
+                  skills={story.data.skills}
+                  languages={story.data.languages}
+                  storyId={story.data.storyId}
+                  estimatedReadTime={story.data.estimatedReadTime}
+                  locale={locale}
+                  slug={story.slug.replace('de/', '')}
+                  isInteractive={story.data.storyFormat === 'interactive'}
+                  provider={story.data.provider}
+                  providerUrl={story.data.providerUrl}
+                  publishDate={story.data.publishDate}
+                />
+              ))}
+            </div>
+          )
+        }
       </section>
     </div>
   </div>
@@ -84,11 +87,13 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
         const matchesSearch = !searchQuery || title.includes(searchQuery.toLowerCase());
 
         // Skills filter (OR logic within skills)
-        const matchesSkills = selectedSkills.length === 0 ||
+        const matchesSkills =
+          selectedSkills.length === 0 ||
           selectedSkills.some((skill: string) => storySkills.includes(skill));
 
         // Languages filter (OR logic within languages)
-        const matchesLanguages = selectedLanguages.length === 0 ||
+        const matchesLanguages =
+          selectedLanguages.length === 0 ||
           selectedLanguages.some((lang: string) => storyLanguages.includes(lang));
 
         // Show/hide card (AND logic between filter types)

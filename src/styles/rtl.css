@@ -1,97 +1,97 @@
 /* RTL (Right-to-Left) styles for Arabic and Urdu */
 
-[dir="rtl"] {
+[dir='rtl'] {
   direction: rtl;
   text-align: right;
 }
 
-[dir="rtl"] body {
+[dir='rtl'] body {
   font-family: var(--font-arabic);
 }
 
 /* Navigation */
-[dir="rtl"] nav ul {
+[dir='rtl'] nav ul {
   flex-direction: row-reverse;
 }
 
 /* Grid and Flex reversals */
-[dir="rtl"] .flex-row {
+[dir='rtl'] .flex-row {
   flex-direction: row-reverse;
 }
 
-[dir="rtl"] .language-selector {
+[dir='rtl'] .language-selector {
   flex-direction: row-reverse;
 }
 
 /* Text alignment */
-[dir="rtl"] .story-content,
-[dir="rtl"] .card-body,
-[dir="rtl"] p,
-[dir="rtl"] li {
+[dir='rtl'] .story-content,
+[dir='rtl'] .card-body,
+[dir='rtl'] p,
+[dir='rtl'] li {
   text-align: right;
 }
 
 /* Margins and paddings */
-[dir="rtl"] .margin-left {
+[dir='rtl'] .margin-left {
   margin-left: 0;
   margin-right: var(--spacing-md);
 }
 
-[dir="rtl"] .margin-right {
+[dir='rtl'] .margin-right {
   margin-right: 0;
   margin-left: var(--spacing-md);
 }
 
-[dir="rtl"] .padding-left {
+[dir='rtl'] .padding-left {
   padding-left: 0;
   padding-right: var(--spacing-md);
 }
 
-[dir="rtl"] .padding-right {
+[dir='rtl'] .padding-right {
   padding-right: 0;
   padding-left: var(--spacing-md);
 }
 
 /* Icons and emojis - keep LTR */
-[dir="rtl"] .emoji-icon,
-[dir="rtl"] .icon {
+[dir='rtl'] .emoji-icon,
+[dir='rtl'] .icon {
   direction: ltr;
 }
 
 /* Lists */
-[dir="rtl"] ul,
-[dir="rtl"] ol {
+[dir='rtl'] ul,
+[dir='rtl'] ol {
   padding-right: var(--spacing-lg);
   padding-left: 0;
 }
 
 /* Card layouts */
-[dir="rtl"] .card-header {
+[dir='rtl'] .card-header {
   flex-direction: row-reverse;
 }
 
 /* Buttons with icons */
-[dir="rtl"] button svg {
+[dir='rtl'] button svg {
   margin-left: 0.5rem;
   margin-right: 0;
 }
 
 /* Forms */
-[dir="rtl"] input,
-[dir="rtl"] textarea,
-[dir="rtl"] select {
+[dir='rtl'] input,
+[dir='rtl'] textarea,
+[dir='rtl'] select {
   text-align: right;
 }
 
 /* Border radius adjustments */
-[dir="rtl"] .border-radius-left {
+[dir='rtl'] .border-radius-left {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-top-right-radius: var(--border-radius);
   border-bottom-right-radius: var(--border-radius);
 }
 
-[dir="rtl"] .border-radius-right {
+[dir='rtl'] .border-radius-right {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   border-top-left-radius: var(--border-radius);
@@ -99,8 +99,8 @@
 }
 
 /* Ensure numbers and Latin text stay LTR within RTL context */
-[dir="rtl"] .number,
-[dir="rtl"] .latin-text {
+[dir='rtl'] .number,
+[dir='rtl'] .latin-text {
   direction: ltr;
   unicode-bidi: embed;
 }

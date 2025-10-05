@@ -107,25 +107,31 @@ npm run preview   # Preview production build locally
 Stories are mapped to **58 skills** across 4 categories:
 
 ### 🎭 Emotional Skills
+
 Self-awareness, emotional regulation, empathy, patience, impulse control
 
 ### 🤝 Social Skills
+
 Communication, cooperation, conflict resolution, leadership, respect
 
 ### 🧠 Cognitive Skills
+
 Problem-solving, decision-making, critical thinking, adaptability, goal-setting
 
 ### 🌱 Behavioral Skills
+
 Responsibility, honesty, persistence, self-discipline, time management
 
 ## 📖 Story Format
 
 ### Standard Format
+
 - Narrative text
 - Key messages
 - Interactive activities (true/false, multiple choice, fill-in-the-blank)
 
 ### Interactive Format
+
 - Page-by-page storytelling with Swiper.js
 - Text-to-Speech narration with Web Speech API
 - Floating control island (play/pause, speed, volume)
@@ -154,6 +160,7 @@ npm run build
 Contributions are welcome! This is a community-driven educational project.
 
 ### Ways to Contribute:
+
 - **Translate stories** to additional languages
 - **Add new stories** following the content format guidelines
 - **Improve accessibility** features
