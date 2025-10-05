@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+.astro/
+
+# Cache
+.cache/
+
+# Logs
+*.log
+
+# Environment
+.env*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# Git
+.git/
+
+# Package manager
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Content files (keep original formatting)
+src/content/stories/**/*.md
+content/**/*.md
+
+# Config that should maintain specific formatting
+public/
+CLAUDE-assets/
+.netlify/
+
+# Scripts and docs that may have specific formatting
+scripts/
+*.config.js
+*.config.mjs
+*.config.ts
