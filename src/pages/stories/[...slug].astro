@@ -279,7 +279,7 @@ const quizQuestions: QuizQuestion[] = [
           >
             📖 {getTranslation(uiLocale, 'exportBooklet')}
           </button>
-          <a href="/" class="back-link">← {getTranslation(uiLocale, 'allStories')}</a>
+          <a href={`${import.meta.env.BASE_URL}/`} class="back-link">← {getTranslation(uiLocale, 'allStories')}</a>
         </div>
       </footer>
     </div>
