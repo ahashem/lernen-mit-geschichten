@@ -8,8 +8,12 @@ interface Props {
 
 const { currentLocale, currentPath = '/' } = Astro.props;
 
-// Strip locale prefix from currentPath
-const cleanPath = currentPath.replace(/^\/(ar|en|tr|ur)/, '') || '/';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// Strip locale prefix and base path from currentPath
+const cleanPath = currentPath
+  .replace(new RegExp(`^${base}`), '')
+  .replace(/^\/(ar|en|tr|ur)/, '') || '/';
 
 const languages = [
   { code: 'de' as Locale, name: 'Deutsch', flag: '🇩🇪' },
@@ -21,9 +25,9 @@ const languages = [
 
 const getLocalizedPath = (langCode: Locale) => {
   if (langCode === 'de') {
-    return cleanPath;
+    return `${base}${cleanPath}`;
   }
-  return `/${langCode}${cleanPath}`;
+  return `${base}/${langCode}${cleanPath}`;
 };
 ---
 

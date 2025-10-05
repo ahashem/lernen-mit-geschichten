@@ -1,23 +1,51 @@
 {
   "name": "lernen-mit-geschichten",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Teaching children values and behavioral skills through interactive multilingual stories - A non-profit educational platform",
+  "type": "module",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "education",
+    "children",
+    "stories",
+    "multilingual",
+    "i18n",
+    "astro",
+    "learning",
+    "skills",
+    "values",
+    "interactive",
+    "tts",
+    "text-to-speech",
+    "rtl",
+    "accessibility",
+    "german",
+    "arabic",
+    "turkish",
+    "urdu"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ahashem/lernen-mit-geschichten.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ahashem/lernen-mit-geschichten/issues"
+  },
+  "homepage": "https://ahashem.github.io/lernen-mit-geschichten/",
+  "author": "Lernen mit Geschichten Contributors",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dependencies": {
     "@astrojs/mdx": "^4.3.6",
     "@astrojs/partytown": "^2.1.4",
     "@astrojs/react": "^4.4.0",
-    "@keystatic/astro": "^5.0.6",
-    "@keystatic/core": "^0.5.48",
     "astro": "^5.14.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.3",
