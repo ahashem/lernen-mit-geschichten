@@ -1,0 +1,555 @@
+---
+import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
+
+interface Props {
+  locale: Locale;
+  storyId: string;
+  availableLanguages?: Array<{locale: Locale; slug: string}>;
+  currentSlug?: string;
+  showBilingualToggle?: boolean;
+}
+
+const { locale, storyId, availableLanguages = [], currentSlug = '', showBilingualToggle = false } = Astro.props;
+
+// Translations
+const t = {
+  fontSize: getTranslation(locale, 'fontSize') || 'Font Size',
+  tts: getTranslation(locale, 'textToSpeech') || 'Read Aloud',
+  bilingual: getTranslation(locale, 'bilingualMode'),
+  settings: getTranslation(locale, 'settings') || 'Settings',
+  volume: getTranslation(locale, 'volume'),
+  speed: getTranslation(locale, 'speed'),
+};
+---
+
+<div class="reading-controls" data-story-id={storyId} data-locale={locale}>
+  <!-- Toggle Button (always visible) -->
+  <button class="controls-toggle-btn" aria-label="Toggle reading controls" title="Reading Controls">
+    <span class="icon">📖</span>
+  </button>
+
+  <!-- Control Island (slides in/out) -->
+  <div class="control-island" data-expanded="false">
+    <div class="control-island-content">
+      <!-- Primary Controls -->
+      <div class="primary-controls">
+        <!-- Font Size -->
+        <div class="font-size-controls">
+          <button class="control-btn font-decrease" aria-label="Decrease font size" title="A-">
+            <span class="icon">A-</span>
+          </button>
+          <button class="control-btn font-reset" aria-label="Reset font size" title="A">
+            <span class="icon">A</span>
+          </button>
+          <button class="control-btn font-increase" aria-label="Increase font size" title="A+">
+            <span class="icon">A+</span>
+          </button>
+        </div>
+
+        <!-- TTS Controls -->
+        <button class="control-btn tts-toggle" data-playing="false" aria-label={t.tts} title={t.tts}>
+          <span class="icon play-icon">🔊</span>
+          <span class="icon pause-icon" style="display: none;">⏸️</span>
+        </button>
+
+        <!-- Bilingual Toggle (if available) -->
+        {showBilingualToggle && availableLanguages.length >= 2 && (
+          <button class="control-btn bilingual-toggle" aria-label={t.bilingual} title={t.bilingual}>
+            <span class="icon">🌐</span>
+          </button>
+        )}
+      </div>
+
+      <!-- Settings Toggle -->
+      <button class="control-btn settings-toggle" aria-label={t.settings} title={t.settings}>
+        <span class="icon">⚙️</span>
+      </button>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" hidden>
+      <div class="setting-row">
+        <label class="setting-label">
+          <span class="icon">🔊</span>
+          <span class="text">{t.volume}</span>
+        </label>
+        <input type="range" class="volume-slider" min="0" max="100" value="80" aria-label={t.volume} />
+        <span class="value-display">80%</span>
+      </div>
+
+      <div class="setting-row">
+        <label class="setting-label">
+          <span class="icon">⏱️</span>
+          <span class="text">{t.speed}</span>
+        </label>
+        <select class="speed-select" aria-label={t.speed}>
+          <option value="0.75">0.75x</option>
+          <option value="0.85">0.85x</option>
+          <option value="1.0" selected>1.0x</option>
+          <option value="1.2">1.2x</option>
+          <option value="1.5">1.5x</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { StoryNarrator, getTTSLocale } from '../utils/text-to-speech';
+
+  class ReadingControlsManager {
+    private narrator: StoryNarrator | null = null;
+    private currentFontSize: number = 18;
+    private minFontSize: number = 14;
+    private maxFontSize: number = 28;
+    private storyContent: HTMLElement | null = null;
+    private isPlaying: boolean = false;
+    private controlIsland: HTMLElement | null = null;
+    private toggleBtn: HTMLElement | null = null;
+    private isExpanded: boolean = false;
+
+    constructor() {
+      this.init();
+    }
+
+    private init() {
+      this.storyContent = document.querySelector('.story-content');
+      this.controlIsland = document.querySelector('.control-island');
+      this.toggleBtn = document.querySelector('.controls-toggle-btn');
+
+      if (!this.storyContent || !this.controlIsland || !this.toggleBtn) return;
+
+      // Load saved font size
+      const saved = localStorage.getItem('reading-font-size');
+      if (saved) {
+        this.currentFontSize = parseInt(saved, 10);
+        this.applyFontSize();
+      }
+
+      this.setupToggle();
+      this.setupClickOutside();
+      this.setupFontControls();
+      this.setupTTSControls();
+      this.setupSettings();
+      this.setupBilingualToggle();
+    }
+
+    private setupToggle() {
+      this.toggleBtn?.addEventListener('click', () => {
+        this.isExpanded = !this.isExpanded;
+        this.controlIsland?.setAttribute('data-expanded', this.isExpanded.toString());
+
+        // Hide toggle button when expanded
+        if (this.toggleBtn) {
+          (this.toggleBtn as HTMLElement).style.transform = this.isExpanded ? 'translateX(100%)' : 'translateX(0)';
+          (this.toggleBtn as HTMLElement).style.opacity = this.isExpanded ? '0' : '1';
+          (this.toggleBtn as HTMLElement).style.pointerEvents = this.isExpanded ? 'none' : 'all';
+        }
+      });
+    }
+
+    private setupClickOutside() {
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const controls = document.querySelector('.reading-controls');
+
+        // Check if click is outside controls
+        if (controls && !controls.contains(target)) {
+          // Close settings panel if open
+          const settingsPanel = document.querySelector('.settings-panel');
+          if (settingsPanel && !settingsPanel.hasAttribute('hidden')) {
+            settingsPanel.setAttribute('hidden', '');
+          }
+
+          // Collapse island if expanded
+          if (this.isExpanded) {
+            this.isExpanded = false;
+            this.controlIsland?.setAttribute('data-expanded', 'false');
+
+            // Show toggle button again
+            if (this.toggleBtn) {
+              (this.toggleBtn as HTMLElement).style.transform = 'translateX(0)';
+              (this.toggleBtn as HTMLElement).style.opacity = '1';
+              (this.toggleBtn as HTMLElement).style.pointerEvents = 'all';
+            }
+          }
+        }
+      });
+    }
+
+    private setupFontControls() {
+      const decreaseBtn = document.querySelector('.font-decrease');
+      const resetBtn = document.querySelector('.font-reset');
+      const increaseBtn = document.querySelector('.font-increase');
+
+      decreaseBtn?.addEventListener('click', () => {
+        if (this.currentFontSize > this.minFontSize) {
+          this.currentFontSize -= 2;
+          this.applyFontSize();
+        }
+      });
+
+      resetBtn?.addEventListener('click', () => {
+        this.currentFontSize = 18;
+        this.applyFontSize();
+      });
+
+      increaseBtn?.addEventListener('click', () => {
+        if (this.currentFontSize < this.maxFontSize) {
+          this.currentFontSize += 2;
+          this.applyFontSize();
+        }
+      });
+    }
+
+    private applyFontSize() {
+      if (!this.storyContent) return;
+      this.storyContent.style.fontSize = `${this.currentFontSize}px`;
+      localStorage.setItem('reading-font-size', this.currentFontSize.toString());
+    }
+
+    private setupTTSControls() {
+      const ttsBtn = document.querySelector('.tts-toggle');
+      const playIcon = ttsBtn?.querySelector('.play-icon');
+      const pauseIcon = ttsBtn?.querySelector('.pause-icon');
+
+      ttsBtn?.addEventListener('click', () => {
+        if (this.isPlaying) {
+          this.stopTTS();
+          this.isPlaying = false;
+          ttsBtn.setAttribute('data-playing', 'false');
+          if (playIcon) (playIcon as HTMLElement).style.display = '';
+          if (pauseIcon) (pauseIcon as HTMLElement).style.display = 'none';
+        } else {
+          this.startTTS();
+          this.isPlaying = true;
+          ttsBtn.setAttribute('data-playing', 'true');
+          if (playIcon) (playIcon as HTMLElement).style.display = 'none';
+          if (pauseIcon) (pauseIcon as HTMLElement).style.display = '';
+        }
+      });
+    }
+
+    private startTTS() {
+      if (!this.storyContent) return;
+
+      const locale = document.querySelector('.reading-controls')?.getAttribute('data-locale') || 'de';
+      const ttsLocale = getTTSLocale(locale);
+      const text = this.storyContent.innerText;
+
+      if (!this.narrator) {
+        this.narrator = new StoryNarrator(ttsLocale);
+      }
+
+      // Get volume and speed settings
+      const volume = (document.querySelector('.volume-slider') as HTMLInputElement)?.value || '80';
+      const speed = (document.querySelector('.speed-select') as HTMLSelectElement)?.value || '1.0';
+
+      // Speak with options
+      this.narrator.speak(text, {
+        volume: parseInt(volume) / 100,
+        rate: parseFloat(speed),
+        onEnd: () => {
+          this.isPlaying = false;
+          const ttsBtn = document.querySelector('.tts-toggle');
+          const playIcon = ttsBtn?.querySelector('.play-icon');
+          const pauseIcon = ttsBtn?.querySelector('.pause-icon');
+
+          if (ttsBtn) ttsBtn.setAttribute('data-playing', 'false');
+          if (playIcon) (playIcon as HTMLElement).style.display = '';
+          if (pauseIcon) (pauseIcon as HTMLElement).style.display = 'none';
+        }
+      });
+    }
+
+    private stopTTS() {
+      this.narrator?.stop();
+    }
+
+    private setupSettings() {
+      const settingsBtn = document.querySelector('.settings-toggle');
+      const settingsPanel = document.querySelector('.settings-panel');
+
+      settingsBtn?.addEventListener('click', () => {
+        const isHidden = settingsPanel?.hasAttribute('hidden');
+        if (isHidden) {
+          settingsPanel?.removeAttribute('hidden');
+        } else {
+          settingsPanel?.setAttribute('hidden', '');
+        }
+      });
+
+      // Volume slider
+      const volumeSlider = document.querySelector('.volume-slider') as HTMLInputElement;
+      const volumeDisplay = volumeSlider?.nextElementSibling;
+
+      volumeSlider?.addEventListener('input', () => {
+        if (volumeDisplay) volumeDisplay.textContent = `${volumeSlider.value}%`;
+      });
+
+      // Speed select - changes will apply on next TTS start
+    }
+
+    private setupBilingualToggle() {
+      const bilingualBtn = document.querySelector('.bilingual-toggle');
+      if (!bilingualBtn) return;
+
+      // This will trigger the existing bilingual mode logic from StoryLanguageSelector
+      bilingualBtn.addEventListener('click', () => {
+        const existingBtn = document.querySelector('.story-language-selector .bilingual-btn');
+        if (existingBtn) {
+          (existingBtn as HTMLElement).click();
+        }
+      });
+    }
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new ReadingControlsManager());
+  } else {
+    new ReadingControlsManager();
+  }
+</script>
+
+<style>
+  .reading-controls {
+    position: fixed;
+    bottom: 25%;
+    right: 0;
+    transform: translateY(50%);
+    z-index: 1000;
+    pointer-events: none;
+  }
+
+  /* Toggle Button */
+  .controls-toggle-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: linear-gradient(135deg, var(--color-primary) 0%, #FF6B9D 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 0.75rem;
+    border-radius: 50% 0 0 50%;
+    box-shadow: -4px 0 12px rgba(255, 159, 64, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    pointer-events: all;
+  }
+
+  .controls-toggle-btn:hover {
+    transform: translateX(-4px);
+    box-shadow: -6px 0 20px rgba(255, 159, 64, 0.5);
+  }
+
+  .controls-toggle-btn:active {
+    transform: translateX(-2px) scale(0.95);
+  }
+
+  .controls-toggle-btn .icon {
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  /* Control Island */
+  .control-island {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 50px 0 0 50px;
+    padding: 0.75rem 1.25rem 0.75rem 1.5rem;
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-right: none;
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .control-island[data-expanded="true"] {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .control-island[data-expanded="true"]:hover {
+    box-shadow: -12px 0 48px rgba(0, 0, 0, 0.15);
+  }
+
+  .control-island-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .primary-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .font-size-controls {
+    display: flex;
+    gap: 0.25rem;
+    padding-right: 0.75rem;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .control-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+  }
+
+  .control-btn:hover {
+    background: rgba(255, 159, 64, 0.1);
+  }
+
+  .control-btn:active {
+    transform: scale(0.95);
+  }
+
+  .control-btn .icon {
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+
+  .font-decrease .icon,
+  .font-increase .icon {
+    font-weight: bold;
+    font-size: 1rem;
+  }
+
+  .font-reset .icon {
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+
+  .settings-panel {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 1rem;
+    background: white;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    min-width: 280px;
+    animation: slideUp 0.2s ease;
+  }
+
+  .settings-panel[hidden] {
+    display: none;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .setting-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .setting-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text);
+    min-width: 80px;
+  }
+
+  .setting-label .icon {
+    font-size: 1rem;
+  }
+
+  .volume-slider {
+    flex: 1;
+    accent-color: var(--color-primary);
+  }
+
+  .speed-select {
+    flex: 1;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: white;
+    cursor: pointer;
+  }
+
+  .value-display {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    min-width: 40px;
+    text-align: right;
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .controls-toggle-btn {
+      width: 3rem;
+      height: 3rem;
+      padding: 0.6rem;
+    }
+
+    .controls-toggle-btn .icon {
+      font-size: 1.2rem;
+    }
+
+    .control-island {
+      padding: 0.5rem 1rem 0.5rem 1.25rem;
+    }
+
+    .control-btn {
+      min-width: 2.25rem;
+      min-height: 2.25rem;
+      padding: 0.4rem;
+    }
+
+    .settings-panel {
+      min-width: 260px;
+      right: 0;
+    }
+  }
+
+  /* Print - hide controls */
+  @media print {
+    .reading-controls {
+      display: none !important;
+    }
+  }
+</style>

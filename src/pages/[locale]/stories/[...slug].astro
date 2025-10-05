@@ -5,7 +5,8 @@ import QuizInteractive, { type QuizQuestion } from '../../../components/QuizInte
 import InteractiveStorybook from '../../../components/InteractiveStorybook.astro';
 import StoryLanguageSelector from '../../../components/StoryLanguageSelector.astro';
 import BilingualView from '../../../components/BilingualView.astro';
-import type { Locale } from '../../../utils/i18n';
+import ReadingControls from '../../../components/ReadingControls.astro';
+import type { Locale } from '../../../utils/i18n.ts';
 import { getTranslation } from '../../../utils/i18n';
 import { getSkillsByIds } from '../../../utils/skills-taxonomy';
 
@@ -144,9 +145,18 @@ if (bilingualMode) {
           locale={locale}
         />
       ) : (
-        <div class="story-content">
-          <Content />
-        </div>
+        <>
+          <div class="story-content">
+            <Content />
+          </div>
+          <ReadingControls
+            locale={locale}
+            storyId={story.data.storyId}
+            availableLanguages={availableLanguages}
+            currentSlug={currentStorySlug}
+            showBilingualToggle={availableLanguages.length >= 2}
+          />
+        </>
       )}
     </div>
   </article>

@@ -141,24 +141,148 @@ img {
 
 /* Print styles */
 @media print {
-  body {
-    background: white;
-    color: black;
+  *,
+  *::before,
+  *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
   }
 
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  /* Hide interactive elements */
   nav,
+  header nav,
+  footer,
   .no-print,
-  .language-selector {
+  .language-selector,
+  .story-language-selector,
+  .reading-controls,
+  .filter-sidebar,
+  .search-bar,
+  button,
+  .swiper-button-prev,
+  .swiper-button-next,
+  .swiper-pagination,
+  .quiz-interactive,
+  .control-island,
+  .bilingual-toggle,
+  .export-btn,
+  .format-selector {
     display: none !important;
   }
 
+  /* Story content optimization */
   .story-content {
     max-width: 100%;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
   }
 
+  .story-header {
+    border-bottom: 2px solid #000;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .story-header h1 {
+    font-size: 20pt;
+    color: black;
+  }
+
+  .story-meta {
+    font-size: 10pt;
+    color: #666;
+  }
+
+  /* Optimize paragraphs for print */
+  p {
+    orphans: 3;
+    widows: 3;
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    page-break-inside: avoid;
+    color: black;
+  }
+
+  h2 {
+    font-size: 16pt;
+    margin-top: 1rem;
+  }
+
+  h3 {
+    font-size: 14pt;
+  }
+
+  /* Images */
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  /* Links */
   a {
     color: black;
     text-decoration: underline;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    font-style: italic;
+  }
+
+  /* Ensure lists print correctly */
+  ul, ol {
+    page-break-inside: avoid;
+  }
+
+  /* Table styles for print */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    page-break-inside: avoid;
+  }
+
+  table, th, td {
+    border: 1px solid black;
+  }
+
+  th, td {
+    padding: 0.5rem;
+  }
+
+  /* Page breaks */
+  .page-break {
+    page-break-before: always;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  /* Containers */
+  .container {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  /* Story cards - if printing listing pages */
+  .story-card {
+    page-break-inside: avoid;
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
   }
 }
 

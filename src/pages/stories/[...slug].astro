@@ -5,6 +5,7 @@ import QuizInteractive, { type QuizQuestion } from '../../components/QuizInterac
 import InteractiveStorybook from '../../components/InteractiveStorybook.astro';
 import StoryLanguageSelector from '../../components/StoryLanguageSelector.astro';
 import BilingualView from '../../components/BilingualView.astro';
+import ReadingControls from '../../components/ReadingControls.astro';
 import type { Locale } from '../../utils/i18n';
 import { getTranslation } from '../../utils/i18n';
 import { getSkillsByIds } from '../../utils/skills-taxonomy';
@@ -224,9 +225,18 @@ const quizQuestions: QuizQuestion[] = [
           title={story.data.title}
         />
       ) : (
-        <div class="story-content">
-          <Content />
-        </div>
+        <>
+          <div class="story-content">
+            <Content />
+          </div>
+          <ReadingControls
+            locale={locale}
+            storyId={story.data.storyId}
+            availableLanguages={availableLanguages}
+            currentSlug={currentStorySlug}
+            showBilingualToggle={availableLanguages.length >= 2}
+          />
+        </>
       )}
 
       {story.data.storyId === '001-bruno' && story.data.storyFormat !== 'interactive' && (
