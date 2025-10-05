@@ -20,6 +20,7 @@
   "incorrect": "غلط",
   "progress": "پیش رفت",
   "minutesRead": "منٹ پڑھیں",
+  "minutes": "منٹ",
   "ageGroup": "عمر گروپ",
   "skills": "مہارتیں",
   "print": "پرنٹ کریں",
@@ -27,5 +28,16 @@
   "interactive": "انٹرایکٹو",
   "autoPlay": "خودکار",
   "volume": "آواز",
-  "speed": "رفتار"
+  "speed": "رفتار",
+  "textFormat": "متن",
+  "interactiveFormat": "انٹرایکٹو",
+  "new": "نیا",
+  "exportBooklet": "کتابچے کے طور پر برآمد کریں",
+  "exportingBooklet": "کتابچہ بنایا جا رہا ہے...",
+  "bookletReady": "کتابچہ ڈاؤن لوڈ کے لیے تیار ہے!",
+  "readIn": "میں پڑھیں",
+  "bilingualMode": "دو لسانی موڈ",
+  "fontSize": "فونٹ سائز",
+  "textToSpeech": "بلند آواز میں پڑھیں",
+  "settings": "ترتیبات"
 }

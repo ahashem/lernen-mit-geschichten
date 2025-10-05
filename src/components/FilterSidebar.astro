@@ -7,9 +7,10 @@ interface Props {
   locale: Locale;
   currentSkills?: string[];
   currentLanguages?: string[];
+  autoSelectLocale?: boolean;
 }
 
-const { locale, currentSkills = [], currentLanguages = [] } = Astro.props;
+const { locale, currentSkills = [], currentLanguages = [], autoSelectLocale = true } = Astro.props;
 
 const languages = [
   { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
@@ -20,7 +21,7 @@ const languages = [
 ];
 ---
 
-<aside class="filter-sidebar">
+<aside class="filter-sidebar" data-locale={locale} data-auto-select={autoSelectLocale}>
   <h3>{getTranslation(locale, 'filterBySkill')}</h3>
 
   <div class="filter-section">
@@ -84,6 +85,20 @@ const languages = [
       localStorage.setItem('filters-skills', JSON.stringify(selectedSkills));
       localStorage.setItem('filters-languages', JSON.stringify(selectedLanguages));
 
+      // Update URL params
+      const url = new URL(window.location.href);
+      if (selectedSkills.length > 0) {
+        url.searchParams.set('skills', selectedSkills.join(','));
+      } else {
+        url.searchParams.delete('skills');
+      }
+      if (selectedLanguages.length > 0) {
+        url.searchParams.set('languages', selectedLanguages.join(','));
+      } else {
+        url.searchParams.delete('languages');
+      }
+      window.history.replaceState({}, '', url);
+
       // Dispatch custom event
       window.dispatchEvent(new CustomEvent('filtersChanged', {
         detail: { skills: selectedSkills, languages: selectedLanguages }
@@ -101,30 +116,79 @@ const languages = [
         });
         localStorage.removeItem('filters-skills');
         localStorage.removeItem('filters-languages');
+
+        // Clear URL params
+        const url = new URL(window.location.href);
+        url.searchParams.delete('skills');
+        url.searchParams.delete('languages');
+        window.history.replaceState({}, '', url);
+
         window.dispatchEvent(new CustomEvent('filtersChanged', {
           detail: { skills: [], languages: [] }
         }));
       });
     }
 
-    // Load saved filters
-    const savedSkills = localStorage.getItem('filters-skills');
-    const savedLanguages = localStorage.getItem('filters-languages');
+    // Load filters: URL params > localStorage > auto-select locale
+    const currentLocale = sidebar.getAttribute('data-locale');
+    const shouldAutoSelect = sidebar.getAttribute('data-auto-select') === 'true';
 
-    if (savedSkills) {
-      const skills = JSON.parse(savedSkills);
-      skills.forEach((skillId: string) => {
+    // Get URL params (client-side only, since we're using SSG)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlSkills = urlParams.get('skills')?.split(',').filter(Boolean) || [];
+    const urlLanguages = urlParams.get('languages')?.split(',').filter(Boolean) || [];
+
+    // Priority: URL params, then localStorage, then auto-select
+    const hasUrlParams = urlSkills.length > 0 || urlLanguages.length > 0;
+
+    if (hasUrlParams) {
+      // Apply URL params to checkboxes
+      urlSkills.forEach((skillId: string) => {
         const cb = sidebar.querySelector(`input[name="skill"][value="${skillId}"]`) as HTMLInputElement;
         if (cb) cb.checked = true;
       });
-    }
-
-    if (savedLanguages) {
-      const languages = JSON.parse(savedLanguages);
-      languages.forEach((langCode: string) => {
+      urlLanguages.forEach((langCode: string) => {
         const cb = sidebar.querySelector(`input[name="language"][value="${langCode}"]`) as HTMLInputElement;
         if (cb) cb.checked = true;
       });
+      // Sync to localStorage
+      if (urlSkills.length > 0) {
+        localStorage.setItem('filters-skills', JSON.stringify(urlSkills));
+      }
+      if (urlLanguages.length > 0) {
+        localStorage.setItem('filters-languages', JSON.stringify(urlLanguages));
+      }
+    } else {
+      // No URL params, try localStorage
+      const savedSkills = localStorage.getItem('filters-skills');
+      const savedLanguages = localStorage.getItem('filters-languages');
+
+      if (savedSkills) {
+        const skills = JSON.parse(savedSkills);
+        skills.forEach((skillId: string) => {
+          const cb = sidebar.querySelector(`input[name="skill"][value="${skillId}"]`) as HTMLInputElement;
+          if (cb) cb.checked = true;
+        });
+      }
+
+      if (savedLanguages) {
+        const languages = JSON.parse(savedLanguages);
+        languages.forEach((langCode: string) => {
+          const cb = sidebar.querySelector(`input[name="language"][value="${langCode}"]`) as HTMLInputElement;
+          if (cb) cb.checked = true;
+        });
+      } else if (shouldAutoSelect && currentLocale) {
+        // Auto-select current locale if no saved languages and auto-select is enabled
+        const cb = sidebar.querySelector(`input[name="language"][value="${currentLocale}"]`) as HTMLInputElement;
+        if (cb) {
+          cb.checked = true;
+          // Save to localStorage and update URL
+          localStorage.setItem('filters-languages', JSON.stringify([currentLocale]));
+          const url = new URL(window.location.href);
+          url.searchParams.set('languages', currentLocale);
+          window.history.replaceState({}, '', url);
+        }
+      }
     }
   });
 </script>

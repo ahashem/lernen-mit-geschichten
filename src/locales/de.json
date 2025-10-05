@@ -20,6 +20,7 @@
   "incorrect": "Nicht ganz",
   "progress": "Fortschritt",
   "minutesRead": "Minuten Lesezeit",
+  "minutes": "Min",
   "ageGroup": "Altersgruppe",
   "skills": "Fähigkeiten",
   "print": "Drucken",
@@ -33,5 +34,10 @@
   "new": "Neu",
   "exportBooklet": "Als Heft exportieren",
   "exportingBooklet": "Heft wird erstellt...",
-  "bookletReady": "Heft ist fertig zum Download!"
+  "bookletReady": "Heft ist fertig zum Download!",
+  "readIn": "Lesen auf",
+  "bilingualMode": "Zweisprachiger Modus",
+  "fontSize": "Schriftgröße",
+  "textToSpeech": "Vorlesen",
+  "settings": "Einstellungen"
 }

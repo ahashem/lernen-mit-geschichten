@@ -23,7 +23,16 @@ const languages = [
   { code: 'ur' as Locale, name: 'اردو', flag: '🇵🇰' },
 ];
 
+// Check if we're on a story page
+const isStoryPage = cleanPath.startsWith('/stories/');
+
 const getLocalizedPath = (langCode: Locale) => {
+  // On story pages, change UI language only (via query param)
+  if (isStoryPage) {
+    return `${base}${cleanPath}${langCode === 'de' ? '' : `?ui=${langCode}`}`;
+  }
+
+  // On other pages, change page language
   if (langCode === 'de') {
     return `${base}${cleanPath}`;
   }

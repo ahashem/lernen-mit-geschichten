@@ -25,9 +25,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
+
+      - name: Cache Astro build
+        uses: actions/cache@v4
+        with:
+          path: |
+            .astro
+            node_modules/.astro
+          key: ${{ runner.os }}-astro-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**') }}
+          restore-keys: |
+            ${{ runner.os }}-astro-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-astro-
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run tests
+        run: npm test
 
       - name: Build site
         run: npm run build

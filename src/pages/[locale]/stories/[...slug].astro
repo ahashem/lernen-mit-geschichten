@@ -1,0 +1,259 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import QuizInteractive, { type QuizQuestion } from '../../../components/QuizInteractive.astro';
+import InteractiveStorybook from '../../../components/InteractiveStorybook.astro';
+import StoryLanguageSelector from '../../../components/StoryLanguageSelector.astro';
+import BilingualView from '../../../components/BilingualView.astro';
+import ReadingControls from '../../../components/ReadingControls.astro';
+import type { Locale } from '../../../utils/i18n.ts';
+import { getTranslation } from '../../../utils/i18n';
+import { getSkillsByIds } from '../../../utils/skills-taxonomy';
+
+export async function getStaticPaths() {
+  const stories = await getCollection('stories');
+  const paths = [];
+  const locales = ['ar', 'en', 'tr', 'ur']; // Non-German locales
+
+  // Generate story pages for non-German locales
+  locales.forEach(loc => {
+    stories
+      .filter(story => story.slug.startsWith(`${loc}/`))
+      .forEach(story => {
+        const slug = story.slug.replace(/^[a-z]{2}\//, '');
+        paths.push({
+          params: { locale: loc, slug },
+          props: { story, storyLocale: loc, bilingualSecondLang: null },
+        });
+      });
+  });
+
+  return paths;
+}
+
+interface Props {
+  story: CollectionEntry<'stories'>;
+  storyLocale: string;
+  bilingualSecondLang: string | null;
+}
+
+const { story, storyLocale, bilingualSecondLang } = Astro.props;
+const { Content } = await story.render();
+
+// Get UI language from URL or use story locale as fallback
+const uiLocale: Locale = (Astro.url.searchParams.get('ui') || storyLocale) as Locale;
+const locale: Locale = storyLocale as Locale;
+
+const skillObjects = getSkillsByIds(story.data.skills);
+
+// Generate meta description from story
+const metaDescription = `${story.data.title} - ${skillObjects.slice(0, 2).map(s => s[locale]).join(' و ')}`;
+
+// Check if both standard and interactive versions exist
+const allStories = await getCollection('stories');
+const baseStoryId = story.data.storyId.replace(/-interactive$/, '');
+const alternativeFormat = story.data.storyFormat === 'interactive' ? 'standard' : 'interactive';
+const alternativeStory = allStories.find(s =>
+  s.data.storyId.replace(/-interactive$/, '') === baseStoryId &&
+  s.data.storyFormat === alternativeFormat
+);
+const hasAlternativeFormat = !!alternativeStory;
+
+// Find all language versions of this story
+const availableLanguages = allStories
+  .filter(s => s.data.storyId === story.data.storyId)
+  .map(s => {
+    const lang = s.slug.match(/^([a-z]{2})\//)?.[1] || 'de';
+    const slug = s.slug.replace(/^[a-z]{2}\//, '');
+    return { locale: lang as Locale, slug };
+  });
+
+// Extract slug without locale prefix for current story
+const currentStorySlug = story.slug.replace(/^[a-z]{2}\//, '');
+
+// Find if bilingual mode is requested (from static route or query param)
+const bilingualWith = bilingualSecondLang || Astro.url.searchParams.get('bilingual');
+const bilingualMode = bilingualWith && availableLanguages.some(l => l.locale === bilingualWith);
+let bilingualStory: CollectionEntry<'stories'> | null = null;
+let BilingualContent: any = null;
+if (bilingualMode) {
+  bilingualStory = allStories.find(s =>
+    s.data.storyId === story.data.storyId &&
+    s.slug.startsWith(bilingualWith + '/')
+  ) || null;
+  if (bilingualStory) {
+    const rendered = await bilingualStory.render();
+    BilingualContent = rendered.Content;
+  }
+}
+---
+
+<BaseLayout
+  title={story.data.title}
+  locale={uiLocale}
+  description={metaDescription}
+  type="article"
+>
+  <article class="story-detail">
+    <div class="container">
+      <header class="story-header">
+        <div class="emoji-large">{story.data.emoji}</div>
+        <h1>{story.data.title}</h1>
+
+        <div class="story-meta">
+          <div class="skills-list">
+            {skillObjects.map(skill => (
+              <span class="skill-badge">{skill[locale]}</span>
+            ))}
+          </div>
+
+          {story.data.estimatedReadTime && (
+            <div class="read-time">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm0 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.5 2.5v4.793l2.854 2.853-.708.708-3-3A.5.5 0 0 1 7.5 8.5v-5h1z"/>
+              </svg>
+              <span>{story.data.estimatedReadTime} {getTranslation(uiLocale, 'minutesRead')}</span>
+            </div>
+          )}
+
+          <div class="age-group">
+            <span>{getTranslation(uiLocale, 'ageGroup')}: {story.data.ageGroup}</span>
+          </div>
+        </div>
+      </header>
+
+      <StoryLanguageSelector
+        availableLanguages={availableLanguages}
+        currentLocale={locale}
+        currentSlug={currentStorySlug}
+        storyId={story.data.storyId}
+      />
+
+      {bilingualMode && bilingualStory && BilingualContent ? (
+        <BilingualView
+          primaryStory={story}
+          primaryContent={Content}
+          primaryLocale={locale}
+          secondaryStory={bilingualStory}
+          secondaryContent={BilingualContent}
+          secondaryLocale={bilingualWith as Locale}
+        />
+      ) : story.data.storyFormat === 'interactive' && story.data.pages ? (
+        <InteractiveStorybook
+          pages={story.data.pages}
+          title={story.data.title}
+          locale={locale}
+        />
+      ) : (
+        <>
+          <div class="story-content">
+            <Content />
+          </div>
+          <ReadingControls
+            locale={locale}
+            storyId={story.data.storyId}
+            availableLanguages={availableLanguages}
+            currentSlug={currentStorySlug}
+            showBilingualToggle={availableLanguages.length >= 2}
+          />
+        </>
+      )}
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .story-detail {
+    padding: 2rem 0;
+  }
+
+  .story-header {
+    text-align: center;
+    padding: 1rem 0;
+    border-bottom: 2px solid #FFD93D;
+    margin-bottom: 1.5rem;
+  }
+
+  .emoji-large {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .story-header h1 {
+    font-size: 1.75rem;
+    color: var(--color-text);
+    margin-bottom: 0.75rem;
+  }
+
+  .story-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.5rem;
+  }
+
+  .skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .skill-badge {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #FF6B9D 100%);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .read-time, .age-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-light);
+    font-size: 0.95rem;
+  }
+
+  .story-content {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    line-height: 1.8;
+  }
+
+  .story-content :global(h2) {
+    color: var(--color-primary);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .story-content :global(p) {
+    margin-bottom: 1rem;
+  }
+
+  .story-content :global(ul) {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .story-header h1 {
+      font-size: 2rem;
+    }
+
+    .emoji-large {
+      font-size: 3rem;
+    }
+
+    .story-content {
+      padding: 1.5rem;
+    }
+  }
+</style>

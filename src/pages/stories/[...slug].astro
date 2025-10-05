@@ -3,29 +3,71 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import QuizInteractive, { type QuizQuestion } from '../../components/QuizInteractive.astro';
 import InteractiveStorybook from '../../components/InteractiveStorybook.astro';
+import StoryLanguageSelector from '../../components/StoryLanguageSelector.astro';
+import BilingualView from '../../components/BilingualView.astro';
+import ReadingControls from '../../components/ReadingControls.astro';
 import type { Locale } from '../../utils/i18n';
 import { getTranslation } from '../../utils/i18n';
 import { getSkillsByIds } from '../../utils/skills-taxonomy';
 
 export async function getStaticPaths() {
   const stories = await getCollection('stories');
+  const paths = [];
 
-  return stories.map(story => {
-    const slug = story.slug.replace(/^[a-z]{2}\//, '');
-    return {
-      params: { slug },
-      props: { story },
-    };
+  // Generate regular story pages (German only - others handled by [locale]/stories/[...slug].astro)
+  stories
+    .filter(story => story.slug.startsWith('de/'))
+    .forEach(story => {
+      const slug = story.slug.replace(/^de\//, '');
+      paths.push({
+        params: { slug },
+        props: { story, storyLocale: 'de', bilingualSecondLang: null },
+      });
+    });
+
+  // Generate bilingual routes for common combinations (primary-de pairs)
+  const commonPairs = ['ar-de', 'en-de', 'tr-de', 'ur-de', 'de-en', 'de-ar'];
+
+  stories.forEach(primaryStory => {
+    const primarySlug = primaryStory.slug.replace(/^[a-z]{2}\//, '');
+    const primaryLang = primaryStory.slug.match(/^([a-z]{2})\//)?.[1] || 'de';
+    const storyId = primaryStory.data.storyId;
+
+    // Find all other language versions of this story
+    const otherVersions = stories.filter(s =>
+      s.data.storyId === storyId &&
+      s.slug.replace(/^[a-z]{2}\//, '') === primarySlug
+    );
+
+    otherVersions.forEach(secondaryStory => {
+      const secondaryLang = secondaryStory.slug.match(/^([a-z]{2})\//)?.[1] || 'de';
+      const pairKey = `${primaryLang}-${secondaryLang}`;
+
+      // Only generate routes for common pairs and avoid same-language pairs
+      if (primaryLang !== secondaryLang && commonPairs.includes(pairKey)) {
+        paths.push({
+          params: { slug: `${primarySlug}-${primaryLang}-${secondaryLang}` },
+          props: { story: primaryStory, storyLocale: primaryLang, bilingualSecondLang: secondaryLang },
+        });
+      }
+    });
   });
+
+  return paths;
 }
 
 interface Props {
   story: CollectionEntry<'stories'>;
+  storyLocale: string;
+  bilingualSecondLang: string | null;
 }
 
-const { story } = Astro.props;
+const { story, storyLocale, bilingualSecondLang } = Astro.props;
 const { Content } = await story.render();
-const locale: Locale = 'de';
+
+// Get UI language from URL or use story locale as fallback
+const uiLocale: Locale = (Astro.url.searchParams.get('ui') || storyLocale) as Locale;
+const locale: Locale = storyLocale as Locale;
 
 const skillObjects = getSkillsByIds(story.data.skills);
 
@@ -41,6 +83,34 @@ const alternativeStory = allStories.find(s =>
   s.data.storyFormat === alternativeFormat
 );
 const hasAlternativeFormat = !!alternativeStory;
+
+// Find all language versions of this story
+const availableLanguages = allStories
+  .filter(s => s.data.storyId === story.data.storyId)
+  .map(s => {
+    const lang = s.slug.match(/^([a-z]{2})\//)?.[1] || 'de';
+    const slug = s.slug.replace(/^[a-z]{2}\//, '');
+    return { locale: lang as Locale, slug };
+  });
+
+// Extract slug without locale prefix for current story
+const currentStorySlug = story.slug.replace(/^[a-z]{2}\//, '');
+
+// Find if bilingual mode is requested (from static route or query param)
+const bilingualWith = bilingualSecondLang || Astro.url.searchParams.get('bilingual');
+const bilingualMode = bilingualWith && availableLanguages.some(l => l.locale === bilingualWith);
+let bilingualStory: CollectionEntry<'stories'> | null = null;
+let BilingualContent: any = null;
+if (bilingualMode) {
+  bilingualStory = allStories.find(s =>
+    s.data.storyId === story.data.storyId &&
+    s.slug.startsWith(bilingualWith + '/')
+  ) || null;
+  if (bilingualStory) {
+    const rendered = await bilingualStory.render();
+    BilingualContent = rendered.Content;
+  }
+}
 
 // Sample quiz questions - will be in frontmatter later
 const quizQuestions: QuizQuestion[] = [
@@ -74,7 +144,7 @@ const quizQuestions: QuizQuestion[] = [
 
 <BaseLayout
   title={story.data.title}
-  locale={locale}
+  locale={uiLocale}
   description={metaDescription}
   type="article"
 >
@@ -96,12 +166,12 @@ const quizQuestions: QuizQuestion[] = [
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                 <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm0 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.5 2.5v4.793l2.854 2.853-.708.708-3-3A.5.5 0 0 1 7.5 8.5v-5h1z"/>
               </svg>
-              <span>{story.data.estimatedReadTime} {getTranslation(locale, 'minutesRead')}</span>
+              <span>{story.data.estimatedReadTime} {getTranslation(uiLocale, 'minutesRead')}</span>
             </div>
           )}
 
           <div class="age-group">
-            <span>{getTranslation(locale, 'ageGroup')}: {story.data.ageGroup}</span>
+            <span>{getTranslation(uiLocale, 'ageGroup')}: {story.data.ageGroup}</span>
           </div>
         </div>
       </header>
@@ -116,7 +186,7 @@ const quizQuestions: QuizQuestion[] = [
               <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M2 3a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H3a1 1 0 01-1-1V3zm2 1v12h12V4H4zm2 3h8v1H6V7zm0 3h8v1H6v-1z"/>
               </svg>
-              <span>{getTranslation(locale, 'textFormat')}</span>
+              <span>{getTranslation(uiLocale, 'textFormat')}</span>
             </a>
             <a
               href={story.data.storyFormat === 'standard' ? `/stories/${baseStoryId}-interactive` : `/stories/${baseStoryId}`}
@@ -125,13 +195,29 @@ const quizQuestions: QuizQuestion[] = [
               <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-1 11V7l4 3-4 3z"/>
               </svg>
-              <span>{getTranslation(locale, 'interactiveFormat')}</span>
+              <span>{getTranslation(uiLocale, 'interactiveFormat')}</span>
             </a>
           </div>
         </div>
       )}
 
-      {story.data.storyFormat === 'interactive' && story.data.pages ? (
+      <StoryLanguageSelector
+        availableLanguages={availableLanguages}
+        currentLocale={locale}
+        currentSlug={currentStorySlug}
+        storyId={story.data.storyId}
+      />
+
+      {bilingualMode && bilingualStory && BilingualContent ? (
+        <BilingualView
+          primaryStory={story}
+          primaryContent={Content}
+          primaryLocale={locale}
+          secondaryStory={bilingualStory}
+          secondaryContent={BilingualContent}
+          secondaryLocale={bilingualWith as Locale}
+        />
+      ) : story.data.storyFormat === 'interactive' && story.data.pages ? (
         <InteractiveStorybook
           pages={story.data.pages}
           storyId={story.data.storyId}
@@ -139,20 +225,29 @@ const quizQuestions: QuizQuestion[] = [
           title={story.data.title}
         />
       ) : (
-        <div class="story-content">
-          <Content />
-        </div>
+        <>
+          <div class="story-content">
+            <Content />
+          </div>
+          <ReadingControls
+            locale={locale}
+            storyId={story.data.storyId}
+            availableLanguages={availableLanguages}
+            currentSlug={currentStorySlug}
+            showBilingualToggle={availableLanguages.length >= 2}
+          />
+        </>
       )}
 
       {story.data.storyId === '001-bruno' && story.data.storyFormat !== 'interactive' && (
         <section class="activities-section">
-          <h2>{getTranslation(locale, 'activities')}</h2>
+          <h2>{getTranslation(uiLocale, 'activities')}</h2>
 
           <QuizInteractive
             questions={quizQuestions}
             language={locale}
             storyId={story.data.storyId}
-            title={getTranslation(locale, 'trueFalse')}
+            title={getTranslation(uiLocale, 'trueFalse')}
           />
         </section>
       )}
@@ -160,9 +255,9 @@ const quizQuestions: QuizQuestion[] = [
       <footer class="story-footer">
         <div class="footer-actions">
           <button class="export-booklet-btn" data-story-title={story.data.title} data-locale={locale}>
-            📖 {getTranslation(locale, 'exportBooklet')}
+            📖 {getTranslation(uiLocale, 'exportBooklet')}
           </button>
-          <a href="/" class="back-link">← {getTranslation(locale, 'allStories')}</a>
+          <a href="/" class="back-link">← {getTranslation(uiLocale, 'allStories')}</a>
         </div>
       </footer>
     </div>
@@ -235,29 +330,29 @@ const quizQuestions: QuizQuestion[] = [
 
   .story-header {
     text-align: center;
-    padding: 2rem 0;
+    padding: 1rem 0;
     border-bottom: 2px solid #FFD93D;
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
   }
 
   .emoji-large {
-    font-size: 5rem;
-    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
   }
 
   .story-header h1 {
     color: var(--color-primary);
-    font-size: 2.5rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
   }
 
   .story-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.75rem;
     justify-content: center;
     align-items: center;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
   }
 
   .skills-list {

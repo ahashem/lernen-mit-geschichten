@@ -20,6 +20,7 @@
   "incorrect": "Try again",
   "progress": "Progress",
   "minutesRead": "minutes read",
+  "minutes": "min",
   "ageGroup": "Age Group",
   "skills": "Skills",
   "print": "Print",
@@ -27,5 +28,16 @@
   "interactive": "Interactive",
   "autoPlay": "Auto-Play",
   "volume": "Volume",
-  "speed": "Speed"
+  "speed": "Speed",
+  "textFormat": "Text",
+  "interactiveFormat": "Interactive",
+  "new": "New",
+  "exportBooklet": "Export as Booklet",
+  "exportingBooklet": "Creating booklet...",
+  "bookletReady": "Booklet is ready to download!",
+  "readIn": "Read in",
+  "bilingualMode": "Bilingual Mode",
+  "fontSize": "Font Size",
+  "textToSpeech": "Read Aloud",
+  "settings": "Settings"
 }
