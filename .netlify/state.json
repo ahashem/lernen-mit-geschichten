@@ -1,0 +1,20 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Berlin",
+			"country": {
+				"code": "DE",
+				"name": "Germany"
+			},
+			"subdivision": {
+				"code": "BE",
+				"name": "State of Berlin"
+			},
+			"timezone": "Europe/Berlin",
+			"latitude": 52.5457,
+			"longitude": 13.3651,
+			"postalCode": "13347"
+		},
+		"timestamp": 1759301942161
+	}
+}

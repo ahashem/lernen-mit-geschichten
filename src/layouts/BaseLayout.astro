@@ -22,6 +22,7 @@ const defaultDescription = getTranslation(locale, 'tagline');
 const ogDescription = description || defaultDescription;
 const ogImage = image || `${siteUrl}/og-image.png`;
 const pageTitle = `${title} | ${siteName}`;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 // Google Tag Manager ID from environment variable
 const gtmId = import.meta.env.PUBLIC_GTM_ID;
@@ -92,15 +93,15 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
       <div class="container">
         <nav>
           <div class="nav-brand">
-            <a href={locale === 'de' ? '/' : `/${locale}`}>
+            <a href={locale === 'de' ? `${base}/` : `${base}/${locale}`}>
               <h1 class="site-title">{siteName}</h1>
               <p class="site-tagline">{getTranslation(locale, 'tagline')}</p>
             </a>
           </div>
 
           <div class="nav-links">
-            <a href={locale === 'de' ? '/' : `/${locale}`}>{getTranslation(locale, 'home')}</a>
-            <a href={locale === 'de' ? '/about' : `/${locale}/about`}>{getTranslation(locale, 'about')}</a>
+            <a href={locale === 'de' ? `${base}/` : `${base}/${locale}`}>{getTranslation(locale, 'home')}</a>
+            <a href={locale === 'de' ? `${base}/about` : `${base}/${locale}/about`}>{getTranslation(locale, 'about')}</a>
           </div>
 
           <LanguageSelector currentLocale={locale} currentPath={Astro.url.pathname} />

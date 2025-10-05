@@ -23,7 +23,8 @@ const { title, emoji, skills, storyId, estimatedReadTime, locale, slug, isIntera
 const isNew = publishDate ? (Date.now() - publishDate.getTime()) / (1000 * 60 * 60 * 24) <= 7 : false;
 
 const skillObjects = getSkillsByIds(skills);
-const storyUrl = locale === 'de' ? `/stories/${slug}` : `/${locale}/stories/${slug}`;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const storyUrl = locale === 'de' ? `${base}/stories/${slug}` : `${base}/${locale}/stories/${slug}`;
 ---
 
 <article class="story-card">
