@@ -8,6 +8,10 @@ import { getCollection } from 'astro:content';
 const locale = 'de';
 const stories = await getCollection('stories', ({ id }) => id.startsWith('de/'));
 const description = "Entdecke spannende Geschichten, die Kindern wichtige Werte und Fähigkeiten vermitteln. Für Eltern, Lehrer und Erzieher.";
+
+// Get filter params from URL
+const urlSkills = Astro.url.searchParams.get('skills')?.split(',').filter(Boolean) || [];
+const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(Boolean) || [];
 ---
 
 <BaseLayout title="Startseite" locale={locale} description={description}>
@@ -23,7 +27,7 @@ const description = "Entdecke spannende Geschichten, die Kindern wichtige Werte 
     <SearchBar locale={locale} />
 
     <div class="content-wrapper">
-      <FilterSidebar locale={locale} />
+      <FilterSidebar locale={locale} currentSkills={urlSkills} currentLanguages={urlLanguages} />
 
       <section class="stories-section">
         <h2>Alle Geschichten</h2>
@@ -39,6 +43,7 @@ const description = "Entdecke spannende Geschichten, die Kindern wichtige Werte 
               title={story.data.title}
               emoji={story.data.emoji}
               skills={story.data.skills}
+              languages={story.data.languages}
               storyId={story.data.storyId}
               estimatedReadTime={story.data.estimatedReadTime}
               locale={locale}
@@ -72,21 +77,22 @@ const description = "Entdecke spannende Geschichten, die Kindern wichtige Werte 
       storyCards.forEach(card => {
         const cardEl = card as HTMLElement;
         const title = cardEl.querySelector('.story-title')?.textContent?.toLowerCase() || '';
-        const skills = Array.from(cardEl.querySelectorAll('.skill-tag')).map(
-          tag => tag.textContent?.toLowerCase() || ''
-        );
+        const storySkills = JSON.parse(cardEl.getAttribute('data-skills') || '[]');
+        const storyLanguages = JSON.parse(cardEl.getAttribute('data-languages') || '[]');
 
         // Search filter
         const matchesSearch = !searchQuery || title.includes(searchQuery.toLowerCase());
 
-        // Skills filter
+        // Skills filter (OR logic within skills)
         const matchesSkills = selectedSkills.length === 0 ||
-          selectedSkills.some((skill: string) =>
-            skills.some(s => s.includes(skill))
-          );
+          selectedSkills.some((skill: string) => storySkills.includes(skill));
 
-        // Show/hide card
-        if (matchesSearch && matchesSkills) {
+        // Languages filter (OR logic within languages)
+        const matchesLanguages = selectedLanguages.length === 0 ||
+          selectedLanguages.some((lang: string) => storyLanguages.includes(lang));
+
+        // Show/hide card (AND logic between filter types)
+        if (matchesSearch && matchesSkills && matchesLanguages) {
           cardEl.style.display = '';
         } else {
           cardEl.style.display = 'none';

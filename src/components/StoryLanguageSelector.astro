@@ -1,0 +1,354 @@
+---
+import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
+
+interface LanguageVersion {
+  locale: Locale;
+  slug: string;
+}
+
+interface Props {
+  availableLanguages: LanguageVersion[];
+  currentLocale: Locale;
+  currentSlug: string;
+  storyId: string;
+}
+
+const { availableLanguages, currentLocale, currentSlug, storyId } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const languageNames = {
+  de: { name: 'Deutsch', flag: '🇩🇪' },
+  ar: { name: 'العربية', flag: '🇸🇦' },
+  en: { name: 'English', flag: '🇬🇧' },
+  tr: { name: 'Türkçe', flag: '🇹🇷' },
+  ur: { name: 'اردو', flag: '🇵🇰' },
+};
+
+const hasMultipleLanguages = availableLanguages.length > 1;
+const canCompare = availableLanguages.length >= 2;
+---
+
+{hasMultipleLanguages && (
+  <div class="story-language-selector">
+    <div class="selector-label">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 10.5v-5H6v5h2zm6 0v-5h-2v5h2zm-6 1v4l4-2-4-2z"/>
+      </svg>
+      <span>{getTranslation(currentLocale, 'readIn')}:</span>
+    </div>
+
+    <div class="language-badges">
+      {availableLanguages.map(lang => {
+        const storyUrl = lang.locale === 'de'
+          ? `${base}/stories/${lang.slug}`
+          : `${base}/${lang.locale}/stories/${lang.slug}`;
+        return (
+          <a
+            href={storyUrl}
+            class={`lang-badge ${lang.locale === currentLocale ? 'active' : ''}`}
+            data-locale={lang.locale}
+          >
+            <span class="flag">{languageNames[lang.locale].flag}</span>
+            <span class="name">{languageNames[lang.locale].name}</span>
+          </a>
+        );
+      })}
+    </div>
+
+    {canCompare && (
+      <div class="bilingual-section">
+        <button
+          class="bilingual-btn"
+          data-story-id={storyId}
+          data-current-locale={currentLocale}
+          data-current-slug={currentSlug}
+          data-available-languages={JSON.stringify(availableLanguages)}
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M3 4h6v12H3V4zm8 0h6v12h-6V4z"/>
+          </svg>
+          <span>{getTranslation(currentLocale, 'bilingualMode')}</span>
+        </button>
+      </div>
+    )}
+  </div>
+)}
+
+<script>
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+  // Common bilingual pairs that have static routes
+  const commonPairs = ['ar-de', 'en-de', 'tr-de', 'ur-de', 'de-en', 'de-ar'];
+
+  function getBilingualUrl(currentSlug: string, currentLocale: string, targetLocale: string): string {
+    const pairKey = `${currentLocale}-${targetLocale}`;
+
+    // Use static route for common pairs
+    if (commonPairs.includes(pairKey)) {
+      // Bilingual routes are always under /stories/ (no locale prefix)
+      return `${base}/stories/${currentSlug}-${currentLocale}-${targetLocale}`;
+    }
+
+    // Fall back to query parameter for uncommon pairs
+    const baseUrl = currentLocale === 'de'
+      ? `${base}/stories/${currentSlug}`
+      : `${base}/${currentLocale}/stories/${currentSlug}`;
+    return `${baseUrl}?bilingual=${targetLocale}`;
+  }
+
+  document.querySelectorAll('.bilingual-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const currentLocale = button.getAttribute('data-current-locale');
+      const currentSlug = button.getAttribute('data-current-slug');
+      const availableLangs = JSON.parse(button.getAttribute('data-available-languages') || '[]');
+
+      // Filter out current language
+      const otherLangs = availableLangs.filter((l: any) => l.locale !== currentLocale);
+
+      if (otherLangs.length === 0) return;
+
+      // If only one other language, enable bilingual mode with it directly
+      if (otherLangs.length === 1) {
+        window.location.href = getBilingualUrl(currentSlug, currentLocale, otherLangs[0].locale);
+        return;
+      }
+
+      // If multiple, show selection modal
+      const modal = document.createElement('div');
+      modal.className = 'bilingual-modal';
+      modal.innerHTML = `
+        <div class="modal-content">
+          <h3>Select second language</h3>
+          <div class="lang-options">
+            ${otherLangs.map((l: any) => `
+              <button class="lang-option" data-locale="${l.locale}">
+                <span class="flag">${getFlag(l.locale)}</span>
+                <span>${getLangName(l.locale)}</span>
+              </button>
+            `).join('')}
+          </div>
+          <button class="close-modal">Cancel</button>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      modal.querySelectorAll('.lang-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+          const bilingualLocale = opt.getAttribute('data-locale');
+          window.location.href = getBilingualUrl(currentSlug, currentLocale, bilingualLocale);
+        });
+      });
+
+      modal.querySelector('.close-modal')?.addEventListener('click', () => {
+        modal.remove();
+      });
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
+    });
+  });
+
+  function getFlag(locale: string): string {
+    const flags: Record<string, string> = {
+      de: '🇩🇪', ar: '🇸🇦', en: '🇬🇧', tr: '🇹🇷', ur: '🇵🇰'
+    };
+    return flags[locale] || '';
+  }
+
+  function getLangName(locale: string): string {
+    const names: Record<string, string> = {
+      de: 'Deutsch', ar: 'العربية', en: 'English', tr: 'Türkçe', ur: 'اردو'
+    };
+    return names[locale] || locale;
+  }
+</script>
+
+<style>
+  .story-language-selector {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 2rem 0;
+  }
+
+  .selector-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .selector-label svg {
+    color: var(--color-primary);
+  }
+
+  .language-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .lang-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--color-text);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+  }
+
+  .lang-badge:hover {
+    border-color: var(--color-primary);
+    background: #FFF5E6;
+    transform: translateY(-2px);
+  }
+
+  .lang-badge.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+  }
+
+  .lang-badge .flag {
+    font-size: 1.25rem;
+  }
+
+  .bilingual-section {
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .bilingual-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  }
+
+  .bilingual-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .bilingual-btn svg {
+    flex-shrink: 0;
+  }
+
+  /* Modal styles */
+  :global(.bilingual-modal) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 1rem;
+  }
+
+  :global(.modal-content) {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 100%;
+  }
+
+  :global(.modal-content h3) {
+    margin: 0 0 1.5rem 0;
+    color: var(--color-text);
+  }
+
+  :global(.lang-options) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  :global(.lang-option) {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    color: var(--color-text);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+    width: 100%;
+    text-align: left;
+  }
+
+  :global(.lang-option:hover) {
+    border-color: var(--color-primary);
+    background: #FFF5E6;
+  }
+
+  :global(.lang-option .flag) {
+    font-size: 1.5rem;
+  }
+
+  :global(.close-modal) {
+    width: 100%;
+    padding: 0.75rem;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  :global(.close-modal:hover) {
+    background: #e0e0e0;
+  }
+
+  @media (max-width: 768px) {
+    .story-language-selector {
+      padding: 1rem;
+    }
+
+    .language-badges {
+      gap: 0.5rem;
+    }
+
+    .lang-badge {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.9rem;
+    }
+
+    .compare-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
