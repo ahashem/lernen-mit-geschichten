@@ -4,7 +4,5 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://lernen-mit-geschichten.de/sitemap.xml
+Sitemap: https://ahashem.github.io/lernen-mit-geschichten/sitemap.xml
 
-# Disallow crawling of testing/dev assets
-Disallow: /CLAUDE-assets/
