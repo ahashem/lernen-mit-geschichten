@@ -20,6 +20,7 @@
   "incorrect": "غير صحيح",
   "progress": "التقدم",
   "minutesRead": "دقائق القراءة",
+  "minutes": "دقيقة",
   "ageGroup": "الفئة العمرية",
   "skills": "المهارات",
   "print": "طباعة",
@@ -27,5 +28,13 @@
   "interactive": "تفاعلي",
   "autoPlay": "تلقائي",
   "volume": "الصوت",
-  "speed": "السرعة"
+  "speed": "السرعة",
+  "textFormat": "نص",
+  "interactiveFormat": "تفاعلي",
+  "new": "جديد",
+  "exportBooklet": "تصدير ككتيب",
+  "exportingBooklet": "جاري إنشاء الكتيب...",
+  "bookletReady": "الكتيب جاهز للتحميل!",
+  "readIn": "اقرأ في",
+  "bilingualMode": "وضع ثنائي اللغة"
 }

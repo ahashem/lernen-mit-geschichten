@@ -20,6 +20,7 @@
   "incorrect": "Yanlış",
   "progress": "İlerleme",
   "minutesRead": "dakika okuma",
+  "minutes": "dk",
   "ageGroup": "Yaş Grubu",
   "skills": "Beceriler",
   "print": "Yazdır",
@@ -27,5 +28,13 @@
   "interactive": "Etkileşimli",
   "autoPlay": "Otomatik",
   "volume": "Ses",
-  "speed": "Hız"
+  "speed": "Hız",
+  "textFormat": "Metin",
+  "interactiveFormat": "Etkileşimli",
+  "new": "Yeni",
+  "exportBooklet": "Kitapçık Olarak Dışa Aktar",
+  "exportingBooklet": "Kitapçık oluşturuluyor...",
+  "bookletReady": "Kitapçık indirmeye hazır!",
+  "readIn": "Dilinde oku",
+  "bilingualMode": "İki Dilli Mod"
 }

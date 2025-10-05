@@ -5,6 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "prebuild": "npm run test",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
@@ -52,5 +56,8 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "swiper": "^12.0.2"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
   }
 }

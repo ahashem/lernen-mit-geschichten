@@ -19,6 +19,10 @@ export async function getStaticPaths() {
 const { locale } = Astro.params as { locale: Locale };
 const stories = await getCollection('stories', ({ id }) => id.startsWith(`${locale}/`));
 
+// Get filter params from URL
+const urlSkills = Astro.url.searchParams.get('skills')?.split(',').filter(Boolean) || [];
+const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(Boolean) || [];
+
 const heroContent = {
   de: {
     title: 'Willkommen bei Lernen mit Geschichten',
@@ -56,7 +60,7 @@ const description = hero.text;
     <SearchBar locale={locale} />
 
     <div class="content-wrapper">
-      <FilterSidebar locale={locale} />
+      <FilterSidebar locale={locale} currentSkills={urlSkills} currentLanguages={urlLanguages} />
 
       <section class="stories-section">
         <h2>{getTranslation(locale, 'allStories')}</h2>
@@ -77,6 +81,7 @@ const description = hero.text;
                 title={story.data[`title${locale.charAt(0).toUpperCase() + locale.slice(1)}` as keyof typeof story.data] as string || story.data.title}
                 emoji={story.data.emoji}
                 skills={story.data.skills}
+                languages={story.data.languages}
                 storyId={story.data.storyId}
                 estimatedReadTime={story.data.estimatedReadTime}
                 locale={locale}
@@ -104,19 +109,21 @@ const description = hero.text;
     const filterStories = () => {
       const searchQuery = localStorage.getItem('search-query') || '';
       const selectedSkills = JSON.parse(localStorage.getItem('filters-skills') || '[]');
+      const selectedLanguages = JSON.parse(localStorage.getItem('filters-languages') || '[]');
 
       storyCards.forEach(card => {
         const cardEl = card as HTMLElement;
         const title = cardEl.querySelector('.story-title')?.textContent?.toLowerCase() || '';
-        const skills = Array.from(cardEl.querySelectorAll('.skill-tag')).map(
-          tag => tag.textContent?.toLowerCase() || ''
-        );
+        const storySkills = JSON.parse(cardEl.getAttribute('data-skills') || '[]');
+        const storyLanguages = JSON.parse(cardEl.getAttribute('data-languages') || '[]');
 
         const matchesSearch = !searchQuery || title.includes(searchQuery.toLowerCase());
         const matchesSkills = selectedSkills.length === 0 ||
-          selectedSkills.some((skill: string) => skills.some(s => s.includes(skill)));
+          selectedSkills.some((skill: string) => storySkills.includes(skill));
+        const matchesLanguages = selectedLanguages.length === 0 ||
+          selectedLanguages.some((lang: string) => storyLanguages.includes(lang));
 
-        if (matchesSearch && matchesSkills) {
+        if (matchesSearch && matchesSkills && matchesLanguages) {
           cardEl.style.display = '';
         } else {
           cardEl.style.display = 'none';
