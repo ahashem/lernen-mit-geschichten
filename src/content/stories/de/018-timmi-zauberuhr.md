@@ -9,6 +9,79 @@ publishDate: 2024-01-15
 characterType: "boy"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Timmi wollte den ganzen Tag spielen."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf2"
+    text: "Seine Mutter gab ihm die Zauberuhr."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf3"
+    text: "Die grüne Farbe der Uhr bedeutete Ausruhen."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf4"
+    text: "Timmi lernte nichts, als die Uhr blau leuchtete."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf5"
+    text: "Am Abend war Timmi müde und wütend."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf6"
+    text: "Die Geschichte lehrt uns: Wer seine Zeit gut organisiert, kann lernen, spielen und sich ausruhen."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "Was wollte Timmi den ganzen Tag machen?"
+    type: "multiplechoice"
+    options:
+      - "Lernen"
+      - "Schlafen"
+      - "Spielen"
+    correctAnswer: "Spielen"
+  - id: "mc2"
+    text: "Wer hat Timmi die Zauberuhr gegeben?"
+    type: "multiplechoice"
+    options:
+      - "Seine Lehrerin"
+      - "Seine Kuscheltierkatze Minka"
+      - "Sein Freund"
+    correctAnswer: "Seine Kuscheltierkatze Minka"
+  - id: "mc3"
+    text: "Welche Farbe bedeutet Lernen bei der Zauberuhr?"
+    type: "multiplechoice"
+    options:
+      - "Blau"
+      - "Gelb"
+      - "Grün"
+    correctAnswer: "Blau"
+  - id: "mc4"
+    text: "Was tat Timmi, als die Uhr gelb wurde?"
+    type: "multiplechoice"
+    options:
+      - "Er schlief"
+      - "Er baute eine Autobahn und spielte"
+      - "Er aß"
+    correctAnswer: "Er baute eine Autobahn und spielte"
+  - id: "mc5"
+    text: "Wie fühlte sich Timmi am Abend?"
+    type: "multiplechoice"
+    options:
+      - "Müde und traurig"
+      - "Glücklich und stolz"
+      - "Wütend"
+    correctAnswer: "Glücklich und stolz"
+  - id: "mc6"
+    text: "Was lehrt die Geschichte?"
+    type: "multiplechoice"
+    options:
+      - "Wer immer spielt, ist glücklich"
+      - "Wer seine Zeit gut teilt, schafft alles"
+      - "Wer viel schläft, braucht nichts zu lernen"
+    correctAnswer: "Wer seine Zeit gut teilt, schafft alles"
 ---
 
 ## Die Geschichte
@@ -49,55 +122,3 @@ Und so schlief Timmi zufrieden ein – mit der Zauberuhr neben seinem Bett.
 
 ✨ Botschaft für Kinder:
 Wenn man seine Zeit einteilt, bleibt Platz für alles: Lernen, Spielen und Ausruhen.
-
-📝 Fragen zur Geschichte „Timmi und die Zauberuhr“
-
-1. Was wollte Timmi den ganzen Tag machen?
-a) Lernen
-b) Schlafen
-c) Spielen 
-
-2. Wer hat Timmi die Zauberuhr gegeben?
-a) Seine Lehrerin
-b) Seine Kuscheltierkatze Minka 
-c) Sein Freund
-
-3. Welche Farbe bedeutet „Lernen“ bei der Zauberuhr?
-a) Blau 
-b) Gelb
-c) Grün
-
-4. Was tat Timmi, als die Uhr gelb wurde?
-a) Er schlief
-b) Er baute eine Autobahn und spielte 
-c) Er aß
-
-5. Wie fühlte sich Timmi am Abend?
-a) Müde und traurig
-b) Glücklich und stolz 
-c) Wütend
-
-6. Was lehrt die Geschichte?
-a) Wer immer spielt, ist glücklich
-b) Wer seine Zeit gut teilt, schafft alles 
-c) Wer viel schläft, braucht nichts zu lernen
-
-📝 Fragen – Richtig oder Falsch
-
-1. Timmi wollte den ganzen Tag spielen.
-✅ Richtig
-
-2. Seine Mutter gab ihm die Zauberuhr.
-❌ Falsch (Die Uhr bekam er von seiner Kuscheltierkatze Minka.)
-
-3. Die grüne Farbe der Uhr bedeutete „Ausruhen“.
-✅ Richtig
-
-4. Timmi lernte nichts, als die Uhr blau leuchtete.
-❌ Falsch (Er lernte die Buchstaben.)
-
-5. Am Abend war Timmi müde und wütend.
-❌ Falsch (Er war glücklich und stolz.)
-
-6. Die Geschichte lehrt uns: Wer seine Zeit gut organisiert, kann lernen, spielen und sich ausruhen.
-✅ Richtig

@@ -9,6 +9,47 @@ publishDate: 2024-01-15
 characterType: "boy"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "mc1"
+    text: "Wer ist die Hauptfigur in der Geschichte?"
+    type: "multiplechoice"
+    options:
+      - "Ein kleiner Hase"
+      - "Ein kleiner Waschbär namens Timmi"
+      - "Ein kleiner Fuchs"
+    correctAnswer: "Ein kleiner Waschbär namens Timmi"
+  - id: "mc2"
+    text: "Was wollte Timmi vom Apfelbaum haben?"
+    type: "multiplechoice"
+    options:
+      - "Rote Äpfel"
+      - "Birnen"
+      - "Nüsse"
+    correctAnswer: "Rote Äpfel"
+  - id: "tf1"
+    text: "Es war gefährlich, auf den Ast zu klettern, weil er brechen konnte."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc3"
+    text: "Welche Idee hatte Timmi, nachdem er nachgedacht hat?"
+    type: "multiplechoice"
+    options:
+      - "Er wollte höher klettern"
+      - "Er wollte einen Stock benutzen"
+      - "Er wollte aufgeben"
+    correctAnswer: "Er wollte einen Stock benutzen"
+  - id: "mc4"
+    text: "Wie haben Timmi und Lilli die Äpfel bekommen?"
+    type: "multiplechoice"
+    options:
+      - "Sie sind hochgeklettert"
+      - "Timmi stupste mit dem Stock, und die Äpfel fielen herunter"
+      - "Sie haben geschüttelt"
+    correctAnswer: "Timmi stupste mit dem Stock, und die Äpfel fielen herunter"
+  - id: "tf2"
+    text: "Timmi hat gelernt: Erst denken, dann handeln."
+    type: "truefalse"
+    correctAnswer: "true"
 ---
 
 ## Die Geschichte
@@ -36,38 +77,6 @@ Also holte Timmi einen langen Stock. Er stupste vorsichtig – Plopp! – schon 
 Beide lachten und aßen glücklich.
 
 Am Ende sagte Timmi stolz:
-„Heute habe ich gelernt: Erst denken, dann handeln!“
+„Heute habe ich gelernt: Erst denken, dann handeln!"
 
 ✨ Botschaft: Die Kinder lernen spielerisch, dass Nachdenken über mögliche Folgen zu klügeren und sichereren Entscheidungen führt.
-
-❓ Fragen und Antworten zur Geschichte
-
-1. Wer ist die Hauptfigur in der Geschichte?
-👉 Die Hauptfigur ist Timmi, ein kleiner Waschbär.
-
-2. Was wollte Timmi vom Apfelbaum haben?
-👉 Er wollte rote Äpfel haben.
-
-3. Warum war es gefährlich, auf den Ast zu klettern?
-👉 Weil der Ast brechen konnte.
-
-4. Was hat Lilli Timmi zugerufen?
-👉 „Timmi! Denk doch nach! Was passiert, wenn der Ast bricht?“
-
-5. Welche Idee hatte Timmi, nachdem er nachgedacht hat?
-👉 Er wollte einen Stock benutzen.
-
-6. Wie haben Timmi und Lilli die Äpfel schließlich bekommen?
-👉 Timmi stupste mit dem Stock, und die Äpfel fielen herunter.
-
-7. Was hat Timmi am Ende gelernt?
-👉 Er hat gelernt: Erst denken, dann handeln.
-
-8. Was wäre passiert, wenn Timmi nicht nachgedacht hätte?
-👉 Er wäre gefallen und hätte sich wehgetan.
-
-9. Kennst du Situationen, in denen man auch zuerst nachdenken sollte, bevor man etwas tut?
-👉 Ja, zum Beispiel beim Spielen, Klettern oder im Straßenverkehr.
-
-10. Warum ist es wichtig, über die Folgen nachzudenken?
-👉 Weil man so bessere und sichere Entscheidungen trifft.

@@ -9,6 +9,47 @@ publishDate: 2024-01-15
 characterType: "mouse"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "mc1"
+    text: "Moritz kimdir?"
+    type: "multiplechoice"
+    options:
+      - "Bir köpek 🐶"
+      - "Küçük bir fare"
+      - "Bir kurbağa 🐸"
+    correctAnswer: "Küçük bir fare"
+  - id: "mc2"
+    text: "Fritz’e ne olmuştur?"
+    type: "multiplechoice"
+    options:
+      - "Bir çiçek bulmuştur"
+      - "Ayağına diken batmıştır"
+      - "Çimlerin üzerinde uyumuştur 🌿"
+    correctAnswer: "Ayağına diken batmıştır"
+  - id: "mc3"
+    text: "Moritz neden önce gülmüştür?"
+    type: "multiplechoice"
+    options:
+      - "Çünkü Fritz kaktüse benziyordur"
+      - "Çünkü Fritz şarkı söylüyordur"
+      - "Çünkü güneş parlıyordur"
+    correctAnswer: "Çünkü Fritz kaktüse benziyordur"
+  - id: "mc4"
+    text: "Moritz, Fritz’in üzgün olduğunu fark ettikten sonra ne yapmıştır?"
+    type: "multiplechoice"
+    options:
+      - "Koşarak kaçmıştır"
+      - "Peynir yemiştir"
+      - "Özür dilemiş ve ona yardım etmiştir"
+    correctAnswer: "Özür dilemiş ve ona yardım etmiştir"
+  - id: "mc5"
+    text: "Hayvanlar sonunda Moritz’e hangi ismi vermiştir?"
+    type: "multiplechoice"
+    options:
+      - "Uzun kulaklı fare"
+      - "Büyük kalpli küçük fare"
+      - "Hızlı ayaklı fare"
+    correctAnswer: "Büyük kalpli küçük fare"
 ---
 
 ## Hikâye
@@ -44,7 +85,7 @@ Ormandaki tüm hayvanlar onu bunun için sevmiş – ve ona tatlı bir lakap tak
 
 ---
 
-📝 Doğru mu Yanlış mı (True or False)
+❓ Doğru mu Yanlış mı (True or False)
 
 1. Moritz küçük gri bir faredir.
 👉 Doğru (Richtig / True)
@@ -66,7 +107,7 @@ Ormandaki tüm hayvanlar onu bunun için sevmiş – ve ona tatlı bir lakap tak
 
 ---
 
-📝 Çoktan Seçmeli Sorular (Multiple-Choice)
+❓ Çoktan Seçmeli Sorular
 
 1. Moritz kimdir?
 a) Bir köpek 🐶

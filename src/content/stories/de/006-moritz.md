@@ -9,6 +9,47 @@ publishDate: 2024-01-15
 characterType: "mouse"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "mc1"
+    text: "Wer ist Moritz?"
+    type: "multiplechoice"
+    options:
+      - "Ein Hund"
+      - "Eine kleine Maus"
+      - "Ein Frosch"
+    correctAnswer: "Eine kleine Maus"
+  - id: "mc2"
+    text: "Was passiert mit Fritz?"
+    type: "multiplechoice"
+    options:
+      - "Er findet eine Blume"
+      - "Er sticht sich an einem Dorn"
+      - "Er schläft im Gras"
+    correctAnswer: "Er sticht sich an einem Dorn"
+  - id: "mc3"
+    text: "Warum lacht Moritz zuerst?"
+    type: "multiplechoice"
+    options:
+      - "Weil Fritz wie ein Kaktus aussieht"
+      - "Weil Fritz ein Lied singt"
+      - "Weil die Sonne scheint"
+    correctAnswer: "Weil Fritz wie ein Kaktus aussieht"
+  - id: "mc4"
+    text: "Was macht Moritz, nachdem er merkt, dass Fritz traurig ist?"
+    type: "multiplechoice"
+    options:
+      - "Er rennt weg"
+      - "Er isst Käse"
+      - "Er entschuldigt sich und hilft ihm"
+    correctAnswer: "Er entschuldigt sich und hilft ihm"
+  - id: "mc5"
+    text: "Wie nennen die Tiere Moritz am Ende?"
+    type: "multiplechoice"
+    options:
+      - "Die Maus mit den langen Ohren"
+      - "Die kleine Maus mit dem großen Herzen"
+      - "Die Maus mit den schnellen Füßen"
+    correctAnswer: "Die kleine Maus mit dem großen Herzen"
 ---
 
 ## Die Geschichte
@@ -37,77 +78,4 @@ Er hatte verstanden: Wenn man die Gefühle anderer sieht und ernst nimmt, wird m
 Von diesem Tag an hörte Moritz nicht nur mit den Ohren, sondern auch mit dem Herzen zu.
 Und wenn jemand traurig war, fragte er: „Wie kann ich dir helfen?“
 
-Alle Tiere im Wald mochten Moritz dafür – und manchmal nannten sie ihn sogar „die kleine Maus mit dem großen Herzen“. 💖
-
----
-
-📝 Fragen zur Geschichte von Moritz
-
-1. Moritz ist eine kleine graue Maus.
-👉 Richtig
-
-2. Fritz ist ein Hase mit langen Ohren.
-👉 Falsch
-
-3. Moritz lacht zuerst über Fritz, weil er wie ein Kaktus aussieht.
-👉 Richtig
-
-4. Fritz freut sich sehr, als Moritz über ihn lacht.
-👉 Falsch
-
-5. Moritz hilft Fritz, den Dorn herauszuziehen.
-👉 Richtig
-
-6. Am Ende verstehen alle Tiere, dass Moritz ein großes Herz hat.
-👉 Richtig
-
----
-
----
-
-📝 Multiple-Choice-Fragen zur Geschichte von Moritz
-
-1. Wer ist Moritz?
-a) Ein Hund
-b) Eine kleine Maus 🐭
-c) Ein Frosch
-
-👉 Antwort: b) Eine kleine Maus
-
----
-
-2. Was passiert mit Fritz?
-a) Er findet eine Blume 🌸
-b) Er sticht sich an einem Dorn 🌵
-c) Er schläft im Gras
-
-👉 Antwort: b) Er sticht sich an einem Dorn
-
----
-
-3. Warum lacht Moritz zuerst?
-a) Weil Fritz wie ein Kaktus aussieht 🌵
-b) Weil Fritz ein Lied singt 🎵
-c) Weil die Sonne scheint ☀️
-
-👉 Antwort: a) Weil Fritz wie ein Kaktus aussieht
-
----
-
-4. Was macht Moritz, nachdem er merkt, dass Fritz traurig ist?
-a) Er rennt weg 🏃‍♂️
-b) Er isst Käse 🧀
-c) Er entschuldigt sich und hilft ihm ❤️
-
-👉 Antwort: c) Er entschuldigt sich und hilft ihm
-
----
-
-5. Wie nennen die Tiere Moritz am Ende?
-a) Die Maus mit den langen Ohren
-b) Die kleine Maus mit dem großen Herzen 💖
-c) Die Maus mit den schnellen Füßen
-
-👉 Antwort: b) Die kleine Maus mit dem großen Herzen
-
----
+Alle Tiere im Wald mochten Moritz dafür – und manchmal nannten sie ihn sogar „die kleine Maus mit dem großen Herzen". 💖

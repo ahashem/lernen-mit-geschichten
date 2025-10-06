@@ -66,7 +66,7 @@ well… almost always. 😉
 
 ---
 
-✅❌ True/False Questions with Answers
+✔️❌ True/False Questions with Answers
 
 1. Dino Dino loves vegetables more than cookies. → False
 

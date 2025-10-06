@@ -85,31 +85,31 @@ Honest words make friendship stronger.
 a) Balloon
 b) Tag
 c) Hide-and-seek
-→ ✅ b) Tag
+→ ✔️ b) Tag
 
 2. Why did Hoppel want to play with the balloon?
 a) Because he was tired.
 b) Because he was afraid.
 c) Because he didn’t like tag.
-→ ✅ a) Because he was tired.
+→ ✔️ a) Because he was tired.
 
 3. What did Mila do when Hoppel explained his feelings?
 a) She got angry.
 b) She suggested an idea.
 c) She walked away.
-→ ✅ b) She suggested an idea.
+→ ✔️ b) She suggested an idea.
 
 4. How did Mila and Hoppel play in the end?
 a) Only tag.
 b) Only with the balloon.
 c) First with the balloon, then tag.
-→ ✅ c) First with the balloon, then tag.
+→ ✔️ c) First with the balloon, then tag.
 
 5. What is the main message of the story?
 a) You should always play alone.
 b) You should express wishes and feelings clearly and kindly.
 c) Balloons are more fun than tag.
-→ ✅ b) You should express wishes and feelings clearly and kindly.
+→ ✔️ b) You should express wishes and feelings clearly and kindly.
 
 ---
 

@@ -77,21 +77,21 @@ And Lina thought happily:
 
 ---
 
-📝 True or False?
+❓ True or False
 
-1- Lina is a little mouse. → ✅ True
+1- Lina is a little mouse. → ✔️ True
 
 2- The cookie was small and light. → ❌ False
 
 3- Lina could jump onto the table right away. → ❌ False
 
-4- Pico is a sparrow and wanted to help Lina. → ✅ True
+4- Pico is a sparrow and wanted to help Lina. → ✔️ True
 
-5- The turtle Tilda suggested building something together. → ✅ True
+5- The turtle Tilda suggested building something together. → ✔️ True
 
 6- In the end Lina ate the cookie all alone. → ❌ False
 
-7- The friends built a ladder out of twigs, buttons, and a toy car. → ✅ True
+7- The friends built a ladder out of twigs, buttons, and a toy car. → ✔️ True
 
 8- Lina learned: You should never try new solutions. → ❌ False
 
@@ -107,7 +107,7 @@ And Lina thought happily:
 
 a) An apple
 
-b) A big cookie ✅
+b) A big cookie ✔️
 
 c) A piece of cheese
 
@@ -117,7 +117,7 @@ c) A piece of cheese
 
 a) The cookie was too hard
 
-b) The table was too high ✅
+b) The table was too high ✔️
 
 c) Pico took the cookie
 
@@ -127,7 +127,7 @@ c) Pico took the cookie
 
 a) The cat
 
-b) The sparrow Pico ✅
+b) The sparrow Pico ✔️
 
 c) The turtle Tilda
 
@@ -139,13 +139,13 @@ a) To share the cookie
 
 b) To shout loudly
 
-c) To build something together ✅
+c) To build something together ✔️
 
 ---
 
 5. What did the friends use to build the ladder?
 
-a) Twigs, buttons, and a toy car ✅
+a) Twigs, buttons, and a toy car ✔️
 
 b) Stones and water
 
@@ -159,7 +159,7 @@ a) She ate it all alone
 
 b) She threw it away
 
-c) She shared it with her friends ✅
+c) She shared it with her friends ✔️
 
 ---
 

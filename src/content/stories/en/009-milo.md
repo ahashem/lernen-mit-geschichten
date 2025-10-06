@@ -63,7 +63,7 @@ And so Milo purred happily:
 
 ---
 
-✅ True or False Questions
+✔️ True or False Questions
 
 1. Milo had a blue blanket that he loved.
 
@@ -91,13 +91,13 @@ And so Milo purred happily:
 
 ---
 
-✅ Multiple-Choice Questions
+✔️ Multiple-Choice Questions
 
 1. What color was Milo’s favorite blanket?
 
 a) Blue
 
-b) Green ✅
+b) Green ✔️
 
 c) Red
 
@@ -105,13 +105,13 @@ c) Red
 
 a) A mouse
 
-b) A spider ✅
+b) A spider ✔️
 
 c) A dog
 
 3. What did Milo try first after the blanket was gone?
 
-a) A pillow ✅
+a) A pillow ✔️
 
 b) A cardboard box
 
@@ -121,7 +121,7 @@ c) The carpet
 
 a) Milo fell asleep immediately
 
-b) Milo fell down ✅
+b) Milo fell down ✔️
 
 c) Milo purred loudly
 
@@ -129,13 +129,13 @@ c) Milo purred loudly
 
 a) Sad
 
-b) Happy ✅
+b) Happy ✔️
 
 c) Afraid
 
 ---
 
-✅ Fill-in-the-Blank Questions
+✔️ Fill-in-the-Blank Questions
 
 1. Milo loved his __________ blanket.
 
@@ -223,7 +223,7 @@ Ve Milo mutlu bir şekilde mırladı:
 
 ---
 
-✅ Doğru mu Yanlış mı? (True or False)
+✔️ Doğru mu Yanlış mı? (True or False)
 
 1. Milo’nun çok sevdiği mavi bir battaniyesi vardı.
 
@@ -251,13 +251,13 @@ Ve Milo mutlu bir şekilde mırladı:
 
 ---
 
-✅ Çoktan Seçmeli Sorular (Multiple Choice)
+✔️ Çoktan Seçmeli Sorular (Multiple Choice)
 
 1. Milo’nun en sevdiği battaniyenin rengi neydi?
 
 a) Mavi
 
-b) Yeşil ✅
+b) Yeşil ✔️
 
 c) Kırmızı
 
@@ -265,13 +265,13 @@ c) Kırmızı
 
 a) Bir fare
 
-b) Bir örümcek ✅
+b) Bir örümcek ✔️
 
 c) Bir köpek
 
 3. Battaniyesi kaybolduktan sonra Milo ilk olarak neyi denedi?
 
-a) Bir yastık ✅
+a) Bir yastık ✔️
 
 b) Bir karton kutu
 
@@ -281,7 +281,7 @@ c) Halı
 
 a) Hemen uykuya daldı
 
-b) Yere düştü ✅
+b) Yere düştü ✔️
 
 c) Yüksek sesle mırladı
 
@@ -289,13 +289,13 @@ c) Yüksek sesle mırladı
 
 a) Üzgün
 
-b) Mutlu ✅
+b) Mutlu ✔️
 
 c) Korkmuş
 
 ---
 
-✅ Boşluk Doldurma (Fill-in-the-Blank)
+✔️ Boşluk Doldurma (Fill-in-the-Blank)
 
 1. Milo __________ battaniyesini çok seviyordu.
 
@@ -415,7 +415,7 @@ c) Korkmuş
 
 ---
 
-✅ أَوَّلًا: أَسْئِلَةُ (صَحّ أَوْ خَطَأ)
+✔️ أَوَّلًا: أَسْئِلَةُ (صَحّ أَوْ خَطَأ)
 
 1. كَانَ لِمِيلُو غِطَاءٌ أَزْرَقُ يُحِبُّهُ.
 
@@ -443,13 +443,13 @@ c) Korkmuş
 
 ---
 
-✅ ثَانِيًا: أَسْئِلَةُ (الِاخْتِيَارِ مِنْ مُتَعَدِّد)
+✔️ ثَانِيًا: أَسْئِلَةُ (الِاخْتِيَارِ مِنْ مُتَعَدِّد)
 
 1. مَا لَوْنُ غِطَاءِ مِيلُو الْمُفَضَّلِ؟
 
 أ) أَزْرَقُ
 
-ب) أَخْضَرُ ✅
+ب) أَخْضَرُ ✔️
 
 ج) أَحْمَرُ
 
@@ -457,13 +457,13 @@ c) Korkmuş
 
 أ) فَأْرَةٌ
 
-ب) عَنْكَبُوتٌ ✅
+ب) عَنْكَبُوتٌ ✔️
 
 ج) كَلْبٌ
 
 3. عَلَى مَاذَا نَامَ مِيلُو أَوَّلًا بَعْدَ أَنْ فُقِدَ غِطَاؤُهُ؟
 
-أ) عَلَى وَسَادَةٍ ✅
+أ) عَلَى وَسَادَةٍ ✔️
 
 ب) فِي صُنْدُوقٍ كَرْتُونِيٍّ
 
@@ -473,7 +473,7 @@ c) Korkmuş
 
 أ) غَفَا مُبَاشَرَةً
 
-ب) وَقَعَ عَلَى الْأَرْضِ ✅
+ب) وَقَعَ عَلَى الْأَرْضِ ✔️
 
 ج) أَصْدَرَ خَرْخَرَةً عَالِيَةً
 
@@ -481,13 +481,13 @@ c) Korkmuş
 
 أ) حَزِينًا
 
-ب) سَعِيدًا ✅
+ب) سَعِيدًا ✔️
 
 ج) خَائِفًا
 
 ---
 
-✅ ثَالِثًا: أَسْئِلَةُ (اِمْلَأِ الْفَرَاغَ)
+✔️ ثَالِثًا: أَسْئِلَةُ (اِمْلَأِ الْفَرَاغَ)
 
 1. كَانَ مِيلُو يُحِبُّ غِطَاءَهُ __________.
 
@@ -575,7 +575,7 @@ c) Korkmuş
 
 ---
 
-✅ درست یا غلط (True or False)
+✔️ درست یا غلط (True or False)
 
 1. میلو کے پاس ایک نیلا کمبل تھا جسے وہ بہت پسند کرتا تھا۔
 
@@ -603,13 +603,13 @@ c) Korkmuş
 
 ---
 
-✅ کثیر الانتخاب سوالات (Multiple Choice)
+✔️ کثیر الانتخاب سوالات (Multiple Choice)
 
 1. میلو کی پسندیدہ کمبل کا رنگ کیا تھا؟
 
 a) نیلا
 
-b) سبز ✅
+b) سبز ✔️
 
 c) سرخ
 
@@ -617,13 +617,13 @@ c) سرخ
 
 a) ایک چوہا
 
-b) ایک مکڑی ✅
+b) ایک مکڑی ✔️
 
 c) ایک کتا
 
 3. کمبل غائب ہونے کے بعد میلو نے سب سے پہلے کیا آزمایا؟
 
-a) ایک تکیہ ✅
+a) ایک تکیہ ✔️
 
 b) ایک گتے کا ڈبہ
 
@@ -633,7 +633,7 @@ c) قالین
 
 a) وہ فوراً سو گیا
 
-b) وہ گر گیا ✅
+b) وہ گر گیا ✔️
 
 c) اس نے زور سے گُرگُرایا
 
@@ -641,13 +641,13 @@ c) اس نے زور سے گُرگُرایا
 
 a) اداس
 
-b) خوش ✅
+b) خوش ✔️
 
 c) ڈرا ہوا
 
 ---
 
-✅ خالی جگہ پُر کریں (Fill-in-the-Blank)
+✔️ خالی جگہ پُر کریں (Fill-in-the-Blank)
 
 1. میلو کو اپنی __________ کمبل بہت پسند تھی۔
 

@@ -119,34 +119,8 @@ if (bilingualMode) {
   }
 }
 
-// Sample quiz questions - will be in frontmatter later
-const quizQuestions: QuizQuestion[] = [
-  {
-    id: 'q1',
-    text: 'Bruno ist ein kleiner Hund.',
-    type: 'truefalse',
-    correctAnswer: 'false',
-  },
-  {
-    id: 'q2',
-    text: 'Bruno liebt Honig.',
-    type: 'truefalse',
-    correctAnswer: 'true',
-  },
-  {
-    id: 'q3',
-    text: 'Wie heißt Brunos Freundin?',
-    type: 'multiplechoice',
-    options: ['Lina', 'Mila', 'Nina'],
-    correctAnswer: 'Mila',
-  },
-  {
-    id: 'q4',
-    text: 'Bruno ist ein kleiner ________.',
-    type: 'fillinblank',
-    correctAnswer: ['Bär', 'baer'],
-  },
-];
+// Get quiz questions from frontmatter if available
+const quizQuestions: QuizQuestion[] = story.data.questions || [];
 ---
 
 <BaseLayout title={story.data.title} locale={uiLocale} description={metaDescription} type="article">
@@ -256,7 +230,7 @@ const quizQuestions: QuizQuestion[] = [
       }
 
       {
-        story.data.storyId === '001-bruno' && story.data.storyFormat !== 'interactive' && (
+        quizQuestions.length > 0 && story.data.storyFormat !== 'interactive' && (
           <section class="activities-section">
             <h2>{getTranslation(uiLocale, 'activities')}</h2>
 
@@ -264,7 +238,6 @@ const quizQuestions: QuizQuestion[] = [
               questions={quizQuestions}
               language={locale}
               storyId={story.data.storyId}
-              title={getTranslation(uiLocale, 'trueFalse')}
             />
           </section>
         )

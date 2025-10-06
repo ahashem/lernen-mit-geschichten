@@ -83,7 +83,7 @@ you also get a warm, happy feeling inside.
 
 ---
 
-📝 True or False Questions
+❓ True or False Questions
 
 1. Tobi lives in a big city.
 
@@ -261,7 +261,7 @@ kalbinde güzel, sıcak bir his de kazanırsın.
 
 ---
 
-📝 Doğru mu Yanlış mı – Sorular
+❓ True or False – Sorular
 
 1. Tobi büyük bir şehirde yaşıyor.
 
@@ -297,7 +297,7 @@ kalbinde güzel, sıcak bir his de kazanırsın.
 
 ---
 
-📝 Çoktan Seçmeli Sorular
+❓ Multiple Choice Questions
 
 1. Tobi özellikle neyi seviyor?
 
@@ -667,7 +667,7 @@ c) قِطْعَتَانِ مِنَ الفَطِيرَةِ
 
 ---
 
-📝 کثیر الانتخاب سوالات
+❓ Multiple Choice Questions
 
 1. توبی کو خاص طور پر کیا پسند ہے؟
 

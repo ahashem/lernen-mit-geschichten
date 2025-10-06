@@ -55,7 +55,7 @@ and maybe even a new friend. 🐿️🍎
 
 ---
 
-📝 True or False Questions
+❓ True or False Questions
 
 1. Fritzchen sat under a tree and ate a banana.
 
@@ -93,7 +93,7 @@ and maybe even a new friend. 🐿️🍎
 
 a) A banana
 
-b) An apple ✅
+b) An apple ✔️
 
 c) A pear
 
@@ -103,7 +103,7 @@ c) A pear
 
 a) A dog
 
-b) A squirrel ✅
+b) A squirrel ✔️
 
 c) A cat
 
@@ -115,7 +115,7 @@ a) Joy
 
 b) Fear
 
-c) Anger ✅
+c) Anger ✔️
 
 ---
 
@@ -123,7 +123,7 @@ c) Anger ✅
 
 a) To run away quickly
 
-b) To count to five and breathe deeply ✅
+b) To count to five and breathe deeply ✔️
 
 c) To hide the apple
 
@@ -135,7 +135,7 @@ a) He throws the apple away
 
 b) He eats the apple alone
 
-c) He shares the apple with the squirrel ✅
+c) He shares the apple with the squirrel ✔️
 
 ---
 

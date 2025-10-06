@@ -9,6 +9,71 @@ publishDate: 2024-01-15
 characterType: "girl"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "mc1"
+    text: "Was wollte Mila zuerst spielen?"
+    type: "multiplechoice"
+    options:
+      - "Ballon"
+      - "Fangen"
+      - "Verstecken"
+    correctAnswer: ""
+  - id: "mc2"
+    text: "Warum wollte Hoppel lieber mit dem Ballon spielen?"
+    type: "multiplechoice"
+    options:
+      - "Er war müde."
+      - "Er hatte Angst."
+      - "Er mochte Fangen nicht."
+    correctAnswer: ""
+  - id: "mc3"
+    text: "Was hat Mila gemacht, als Hoppel seine Gefühle erklärt hat?"
+    type: "multiplechoice"
+    options:
+      - "Sie wurde wütend."
+      - "Sie hat eine Idee vorgeschlagen."
+      - "Sie ist weggegangen."
+    correctAnswer: ""
+  - id: "mc4"
+    text: "Wie haben Mila und Hoppel am Ende gespielt?"
+    type: "multiplechoice"
+    options:
+      - "Nur Fangen."
+      - "Nur mit dem Ballon."
+      - "Erst Ballon, dann Fangen."
+    correctAnswer: ""
+  - id: "mc5"
+    text: "Was ist die wichtigste Botschaft der Geschichte?"
+    type: "multiplechoice"
+    options:
+      - "Man soll immer allein spielen."
+      - "Man soll Wünsche und Gefühle klar und freundlich sagen."
+      - "Ballons sind lustiger als Fangen."
+      - "__________ wollte zuerst Fangen spielen."
+      - "__________ fühlte sich ein bisschen __________."
+      - "Sie spielten zuerst mit dem __________."
+      - "Am Ende spielten sie auch __________."
+    correctAnswer: ""
+  - id: "mc6"
+    text: "Sie spielen zuerst mit dem Ballon, dann Fangen."
+    type: "multiplechoice"
+    options:
+      - "Was hat Hoppel gefühlt?"
+      - "Was wollte Mila spielen?"
+      - "Was ist die Botschaft der Geschichte?"
+      - "Mila wollte zuerst Fangen spielen."
+      - "Hoppel fühlte sich ein bisschen müde."
+      - "Sie spielten zuerst mit dem Ballon."
+      - "Am Ende spielten sie auch Fangen."
+    correctAnswer: ""
+  - id: "mc7"
+    text: "Sie spielen zuerst mit dem Ballon, dann Fangen."
+    type: "multiplechoice"
+    options:
+      - "Hoppel hat sich müde gefühlt."
+      - "Mila wollte Fangen spielen."
+      - "Die Botschaft: Man soll Wünsche und Gefühle klar und freundlich sagen."
+    correctAnswer: ""
 ---
 
 ## Die Geschichte
@@ -40,149 +105,4 @@ Am Ende sagte Mila:
 „Weißt du, Hoppel? Wenn man Wünsche und Gefühle klar und freundlich sagt, dann versteht der andere es besser. Das macht Freundschaft noch stärker!“
 
 Und der kleine Hase nickte.
-„Genau, Mila. Ehrliche Worte sind wie ein bunter Ballon – sie bringen Freude und fliegen hoch!“ 🎈
-
----
-
----
-
----
-
-🌟 Die Botschaft der Geschichte
-
-Es ist wichtig, Gefühle und Wünsche klar auszudrücken.
-
-Man sollte immer freundlich und respektvoll sprechen.
-
-Wenn wir gut zuhören, finden wir Lösungen, die beide glücklich machen.
-
-Ehrliche Worte machen Freundschaft stärker.
-
----
-
-❓ Fragen & Antworten: Richtig oder Falsch
-
-1. Mila wollte zuerst mit dem Ballon spielen.
-→ Falsch. Mila wollte zuerst Fangen spielen.
-
-2. Hoppel fühlte sich ein bisschen müde.
-→ Richtig. Er sagte, dass er müde ist und lieber mit dem Ballon ruhig spielt.
-
-3. Mila hat Hoppel nicht zugehört.
-→ Falsch. Mila hat gut zugehört und eine Lösung gefunden.
-
-4. Am Ende spielten Mila und Hoppel beide Spiele.
-→ Richtig. Erst spielten sie mit dem Ballon, dann Fangen.
-
-5. Die Geschichte zeigt, dass man Wünsche und Gefühle klar sagen soll.
-→ Richtig. So verstehen Freunde einander besser.
-
-6. Hoppel wollte gar nicht mit Mila spielen.
-→ Falsch. Er wollte mit Mila spielen, aber auf eine andere Weise.
-
----
-
----
-
-❓ Multiple-Choice-Fragen
-
-1. Was wollte Mila zuerst spielen?
-a) Ballon
-b) Fangen
-c) Verstecken
-→ ✅ b) Fangen
-
-2. Warum wollte Hoppel lieber mit dem Ballon spielen?
-a) Er war müde.
-b) Er hatte Angst.
-c) Er mochte Fangen nicht.
-→ ✅ a) Er war müde.
-
-3. Was hat Mila gemacht, als Hoppel seine Gefühle erklärt hat?
-a) Sie wurde wütend.
-b) Sie hat eine Idee vorgeschlagen.
-c) Sie ist weggegangen.
-→ ✅ b) Sie hat eine Idee vorgeschlagen.
-
-4. Wie haben Mila und Hoppel am Ende gespielt?
-a) Nur Fangen.
-b) Nur mit dem Ballon.
-c) Erst Ballon, dann Fangen.
-→ ✅ c) Erst Ballon, dann Fangen.
-
-5. Was ist die wichtigste Botschaft der Geschichte?
-a) Man soll immer allein spielen.
-b) Man soll Wünsche und Gefühle klar und freundlich sagen.
-c) Ballons sind lustiger als Fangen.
-→ ✅ b) Man soll Wünsche und Gefühle klar und freundlich sagen.
-
----
-
----
-
-Setze die richtigen Wörter ein: Mila – Hoppel – Ballon – Fangen – müde
-
-a) __________ wollte zuerst Fangen spielen.
-b) __________ fühlte sich ein bisschen __________.
-c) Sie spielten zuerst mit dem __________.
-d) Am Ende spielten sie auch __________.
-
----
-
-Bringe die Sätze in die richtige Reihenfolge:
-
-1. Hoppel erklärt seine Gefühle.
-
-2. Mila schlägt eine Lösung vor.
-
-3. Mila möchte Fangen spielen.
-
-4. Sie spielen zuerst mit dem Ballon, dann Fangen.
-
----
-
-a) Was hat Hoppel gefühlt?
-b) Was wollte Mila spielen?
-c) Was ist die Botschaft der Geschichte?
-
----
-
-Male Mila und Hoppel mit einem großen bunten Ballon 🎈. Schreibe daneben:
-„Ehrliche Worte sind wie ein bunter Ballon!“
-
----
-
----
-
-a) Mila wollte zuerst Fangen spielen.
-b) Hoppel fühlte sich ein bisschen müde.
-c) Sie spielten zuerst mit dem Ballon.
-d) Am Ende spielten sie auch Fangen.
-
----
-
-Die richtige Reihenfolge ist:
-
-1. Mila möchte Fangen spielen.
-
-2. Hoppel erklärt seine Gefühle.
-
-3. Mila schlägt eine Lösung vor.
-
-4. Sie spielen zuerst mit dem Ballon, dann Fangen.
-
----
-
-a) Hoppel hat sich müde gefühlt.
-b) Mila wollte Fangen spielen.
-c) Die Botschaft: Man soll Wünsche und Gefühle klar und freundlich sagen.
-
----
-
-„Ehrliche Worte sind wie ein bunter Ballon!“
-
----
-
----
-
----
+„Genau, Mila. Ehrliche Worte sind wie ein bunter Ballon – sie bringen Freude und fliegen hoch!" 🎈

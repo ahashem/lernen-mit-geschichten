@@ -5,6 +5,14 @@ const storyPageSchema = z.object({
   image: z.string().optional(),
 });
 
+const quizQuestionSchema = z.object({
+  id: z.string(),
+  text: z.string(),
+  type: z.enum(['truefalse', 'multiplechoice', 'fillinblank']),
+  correctAnswer: z.union([z.string(), z.array(z.string())]),
+  options: z.array(z.string()).optional(),
+});
+
 const storiesCollection = defineCollection({
   type: 'content',
   schema: z.object({
@@ -28,6 +36,8 @@ const storiesCollection = defineCollection({
     // Interactive format fields
     storyFormat: z.enum(['standard', 'interactive']).default('standard'),
     pages: z.array(storyPageSchema).optional(),
+    // Quiz questions
+    questions: z.array(quizQuestionSchema).optional(),
   }),
 });
 

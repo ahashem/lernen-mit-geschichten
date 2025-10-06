@@ -9,6 +9,64 @@ publishDate: 2024-01-15
 characterType: "girl"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "mc1"
+    text: "Mila önce ne oynamak istedi?"
+    type: "multiplechoice"
+    options:
+      - "Balon"
+      - "Yakalamaca"
+      - "Saklambaç"
+    correctAnswer: ""
+  - id: "mc2"
+    text: "Hoppel neden balonla oynamak istedi?"
+    type: "multiplechoice"
+    options:
+      - "Çünkü yorgundu."
+      - "Çünkü korkuyordu."
+      - "Çünkü yakalamacayı sevmiyordu."
+    correctAnswer: ""
+  - id: "mc3"
+    text: "Hoppel duygularını açıkladığında Mila ne yaptı?"
+    type: "multiplechoice"
+    options:
+      - "Kızdı."
+      - "Bir fikir önerdi."
+      - "Gidip onu yalnız bıraktı."
+    correctAnswer: ""
+  - id: "mc4"
+    text: "Mila ve Hoppel sonunda nasıl oynadılar?"
+    type: "multiplechoice"
+    options:
+      - "Sadece yakalamaca."
+      - "Sadece balonla."
+      - "Önce balonla, sonra yakalamaca."
+    correctAnswer: ""
+  - id: "mc5"
+    text: "Hikâyenin en önemli mesajı nedir?"
+    type: "multiplechoice"
+    options:
+      - "Her zaman yalnız oynamalıyız."
+      - "İstekleri ve duyguları açık ve nazikçe ifade etmeliyiz."
+      - "Balonlar yakalamacadan daha eğlencelidir."
+    correctAnswer: ""
+  - id: "mc6"
+    text: "Boşlukları doldur:"
+    type: "multiplechoice"
+    options:
+      - "__________ önce yakalamaca oynamak istedi."
+      - "__________ biraz __________ hissetti."
+      - "Önce __________ ile oynadılar."
+      - "Sonunda __________ da oynadılar."
+    correctAnswer: ""
+  - id: "mc7"
+    text: "Soruları cevapla:"
+    type: "multiplechoice"
+    options:
+      - "Hoppel ne hissetti?"
+      - "Mila ne oynamak istedi?"
+      - "Hikâyenin mesajı nedir?"
+    correctAnswer: ""
 ---
 
 ## Hikâye
@@ -57,7 +115,7 @@ Dürüst sözler arkadaşlığı güçlendirir.
 
 ---
 
-❓ Doğru mu Yanlış mı?
+❓ Doğru mu Yanlış mı
 
 1. Mila önce balonla oynamak istedi.
 → Yanlış. Mila önce yakalamaca oynamak istedi.
@@ -85,31 +143,31 @@ Dürüst sözler arkadaşlığı güçlendirir.
 a) Balon
 b) Yakalamaca
 c) Saklambaç
-→ ✅ b) Yakalamaca
+→ ✔️ b) Yakalamaca
 
 2. Hoppel neden balonla oynamak istedi?
 a) Çünkü yorgundu.
 b) Çünkü korkuyordu.
 c) Çünkü yakalamacayı sevmiyordu.
-→ ✅ a) Çünkü yorgundu.
+→ ✔️ a) Çünkü yorgundu.
 
 3. Hoppel duygularını açıkladığında Mila ne yaptı?
 a) Kızdı.
 b) Bir fikir önerdi.
 c) Gidip onu yalnız bıraktı.
-→ ✅ b) Bir fikir önerdi.
+→ ✔️ b) Bir fikir önerdi.
 
 4. Mila ve Hoppel sonunda nasıl oynadılar?
 a) Sadece yakalamaca.
 b) Sadece balonla.
 c) Önce balonla, sonra yakalamaca.
-→ ✅ c) Önce balonla, sonra yakalamaca.
+→ ✔️ c) Önce balonla, sonra yakalamaca.
 
 5. Hikâyenin en önemli mesajı nedir?
 a) Her zaman yalnız oynamalıyız.
 b) İstekleri ve duyguları açık ve nazikçe ifade etmeliyiz.
 c) Balonlar yakalamacadan daha eğlencelidir.
-→ ✅ b) İstekleri ve duyguları açık ve nazikçe ifade etmeliyiz.
+→ ✔️ b) İstekleri ve duyguları açık ve nazikçe ifade etmeliyiz.
 
 ---
 

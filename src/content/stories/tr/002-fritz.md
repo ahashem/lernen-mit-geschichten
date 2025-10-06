@@ -53,7 +53,7 @@ ve belki de yeni bir arkadaş kazanır. 🐿️🍎
 
 ---
 
-📝 Doğru mu Yanlış mı Soruları
+❓ Doğru mu Yanlış mı Soruları
 
 1. Fritzchen bir ağacın altında oturup muz yemiş.
 
@@ -85,13 +85,13 @@ ve belki de yeni bir arkadaş kazanır. 🐿️🍎
 
 ---
 
-📝 Çoktan Seçmeli Sorular
+❓ Çoktan Seçmeli Sorular
 
 1. Fritzchen ağacın altında ne yiyor?
 
 a) Muz
 
-b) Elma ✅
+b) Elma ✔️
 
 c) Armut
 
@@ -101,7 +101,7 @@ c) Armut
 
 a) Bir köpek
 
-b) Bir sincap ✅
+b) Bir sincap ✔️
 
 c) Bir kedi
 
@@ -113,7 +113,7 @@ a) Sevinç
 
 b) Korku
 
-c) Öfke ✅
+c) Öfke ✔️
 
 ---
 
@@ -121,7 +121,7 @@ c) Öfke ✅
 
 a) Hızlıca kaçmasını
 
-b) Beşe kadar sayıp derin nefes almasını ✅
+b) Beşe kadar sayıp derin nefes almasını ✔️
 
 c) Elmayı saklamasını
 
@@ -133,7 +133,7 @@ a) Elmayı fırlatıyor
 
 b) Elmayı tek başına yiyor
 
-c) Elmayı sincapla paylaşıyor ✅
+c) Elmayı sincapla paylaşıyor ✔️
 
 ---
 
@@ -213,7 +213,7 @@ c) Elmayı sincapla paylaşıyor ✅
 
 أ) مَوْزَةٌ
 
-ب) تُفَّاحَةٌ ✅
+ب) تُفَّاحَةٌ ✔️
 
 ج) إِجَّاصَةٌ
 
@@ -223,7 +223,7 @@ c) Elmayı sincapla paylaşıyor ✅
 
 أ) كَلْبٌ
 
-ب) سِنْجَابٌ ✅
+ب) سِنْجَابٌ ✔️
 
 ج) قِطٌّ
 
@@ -235,7 +235,7 @@ c) Elmayı sincapla paylaşıyor ✅
 
 ب) خَوْفًا
 
-ج) غَضَبًا ✅
+ج) غَضَبًا ✔️
 
 ---
 
@@ -243,7 +243,7 @@ c) Elmayı sincapla paylaşıyor ✅
 
 أ) أَنْ يَجْرِيَ سَرِيعًا
 
-ب) أَنْ يَعُدَّ إِلَى خَمْسَةٍ وَيَتَنَفَّسَ عَمِيقًا ✅
+ب) أَنْ يَعُدَّ إِلَى خَمْسَةٍ وَيَتَنَفَّسَ عَمِيقًا ✔️
 
 ج) أَنْ يُخْفِيَ التُّفَّاحَةَ
 
@@ -255,7 +255,7 @@ c) Elmayı sincapla paylaşıyor ✅
 
 ب) أَكَلَ التُّفَّاحَةَ وَحْدَهُ
 
-ج) قَاسَمَ التُّفَّاحَةَ مَعَ السِّنْجَابِ ✅
+ج) قَاسَمَ التُّفَّاحَةَ مَعَ السِّنْجَابِ ✔️
 
 ---
 
@@ -393,13 +393,13 @@ c) Elmayı sincapla paylaşıyor ✅
 
 ---
 
-📝 کثیر الانتخاب سوالات
+❓ Çoktan Seçmeli Sorular
 
 1. فریٹشن درخت کے نیچے کیا کھا رہا تھا؟
 
 الف) کیلا
 
-ب) سیب ✅
+ب) سیب ✔️
 
 ج) ناشپاتی
 
@@ -409,7 +409,7 @@ c) Elmayı sincapla paylaşıyor ✅
 
 الف) کتا
 
-ب) گلہری ✅
+ب) گلہری ✔️
 
 ج) بلی
 
@@ -421,7 +421,7 @@ c) Elmayı sincapla paylaşıyor ✅
 
 ب) ڈر
 
-ج) غصہ ✅
+ج) غصہ ✔️
 
 ---
 
@@ -429,7 +429,7 @@ c) Elmayı sincapla paylaşıyor ✅
 
 الف) فوراً بھاگ جانا
 
-ب) پانچ تک گننا اور گہری سانس لینا ✅
+ب) پانچ تک گننا اور گہری سانس لینا ✔️
 
 ج) سیب چھپا دینا
 
@@ -441,7 +441,7 @@ c) Elmayı sincapla paylaşıyor ✅
 
 ب) سیب اکیلا کھا لیا
 
-ج) سیب گلہری کے ساتھ بانٹ لیا ✅
+ج) سیب گلہری کے ساتھ بانٹ لیا ✔️
 
 ---
 
