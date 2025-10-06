@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "raccoon"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Finn fand eine riesige Nuss im Wald."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf2"
+    text: "Finn konnte die Nuss allein bewegen."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf3"
+    text: "Die Ameisen halfen am Ende mit."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "Wer half Finn zuerst?"
+    type: "multiplechoice"
+    options:
+      - "Mila, das Eichhörnchen"
+      - "Kiko, der Vogel"
+      - "Die Ameisen"
+    correctAnswer: "Mila, das Eichhörnchen"
+  - id: "mc2"
+    text: "Warum blieb die Nuss stecken?"
+    type: "multiplechoice"
+    options:
+      - "Sie war zu schwer"
+      - "Sie blieb in einer kleinen Mulde stecken"
+      - "Es regnete"
+    correctAnswer: "Sie blieb in einer kleinen Mulde stecken"
+  - id: "mc3"
+    text: "Was lernen wir aus der Geschichte?"
+    type: "multiplechoice"
+    options:
+      - "Allein ist man stärker"
+      - "Gemeinsam sind wir stärker"
+      - "Nüsse sind zu schwer"
+    correctAnswer: "Gemeinsam sind wir stärker"
 ---
 
 ## Die Geschichte

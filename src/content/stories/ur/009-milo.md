@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "koala"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "میلو کے پاس ایک نیلا کمبل تھا جسے وہ بہت پسند کرتا تھا۔"
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf2"
+    text: "جب اس کی کمبل غائب ہو گئی تو میلو بہت اداس ہوا۔"
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "مکڑی لینا نے میلو کو نیا کچھ آزمانے میں مدد دی۔"
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "میلو کی پسندیدہ کمبل کا رنگ کیا تھا؟"
+    type: "multiplechoice"
+    options:
+      - "نیلا"
+      - "سبز"
+      - "سرخ"
+    correctAnswer: "سبز"
+  - id: "mc2"
+    text: "میلو کا دوست کون تھا؟"
+    type: "multiplechoice"
+    options:
+      - "ایک چوہا"
+      - "ایک مکڑی"
+      - "ایک کتا"
+    correctAnswer: "ایک مکڑی"
+  - id: "mc3"
+    text: "کمبل غائب ہونے کے بعد میلو نے سب سے پہلے کیا آزمایا؟"
+    type: "multiplechoice"
+    options:
+      - "ایک تکیہ"
+      - "ایک گتے کا ڈبہ"
+      - "قالین"
+    correctAnswer: "ایک تکیہ"
 ---
 
 🐾 کہانی: میلو نے تبدیلی کے ساتھ ایڈجسٹ ہونا سیکھا

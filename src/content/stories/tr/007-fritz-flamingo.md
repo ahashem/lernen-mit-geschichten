@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "flamingo"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Fritz her şeyi aynı anda yapmak istiyordu."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf2"
+    text: "Akıllı örümceğin adı Susi'ydi."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "Fritz ateşe düştü."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "mc1"
+    text: "Susi'nin Fritz'e öğrettiği üç düzen türü neydi?"
+    type: "multiplechoice"
+    options:
+      - "Zaman, davranış ve duygular"
+      - "Yemek, uyku ve oyun"
+      - "Dans, uçma ve yüzme"
+    correctAnswer: "Zaman, davranış ve duygular"
+  - id: "mc2"
+    text: "Fritz kızdığında ne yaptı?"
+    type: "multiplechoice"
+    options:
+      - "Yüksek sesle bağırdı"
+      - "Derin nefes aldı ve üçe kadar saydı"
+      - "Kaçtı"
+    correctAnswer: "Derin nefes aldı ve üçe kadar saydı"
+  - id: "mc3"
+    text: "Fritz sabahları yeni planında ne yaptı?"
+    type: "multiplechoice"
+    options:
+      - "Uyumak"
+      - "Yemek yemek"
+      - "Dans etmek"
+    correctAnswer: "Dans etmek"
 ---
 
 ## Hikâye

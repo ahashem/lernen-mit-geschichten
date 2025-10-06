@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "raccoon"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Finn found a giant nut in the forest."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf2"
+    text: "Finn could move the nut by himself."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf3"
+    text: "The ants helped in the end."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "Who helped Finn first?"
+    type: "multiplechoice"
+    options:
+      - "Mila, the squirrel"
+      - "Kiko, the bird"
+      - "The ants"
+    correctAnswer: "Mila, the squirrel"
+  - id: "mc2"
+    text: "Why did the nut get stuck?"
+    type: "multiplechoice"
+    options:
+      - "It was too heavy"
+      - "It got stuck in a small hole"
+      - "It was raining"
+    correctAnswer: "It got stuck in a small hole"
+  - id: "mc3"
+    text: "What do we learn from the story?"
+    type: "multiplechoice"
+    options:
+      - "We are stronger alone"
+      - "Together we are stronger"
+      - "Nuts are too heavy"
+    correctAnswer: "Together we are stronger"
 ---
 
 ## The Story

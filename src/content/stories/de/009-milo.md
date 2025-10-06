@@ -13,6 +13,43 @@ characterType: "cat"
 difficulty: "beginner"
 estimatedReadTime: 3
 publishDate: 2024-01-15
+questions:
+  - id: "tf1"
+    text: "Milo hatte sein ganzes Leben in einem gemütlichen Haus verbracht."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf2"
+    text: "Der rote Ball war nicht verloren gegangen."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf3"
+    text: "Nina war eine Maus."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "Welche drei Dinge liebte Milo in seinem alten Haus?"
+    type: "multiplechoice"
+    options:
+      - "Weichen Teppich, roten Ball, warmen Platz auf dem Sofa"
+      - "Blauen Ball, Hängematte, glatten Teppich"
+      - "Garten, Fenster, Tür"
+    correctAnswer: "Weichen Teppich, roten Ball, warmen Platz auf dem Sofa"
+  - id: "mc2"
+    text: "Was fand Milo im neuen Haus anstatt des roten Balls?"
+    type: "multiplechoice"
+    options:
+      - "Einen grünen Ball"
+      - "Einen blauen Ball"
+      - "Einen gelben Ball"
+    correctAnswer: "Einen blauen Ball"
+  - id: "mc3"
+    text: "Was lernte Milo am Ende?"
+    type: "multiplechoice"
+    options:
+      - "Veränderungen sind immer schlecht"
+      - "Man kann sich anpassen und neue Lieblingssachen finden"
+      - "Das alte Haus war besser"
+    correctAnswer: "Man kann sich anpassen und neue Lieblingssachen finden"
 ---
 
 ## Die Geschichte

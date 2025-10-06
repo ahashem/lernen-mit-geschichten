@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "boy"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Emil wollte einen großen Schokoladenkuchen backen."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf2"
+    text: "Der Ofen war kaputt."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "Leni sagte: Vielleicht können wir den Kuchen anders machen."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "Was wollte Emil backen?"
+    type: "multiplechoice"
+    options:
+      - "Einen Schokoladenkuchen"
+      - "Einen Apfelkuchen"
+      - "Einen Käsekuchen"
+    correctAnswer: "Einen Apfelkuchen"
+  - id: "mc2"
+    text: "Wer half Emil beim Überlegen?"
+    type: "multiplechoice"
+    options:
+      - "Seine Katze Minka"
+      - "Sein Freund Tom"
+      - "Seine Freundin Leni"
+    correctAnswer: "Seine Freundin Leni"
+  - id: "mc3"
+    text: "Was hat Emil am Ende gelernt?"
+    type: "multiplechoice"
+    options:
+      - "Ohne Ofen gibt es keinen Kuchen"
+      - "Wenn etwas nicht klappt, muss man anders denken"
+      - "Man sollte immer alles genauso machen wie früher"
+    correctAnswer: "Wenn etwas nicht klappt, muss man anders denken"
 ---
 
 ## Die Geschichte

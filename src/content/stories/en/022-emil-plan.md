@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "boy"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Emil wanted to bake a big chocolate cake."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf2"
+    text: "The oven was broken."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "Leni said: Maybe we can make the pie in a different way."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "What did Emil want to bake?"
+    type: "multiplechoice"
+    options:
+      - "A chocolate cake"
+      - "An apple pie"
+      - "A cheesecake"
+    correctAnswer: "An apple pie"
+  - id: "mc2"
+    text: "Who helped Emil think of new ideas?"
+    type: "multiplechoice"
+    options:
+      - "His cat Minka"
+      - "His friend Tom"
+      - "His friend Leni"
+    correctAnswer: "His friend Leni"
+  - id: "mc3"
+    text: "What did Emil learn in the end?"
+    type: "multiplechoice"
+    options:
+      - "Without an oven, there can be no cake"
+      - "If something doesn't work, you must think differently"
+      - "You should always do things the same way as before"
+    correctAnswer: "If something doesn't work, you must think differently"
 ---
 
 ## The Story

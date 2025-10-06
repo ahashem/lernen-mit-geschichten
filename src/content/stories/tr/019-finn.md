@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "raccoon"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Finn ormanda dev bir ceviz buldu."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf2"
+    text: "Finn cevizi tek başına hareket ettirebildi."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf3"
+    text: "Karıncalar sonunda yardım etti."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "Finn'e ilk kim yardım etti?"
+    type: "multiplechoice"
+    options:
+      - "Sincap Mila"
+      - "Kuş Kiko"
+      - "Karıncalar"
+    correctAnswer: "Sincap Mila"
+  - id: "mc2"
+    text: "Ceviz neden sıkıştı?"
+    type: "multiplechoice"
+    options:
+      - "Çok ağırdı"
+      - "Küçük bir çukura sıkıştı"
+      - "Yağmur yağıyordu"
+    correctAnswer: "Küçük bir çukura sıkıştı"
+  - id: "mc3"
+    text: "Bu hikâyeden ne öğreniyoruz?"
+    type: "multiplechoice"
+    options:
+      - "Yalnızken daha güçlüyüz"
+      - "Birlikte daha güçlüyüz"
+      - "Cevizler çok ağırdır"
+    correctAnswer: "Birlikte daha güçlüyüz"
 ---
 
 ## Hikâye

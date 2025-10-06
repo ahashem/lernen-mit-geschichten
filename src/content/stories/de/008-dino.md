@@ -9,6 +9,79 @@ publishDate: 2024-01-15
 characterType: "dinosaur"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Dino Dino liebt Gemüse mehr als Kekse."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf2"
+    text: "Oma Dino sagt: 'Du musst warten, bis die Kekse abgekühlt sind.'"
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "Dino Dino spielt mit seinem Schwanz, um nicht an Kekse zu denken."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf4"
+    text: "Dino Dino verbrennt sich die Zunge, weil er zu früh isst."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf5"
+    text: "Dino Dino macht Grimassen im Spiegel und lacht darüber."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf6"
+    text: "Am Ende sind die Kekse kalt und Dino Dino darf essen."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf7"
+    text: "Dino Dino lernt, dass Warten manchmal eine gute Idee ist."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf8"
+    text: "Seit diesem Tag kann Dino Dino immer warten, ohne Probleme."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "mc1"
+    text: "Was liebt Dino Dino am meisten?"
+    type: "multiplechoice"
+    options:
+      - "Gemüse"
+      - "Riesen-Kekse"
+      - "Pizza"
+    correctAnswer: "Riesen-Kekse"
+  - id: "mc2"
+    text: "Was sagt Oma Dino zu Dino Dino?"
+    type: "multiplechoice"
+    options:
+      - "Du musst sofort essen!"
+      - "Du musst warten, bis die Kekse abgekühlt sind."
+      - "Es gibt keine Kekse."
+    correctAnswer: "Du musst warten, bis die Kekse abgekühlt sind."
+  - id: "mc3"
+    text: "Was macht Dino Dino, um die Zeit zu vertreiben?"
+    type: "multiplechoice"
+    options:
+      - "Er zählt Steine."
+      - "Er schläft den ganzen Tag."
+      - "Er geht schwimmen."
+    correctAnswer: "Er zählt Steine."
+  - id: "mc4"
+    text: "Was macht Dino Dino im Spiegel?"
+    type: "multiplechoice"
+    options:
+      - "Er putzt seine Zähne."
+      - "Er macht Grimassen."
+      - "Er malt Bilder."
+    correctAnswer: "Er macht Grimassen."
+  - id: "mc5"
+    text: "Was lernt Dino Dino am Ende der Geschichte?"
+    type: "multiplechoice"
+    options:
+      - "Dass Warten nichts bringt."
+      - "Dass Kekse kalt nicht schmecken."
+      - "Dass Geduld sich lohnt."
+    correctAnswer: "Dass Geduld sich lohnt."
 ---
 
 ## Die Geschichte
@@ -62,120 +135,3 @@ Dino Dino nickte und sagte:
 
 Und seit diesem Tag konnte er viel besser warten –
 na ja… fast immer. 😉
-
----
-
-✅❌ Fragen: Richtig oder Falsch?
-
-1. Dino Dino liebt Gemüse mehr als Kekse.
-
-2. Oma Dino sagt: „Du musst warten, bis die Kekse abgekühlt sind.“
-
-3. Dino Dino spielt mit seinem Schwanz, um nicht an Kekse zu denken.
-
-4. Dino Dino verbrennt sich die Zunge, weil er zu früh isst.
-
-5. Dino Dino macht Grimassen im Spiegel und lacht darüber.
-
-6. Am Ende sind die Kekse kalt und Dino Dino darf essen.
-
-7. Dino Dino lernt, dass Warten manchmal eine gute Idee ist.
-
-8. Seit diesem Tag kann Dino Dino immer warten, ohne Probleme.
-
----
-
-📚 Multiple-Choice-Fragen
-
-1. Was liebt Dino Dino am meisten?
-a) Gemüse 🥦
-b) Riesen-Kekse 🍪
-c) Pizza 🍕
-👉 Antwort: b) Riesen-Kekse
-
----
-
-2. Was sagt Oma Dino zu Dino Dino?
-a) „Du musst sofort essen!“
-b) „Du musst warten, bis die Kekse abgekühlt sind.“
-c) „Es gibt keine Kekse.“
-👉 Antwort: b) „Du musst warten, bis die Kekse abgekühlt sind.“
-
----
-
-3. Was macht Dino Dino, um die Zeit zu vertreiben?
-a) Er zählt Steine.
-b) Er schläft den ganzen Tag.
-c) Er geht schwimmen.
-👉 Antwort: a) Er zählt Steine.
-
----
-
-4. Was macht Dino Dino im Spiegel?
-a) Er putzt seine Zähne.
-b) Er macht Grimassen.
-c) Er malt Bilder.
-👉 Antwort: b) Er macht Grimassen.
-
----
-
-5. Was lernt Dino Dino am Ende der Geschichte?
-a) Dass Warten nichts bringt.
-b) Dass Kekse kalt nicht schmecken.
-c) Dass Geduld sich lohnt.
-👉 Antwort: c) Dass Geduld sich lohnt.
-
----
-
----
-
-✏️ Interaktive Aufgaben
-
-Setze die richtigen Wörter ein:
-(Kekse – warten – lachen – Oma – Spiegel)
-
-a) Dino Dino muss ________, bis die Kekse kalt sind.
-b) Die ________ backt Kekse.
-c) Dino Dino schaut in den ________ und macht Grimassen.
-d) Dino Dino liebt große ________.
-e) Er beginnt laut zu ________.
-
-👉 Lösung:
-a) warten – b) Oma – c) Spiegel – d) Kekse – e) lachen
-
----
-
-1. Dino Dino riecht die Kekse. 👃🍪
-
-2. Dino Dino spielt und macht Grimassen. 🤪
-
-3. Die Kekse sind kalt. ❄️🍪
-
-4. Dino Dino isst glücklich. 😋
-
-👉 Aufgabe: Nummeriere die Szenen: __ → __ → __ → __
-
----
-
-Verbinde die Sätze mit den passenden Antworten:
-
-1. Dino Dino liebt …
-
-2. Oma sagt …
-
-3. Dino Dino macht …
-
-4. Am Ende lernt Dino Dino …
-
-a) „Du musst warten!“
-b) Grimassen im Spiegel.
-c) Geduld ist wichtig.
-d) große Kekse.
-
-👉 Lösung: 1-d, 2-a, 3-b, 4-c
-
----
-
-👉 „Male Dino Dino grün und male seine Lieblingskekse braun!“ 🎨🖌️
-
----

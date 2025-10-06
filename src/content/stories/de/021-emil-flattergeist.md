@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "boy"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Emil konnte sich leicht konzentrieren."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf2"
+    text: "Emils Hund heißt Bello."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "Die Lehrerin bat Emil, ein Schloss zu zeichnen."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "Wer half Emil, sich zu konzentrieren?"
+    type: "multiplechoice"
+    options:
+      - "Ein sprechender Vogel"
+      - "Die Aufmerksamkeitsfliege"
+      - "Seine Mutter"
+    correctAnswer: "Die Aufmerksamkeitsfliege"
+  - id: "mc2"
+    text: "Was sagte Emil, wenn er abgelenkt wurde?"
+    type: "multiplechoice"
+    options:
+      - "Erst spielen, dann beenden"
+      - "Erst beenden, dann spielen"
+      - "Ich will nicht zeichnen"
+    correctAnswer: "Erst beenden, dann spielen"
+  - id: "mc3"
+    text: "Was lernte Emil am Ende?"
+    type: "multiplechoice"
+    options:
+      - "Aufmerksam zu sein macht Spaß"
+      - "Zeichnen ist langweilig"
+      - "Man sollte immer spielen"
+    correctAnswer: "Aufmerksam zu sein macht Spaß"
 ---
 
 ## Die Geschichte

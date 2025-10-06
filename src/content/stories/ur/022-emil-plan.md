@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "boy"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "ایمیل نے بڑی چاکلیٹ کیک بنانا چاہی۔"
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf2"
+    text: "اوون خراب ہو گیا تھا۔"
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "لینی نے کہا: شاید ہم پائی کو کسی اور طریقے سے بنا سکتے ہیں۔"
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "ایمیل کیا بنانا چاہتا تھا؟"
+    type: "multiplechoice"
+    options:
+      - "چاکلیٹ کیک"
+      - "سیب کی پائی"
+      - "چیز کیک"
+    correctAnswer: "سیب کی پائی"
+  - id: "mc2"
+    text: "ایمیل کی مدد کس نے کی؟"
+    type: "multiplechoice"
+    options:
+      - "اس کی بلی منکا"
+      - "اس کا دوست ٹام"
+      - "اس کی سہیلی لینی"
+    correctAnswer: "اس کی سہیلی لینی"
+  - id: "mc3"
+    text: "آخر میں ایمیل نے کیا سیکھا؟"
+    type: "multiplechoice"
+    options:
+      - "اوون کے بغیر پائی نہیں بن سکتی"
+      - "اگر کوئی کام نہ بنے تو مختلف انداز میں سوچنا چاہیے"
+      - "ہمیشہ سب کچھ ویسے ہی کرنا چاہیے جیسے پہلے کرتے تھے"
+    correctAnswer: "اگر کوئی کام نہ بنے تو مختلف انداز میں سوچنا چاہیے"
 ---
 
 ## کہانی

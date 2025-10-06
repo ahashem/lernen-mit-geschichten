@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "flamingo"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Fritz wollte alles gleichzeitig machen."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf2"
+    text: "Die kluge Spinne hieß Susi."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "Fritz fiel ins Feuer."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "mc1"
+    text: "Was waren die drei Arten von Ordnung, die Susi Fritz beibrachte?"
+    type: "multiplechoice"
+    options:
+      - "Zeit, Verhalten, Gefühle"
+      - "Essen, Schlafen, Spielen"
+      - "Tanzen, Fliegen, Schwimmen"
+    correctAnswer: "Zeit, Verhalten, Gefühle"
+  - id: "mc2"
+    text: "Was machte Fritz, wenn er wütend wurde?"
+    type: "multiplechoice"
+    options:
+      - "Er schrie laut"
+      - "Er atmete tief und zählte bis drei"
+      - "Er rannte weg"
+    correctAnswer: "Er atmete tief und zählte bis drei"
+  - id: "mc3"
+    text: "Was machte Fritz morgens in seinem neuen Plan?"
+    type: "multiplechoice"
+    options:
+      - "Schlafen"
+      - "Essen"
+      - "Tanzen"
+    correctAnswer: "Tanzen"
 ---
 
 ## Die Geschichte

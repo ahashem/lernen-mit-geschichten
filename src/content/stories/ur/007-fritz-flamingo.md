@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "flamingo"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "فریٹز ہر کام ایک ہی وقت میں کرنا چاہتا تھا۔"
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf2"
+    text: "عقلمند مکڑی کا نام سوزی تھا۔"
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "فریٹز آگ میں گر گیا۔"
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "mc1"
+    text: "سوزی نے فریٹز کو کون سی تین قسم کی تنظیم سکھائی؟"
+    type: "multiplechoice"
+    options:
+      - "وقت، رویہ اور جذبات"
+      - "کھانا، سونا اور کھیلنا"
+      - "ناچنا، اڑنا اور تیرنا"
+    correctAnswer: "وقت، رویہ اور جذبات"
+  - id: "mc2"
+    text: "جب فریٹز غصے میں آتا تو کیا کرتا تھا؟"
+    type: "multiplechoice"
+    options:
+      - "وہ زور سے چیختا تھا"
+      - "وہ گہری سانس لیتا اور تین تک گنتا تھا"
+      - "وہ بھاگ جاتا تھا"
+    correctAnswer: "وہ گہری سانس لیتا اور تین تک گنتا تھا"
+  - id: "mc3"
+    text: "فریٹز اپنے نئے منصوبے میں صبح کیا کرتا تھا؟"
+    type: "multiplechoice"
+    options:
+      - "سونا"
+      - "کھانا"
+      - "ناچنا"
+    correctAnswer: "ناچنا"
 ---
 
 ## کہانی

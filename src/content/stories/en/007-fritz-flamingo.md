@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "flamingo"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Fritz wanted to do everything at the same time."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf2"
+    text: "The clever spider's name was Susi."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "Fritz fell into fire."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "mc1"
+    text: "What were the three types of organization that Susi taught Fritz?"
+    type: "multiplechoice"
+    options:
+      - "Time, behavior, and feelings"
+      - "Eating, sleeping, and playing"
+      - "Dancing, flying, and swimming"
+    correctAnswer: "Time, behavior, and feelings"
+  - id: "mc2"
+    text: "What did Fritz do when he got angry?"
+    type: "multiplechoice"
+    options:
+      - "He screamed loudly"
+      - "He breathed deeply and counted to three"
+      - "He ran away"
+    correctAnswer: "He breathed deeply and counted to three"
+  - id: "mc3"
+    text: "What did Fritz do in the morning in his new plan?"
+    type: "multiplechoice"
+    options:
+      - "Sleeping"
+      - "Eating"
+      - "Dancing"
+    correctAnswer: "Dancing"
 ---
 
 ## The Story

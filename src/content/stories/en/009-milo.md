@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "koala"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Milo had a blue blanket that he loved."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf2"
+    text: "Milo was very sad when his blanket disappeared."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "Lina the spider helped Milo try something new."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "What color was Milo's favorite blanket?"
+    type: "multiplechoice"
+    options:
+      - "Blue"
+      - "Green"
+      - "Red"
+    correctAnswer: "Green"
+  - id: "mc2"
+    text: "Who was Milo's friend?"
+    type: "multiplechoice"
+    options:
+      - "A mouse"
+      - "A spider"
+      - "A dog"
+    correctAnswer: "A spider"
+  - id: "mc3"
+    text: "What did Milo try first after the blanket was gone?"
+    type: "multiplechoice"
+    options:
+      - "A pillow"
+      - "A cardboard box"
+      - "The carpet"
+    correctAnswer: "A pillow"
 ---
 
 🐾 Story: Milo Learns to Adapt
