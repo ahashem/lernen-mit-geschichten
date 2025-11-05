@@ -1,0 +1,588 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import JigsawPuzzle from '../../components/JigsawPuzzle.astro';
+import { getTranslation } from '../../utils/i18n';
+
+const locale = 'de';
+const title = getTranslation(locale, 'puzzleGame') || 'Puzzle-Spiel';
+const description = getTranslation(locale, 'puzzleGameDescription') || 'Setze die Bildteile zusammen!';
+
+// Available puzzle images (character emojis and story illustrations)
+const puzzleImages = [
+  { id: 'bruno', emoji: '🐻', name: 'Bruno der Bär', url: '/images/characters/bruno.png', unlocked: true },
+  { id: 'fritz', emoji: '🦊', name: 'Fritz der Fuchs', url: '/images/characters/fritz.png', unlocked: true },
+  { id: 'lina', emoji: '🦁', name: 'Lina die Löwin', url: '/images/characters/lina.png', unlocked: true },
+  { id: 'tobi', emoji: '🐰', name: 'Tobi der Hase', url: '/images/characters/tobi.png', unlocked: true },
+  { id: 'mila', emoji: '🦉', name: 'Mila die Eule', url: '/images/characters/mila.png', unlocked: true },
+  { id: 'moritz', emoji: '🐵', name: 'Moritz der Affe', url: '/images/characters/moritz.png', unlocked: false },
+  { id: 'emma', emoji: '🐘', name: 'Emma der Elefant', url: '/images/characters/emma.png', unlocked: false },
+  { id: 'leo', emoji: '🦁', name: 'Leo der Löwe', url: '/images/characters/leo.png', unlocked: false },
+];
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="puzzle-page">
+    <div class="container">
+      <!-- Puzzle Selection -->
+      <div class="puzzle-selector" id="puzzle-selector">
+        <h1 class="page-title">{title}</h1>
+        <p class="page-description">{description}</p>
+
+        <!-- Difficulty Selection -->
+        <div class="difficulty-selection">
+          <h3>{getTranslation(locale, 'selectDifficulty') || 'Wähle Schwierigkeit'}</h3>
+          <div class="difficulty-buttons">
+            <button class="difficulty-btn active" data-difficulty="easy">
+              <span class="difficulty-emoji">😊</span>
+              <span class="difficulty-name">{getTranslation(locale, 'puzzleEasy') || 'Einfach'}</span>
+              <span class="difficulty-pieces">9 Teile</span>
+            </button>
+            <button class="difficulty-btn" data-difficulty="medium">
+              <span class="difficulty-emoji">🙂</span>
+              <span class="difficulty-name">{getTranslation(locale, 'puzzleMedium') || 'Mittel'}</span>
+              <span class="difficulty-pieces">16 Teile</span>
+            </button>
+            <button class="difficulty-btn" data-difficulty="hard">
+              <span class="difficulty-emoji">😎</span>
+              <span class="difficulty-name">{getTranslation(locale, 'puzzleHard') || 'Schwer'}</span>
+              <span class="difficulty-pieces">25 Teile</span>
+            </button>
+            <button class="difficulty-btn" data-difficulty="expert">
+              <span class="difficulty-emoji">🤓</span>
+              <span class="difficulty-name">{getTranslation(locale, 'puzzleExpert') || 'Experte'}</span>
+              <span class="difficulty-pieces">36 Teile</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Image Gallery -->
+        <div class="image-gallery">
+          <h3>{getTranslation(locale, 'selectPuzzle') || 'Wähle ein Puzzle'}</h3>
+          <div class="gallery-grid">
+            {puzzleImages.map((image) => (
+              <button
+                class={`gallery-item ${!image.unlocked ? 'locked' : ''}`}
+                data-image-id={image.id}
+                data-image-url={image.url}
+                data-unlocked={image.unlocked}
+              >
+                <div class="gallery-emoji">{image.emoji}</div>
+                <div class="gallery-name">{image.name}</div>
+                {!image.unlocked && (
+                  <div class="lock-overlay">
+                    <span class="lock-icon">🔒</span>
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <!-- Best Times Leaderboard -->
+        <div class="leaderboard">
+          <h3>{getTranslation(locale, 'bestTimes') || 'Beste Zeiten'}</h3>
+          <div class="leaderboard-tabs">
+            <button class="tab-btn active" data-tab="easy">Einfach</button>
+            <button class="tab-btn" data-tab="medium">Mittel</button>
+            <button class="tab-btn" data-tab="hard">Schwer</button>
+            <button class="tab-btn" data-tab="expert">Experte</button>
+          </div>
+          <div class="leaderboard-content">
+            <div class="leaderboard-panel active" data-panel="easy">
+              <div class="no-records">{getTranslation(locale, 'noRecordsYet') || 'Noch keine Rekorde'}</div>
+            </div>
+            <div class="leaderboard-panel" data-panel="medium">
+              <div class="no-records">{getTranslation(locale, 'noRecordsYet') || 'Noch keine Rekorde'}</div>
+            </div>
+            <div class="leaderboard-panel" data-panel="hard">
+              <div class="no-records">{getTranslation(locale, 'noRecordsYet') || 'Noch keine Rekorde'}</div>
+            </div>
+            <div class="leaderboard-panel" data-panel="expert">
+              <div class="no-records">{getTranslation(locale, 'noRecordsYet') || 'Noch keine Rekorde'}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Puzzle Game Container (hidden initially) -->
+      <div class="puzzle-game-wrapper hidden" id="puzzle-game-wrapper">
+        <button class="back-btn" id="back-to-selection">
+          ← {getTranslation(locale, 'backToPuzzles') || 'Zurück zur Auswahl'}
+        </button>
+        <div id="puzzle-container"></div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .puzzle-page {
+    min-height: 90vh;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .puzzle-selector {
+    background: white;
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    color: #667eea;
+    margin: 0 0 0.5rem 0;
+    text-align: center;
+  }
+
+  .page-description {
+    font-size: 1.2rem;
+    color: #666;
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .difficulty-selection {
+    margin-bottom: 3rem;
+  }
+
+  .difficulty-selection h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .difficulty-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .difficulty-btn {
+    background: white;
+    border: 3px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .difficulty-btn:hover {
+    border-color: #667eea;
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+  }
+
+  .difficulty-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: white;
+  }
+
+  .difficulty-emoji {
+    font-size: 2.5rem;
+  }
+
+  .difficulty-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .difficulty-pieces {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  .image-gallery {
+    margin-bottom: 3rem;
+  }
+
+  .image-gallery h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .gallery-item {
+    background: white;
+    border: 3px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .gallery-item:hover:not(.locked) {
+    border-color: #667eea;
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+  }
+
+  .gallery-item.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .gallery-emoji {
+    font-size: 3.5rem;
+  }
+
+  .gallery-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+  }
+
+  .lock-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lock-icon {
+    font-size: 2rem;
+  }
+
+  .leaderboard {
+    margin-top: 3rem;
+  }
+
+  .leaderboard h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .leaderboard-tabs {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .tab-btn:hover {
+    border-color: #667eea;
+  }
+
+  .tab-btn.active {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+  }
+
+  .leaderboard-content {
+    background: #f9f9f9;
+    border-radius: 16px;
+    padding: 2rem;
+    min-height: 200px;
+  }
+
+  .leaderboard-panel {
+    display: none;
+  }
+
+  .leaderboard-panel.active {
+    display: block;
+  }
+
+  .no-records {
+    text-align: center;
+    color: #999;
+    padding: 2rem;
+    font-size: 1.1rem;
+  }
+
+  .record-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+  }
+
+  .record-puzzle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .record-emoji {
+    font-size: 2rem;
+  }
+
+  .record-time {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #667eea;
+  }
+
+  .puzzle-game-wrapper {
+    background: white;
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .puzzle-game-wrapper.hidden {
+    display: none;
+  }
+
+  .back-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .back-btn:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .puzzle-selector {
+      padding: 1.5rem;
+    }
+
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .difficulty-buttons {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 1rem;
+    }
+
+    .gallery-emoji {
+      font-size: 2.5rem;
+    }
+  }
+
+  [dir='rtl'] .puzzle-page {
+    direction: rtl;
+  }
+</style>
+
+<script>
+  import JigsawPuzzle from '../../components/JigsawPuzzle.astro';
+
+  let selectedDifficulty: 'easy' | 'medium' | 'hard' | 'expert' = 'easy';
+  let selectedImage: { id: string; url: string; emoji: string; name: string } | null = null;
+
+  // Difficulty selection
+  document.querySelectorAll('.difficulty-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.difficulty-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedDifficulty = btn.getAttribute('data-difficulty') as 'easy' | 'medium' | 'hard' | 'expert';
+    });
+  });
+
+  // Image selection
+  document.querySelectorAll('.gallery-item').forEach((item) => {
+    item.addEventListener('click', () => {
+      const unlocked = item.getAttribute('data-unlocked') === 'true';
+      if (!unlocked) {
+        alert('Dieses Puzzle ist noch gesperrt! Schließe mehr Geschichten ab, um es freizuschalten.');
+        return;
+      }
+
+      const imageId = item.getAttribute('data-image-id')!;
+      const imageUrl = item.getAttribute('data-image-url')!;
+      const emoji = item.querySelector('.gallery-emoji')?.textContent || '';
+      const name = item.querySelector('.gallery-name')?.textContent || '';
+
+      selectedImage = { id: imageId, url: imageUrl, emoji, name };
+      startPuzzle();
+    });
+  });
+
+  // Start puzzle
+  function startPuzzle() {
+    if (!selectedImage) return;
+
+    const selector = document.getElementById('puzzle-selector');
+    const gameWrapper = document.getElementById('puzzle-game-wrapper');
+    const puzzleContainer = document.getElementById('puzzle-container');
+
+    if (!selector || !gameWrapper || !puzzleContainer) return;
+
+    // Hide selector, show game
+    selector.classList.add('hidden');
+    gameWrapper.classList.remove('hidden');
+
+    // Create puzzle component
+    puzzleContainer.innerHTML = `
+      <div
+        class="jigsaw-puzzle-container"
+        data-puzzle-id="${selectedImage.id}"
+        data-difficulty="${selectedDifficulty}"
+        data-image-url="${selectedImage.url}"
+        data-language="de"
+        data-show-ghost="true"
+      >
+        <!-- Puzzle will be rendered by JigsawPuzzle component script -->
+      </div>
+    `;
+
+    // Initialize puzzle (the JigsawPuzzle component script will handle this)
+    const event = new CustomEvent('puzzle-init');
+    document.dispatchEvent(event);
+  }
+
+  // Back to selection
+  document.getElementById('back-to-selection')?.addEventListener('click', () => {
+    const selector = document.getElementById('puzzle-selector');
+    const gameWrapper = document.getElementById('puzzle-game-wrapper');
+
+    if (!selector || !gameWrapper) return;
+
+    gameWrapper.classList.add('hidden');
+    selector.classList.remove('hidden');
+
+    // Clear puzzle container
+    const puzzleContainer = document.getElementById('puzzle-container');
+    if (puzzleContainer) {
+      puzzleContainer.innerHTML = '';
+    }
+  });
+
+  // Leaderboard tabs
+  document.querySelectorAll('.tab-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tab = btn.getAttribute('data-tab');
+
+      document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.querySelectorAll('.leaderboard-panel').forEach((panel) => {
+        panel.classList.remove('active');
+      });
+      document.querySelector(`[data-panel="${tab}"]`)?.classList.add('active');
+    });
+  });
+
+  // Load leaderboard from localStorage
+  function loadLeaderboard() {
+    const difficulties = ['easy', 'medium', 'hard', 'expert'];
+    const puzzleImages = ['bruno', 'fritz', 'lina', 'tobi', 'mila'];
+
+    difficulties.forEach((difficulty) => {
+      const panel = document.querySelector(`[data-panel="${difficulty}"]`);
+      if (!panel) return;
+
+      const records: Array<{ puzzleId: string; time: number }> = [];
+
+      puzzleImages.forEach((puzzleId) => {
+        const key = `puzzle-best-time-${puzzleId}-${difficulty}`;
+        const time = localStorage.getItem(key);
+        if (time) {
+          records.push({ puzzleId, time: parseInt(time, 10) });
+        }
+      });
+
+      if (records.length === 0) return;
+
+      // Sort by time (fastest first)
+      records.sort((a, b) => a.time - b.time);
+
+      // Render records
+      const recordsHTML = records
+        .map((record) => {
+          const mins = Math.floor(record.time / 60);
+          const secs = record.time % 60;
+          const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+          // Get emoji for puzzle
+          const puzzleEmoji = {
+            bruno: '🐻',
+            fritz: '🦊',
+            lina: '🦁',
+            tobi: '🐰',
+            mila: '🦉',
+          }[record.puzzleId] || '🧩';
+
+          return `
+            <div class="record-item">
+              <div class="record-puzzle">
+                <span class="record-emoji">${puzzleEmoji}</span>
+                <span class="record-name">${record.puzzleId}</span>
+              </div>
+              <span class="record-time">${timeStr}</span>
+            </div>
+          `;
+        })
+        .join('');
+
+      panel.innerHTML = recordsHTML;
+    });
+  }
+
+  // Load leaderboard on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    loadLeaderboard();
+  });
+</script>

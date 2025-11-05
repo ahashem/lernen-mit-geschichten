@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MemoryGame from '../../components/MemoryGame.astro';
+
+const locale = 'de';
+const title = 'Gedächtnisspiel';
+const description = 'Finde die passenden Kartenpaare!';
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="memory-game-page">
+    <div class="page-header">
+      <a href="/games" class="back-button">
+        <span class="arrow">←</span>
+        <span>Zurück zur Spielhalle</span>
+      </a>
+      <h1 class="page-title">🎴 Gedächtnisspiel</h1>
+    </div>
+    <div class="container">
+      <MemoryGame locale={locale} />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .memory-game-page {
+    min-height: 100vh;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .page-header {
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+    padding: 0 2rem;
+  }
+
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+  }
+
+  .back-button:hover {
+    background: white;
+    transform: translateX(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .back-button .arrow {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+  }
+
+  .back-button:hover .arrow {
+    transform: translateX(-4px);
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    color: white;
+    text-align: center;
+    margin: 1rem 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  @media (max-width: 768px) {
+    .memory-game-page {
+      padding: 1rem 0;
+    }
+
+    .page-header {
+      padding: 0 1rem;
+    }
+
+    .page-title {
+      font-size: 1.8rem;
+    }
+
+    .container {
+      padding: 1rem;
+      border-radius: 12px;
+    }
+  }
+</style>

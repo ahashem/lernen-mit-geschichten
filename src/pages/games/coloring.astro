@@ -1,0 +1,1033 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { COLORING_TEMPLATES, DEFAULT_PALETTE, SKIN_TONE_PALETTE } from '../../utils/coloring-pages';
+
+const locale = 'de';
+const title = 'Malbuch';
+const description = 'Male deine Lieblingscharaktere bunt aus!';
+
+// Group templates by difficulty
+const simpleTemplates = COLORING_TEMPLATES.filter(t => t.difficulty === 'simple');
+const mediumTemplates = COLORING_TEMPLATES.filter(t => t.difficulty === 'medium');
+const detailedTemplates = COLORING_TEMPLATES.filter(t => t.difficulty === 'detailed');
+const featuredTemplates = COLORING_TEMPLATES.filter(t => t.featured);
+
+const allColors = [...DEFAULT_PALETTE.colors, ...SKIN_TONE_PALETTE.colors];
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="coloring-page">
+    <div class="container">
+      <div class="coloring-studio">
+        <div class="studio-header">
+          <h1>🎨 {title}</h1>
+          <p>{description}</p>
+        </div>
+
+        <div class="studio-content">
+          <!-- Template Selector -->
+          <aside class="template-sidebar">
+            <div class="sidebar-section">
+              <h3>Wähle ein Bild</h3>
+
+              <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">Alle</button>
+                <button class="filter-tab" data-filter="featured">⭐ Empfohlen</button>
+                <button class="filter-tab" data-filter="simple">😊 Einfach</button>
+                <button class="filter-tab" data-filter="medium">🎯 Mittel</button>
+                <button class="filter-tab" data-filter="detailed">🎨 Detailliert</button>
+              </div>
+
+              <div class="template-grid" id="template-grid">
+                {COLORING_TEMPLATES.map((template) => (
+                  <div
+                    class="template-item"
+                    data-template-id={template.id}
+                    data-difficulty={template.difficulty}
+                    data-featured={template.featured}
+                  >
+                    <div class="template-emoji">{template.emoji}</div>
+                    <div class="template-name">{template.name.de}</div>
+                    <div class="template-badge" data-difficulty={template.difficulty}>
+                      {template.difficulty === 'simple' && '⭐'}
+                      {template.difficulty === 'medium' && '⭐⭐'}
+                      {template.difficulty === 'detailed' && '⭐⭐⭐'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <!-- Saved Gallery -->
+            <div class="sidebar-section">
+              <h4>🖼️ Gespeicherte Bilder</h4>
+              <div class="saved-gallery" id="saved-gallery">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </aside>
+
+          <!-- Main Canvas Area -->
+          <main class="coloring-canvas-container">
+            <!-- Tools Panel -->
+            <div class="canvas-tools">
+              <div class="tool-group">
+                <h4>Werkzeuge</h4>
+                <div class="tool-buttons">
+                  <button id="fill-tool" class="tool-btn active" title="Füll-Werkzeug" data-tool="fill">
+                    <span class="tool-icon">🪣</span>
+                    <span class="tool-label">Füllen</span>
+                  </button>
+                  <button id="brush-tool" class="tool-btn" title="Pinsel" data-tool="brush">
+                    <span class="tool-icon">🖌️</span>
+                    <span class="tool-label">Pinsel</span>
+                  </button>
+                  <button id="eraser-tool" class="tool-btn" title="Radiergummi" data-tool="eraser">
+                    <span class="tool-icon">🧹</span>
+                    <span class="tool-label">Löschen</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="tool-group">
+                <h4>Aktionen</h4>
+                <div class="action-buttons">
+                  <button id="undo-btn" class="action-btn" title="Rückgängig">
+                    <span>↶</span>
+                  </button>
+                  <button id="redo-btn" class="action-btn" title="Wiederholen">
+                    <span>↷</span>
+                  </button>
+                  <button id="clear-btn" class="action-btn danger" title="Alles löschen">
+                    <span>🗑️</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="tool-group">
+                <h4>Farbpalette</h4>
+                <div class="palette-tabs">
+                  <button class="palette-tab active" data-palette="default">🎨 Farben</button>
+                  <button class="palette-tab" data-palette="skin">👤 Hauttöne</button>
+                </div>
+                <div class="color-palette" id="color-palette">
+                  {DEFAULT_PALETTE.colors.map((color) => (
+                    <div
+                      class="color-swatch"
+                      data-color={color.hex}
+                      style={`background-color: ${color.hex};`}
+                      title={color.name}
+                    ></div>
+                  ))}
+                </div>
+                <div class="color-palette hidden" id="skin-palette">
+                  {SKIN_TONE_PALETTE.colors.map((color) => (
+                    <div
+                      class="color-swatch"
+                      data-color={color.hex}
+                      style={`background-color: ${color.hex};`}
+                      title={color.name}
+                    ></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <!-- Canvas Wrapper -->
+            <div class="canvas-wrapper">
+              <div class="canvas-controls">
+                <div class="progress-indicator">
+                  <span id="progress-text">Wähle ein Bild zum Ausmalen</span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                  </div>
+                </div>
+                <div class="zoom-controls">
+                  <button id="zoom-out" class="zoom-btn" title="Verkleinern">−</button>
+                  <span id="zoom-level">100%</span>
+                  <button id="zoom-in" class="zoom-btn" title="Vergrößern">+</button>
+                  <button id="reset-zoom" class="zoom-btn" title="Zurücksetzen">⟲</button>
+                </div>
+              </div>
+
+              <div class="canvas-container" id="canvas-container">
+                <svg
+                  id="coloring-canvas"
+                  width="800"
+                  height="800"
+                  viewBox="0 0 800 800"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect width="800" height="800" fill="#ffffff"/>
+                  <text
+                    x="400"
+                    y="400"
+                    text-anchor="middle"
+                    font-size="24"
+                    fill="#999"
+                  >
+                    Wähle ein Bild zum Ausmalen
+                  </text>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Save/Export Actions -->
+            <div class="canvas-actions">
+              <button id="save-btn" class="action-btn primary">
+                <span>💾</span>
+                <span>Speichern</span>
+              </button>
+              <button id="export-png-btn" class="action-btn">
+                <span>🖼️</span>
+                <span>PNG</span>
+              </button>
+              <button id="print-btn" class="action-btn">
+                <span>🖨️</span>
+                <span>Drucken</span>
+              </button>
+              <button id="share-btn" class="action-btn">
+                <span>📤</span>
+                <span>Teilen</span>
+              </button>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .coloring-page {
+    min-height: 100vh;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  }
+
+  .studio-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .studio-header h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .studio-content {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+  }
+
+  /* Template Sidebar */
+  .template-sidebar {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+
+  .sidebar-section {
+    margin-bottom: 2rem;
+  }
+
+  .sidebar-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .sidebar-section h4 {
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    color: #666;
+  }
+
+  .filter-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .filter-tab {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+  }
+
+  .filter-tab:hover {
+    border-color: #ff6b6b;
+    background: #fff5f5;
+  }
+
+  .filter-tab.active {
+    border-color: #ff6b6b;
+    background: #ff6b6b;
+    color: white;
+  }
+
+  .template-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .template-item {
+    position: relative;
+    border: 3px solid transparent;
+    border-radius: 12px;
+    padding: 1rem 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #f9f9f9;
+    text-align: center;
+  }
+
+  .template-item:hover {
+    border-color: #ff6b6b;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .template-item.active {
+    border-color: #ff6b6b;
+    background: #fff5f5;
+  }
+
+  .template-emoji {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .template-name {
+    font-size: 0.85rem;
+    color: #333;
+    font-weight: 500;
+  }
+
+  .template-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Canvas Container */
+  .coloring-canvas-container {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .canvas-tools {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #f0f0f0;
+  }
+
+  .tool-group h4 {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.75rem;
+  }
+
+  .tool-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .tool-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.75rem 0.5rem;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tool-icon {
+    font-size: 1.5rem;
+  }
+
+  .tool-label {
+    font-size: 0.75rem;
+    color: #666;
+  }
+
+  .tool-btn:hover, .tool-btn.active {
+    background: #ffeaa7;
+    border-color: #fdcb6e;
+    transform: scale(1.05);
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .action-btn {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    background: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .action-btn:hover {
+    background: #f0f0f0;
+    transform: scale(1.05);
+  }
+
+  .action-btn.danger:hover {
+    background: #ffe0e0;
+    border-color: #ff6b6b;
+  }
+
+  .action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .palette-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .palette-tab {
+    flex: 1;
+    padding: 0.5rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .palette-tab:hover, .palette-tab.active {
+    border-color: #ff6b6b;
+    background: #fff5f5;
+  }
+
+  .color-palette {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .color-palette.hidden {
+    display: none;
+  }
+
+  .color-swatch {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .color-swatch:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .color-swatch.active {
+    border-color: #333;
+    transform: scale(1.2);
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3);
+  }
+
+  .canvas-wrapper {
+    margin-bottom: 1.5rem;
+  }
+
+  .canvas-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 12px;
+  }
+
+  .progress-indicator {
+    flex: 1;
+  }
+
+  #progress-text {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-bar {
+    width: 100%;
+    max-width: 300px;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b6b, #ffa07a);
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  .zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .zoom-btn {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .zoom-btn:hover {
+    background: #f0f0f0;
+    border-color: #999;
+  }
+
+  #zoom-level {
+    font-size: 0.9rem;
+    color: #666;
+    min-width: 50px;
+    text-align: center;
+  }
+
+  .canvas-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 600px;
+    background: #fafafa;
+    border-radius: 12px;
+    padding: 2rem;
+    overflow: auto;
+  }
+
+  #coloring-canvas {
+    max-width: 100%;
+    height: auto;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    cursor: crosshair;
+    transition: transform 0.2s;
+  }
+
+  .canvas-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .canvas-actions .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #e0e0e0;
+    color: #333;
+  }
+
+  .canvas-actions .action-btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .canvas-actions .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .saved-gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .saved-item {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .saved-item:hover {
+    border-color: #ff6b6b;
+    transform: scale(1.05);
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  @media (max-width: 768px) {
+    .studio-content {
+      grid-template-columns: 1fr;
+    }
+
+    .template-sidebar {
+      max-height: none;
+    }
+
+    .canvas-tools {
+      grid-template-columns: 1fr;
+    }
+
+    .canvas-controls {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+</style>
+
+<script>
+  import { ColoringPageManager, COLORING_TEMPLATES, coloringAchievements } from '../../utils/coloring-pages';
+
+  let currentManager: ColoringPageManager | null = null;
+  let currentTemplateId: string | null = null;
+  let currentTool: 'fill' | 'eraser' = 'fill';
+  let currentColor: string = '#FF6B6B';
+  let zoomLevel = 1;
+
+  // Simple SVG region generator (placeholder - would use actual SVG files in production)
+  function generateSimpleSVGRegions(templateId: string, emoji: string): string {
+    const regions = [];
+
+    // Create 10-15 regions based on difficulty
+    const regionCount = Math.floor(Math.random() * 5) + 10;
+
+    for (let i = 0; i < regionCount; i++) {
+      const x = 100 + (i % 5) * 150;
+      const y = 100 + Math.floor(i / 5) * 150;
+      const width = 120;
+      const height = 120;
+
+      regions.push(`
+        <rect
+          id="region-${i}"
+          class="coloring-region"
+          x="${x}"
+          y="${y}"
+          width="${width}"
+          height="${height}"
+          fill="white"
+          stroke="#333"
+          stroke-width="3"
+          data-region-id="region-${i}"
+        />
+      `);
+    }
+
+    // Add character emoji in center
+    regions.push(`
+      <text
+        x="400"
+        y="450"
+        text-anchor="middle"
+        font-size="200"
+        opacity="0.1"
+      >
+        ${emoji}
+      </text>
+    `);
+
+    return regions.join('');
+  }
+
+  // Initialize coloring book
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeColoringBook();
+  });
+
+  function initializeColoringBook() {
+    // Template selection
+    const templateGrid = document.getElementById('template-grid');
+    templateGrid?.querySelectorAll('.template-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const templateId = item.getAttribute('data-template-id');
+        if (templateId) {
+          selectTemplate(templateId);
+        }
+      });
+    });
+
+    // Filter tabs
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        const filter = tab.getAttribute('data-filter');
+        filterTemplates(filter || 'all');
+      });
+    });
+
+    // Color palette
+    const colorPalette = document.getElementById('color-palette');
+    colorPalette?.querySelectorAll('.color-swatch').forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        const color = swatch.getAttribute('data-color');
+        if (color) {
+          selectColor(color);
+        }
+      });
+    });
+
+    const skinPalette = document.getElementById('skin-palette');
+    skinPalette?.querySelectorAll('.color-swatch').forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        const color = swatch.getAttribute('data-color');
+        if (color) {
+          selectColor(color);
+        }
+      });
+    });
+
+    // Palette tabs
+    document.querySelectorAll('.palette-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.palette-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        const palette = tab.getAttribute('data-palette');
+        switchPalette(palette || 'default');
+      });
+    });
+
+    // Tool buttons
+    document.querySelectorAll('.tool-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tool = btn.getAttribute('data-tool');
+        if (tool === 'fill' || tool === 'eraser') {
+          selectTool(tool);
+        }
+      });
+    });
+
+    // Action buttons
+    document.getElementById('undo-btn')?.addEventListener('click', () => undo());
+    document.getElementById('redo-btn')?.addEventListener('click', () => redo());
+    document.getElementById('clear-btn')?.addEventListener('click', () => clearCanvas());
+
+    // Zoom controls
+    document.getElementById('zoom-in')?.addEventListener('click', () => zoom(0.1));
+    document.getElementById('zoom-out')?.addEventListener('click', () => zoom(-0.1));
+    document.getElementById('reset-zoom')?.addEventListener('click', () => resetZoom());
+
+    // Export actions
+    document.getElementById('save-btn')?.addEventListener('click', () => saveColoring());
+    document.getElementById('export-png-btn')?.addEventListener('click', () => exportPNG());
+    document.getElementById('print-btn')?.addEventListener('click', () => printColoring());
+    document.getElementById('share-btn')?.addEventListener('click', () => shareColoring());
+
+    // Load saved gallery
+    loadSavedGallery();
+  }
+
+  function selectTemplate(templateId: string) {
+    const template = COLORING_TEMPLATES.find(t => t.id === templateId);
+    if (!template) return;
+
+    currentTemplateId = templateId;
+    currentManager = new ColoringPageManager(templateId);
+
+    // Update UI
+    document.querySelectorAll('.template-item').forEach(item => {
+      item.classList.toggle('active', item.getAttribute('data-template-id') === templateId);
+    });
+
+    // Load template to canvas
+    const canvas = document.getElementById('coloring-canvas') as unknown as SVGElement;
+    if (canvas) {
+      const svgContent = generateSimpleSVGRegions(templateId, template.emoji);
+      canvas.innerHTML = `
+        <rect width="800" height="800" fill="#ffffff"/>
+        ${svgContent}
+      `;
+
+      // Attach region click handlers
+      canvas.querySelectorAll('.coloring-region').forEach(region => {
+        region.addEventListener('click', () => {
+          const regionId = region.getAttribute('data-region-id');
+          if (regionId && currentManager) {
+            currentManager.handleRegionClick(regionId);
+          }
+        });
+      });
+
+      // Listen for color changes
+      window.addEventListener('coloring-page-update', ((event: CustomEvent) => {
+        const { regionId, color } = event.detail;
+        const regionEl = canvas.querySelector(`[data-region-id="${regionId}"]`) as SVGElement;
+        if (regionEl) {
+          regionEl.setAttribute('fill', color || 'white');
+        }
+        updateProgress();
+      }) as EventListener);
+    }
+
+    updateProgress();
+  }
+
+  function selectColor(color: string) {
+    currentColor = color;
+    currentTool = 'fill';
+
+    if (currentManager) {
+      currentManager.setColor(color);
+    }
+
+    // Update UI
+    document.querySelectorAll('.color-swatch').forEach(swatch => {
+      swatch.classList.toggle('active', swatch.getAttribute('data-color') === color);
+    });
+
+    document.querySelectorAll('.tool-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-tool') === 'fill');
+    });
+  }
+
+  function selectTool(tool: 'fill' | 'eraser') {
+    currentTool = tool;
+
+    if (currentManager) {
+      currentManager.setTool(tool);
+    }
+
+    document.querySelectorAll('.tool-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-tool') === tool);
+    });
+  }
+
+  function switchPalette(palette: string) {
+    const defaultPalette = document.getElementById('color-palette');
+    const skinPalette = document.getElementById('skin-palette');
+
+    if (palette === 'skin') {
+      defaultPalette?.classList.add('hidden');
+      skinPalette?.classList.remove('hidden');
+    } else {
+      defaultPalette?.classList.remove('hidden');
+      skinPalette?.classList.add('hidden');
+    }
+  }
+
+  function filterTemplates(filter: string) {
+    const templates = document.querySelectorAll('.template-item');
+
+    templates.forEach(template => {
+      const difficulty = template.getAttribute('data-difficulty');
+      const featured = template.getAttribute('data-featured') === 'true';
+
+      let show = false;
+      if (filter === 'all') {
+        show = true;
+      } else if (filter === 'featured') {
+        show = featured;
+      } else {
+        show = difficulty === filter;
+      }
+
+      template.classList.toggle('hidden', !show);
+    });
+  }
+
+  function undo() {
+    if (currentManager && currentManager.canUndo()) {
+      currentManager.undo();
+      updateProgress();
+    }
+  }
+
+  function redo() {
+    if (currentManager && currentManager.canRedo()) {
+      currentManager.redo();
+      updateProgress();
+    }
+  }
+
+  function clearCanvas() {
+    if (!currentManager) return;
+
+    if (confirm('Möchtest du wirklich alles löschen?')) {
+      currentManager.clear();
+      updateProgress();
+    }
+  }
+
+  function zoom(delta: number) {
+    zoomLevel = Math.max(0.5, Math.min(2, zoomLevel + delta));
+    const canvas = document.getElementById('coloring-canvas');
+    if (canvas) {
+      canvas.style.transform = `scale(${zoomLevel})`;
+    }
+    updateZoomDisplay();
+  }
+
+  function resetZoom() {
+    zoomLevel = 1;
+    const canvas = document.getElementById('coloring-canvas');
+    if (canvas) {
+      canvas.style.transform = 'scale(1)';
+    }
+    updateZoomDisplay();
+  }
+
+  function updateZoomDisplay() {
+    const zoomDisplay = document.getElementById('zoom-level');
+    if (zoomDisplay) {
+      zoomDisplay.textContent = `${Math.round(zoomLevel * 100)}%`;
+    }
+  }
+
+  function updateProgress() {
+    if (!currentManager) return;
+
+    const totalRegions = document.querySelectorAll('.coloring-region').length;
+    const percentage = currentManager.getCompletionPercentage(totalRegions);
+
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+
+    if (progressFill) {
+      progressFill.style.width = `${percentage}%`;
+    }
+
+    if (progressText) {
+      progressText.textContent = `${percentage}% fertig`;
+    }
+
+    // Check for completion
+    if (percentage === 100 && currentTemplateId) {
+      setTimeout(() => {
+        coloringAchievements.markPageCompleted(currentTemplateId!);
+        alert('🎉 Toll gemacht! Ausmalbild fertig!');
+      }, 500);
+    }
+  }
+
+  function saveColoring() {
+    if (!currentTemplateId) return;
+
+    // State is auto-saved via ColoringPageManager
+    alert('💾 Ausmalbild gespeichert!');
+    loadSavedGallery();
+  }
+
+  function exportPNG() {
+    const canvas = document.getElementById('coloring-canvas') as unknown as SVGElement;
+    if (!canvas || !currentManager || !currentTemplateId) return;
+
+    currentManager.exportAsPNG(canvas, `coloring-${currentTemplateId}.png`);
+  }
+
+  function printColoring() {
+    const canvas = document.getElementById('coloring-canvas') as unknown as SVGElement;
+    if (!canvas || !currentManager) return;
+
+    currentManager.print(canvas);
+  }
+
+  async function shareColoring() {
+    if (!currentManager) return;
+
+    const shareUrl = await currentManager.generateQRCode();
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'Mein Ausmalbild',
+        text: 'Schau dir mein Ausmalbild an!',
+        url: shareUrl,
+      });
+    } else {
+      alert(`Teile diesen Link:\n${shareUrl}`);
+    }
+  }
+
+  function loadSavedGallery() {
+    const gallery = document.getElementById('saved-gallery');
+    if (!gallery) return;
+
+    const completed = coloringAchievements.getCompletedPages();
+
+    if (completed.length === 0) {
+      gallery.innerHTML = '<p style="text-align: center; color: #999; padding: 1rem;">Noch keine gespeicherten Bilder</p>';
+      return;
+    }
+
+    gallery.innerHTML = completed.slice(0, 6).map(templateId => {
+      const template = COLORING_TEMPLATES.find(t => t.id === templateId);
+      if (!template) return '';
+
+      return `
+        <div class="saved-item" data-template-id="${templateId}">
+          <div style="font-size: 2rem; text-align: center;">${template.emoji}</div>
+        </div>
+      `;
+    }).join('');
+
+    // Add click handlers
+    gallery.querySelectorAll('.saved-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const templateId = item.getAttribute('data-template-id');
+        if (templateId) {
+          selectTemplate(templateId);
+        }
+      });
+    });
+  }
+</script>

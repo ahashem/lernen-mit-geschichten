@@ -1,0 +1,168 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getTranslation } from '../../utils/i18n';
+
+const locale = 'de';
+const title = 'Spiele & Aktivitäten';
+const description = 'Lerne durch Spielen - Memory, Puzzles, Malen und mehr!';
+
+const games = [
+  {
+    id: 'memory',
+    title: 'Gedächtnisspiel',
+    emoji: '🎴',
+    description: 'Finde die passenden Kartenpaare',
+    url: '/games/memory',
+    difficulty: 'easy',
+    stars: 3,
+  },
+  {
+    id: 'puzzle',
+    title: 'Puzzle',
+    emoji: '🧩',
+    description: 'Setze die Bilder zusammen',
+    url: '/games/puzzle',
+    difficulty: 'medium',
+    stars: 5,
+  },
+  {
+    id: 'coloring',
+    title: 'Malbuch',
+    emoji: '🎨',
+    description: 'Male deine Lieblingscharaktere',
+    url: '/games/coloring',
+    difficulty: 'easy',
+    stars: 2,
+  },
+  {
+    id: 'quiz',
+    title: 'Quiz-Meister',
+    emoji: '❓',
+    description: 'Teste dein Wissen',
+    url: '/achievements',
+    difficulty: 'medium',
+    stars: 4,
+  },
+];
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="games-hub">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">🎮 {title}</h1>
+        <p class="page-description">{description}</p>
+      </header>
+
+      <div class="games-grid">
+        {games.map(game => (
+          <a href={game.url} class="game-card">
+            <div class="game-icon">{game.emoji}</div>
+            <h3 class="game-title">{game.title}</h3>
+            <p class="game-description">{game.description}</p>
+            <div class="game-meta">
+              <span class={`difficulty ${game.difficulty}`}>{game.difficulty}</span>
+              <span class="stars">{'⭐'.repeat(game.stars)}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .games-hub {
+    min-height: 80vh;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 3rem;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+
+  .page-description {
+    font-size: 1.3rem;
+    color: #666;
+  }
+
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .game-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .game-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+  }
+
+  .game-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .game-title {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+
+  .game-description {
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+
+  .game-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 2px solid #f0f0f0;
+  }
+
+  .difficulty {
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .difficulty.easy {
+    background: #4caf50;
+    color: white;
+  }
+
+  .difficulty.medium {
+    background: #ff9800;
+    color: white;
+  }
+
+  .difficulty.hard {
+    background: #f44336;
+    color: white;
+  }
+
+  .stars {
+    font-size: 1.2rem;
+  }
+</style>

@@ -1,0 +1,911 @@
+---
+/**
+ * Memory Card Matching Game Component
+ * Interactive memory game with flip animations, scoring, and multiplayer support
+ */
+
+interface Props {
+  locale?: 'de' | 'ar' | 'en' | 'tr' | 'ur';
+}
+
+const { locale = 'de' } = Astro.props;
+---
+
+<div class="memory-game-container" data-locale={locale}>
+  <!-- Game Setup Screen -->
+  <div class="game-setup" id="game-setup">
+    <h2 class="setup-title" data-i18n="memoryGameTitle">Gedächtnisspiel</h2>
+    <p class="setup-description" data-i18n="memoryGameDescription">
+      Finde die passenden Kartenpaare!
+    </p>
+
+    <div class="difficulty-selector">
+      <h3 data-i18n="selectDifficulty">Schwierigkeit wählen</h3>
+      <div class="difficulty-buttons">
+        <button class="difficulty-btn" data-difficulty="easy">
+          <span class="emoji">🟢</span>
+          <span data-i18n="easy">Einfach</span>
+          <span class="detail">8 Karten</span>
+        </button>
+        <button class="difficulty-btn active" data-difficulty="medium">
+          <span class="emoji">🟡</span>
+          <span data-i18n="medium">Mittel</span>
+          <span class="detail">16 Karten</span>
+        </button>
+        <button class="difficulty-btn" data-difficulty="hard">
+          <span class="emoji">🔴</span>
+          <span data-i18n="hard">Schwer</span>
+          <span class="detail">24 Karten</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mode-selector">
+      <h3 data-i18n="selectMode">Spielmodus wählen</h3>
+      <div class="mode-buttons">
+        <button class="mode-btn active" data-mode="single">
+          <span class="emoji">👤</span>
+          <span data-i18n="singlePlayer">Einzelspieler</span>
+        </button>
+        <button class="mode-btn" data-mode="multiplayer">
+          <span class="emoji">👥</span>
+          <span data-i18n="multiPlayer">Mehrspieler</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="player-setup hidden" id="player-setup">
+      <h3 data-i18n="enterPlayerNames">Spielernamen eingeben</h3>
+      <div class="player-inputs">
+        <input type="text" class="player-name-input" placeholder="Spieler 1" value="Spieler 1" data-player="1" />
+        <input type="text" class="player-name-input" placeholder="Spieler 2" value="Spieler 2" data-player="2" />
+      </div>
+    </div>
+
+    <button class="start-game-btn" id="start-game-btn">
+      <span data-i18n="startGame">Spiel starten</span>
+    </button>
+  </div>
+
+  <!-- Game Board -->
+  <div class="game-board hidden" id="game-board">
+    <!-- Game Header -->
+    <div class="game-header">
+      <div class="game-info">
+        <div class="info-item">
+          <span class="info-label" data-i18n="time">Zeit</span>
+          <span class="info-value" id="game-time">0:00</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label" data-i18n="moves">Züge</span>
+          <span class="info-value" id="game-moves">0</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label" data-i18n="matches">Paare</span>
+          <span class="info-value" id="game-matches">0 / 0</span>
+        </div>
+      </div>
+
+      <div class="game-actions">
+        <button class="icon-btn" id="reset-btn" title="Neustart">
+          <span>🔄</span>
+        </button>
+        <button class="icon-btn" id="back-to-setup-btn" title="Zurück">
+          <span>⬅️</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Player Turn Indicator (Multiplayer) -->
+    <div class="player-turn hidden" id="player-turn">
+      <div class="player-indicator" id="player-1-indicator">
+        <span class="player-icon">👤</span>
+        <span class="player-name" id="player-1-name">Spieler 1</span>
+        <span class="player-score" id="player-1-score">0</span>
+      </div>
+      <div class="player-indicator" id="player-2-indicator">
+        <span class="player-icon">👤</span>
+        <span class="player-name" id="player-2-name">Spieler 2</span>
+        <span class="player-score" id="player-2-score">0</span>
+      </div>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="cards-grid" id="cards-grid">
+      <!-- Cards will be inserted here dynamically -->
+    </div>
+
+    <!-- Best Time Display -->
+    <div class="best-time" id="best-time">
+      <span data-i18n="bestTime">Bestzeit</span>: <span id="best-time-value">--:--</span>
+    </div>
+  </div>
+
+  <!-- Completion Modal -->
+  <div class="completion-modal hidden" id="completion-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 data-i18n="congratulations">Glückwunsch!</h2>
+        <div class="stars-display" id="stars-display">
+          <span class="star">⭐</span>
+          <span class="star">⭐</span>
+          <span class="star">⭐</span>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="completion-stats">
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="timeUsed">Zeit</span>
+            <span class="stat-value" id="final-time">0:00</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="totalMoves">Züge</span>
+            <span class="stat-value" id="final-moves">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="starsEarned">Sterne</span>
+            <span class="stat-value" id="stars-earned">0 ⭐</span>
+          </div>
+        </div>
+
+        <!-- Winner Display (Multiplayer) -->
+        <div class="winner-display hidden" id="winner-display">
+          <h3 data-i18n="winner">Gewinner</h3>
+          <div class="winner-info">
+            <span class="winner-emoji">👑</span>
+            <span class="winner-name" id="winner-name">Spieler 1</span>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="modal-btn primary" id="play-again-btn">
+            <span data-i18n="playAgain">Nochmal spielen</span>
+          </button>
+          <button class="modal-btn secondary" id="change-settings-btn">
+            <span data-i18n="changeSettings">Einstellungen ändern</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .memory-game-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* Game Setup */
+  .game-setup {
+    text-align: center;
+    animation: fadeIn 0.5s ease-in;
+  }
+
+  .setup-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .setup-description {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .difficulty-selector,
+  .mode-selector {
+    margin-bottom: 2rem;
+  }
+
+  .difficulty-selector h3,
+  .mode-selector h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .difficulty-buttons,
+  .mode-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .difficulty-btn,
+  .mode-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem 2rem;
+    border: 3px solid #e0e0e0;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 140px;
+  }
+
+  .difficulty-btn:hover,
+  .mode-btn:hover {
+    transform: translateY(-4px);
+    border-color: #FF9F40;
+    box-shadow: 0 4px 12px rgba(255, 159, 64, 0.3);
+  }
+
+  .difficulty-btn.active,
+  .mode-btn.active {
+    border-color: #FF9F40;
+    background: #FFF5E6;
+  }
+
+  .difficulty-btn .emoji,
+  .mode-btn .emoji {
+    font-size: 2rem;
+  }
+
+  .difficulty-btn .detail {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .player-setup {
+    margin: 2rem 0;
+  }
+
+  .player-inputs {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .player-name-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    width: 200px;
+  }
+
+  .start-game-btn {
+    padding: 1rem 3rem;
+    font-size: 1.3rem;
+    font-weight: bold;
+    background: linear-gradient(135deg, #FF9F40 0%, #FFD93D 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 2rem;
+  }
+
+  .start-game-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 159, 64, 0.4);
+  }
+
+  /* Game Board */
+  .game-board {
+    animation: fadeIn 0.5s ease-in;
+  }
+
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .game-info {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .info-label {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .info-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .game-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .icon-btn:hover {
+    border-color: #FF9F40;
+    transform: scale(1.1);
+  }
+
+  /* Player Turn Indicator */
+  .player-turn {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .player-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border: 3px solid #e0e0e0;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .player-indicator.active {
+    border-color: #FF9F40;
+    background: #FFF5E6;
+    transform: scale(1.05);
+  }
+
+  .player-icon {
+    font-size: 1.5rem;
+  }
+
+  .player-name {
+    font-weight: bold;
+  }
+
+  .player-score {
+    margin-left: auto;
+    font-size: 1.2rem;
+    color: #FF9F40;
+    font-weight: bold;
+  }
+
+  /* Cards Grid */
+  .cards-grid {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .cards-grid.cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .cards-grid.cols-6 {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .memory-card {
+    aspect-ratio: 1;
+    position: relative;
+    cursor: pointer;
+    perspective: 1000px;
+  }
+
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .memory-card.flipped .card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+  }
+
+  .card-back {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .card-front {
+    background: white;
+    border: 3px solid #e0e0e0;
+    transform: rotateY(180deg);
+  }
+
+  .memory-card.matched .card-front {
+    border-color: #4CAF50;
+    background: #E8F5E9;
+    animation: matchPulse 0.6s ease-out;
+  }
+
+  .memory-card.matched {
+    pointer-events: none;
+  }
+
+  @keyframes matchPulse {
+    0%, 100% { transform: rotateY(180deg) scale(1); }
+    50% { transform: rotateY(180deg) scale(1.1); }
+  }
+
+  .best-time {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #666;
+  }
+
+  /* Completion Modal */
+  .completion-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-in;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    animation: slideUp 0.4s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .modal-header h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .stars-display {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    font-size: 2.5rem;
+  }
+
+  .stars-display .star {
+    filter: grayscale(100%);
+    opacity: 0.3;
+    transition: all 0.3s ease;
+  }
+
+  .stars-display .star.earned {
+    filter: grayscale(0%);
+    opacity: 1;
+    animation: starPop 0.5s ease-out;
+  }
+
+  @keyframes starPop {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+  }
+
+  .completion-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+
+  .stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .winner-display {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #FFD93D 0%, #FF9F40 100%);
+    border-radius: 12px;
+  }
+
+  .winner-display h3 {
+    margin-bottom: 1rem;
+    color: white;
+  }
+
+  .winner-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .winner-emoji {
+    font-size: 3rem;
+  }
+
+  .winner-name {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .modal-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .modal-btn.primary {
+    background: #FF9F40;
+    color: white;
+  }
+
+  .modal-btn.secondary {
+    background: #e0e0e0;
+    color: #333;
+  }
+
+  .modal-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Utilities */
+  .hidden {
+    display: none !important;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .memory-game-container {
+      padding: 1rem;
+    }
+
+    .setup-title {
+      font-size: 2rem;
+    }
+
+    .cards-grid {
+      gap: 0.5rem;
+    }
+
+    .card-face {
+      font-size: 2rem;
+    }
+
+    .game-header {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .completion-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .modal-actions {
+      flex-direction: column;
+    }
+  }
+
+  /* RTL Support */
+  [dir="rtl"] .game-header,
+  [dir="rtl"] .player-turn,
+  [dir="rtl"] .modal-actions {
+    direction: rtl;
+  }
+</style>
+
+<script>
+  import { memoryGame } from '../utils/memory-game';
+  import type { DifficultyLevel, GameMode } from '../utils/memory-game';
+
+  // Game state
+  let selectedDifficulty: DifficultyLevel = 'medium';
+  let selectedMode: GameMode = 'single';
+  let timerInterval: number | null = null;
+
+  // DOM Elements
+  const gameSetup = document.getElementById('game-setup');
+  const gameBoard = document.getElementById('game-board');
+  const cardsGrid = document.getElementById('cards-grid');
+  const completionModal = document.getElementById('completion-modal');
+  const playerSetup = document.getElementById('player-setup');
+  const playerTurn = document.getElementById('player-turn');
+  const winnerDisplay = document.getElementById('winner-display');
+
+  // Difficulty buttons
+  document.querySelectorAll('.difficulty-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedDifficulty = btn.getAttribute('data-difficulty') as DifficultyLevel;
+    });
+  });
+
+  // Mode buttons
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedMode = btn.getAttribute('data-mode') as GameMode;
+
+      // Show/hide player setup
+      if (selectedMode === 'multiplayer') {
+        playerSetup?.classList.remove('hidden');
+      } else {
+        playerSetup?.classList.add('hidden');
+      }
+    });
+  });
+
+  // Start game button
+  document.getElementById('start-game-btn')?.addEventListener('click', () => {
+    startNewGame();
+  });
+
+  // Reset button
+  document.getElementById('reset-btn')?.addEventListener('click', () => {
+    memoryGame.resetGame();
+    renderGame();
+    startTimer();
+  });
+
+  // Back to setup button
+  document.getElementById('back-to-setup-btn')?.addEventListener('click', () => {
+    stopTimer();
+    gameBoard?.classList.add('hidden');
+    gameSetup?.classList.remove('hidden');
+  });
+
+  // Play again button
+  document.getElementById('play-again-btn')?.addEventListener('click', () => {
+    completionModal?.classList.add('hidden');
+    memoryGame.resetGame();
+    renderGame();
+    startTimer();
+  });
+
+  // Change settings button
+  document.getElementById('change-settings-btn')?.addEventListener('click', () => {
+    completionModal?.classList.add('hidden');
+    stopTimer();
+    gameBoard?.classList.add('hidden');
+    gameSetup?.classList.remove('hidden');
+  });
+
+  function startNewGame() {
+    const playerNames = selectedMode === 'multiplayer'
+      ? Array.from(document.querySelectorAll('.player-name-input')).map(input => (input as HTMLInputElement).value)
+      : undefined;
+
+    memoryGame.startGame(selectedDifficulty, selectedMode, playerNames);
+
+    gameSetup?.classList.add('hidden');
+    gameBoard?.classList.remove('hidden');
+
+    renderGame();
+    startTimer();
+  }
+
+  function renderGame() {
+    const state = memoryGame.getState();
+
+    // Update grid columns
+    const gridCols = selectedDifficulty === 'hard' ? 6 : 4;
+    cardsGrid?.classList.remove('cols-4', 'cols-6');
+    cardsGrid?.classList.add(`cols-${gridCols}`);
+
+    // Render cards
+    if (cardsGrid) {
+      cardsGrid.innerHTML = state.cards.map(card => `
+        <div class="memory-card ${card.flipped ? 'flipped' : ''} ${card.matched ? 'matched' : ''}"
+             data-card-id="${card.id}">
+          <div class="card-inner">
+            <div class="card-face card-back">
+              <span>?</span>
+            </div>
+            <div class="card-face card-front">
+              <span>${card.emoji}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Add click listeners to cards
+      cardsGrid.querySelectorAll('.memory-card').forEach(cardEl => {
+        cardEl.addEventListener('click', () => {
+          const cardId = cardEl.getAttribute('data-card-id');
+          if (cardId) {
+            const flipped = memoryGame.flipCard(cardId);
+            if (flipped) {
+              cardEl.classList.add('flipped');
+
+              // Check if we need to wait for match checking
+              const state = memoryGame.getState();
+              if (state.flippedCards.length === 2) {
+                // Re-render after match check completes
+                setTimeout(() => {
+                  renderGame();
+                }, 700);
+              }
+            }
+          }
+        });
+      });
+    }
+
+    // Update game info
+    document.getElementById('game-moves')!.textContent = state.moves.toString();
+    document.getElementById('game-matches')!.textContent = `${state.matches} / ${state.totalPairs}`;
+
+    // Update best time
+    if (state.bestTime) {
+      const minutes = Math.floor(state.bestTime / 60);
+      const seconds = state.bestTime % 60;
+      document.getElementById('best-time-value')!.textContent =
+        `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    // Update player turn (multiplayer)
+    if (selectedMode === 'multiplayer') {
+      playerTurn?.classList.remove('hidden');
+      state.players.forEach((player, index) => {
+        const indicator = document.getElementById(`player-${index + 1}-indicator`);
+        if (indicator) {
+          indicator.classList.toggle('active', player.currentTurn);
+          document.getElementById(`player-${index + 1}-name`)!.textContent = player.name;
+          document.getElementById(`player-${index + 1}-score`)!.textContent = player.score.toString();
+        }
+      });
+    } else {
+      playerTurn?.classList.add('hidden');
+    }
+  }
+
+  function startTimer() {
+    stopTimer();
+    timerInterval = window.setInterval(() => {
+      const timeDisplay = document.getElementById('game-time');
+      if (timeDisplay) {
+        timeDisplay.textContent = memoryGame.getFormattedTime();
+      }
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  }
+
+  // Listen for game completion
+  window.addEventListener('memory-game-complete', ((event: CustomEvent) => {
+    stopTimer();
+
+    const { duration, moves, stars, players } = event.detail;
+    const state = memoryGame.getState();
+
+    // Update completion modal
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
+    document.getElementById('final-time')!.textContent =
+      `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    document.getElementById('final-moves')!.textContent = moves.toString();
+    document.getElementById('stars-earned')!.textContent = `${stars * 5} ⭐`;
+
+    // Update stars display
+    const starsDisplay = document.getElementById('stars-display');
+    if (starsDisplay) {
+      const starElements = starsDisplay.querySelectorAll('.star');
+      starElements.forEach((star, index) => {
+        if (index < stars) {
+          setTimeout(() => {
+            star.classList.add('earned');
+          }, index * 200);
+        } else {
+          star.classList.remove('earned');
+        }
+      });
+    }
+
+    // Show winner (multiplayer)
+    if (selectedMode === 'multiplayer') {
+      const winner = memoryGame.getWinner();
+      if (winner) {
+        winnerDisplay?.classList.remove('hidden');
+        document.getElementById('winner-name')!.textContent = winner.name;
+      }
+    } else {
+      winnerDisplay?.classList.add('hidden');
+    }
+
+    // Show modal
+    setTimeout(() => {
+      completionModal?.classList.remove('hidden');
+    }, 500);
+  }) as EventListener);
+</script>

@@ -1,0 +1,912 @@
+---
+import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
+
+export interface Props {
+  imageUrl?: string;
+  puzzleId?: string;
+  difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
+  locale: Locale;
+  showGhostOutline?: boolean;
+  showTimer?: boolean;
+}
+
+const {
+  imageUrl = '',
+  puzzleId = 'default',
+  difficulty = 'easy',
+  locale,
+  showGhostOutline = true,
+  showTimer = true,
+} = Astro.props;
+
+const difficultyLabels = {
+  easy: getTranslation(locale, 'puzzleEasy') || 'Easy (9 pieces)',
+  medium: getTranslation(locale, 'puzzleMedium') || 'Medium (16 pieces)',
+  hard: getTranslation(locale, 'puzzleHard') || 'Hard (25 pieces)',
+  expert: getTranslation(locale, 'puzzleExpert') || 'Expert (36 pieces)',
+};
+---
+
+<div
+  class="jigsaw-puzzle-container"
+  data-puzzle-id={puzzleId}
+  data-difficulty={difficulty}
+  data-image-url={imageUrl}
+  data-language={locale}
+  data-show-ghost={showGhostOutline}
+>
+  <!-- Controls -->
+  <div class="puzzle-controls">
+    <div class="puzzle-header">
+      <h2 class="puzzle-title">
+        {getTranslation(locale, 'puzzleGame') || 'Puzzle Game'}
+      </h2>
+      <div class="difficulty-badge">{difficultyLabels[difficulty]}</div>
+    </div>
+
+    <div class="puzzle-stats">
+      <div class="stat-item">
+        <span class="stat-label"
+          >{getTranslation(locale, 'progress') || 'Progress'}:</span
+        >
+        <span class="stat-value"
+          ><span class="placed-count">0</span> / <span class="total-count"
+            >0</span
+          ></span
+        >
+      </div>
+
+      {
+        showTimer && (
+          <div class="stat-item">
+            <span class="stat-label">
+              {getTranslation(locale, 'time') || 'Time'}:
+            </span>
+            <span class="stat-value timer">00:00</span>
+          </div>
+        )
+      }
+
+      <div class="stat-item">
+        <span class="stat-label"
+          >{getTranslation(locale, 'bestTime') || 'Best'}:</span
+        >
+        <span class="stat-value best-time">--:--</span>
+      </div>
+    </div>
+
+    <div class="puzzle-actions">
+      <button class="puzzle-btn hint-btn" data-action="hint">
+        💡 {getTranslation(locale, 'hint') || 'Hint'}
+        <span class="hints-remaining">(3)</span>
+      </button>
+      <button class="puzzle-btn reset-btn" data-action="reset">
+        🔄 {getTranslation(locale, 'reset') || 'Reset'}
+      </button>
+      <button class="puzzle-btn ghost-btn" data-action="toggle-ghost">
+        👻 {getTranslation(locale, 'ghostOutline') || 'Ghost'}
+      </button>
+    </div>
+  </div>
+
+  <!-- Puzzle Area -->
+  <div class="puzzle-area">
+    <!-- Ghost outline (background) -->
+    <div class="puzzle-ghost" style={`background-image: url(${imageUrl});`}>
+    </div>
+
+    <!-- Puzzle grid (correct positions) -->
+    <div class="puzzle-grid">
+      <!-- Pieces will be rendered here -->
+    </div>
+
+    <!-- Draggable pieces area -->
+    <div class="puzzle-pieces">
+      <!-- Draggable pieces will be rendered here -->
+    </div>
+  </div>
+
+  <!-- Completion modal -->
+  <div class="completion-modal hidden">
+    <div class="modal-content">
+      <div class="confetti-container"></div>
+      <h3 class="completion-title">
+        🎉 {getTranslation(locale, 'puzzleComplete') || 'Puzzle Complete!'}
+      </h3>
+      <div class="completion-stats">
+        <p class="completion-time">
+          {getTranslation(locale, 'completionTime') || 'Time'}:
+          <strong class="final-time">00:00</strong>
+        </p>
+        <p class="completion-hints">
+          {getTranslation(locale, 'hintsUsed') || 'Hints used'}:
+          <strong class="hints-used-count">0</strong>
+        </p>
+      </div>
+      <div class="completion-actions">
+        <button class="puzzle-btn play-again-btn" data-action="play-again">
+          🔄 {getTranslation(locale, 'playAgain') || 'Play Again'}
+        </button>
+        <button class="puzzle-btn change-difficulty-btn" data-action="change-difficulty">
+          ⚙️ {getTranslation(locale, 'changeDifficulty') || 'Change Difficulty'}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .jigsaw-puzzle-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    font-family: 'Noto Sans', sans-serif;
+  }
+
+  /* Controls */
+  .puzzle-controls {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: white;
+  }
+
+  .puzzle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .puzzle-title {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+
+  .difficulty-badge {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .puzzle-stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .puzzle-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .puzzle-btn {
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .puzzle-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .puzzle-btn:active {
+    transform: translateY(0);
+  }
+
+  .hints-remaining {
+    font-size: 0.85rem;
+    opacity: 0.7;
+  }
+
+  /* Puzzle Area */
+  .puzzle-area {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    max-width: 100%;
+    margin: 0 auto;
+    border: 3px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f5f5f5;
+    touch-action: none; /* Disable browser touch gestures */
+  }
+
+  .puzzle-ghost {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.15;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .puzzle-ghost.hidden {
+    opacity: 0;
+  }
+
+  .puzzle-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    pointer-events: none;
+  }
+
+  .puzzle-pieces {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .puzzle-piece {
+    position: absolute;
+    cursor: grab;
+    transition: transform 0.15s ease;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+
+  .puzzle-piece:hover {
+    transform: scale(1.05);
+    z-index: 10;
+  }
+
+  .puzzle-piece.dragging {
+    cursor: grabbing;
+    z-index: 100;
+    transform: scale(1.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .puzzle-piece.placed {
+    cursor: default;
+    border-color: #4caf50;
+    box-shadow: 0 0 12px rgba(76, 175, 80, 0.6);
+    pointer-events: none;
+    animation: placeSuccess 0.4s ease;
+  }
+
+  @keyframes placeSuccess {
+    0% {
+      transform: scale(1.1);
+    }
+    50% {
+      transform: scale(1.2);
+      box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .puzzle-piece.snap-nearby {
+    border-color: #ffc107;
+    box-shadow: 0 0 12px rgba(255, 193, 7, 0.6);
+  }
+
+  /* Completion Modal */
+  .completion-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .completion-modal.hidden {
+    display: none;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 24px;
+    padding: 3rem;
+    max-width: 500px;
+    text-align: center;
+    animation: slideUp 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    animation: confettiFall 3s ease-in-out;
+  }
+
+  @keyframes confettiFall {
+    0% {
+      transform: translateY(-100%) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(500px) rotate(720deg);
+      opacity: 0;
+    }
+  }
+
+  .completion-title {
+    font-size: 2rem;
+    color: #667eea;
+    margin-bottom: 1.5rem;
+  }
+
+  .completion-stats {
+    margin: 1.5rem 0;
+  }
+
+  .completion-stats p {
+    font-size: 1.1rem;
+    margin: 0.75rem 0;
+    color: #555;
+  }
+
+  .completion-stats strong {
+    color: #667eea;
+    font-size: 1.3rem;
+  }
+
+  .completion-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .jigsaw-puzzle-container {
+      padding: 1rem;
+    }
+
+    .puzzle-area {
+      width: 100%;
+      height: 0;
+      padding-bottom: 100%; /* 1:1 aspect ratio */
+    }
+
+    .puzzle-title {
+      font-size: 1.5rem;
+    }
+
+    .puzzle-stats {
+      gap: 1rem;
+    }
+
+    .modal-content {
+      padding: 2rem;
+      margin: 1rem;
+    }
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .puzzle-controls,
+  [dir='rtl'] .puzzle-stats,
+  [dir='rtl'] .puzzle-actions,
+  [dir='rtl'] .completion-actions {
+    direction: rtl;
+  }
+</style>
+
+<script>
+  import {
+    createPuzzleConfig,
+    generatePuzzlePieces,
+    randomizePiecePositions,
+    createInitialPuzzleState,
+    updatePuzzleState,
+    getHintPieces,
+    applyHint,
+    getCompletionTime,
+    formatTime,
+    savePuzzleState,
+    loadPuzzleState,
+    getBestTime,
+    saveBestTime,
+    resetPuzzle,
+    type PuzzleState,
+    type PuzzlePiece,
+  } from '../utils/jigsaw-puzzle';
+
+  class JigsawPuzzleGame {
+    private container: HTMLElement;
+    private puzzleId: string;
+    private difficulty: 'easy' | 'medium' | 'hard' | 'expert';
+    private imageUrl: string;
+    private language: string;
+    private showGhost: boolean;
+    private state: PuzzleState | null = null;
+    private draggedPiece: { element: HTMLElement; piece: PuzzlePiece } | null =
+      null;
+    private dragOffset = { x: 0, y: 0 };
+    private timerInterval: number | null = null;
+    private maxHints = 3;
+
+    constructor(container: HTMLElement) {
+      this.container = container;
+      this.puzzleId = container.dataset.puzzleId || 'default';
+      this.difficulty =
+        (container.dataset.difficulty as 'easy' | 'medium' | 'hard' | 'expert') || 'easy';
+      this.imageUrl = container.dataset.imageUrl || '';
+      this.language = container.dataset.language || 'de';
+      this.showGhost = container.dataset.showGhost === 'true';
+
+      this.init();
+    }
+
+    async init() {
+      await this.loadImage();
+      await this.initializePuzzle();
+      this.attachEventListeners();
+      this.loadBestTime();
+    }
+
+    async loadImage(): Promise<void> {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error('Failed to load image'));
+        img.src = this.imageUrl;
+      });
+    }
+
+    async initializePuzzle() {
+      const puzzleArea = this.container.querySelector(
+        '.puzzle-area'
+      ) as HTMLElement;
+      const rect = puzzleArea.getBoundingClientRect();
+
+      const config = createPuzzleConfig(
+        this.difficulty,
+        this.imageUrl,
+        rect.width,
+        rect.height
+      );
+
+      const pieces = await generatePuzzlePieces(config);
+      const shuffledPieces = randomizePiecePositions(
+        pieces,
+        rect.width,
+        rect.height
+      );
+
+      this.state = createInitialPuzzleState(shuffledPieces);
+
+      // Try to load saved state
+      const savedState = loadPuzzleState(
+        `${this.puzzleId}-${this.difficulty}`
+      );
+      if (savedState && !savedState.isComplete) {
+        this.state = savedState;
+      }
+
+      this.renderPuzzle();
+      this.updateStats();
+    }
+
+    renderPuzzle() {
+      if (!this.state) return;
+
+      const piecesContainer = this.container.querySelector(
+        '.puzzle-pieces'
+      ) as HTMLElement;
+      piecesContainer.innerHTML = '';
+
+      this.state.pieces.forEach((piece) => {
+        const pieceEl = document.createElement('div');
+        pieceEl.className = 'puzzle-piece';
+        pieceEl.dataset.pieceId = piece.id.toString();
+
+        if (piece.isPlaced) {
+          pieceEl.classList.add('placed');
+        }
+
+        // Calculate background position for this piece
+        const bgX = (-piece.col * piece.width).toString();
+        const bgY = (-piece.row * piece.height).toString();
+
+        pieceEl.style.cssText = `
+          width: ${piece.width}px;
+          height: ${piece.height}px;
+          left: ${piece.x}px;
+          top: ${piece.y}px;
+          background-image: url(${this.imageUrl});
+          background-size: ${piece.width * (this.state.pieces.length ** 0.5)}px ${piece.height * (this.state.pieces.length ** 0.5)}px;
+          background-position: ${bgX}px ${bgY}px;
+        `;
+
+        piecesContainer.appendChild(pieceEl);
+
+        if (!piece.isPlaced) {
+          this.attachPieceDragListeners(pieceEl, piece);
+        }
+      });
+    }
+
+    attachPieceDragListeners(element: HTMLElement, piece: PuzzlePiece) {
+      // Mouse events
+      element.addEventListener('mousedown', (e) =>
+        this.handleDragStart(e, element, piece)
+      );
+
+      // Touch events
+      element.addEventListener('touchstart', (e) =>
+        this.handleDragStart(e, element, piece)
+      );
+    }
+
+    handleDragStart(
+      e: MouseEvent | TouchEvent,
+      element: HTMLElement,
+      piece: PuzzlePiece
+    ) {
+      e.preventDefault();
+
+      // Start timer on first interaction
+      if (!this.state!.startTime) {
+        this.state!.startTime = Date.now();
+        this.startTimer();
+      }
+
+      const rect = element.getBoundingClientRect();
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+      this.dragOffset = {
+        x: clientX - rect.left,
+        y: clientY - rect.top,
+      };
+
+      this.draggedPiece = { element, piece };
+      element.classList.add('dragging');
+
+      // Attach move and end listeners
+      document.addEventListener('mousemove', this.handleDragMove);
+      document.addEventListener('mouseup', this.handleDragEnd);
+      document.addEventListener('touchmove', this.handleDragMove);
+      document.addEventListener('touchend', this.handleDragEnd);
+    }
+
+    handleDragMove = (e: MouseEvent | TouchEvent) => {
+      if (!this.draggedPiece) return;
+
+      e.preventDefault();
+
+      const puzzleArea = this.container.querySelector(
+        '.puzzle-area'
+      ) as HTMLElement;
+      const rect = puzzleArea.getBoundingClientRect();
+
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+      const x = clientX - rect.left - this.dragOffset.x;
+      const y = clientY - rect.top - this.dragOffset.y;
+
+      this.draggedPiece.element.style.left = `${x}px`;
+      this.draggedPiece.element.style.top = `${y}px`;
+
+      // Check if nearby correct position (for visual feedback)
+      const dx = Math.abs(x - this.draggedPiece.piece.correctX);
+      const dy = Math.abs(y - this.draggedPiece.piece.correctY);
+      const isNearby = dx <= 30 && dy <= 30;
+
+      if (isNearby) {
+        this.draggedPiece.element.classList.add('snap-nearby');
+      } else {
+        this.draggedPiece.element.classList.remove('snap-nearby');
+      }
+    };
+
+    handleDragEnd = (e: MouseEvent | TouchEvent) => {
+      if (!this.draggedPiece) return;
+
+      e.preventDefault();
+
+      const puzzleArea = this.container.querySelector(
+        '.puzzle-area'
+      ) as HTMLElement;
+      const rect = puzzleArea.getBoundingClientRect();
+
+      const clientX = 'changedTouches' in e ? e.changedTouches[0].clientX : e.clientX;
+      const clientY = 'changedTouches' in e ? e.changedTouches[0].clientY : e.clientY;
+
+      const x = clientX - rect.left - this.dragOffset.x;
+      const y = clientY - rect.top - this.dragOffset.y;
+
+      // Update state
+      this.state = updatePuzzleState(this.state!, this.draggedPiece.piece.id, {
+        x,
+        y,
+      });
+
+      // Save state
+      savePuzzleState(`${this.puzzleId}-${this.difficulty}`, this.state);
+
+      this.draggedPiece.element.classList.remove('dragging', 'snap-nearby');
+      this.draggedPiece = null;
+
+      // Re-render and update
+      this.renderPuzzle();
+      this.updateStats();
+
+      // Check completion
+      if (this.state.isComplete) {
+        this.handleCompletion();
+      }
+
+      // Remove listeners
+      document.removeEventListener('mousemove', this.handleDragMove);
+      document.removeEventListener('mouseup', this.handleDragEnd);
+      document.removeEventListener('touchmove', this.handleDragMove);
+      document.removeEventListener('touchend', this.handleDragEnd);
+    };
+
+    startTimer() {
+      this.timerInterval = window.setInterval(() => {
+        if (this.state?.startTime && !this.state.isComplete) {
+          const elapsed = Math.floor((Date.now() - this.state.startTime) / 1000);
+          const timerEl = this.container.querySelector('.timer');
+          if (timerEl) {
+            timerEl.textContent = formatTime(elapsed);
+          }
+        }
+      }, 1000);
+    }
+
+    updateStats() {
+      if (!this.state) return;
+
+      const placedCountEl = this.container.querySelector('.placed-count');
+      const totalCountEl = this.container.querySelector('.total-count');
+      const hintsRemainingEl = this.container.querySelector('.hints-remaining');
+
+      if (placedCountEl)
+        placedCountEl.textContent = this.state.placedCount.toString();
+      if (totalCountEl)
+        totalCountEl.textContent = this.state.pieces.length.toString();
+      if (hintsRemainingEl)
+        hintsRemainingEl.textContent = `(${Math.max(0, this.maxHints - this.state.hintsUsed)})`;
+    }
+
+    loadBestTime() {
+      const bestTime = getBestTime(this.puzzleId, this.difficulty);
+      const bestTimeEl = this.container.querySelector('.best-time');
+      if (bestTimeEl) {
+        bestTimeEl.textContent = bestTime ? formatTime(bestTime) : '--:--';
+      }
+    }
+
+    handleHint() {
+      if (!this.state || this.state.hintsUsed >= this.maxHints) return;
+
+      const hintPieces = getHintPieces(this.state.pieces, 1);
+      this.state = applyHint(this.state, hintPieces);
+
+      savePuzzleState(`${this.puzzleId}-${this.difficulty}`, this.state);
+
+      this.renderPuzzle();
+      this.updateStats();
+
+      if (this.state.isComplete) {
+        this.handleCompletion();
+      }
+    }
+
+    handleReset() {
+      if (!this.state) return;
+
+      const puzzleArea = this.container.querySelector(
+        '.puzzle-area'
+      ) as HTMLElement;
+      const rect = puzzleArea.getBoundingClientRect();
+
+      this.state = resetPuzzle(this.state, rect.width, rect.height);
+
+      // Stop and reset timer
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
+
+      const timerEl = this.container.querySelector('.timer');
+      if (timerEl) timerEl.textContent = '00:00';
+
+      savePuzzleState(`${this.puzzleId}-${this.difficulty}`, this.state);
+
+      this.renderPuzzle();
+      this.updateStats();
+    }
+
+    handleToggleGhost() {
+      const ghostEl = this.container.querySelector('.puzzle-ghost');
+      if (ghostEl) {
+        ghostEl.classList.toggle('hidden');
+      }
+    }
+
+    handleCompletion() {
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
+
+      const completionTime = getCompletionTime(this.state!);
+      if (completionTime) {
+        saveBestTime(this.puzzleId, this.difficulty, completionTime);
+        this.loadBestTime();
+      }
+
+      // Show completion modal
+      const modal = this.container.querySelector('.completion-modal');
+      const finalTimeEl = this.container.querySelector('.final-time');
+      const hintsUsedEl = this.container.querySelector('.hints-used-count');
+
+      if (modal) modal.classList.remove('hidden');
+      if (finalTimeEl && completionTime)
+        finalTimeEl.textContent = formatTime(completionTime);
+      if (hintsUsedEl)
+        hintsUsedEl.textContent = this.state!.hintsUsed.toString();
+
+      this.showConfetti();
+    }
+
+    showConfetti() {
+      const confettiContainer = this.container.querySelector(
+        '.confetti-container'
+      ) as HTMLElement;
+      if (!confettiContainer) return;
+
+      const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1', '#ee5a6f'];
+
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = `${Math.random() * 100}%`;
+          confetti.style.backgroundColor =
+            colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+          confettiContainer.appendChild(confetti);
+
+          setTimeout(() => confetti.remove(), 3000);
+        }, i * 30);
+      }
+    }
+
+    attachEventListeners() {
+      // Hint button
+      const hintBtn = this.container.querySelector('[data-action="hint"]');
+      hintBtn?.addEventListener('click', () => this.handleHint());
+
+      // Reset button
+      const resetBtn = this.container.querySelector('[data-action="reset"]');
+      resetBtn?.addEventListener('click', () => this.handleReset());
+
+      // Toggle ghost
+      const ghostBtn = this.container.querySelector(
+        '[data-action="toggle-ghost"]'
+      );
+      ghostBtn?.addEventListener('click', () => this.handleToggleGhost());
+
+      // Play again
+      const playAgainBtn = this.container.querySelector(
+        '[data-action="play-again"]'
+      );
+      playAgainBtn?.addEventListener('click', () => {
+        const modal = this.container.querySelector('.completion-modal');
+        modal?.classList.add('hidden');
+        this.handleReset();
+      });
+
+      // Change difficulty
+      const changeDiffBtn = this.container.querySelector(
+        '[data-action="change-difficulty"]'
+      );
+      changeDiffBtn?.addEventListener('click', () => {
+        // Navigate to puzzle selection page or reload with different difficulty
+        window.location.reload();
+      });
+    }
+  }
+
+  // Initialize all puzzles on page
+  document.addEventListener('DOMContentLoaded', () => {
+    const puzzleContainers = document.querySelectorAll(
+      '.jigsaw-puzzle-container'
+    );
+    puzzleContainers.forEach((container) => {
+      new JigsawPuzzleGame(container as HTMLElement);
+    });
+  });
+</script>
