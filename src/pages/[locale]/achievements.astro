@@ -1,0 +1,483 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Locale } from '../../utils/i18n';
+import { getTranslation } from '../../utils/i18n';
+
+export async function getStaticPaths() {
+  const locales: Locale[] = ['ar', 'en', 'tr', 'ur'];
+  return locales.map(locale => ({
+    params: { locale },
+  }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+
+const pageTitle = getTranslation(locale, 'achievements');
+const pageDescription = getTranslation(locale, 'achievementsDescription');
+---
+
+<BaseLayout title={pageTitle} locale={locale} description={pageDescription}>
+  <div class="achievements-page">
+    <header class="page-header">
+      <h1 class="page-title">🏆 {pageTitle}</h1>
+      <p class="page-description">{pageDescription}</p>
+
+      <div class="progress-stats">
+        <div class="stat-card">
+          <span class="stat-value" id="unlocked-count">0</span>
+          <span class="stat-label">{getTranslation(locale, 'unlockedAchievements')}</span>
+        </div>
+        <div class="stat-divider">/</div>
+        <div class="stat-card">
+          <span class="stat-value" id="total-count">0</span>
+          <span class="stat-label">{getTranslation(locale, 'allAchievements')}</span>
+        </div>
+        <div class="stat-progress">
+          <div class="progress-ring" id="progress-ring">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle class="progress-ring-bg" cx="40" cy="40" r="35" />
+              <circle class="progress-ring-fill" cx="40" cy="40" r="35" id="progress-circle" />
+            </svg>
+            <span class="progress-percent" id="progress-percent">0%</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-filter="all">
+        {getTranslation(locale, 'allAchievements')}
+      </button>
+      <button class="filter-tab" data-filter="unlocked">
+        {getTranslation(locale, 'unlockedAchievements')}
+      </button>
+      <button class="filter-tab" data-filter="locked">
+        {getTranslation(locale, 'lockedAchievements')}
+      </button>
+    </div>
+
+    <div class="achievements-grid" id="achievements-grid">
+      <!-- Achievements will be dynamically loaded here -->
+    </div>
+  </div>
+</BaseLayout>
+
+<script define:vars={{ locale }}>
+  import { achievementTracker } from '../../utils/achievements';
+  import { RARITY_COLORS } from '../../utils/achievements';
+
+  const achievements = achievementTracker.getAchievements();
+  const grid = document.getElementById('achievements-grid');
+  const unlockedCountEl = document.getElementById('unlocked-count');
+  const totalCountEl = document.getElementById('total-count');
+  const progressCircle = document.getElementById('progress-circle');
+  const progressPercent = document.getElementById('progress-percent');
+
+  // Update stats
+  const unlockedCount = achievementTracker.getUnlockedCount();
+  const totalCount = achievementTracker.getTotalCount();
+  const progressPercentValue = Math.round((unlockedCount / totalCount) * 100);
+
+  if (unlockedCountEl) unlockedCountEl.textContent = unlockedCount.toString();
+  if (totalCountEl) totalCountEl.textContent = totalCount.toString();
+  if (progressPercent) progressPercent.textContent = `${progressPercentValue}%`;
+
+  // Animate progress ring
+  if (progressCircle) {
+    const radius = 35;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (progressPercentValue / 100) * circumference;
+    progressCircle.style.strokeDasharray = `${circumference}`;
+    progressCircle.style.strokeDashoffset = `${offset}`;
+  }
+
+  // Render achievements
+  function renderAchievements(filter = 'all') {
+    if (!grid) return;
+
+    let filteredAchievements = achievements;
+
+    if (filter === 'unlocked') {
+      filteredAchievements = achievements.filter(a => a.unlocked);
+    } else if (filter === 'locked') {
+      filteredAchievements = achievements.filter(a => !a.unlocked);
+    }
+
+    grid.innerHTML = '';
+
+    filteredAchievements.forEach(achievement => {
+      const card = document.createElement('div');
+      card.className = `achievement-card ${achievement.rarity} ${achievement.unlocked ? 'unlocked' : 'locked'}`;
+      card.style.setProperty('--rarity-color', RARITY_COLORS[achievement.rarity]);
+
+      const hasProgress = achievement.progress && achievement.progress.total > 1;
+      const progressPercent = hasProgress
+        ? Math.min(100, (achievement.progress.current / achievement.progress.total) * 100)
+        : 0;
+
+      card.innerHTML = `
+        <div class="achievement-card-inner">
+          ${achievement.unlocked ? `<div class="glow-effect"></div>` : ''}
+
+          <div class="achievement-icon">
+            ${achievement.unlocked ? achievement.emoji : '🔒'}
+          </div>
+
+          <div class="achievement-info">
+            <h3 class="achievement-title">${achievement.title[locale]}</h3>
+            <p class="achievement-description">${achievement.description[locale]}</p>
+
+            ${
+              hasProgress
+                ? `
+              <div class="progress-container">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+                <span class="progress-text">${achievement.progress.current} / ${achievement.progress.total}</span>
+              </div>
+            `
+                : ''
+            }
+
+            ${
+              achievement.unlocked && achievement.unlockedAt
+                ? `
+              <div class="unlocked-date">
+                ${new Date(achievement.unlockedAt).toLocaleDateString(locale)}
+              </div>
+            `
+                : ''
+            }
+          </div>
+
+          <div class="rarity-badge">${achievement.rarity}</div>
+        </div>
+      `;
+
+      grid.appendChild(card);
+    });
+  }
+
+  // Filter tabs
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const filter = tab.getAttribute('data-filter') || 'all';
+      renderAchievements(filter);
+    });
+  });
+
+  // Initial render
+  renderAchievements('all');
+</script>
+
+<style>
+  .achievements-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .page-description {
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+  }
+
+  .progress-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-divider {
+    font-size: 2rem;
+    color: var(--color-text-light);
+    opacity: 0.3;
+  }
+
+  .stat-progress {
+    margin-left: 1rem;
+  }
+
+  .progress-ring {
+    position: relative;
+    width: 80px;
+    height: 80px;
+  }
+
+  .progress-ring svg {
+    transform: rotate(-90deg);
+  }
+
+  .progress-ring-bg {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.1);
+    stroke-width: 6;
+  }
+
+  .progress-ring-fill {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s ease;
+  }
+
+  .progress-percent {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .filter-tabs {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-tab {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .filter-tab:hover {
+    border-color: var(--color-primary);
+    background: rgba(247, 151, 49, 0.1);
+  }
+
+  .filter-tab.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .achievement-card {
+    position: relative;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .achievement-card-inner {
+    position: relative;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    min-height: 180px;
+  }
+
+  .achievement-card.unlocked .achievement-card-inner {
+    border-color: var(--rarity-color);
+  }
+
+  .achievement-card.locked .achievement-card-inner {
+    opacity: 0.6;
+    filter: grayscale(1);
+  }
+
+  .achievement-card:hover .achievement-card-inner {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .achievement-icon {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    line-height: 1;
+  }
+
+  .achievement-card.unlocked .achievement-icon {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .achievement-info {
+    text-align: center;
+  }
+
+  .achievement-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .achievement-description {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
+  }
+
+  .progress-container {
+    margin-top: 1rem;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 10px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--rarity-color), var(--rarity-color) 80%, transparent);
+    border-radius: 5px;
+    transition: width 0.5s ease;
+  }
+
+  .progress-text {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    font-weight: 600;
+  }
+
+  .unlocked-date {
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    margin-top: 1rem;
+    font-style: italic;
+  }
+
+  .rarity-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.35rem 0.7rem;
+    background: var(--rarity-color);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .glow-effect {
+    position: absolute;
+    inset: -4px;
+    border-radius: 16px;
+    background: var(--rarity-color);
+    opacity: 0;
+    filter: blur(12px);
+    z-index: -1;
+    animation: glow 2s ease-in-out infinite;
+  }
+
+  @keyframes glow {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .achievements-page {
+      padding: 1.5rem 1rem;
+    }
+
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .achievements-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .filter-tabs {
+      gap: 0.5rem;
+    }
+
+    .filter-tab {
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .rarity-badge {
+    right: auto;
+    left: 1rem;
+  }
+
+  [dir='rtl'] .stat-progress {
+    margin-left: 0;
+    margin-right: 1rem;
+  }
+</style>

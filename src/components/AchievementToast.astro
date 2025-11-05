@@ -1,0 +1,324 @@
+---
+// Achievement Toast - Shows popup notification when achievement is unlocked
+// This component automatically listens for achievement-unlocked events
+---
+
+<div id="achievement-toast" class="achievement-toast" hidden>
+  <div class="toast-content">
+    <div class="toast-icon">🎉</div>
+    <div class="toast-text">
+      <div class="toast-title">Achievement Unlocked!</div>
+      <div class="toast-achievement">
+        <span class="achievement-emoji"></span>
+        <span class="achievement-name"></span>
+      </div>
+      <div class="toast-description"></div>
+    </div>
+    <button class="toast-close" aria-label="Close">×</button>
+  </div>
+  <div class="toast-progress"></div>
+</div>
+
+<script>
+  import type { Achievement } from '../utils/achievements';
+  import type { Locale } from '../utils/i18n';
+
+  const toast = document.getElementById('achievement-toast');
+  const toastIcon = toast?.querySelector('.toast-icon');
+  const toastTitle = toast?.querySelector('.toast-title');
+  const achievementEmoji = toast?.querySelector('.achievement-emoji');
+  const achievementName = toast?.querySelector('.achievement-name');
+  const toastDescription = toast?.querySelector('.toast-description');
+  const closeBtn = toast?.querySelector('.toast-close');
+  const progressBar = toast?.querySelector('.toast-progress') as HTMLElement;
+
+  const translations = {
+    de: 'Erfolg freigeschaltet!',
+    ar: 'إنجاز جديد!',
+    en: 'Achievement Unlocked!',
+    tr: 'Başarı Kazanıldı!',
+    ur: 'کامیابی حاصل کی!',
+  };
+
+  let hideTimeout: number | null = null;
+
+  function showToast(achievement: Achievement, locale: Locale = 'de') {
+    if (!toast) return;
+
+    // Clear any existing timeout
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+    }
+
+    // Set content
+    if (toastTitle) toastTitle.textContent = translations[locale] || translations.de;
+    if (achievementEmoji) achievementEmoji.textContent = achievement.emoji;
+    if (achievementName) achievementName.textContent = achievement.title[locale];
+    if (toastDescription) toastDescription.textContent = achievement.description[locale];
+
+    // Show toast
+    toast.removeAttribute('hidden');
+    toast.classList.add('show');
+
+    // Animate progress bar
+    if (progressBar) {
+      progressBar.style.width = '100%';
+      progressBar.style.transition = 'none';
+      setTimeout(() => {
+        progressBar.style.transition = 'width 5s linear';
+        progressBar.style.width = '0%';
+      }, 10);
+    }
+
+    // Auto-hide after 5 seconds
+    hideTimeout = window.setTimeout(() => {
+      hideToast();
+    }, 5000);
+  }
+
+  function hideToast() {
+    if (!toast) return;
+
+    toast.classList.remove('show');
+    setTimeout(() => {
+      toast.setAttribute('hidden', '');
+      if (progressBar) {
+        progressBar.style.width = '100%';
+      }
+    }, 300);
+  }
+
+  // Listen for achievement unlock events
+  window.addEventListener('achievement-unlocked', ((event: CustomEvent) => {
+    const { achievement, locale } = event.detail;
+    showToast(achievement, locale);
+  }) as EventListener);
+
+  // Close button
+  closeBtn?.addEventListener('click', () => {
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+    }
+    hideToast();
+  });
+
+  // Click toast to dismiss
+  toast?.addEventListener('click', e => {
+    if (e.target === closeBtn || (e.target as HTMLElement).closest('.toast-close')) return;
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+    }
+    hideToast();
+  });
+</script>
+
+<style>
+  .achievement-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    max-width: 380px;
+    width: calc(100% - 40px);
+    transform: translateX(500px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .achievement-toast[hidden] {
+    display: none;
+  }
+
+  .achievement-toast.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .toast-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+    animation: celebrate 0.6s ease;
+  }
+
+  @keyframes celebrate {
+    0%,
+    100% {
+      transform: scale(1) rotate(0deg);
+    }
+    25% {
+      transform: scale(1.05) rotate(-2deg);
+    }
+    75% {
+      transform: scale(1.05) rotate(2deg);
+    }
+  }
+
+  .toast-icon {
+    font-size: 2rem;
+    line-height: 1;
+    animation: bounce 1s ease infinite;
+  }
+
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  .toast-text {
+    flex: 1;
+  }
+
+  .toast-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+  }
+
+  .toast-achievement {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .achievement-emoji {
+    font-size: 1.75rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  }
+
+  .achievement-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .toast-description {
+    font-size: 0.9rem;
+    opacity: 0.95;
+    line-height: 1.4;
+  }
+
+  .toast-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .toast-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+  }
+
+  .toast-close:active {
+    transform: scale(0.95);
+  }
+
+  .toast-progress {
+    height: 4px;
+    background: linear-gradient(90deg, #ffd93d, #ff9f40);
+    border-radius: 0 0 16px 16px;
+    width: 100%;
+    transform-origin: left;
+    box-shadow: 0 2px 8px rgba(255, 217, 61, 0.4);
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .achievement-toast {
+    right: auto;
+    left: 20px;
+    transform: translateX(-500px);
+  }
+
+  [dir='rtl'] .achievement-toast.show {
+    transform: translateX(0);
+  }
+
+  [dir='rtl'] .toast-close {
+    right: auto;
+    left: 0.5rem;
+  }
+
+  [dir='rtl'] .toast-progress {
+    transform-origin: right;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .achievement-toast {
+      top: 10px;
+      right: 10px;
+      width: calc(100% - 20px);
+      max-width: none;
+    }
+
+    .toast-content {
+      padding: 1rem;
+    }
+
+    .toast-icon {
+      font-size: 1.5rem;
+    }
+
+    .achievement-emoji {
+      font-size: 1.5rem;
+    }
+
+    .achievement-name {
+      font-size: 1rem;
+    }
+
+    .toast-description {
+      font-size: 0.85rem;
+    }
+
+    [dir='rtl'] .achievement-toast {
+      left: 10px;
+      right: auto;
+    }
+  }
+
+  /* Accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .achievement-toast {
+      transition: opacity 0.2s ease;
+    }
+
+    .toast-content {
+      animation: none;
+    }
+
+    .toast-icon {
+      animation: none;
+    }
+  }
+</style>

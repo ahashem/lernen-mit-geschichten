@@ -1,0 +1,265 @@
+---
+import type { Achievement } from '../utils/achievements';
+import { RARITY_COLORS } from '../utils/achievements';
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  achievement: Achievement;
+  locale: Locale;
+  showProgress?: boolean;
+  size?: 'small' | 'medium' | 'large';
+}
+
+const { achievement, locale, showProgress = true, size = 'medium' } = Astro.props;
+
+const rarityColor = RARITY_COLORS[achievement.rarity];
+const isUnlocked = achievement.unlocked;
+const hasProgress = achievement.progress && achievement.progress.total > 1;
+const progressPercent = hasProgress
+  ? Math.min(100, (achievement.progress!.current / achievement.progress!.total) * 100)
+  : 0;
+---
+
+<div
+  class={`achievement-badge ${size} ${achievement.rarity} ${isUnlocked ? 'unlocked' : 'locked'}`}
+  data-achievement-id={achievement.id}
+  data-unlocked={isUnlocked}
+>
+  <div class="badge-card">
+    <div class="badge-icon" style={`--rarity-color: ${rarityColor}`}>
+      {isUnlocked ? achievement.emoji : '🔒'}
+    </div>
+
+    <div class="badge-content">
+      <h3 class="badge-title">{achievement.title[locale]}</h3>
+      <p class="badge-description">{achievement.description[locale]}</p>
+
+      {
+        hasProgress && showProgress && (
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill" style={`width: ${progressPercent}%`} />
+            </div>
+            <span class="progress-text">
+              {achievement.progress!.current} / {achievement.progress!.total}
+            </span>
+          </div>
+        )
+      }
+
+      {
+        isUnlocked && achievement.unlockedAt && (
+          <div class="unlocked-date">
+            {new Date(achievement.unlockedAt).toLocaleDateString(locale)}
+          </div>
+        )
+      }
+    </div>
+
+    <div class="rarity-badge">{achievement.rarity}</div>
+  </div>
+
+  {isUnlocked && <div class="glow-effect" style={`--rarity-color: ${rarityColor}`} />}
+</div>
+
+<style>
+  .achievement-badge {
+    position: relative;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .achievement-badge.small {
+    --badge-size: 80px;
+    --icon-size: 2rem;
+    --padding: 0.75rem;
+  }
+
+  .achievement-badge.medium {
+    --badge-size: 100px;
+    --icon-size: 2.5rem;
+    --padding: 1rem;
+  }
+
+  .achievement-badge.large {
+    --badge-size: 120px;
+    --icon-size: 3rem;
+    --padding: 1.25rem;
+  }
+
+  .badge-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: var(--padding);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .achievement-badge.unlocked .badge-card {
+    border-color: var(--rarity-color);
+  }
+
+  .achievement-badge.locked .badge-card {
+    opacity: 0.6;
+    filter: grayscale(1);
+  }
+
+  .achievement-badge:hover .badge-card {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .badge-icon {
+    font-size: var(--icon-size);
+    text-align: center;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .achievement-badge.unlocked .badge-icon {
+    animation: bounce 0.5s ease;
+  }
+
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+  }
+
+  .badge-content {
+    flex: 1;
+  }
+
+  .badge-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 0.25rem 0;
+    line-height: 1.3;
+  }
+
+  .badge-description {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .progress-container {
+    margin-top: 0.75rem;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--rarity-color), var(--rarity-color) 80%, transparent);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .progress-text {
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    font-weight: 600;
+  }
+
+  .unlocked-date {
+    font-size: 0.7rem;
+    color: var(--color-text-light);
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+
+  .rarity-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--rarity-color);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .glow-effect {
+    position: absolute;
+    inset: -2px;
+    border-radius: 12px;
+    background: var(--rarity-color);
+    opacity: 0;
+    filter: blur(8px);
+    z-index: -1;
+    animation: glow 2s ease-in-out infinite;
+  }
+
+  @keyframes glow {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  /* Rarity-specific styles */
+  .achievement-badge.common .rarity-badge {
+    background: #4caf50;
+  }
+
+  .achievement-badge.rare .rarity-badge {
+    background: #2196f3;
+  }
+
+  .achievement-badge.epic .rarity-badge {
+    background: #9c27b0;
+  }
+
+  .achievement-badge.legendary .rarity-badge {
+    background: linear-gradient(135deg, #ff9800, #f44336);
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .rarity-badge {
+    right: auto;
+    left: 0.5rem;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .achievement-badge.medium {
+      --icon-size: 2rem;
+      --padding: 0.875rem;
+    }
+
+    .badge-title {
+      font-size: 1rem;
+    }
+
+    .badge-description {
+      font-size: 0.8rem;
+    }
+  }
+</style>
