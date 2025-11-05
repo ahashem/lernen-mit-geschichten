@@ -1,0 +1,220 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CharacterDesigner from '../components/CharacterDesigner.astro';
+import { getTranslation } from '../utils/i18n';
+
+const locale = 'de';
+const title = getTranslation(locale, 'characterDesigner');
+const description = getTranslation(locale, 'characterDesignerDesc');
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="character-designer-page">
+    <div class="page-header">
+      <h1>🎭 {title}</h1>
+      <p class="subtitle">{description}</p>
+    </div>
+
+    <CharacterDesigner locale={locale} />
+
+    <!-- Saved Characters Gallery -->
+    <div class="saved-characters-section">
+      <h2>📚 Saved Characters</h2>
+      <div id="saved-characters-gallery" class="characters-gallery">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .character-designer-page {
+    min-height: 100vh;
+    padding: 2rem;
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+    color: #333;
+  }
+
+  .subtitle {
+    font-size: 1.25rem;
+    color: #666;
+    margin: 0;
+  }
+
+  .saved-characters-section {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .saved-characters-section h2 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.75rem;
+    color: #333;
+  }
+
+  .characters-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .character-card {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .character-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .character-card-preview {
+    width: 100%;
+    aspect-ratio: 1;
+    margin-bottom: 0.75rem;
+  }
+
+  .character-card-name {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  .character-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .character-card-actions button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .character-card-actions button.edit-btn {
+    background: #667eea;
+    color: white;
+  }
+
+  .character-card-actions button.delete-btn {
+    background: #ff4444;
+    color: white;
+  }
+
+  .character-card-actions button:hover {
+    transform: translateY(-2px);
+  }
+
+  .empty-gallery {
+    text-align: center;
+    padding: 3rem;
+    color: #999;
+  }
+
+  @media (max-width: 768px) {
+    .character-designer-page {
+      padding: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .characters-gallery {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+  }
+</style>
+
+<script>
+  import { CharacterStorage, CharacterDesigner } from '../utils/character-designer';
+
+  function renderSavedCharacters() {
+    const gallery = document.getElementById('saved-characters-gallery');
+    if (!gallery) return;
+
+    const characters = CharacterStorage.getAllCharacters();
+
+    if (characters.length === 0) {
+      gallery.innerHTML = '<div class="empty-gallery">No saved characters yet. Create your first character above!</div>';
+      return;
+    }
+
+    gallery.innerHTML = characters.map(char => {
+      const designer = new CharacterDesigner(char);
+      const svg = designer.generateSVG(200, 200);
+
+      return `
+        <div class="character-card" data-id="${char.id}">
+          <div class="character-card-preview">${svg}</div>
+          <div class="character-card-name">${char.name}</div>
+          <div class="character-card-actions">
+            <button class="edit-btn" data-id="${char.id}">Edit</button>
+            <button class="delete-btn" data-id="${char.id}">Delete</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Add event listeners
+    gallery.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = (btn as HTMLElement).dataset.id;
+        if (id) loadCharacter(id);
+      });
+    });
+
+    gallery.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = (btn as HTMLElement).dataset.id;
+        if (id && confirm('Delete this character?')) {
+          CharacterStorage.deleteCharacter(id);
+          renderSavedCharacters();
+        }
+      });
+    });
+  }
+
+  function loadCharacter(id: string) {
+    const char = CharacterStorage.getCharacter(id);
+    if (!char) return;
+
+    // Trigger custom event to load character in designer
+    window.dispatchEvent(new CustomEvent('load-character', { detail: char }));
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderSavedCharacters();
+
+    // Listen for character saves
+    window.addEventListener('character-saved', () => {
+      renderSavedCharacters();
+    });
+  });
+</script>

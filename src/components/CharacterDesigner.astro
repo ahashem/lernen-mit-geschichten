@@ -1,0 +1,929 @@
+---
+/**
+ * CharacterDesigner Component
+ * Interactive character builder with part selection, color customization, and preview
+ */
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<div class="character-designer">
+  <!-- Main Canvas Area -->
+  <div class="designer-canvas">
+    <div class="canvas-wrapper">
+      <div id="character-preview" class="character-svg-container"></div>
+      <div class="canvas-controls">
+        <button id="undo-btn" class="control-btn" disabled aria-label="Undo">
+          ↶
+        </button>
+        <button id="redo-btn" class="control-btn" disabled aria-label="Redo">
+          ↷
+        </button>
+        <button id="reset-btn" class="control-btn" aria-label="Reset">
+          ⟲
+        </button>
+      </div>
+    </div>
+
+    <!-- Character Info -->
+    <div class="character-info">
+      <input
+        type="text"
+        id="character-name"
+        class="character-name-input"
+        placeholder="Character Name"
+        maxlength="30"
+      />
+      <div class="gender-selector">
+        <button class="gender-btn" data-gender="boy">👦 Boy</button>
+        <button class="gender-btn active" data-gender="neutral">👤 Neutral</button>
+        <button class="gender-btn" data-gender="girl">👧 Girl</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parts Selector Sidebar -->
+  <div class="designer-sidebar">
+    <div class="parts-tabs">
+      <button class="tab-btn active" data-tab="body">Body</button>
+      <button class="tab-btn" data-tab="hair">Hair</button>
+      <button class="tab-btn" data-tab="eyes">Eyes</button>
+      <button class="tab-btn" data-tab="mouth">Mouth</button>
+      <button class="tab-btn" data-tab="accessories">Accessories</button>
+      <button class="tab-btn" data-tab="colors">Colors</button>
+      <button class="tab-btn" data-tab="background">Background</button>
+    </div>
+
+    <!-- Tab Content Panels -->
+    <div class="tab-content">
+      <!-- Body Tab -->
+      <div class="tab-panel active" data-panel="body">
+        <h3>Choose Body Type</h3>
+        <div class="parts-grid" id="body-parts"></div>
+      </div>
+
+      <!-- Hair Tab -->
+      <div class="tab-panel" data-panel="hair">
+        <h3>Choose Hairstyle</h3>
+        <div class="color-picker-inline">
+          <label>Hair Color:</label>
+          <input type="color" id="hair-color" value="#654321" />
+        </div>
+        <div class="parts-grid" id="hair-parts"></div>
+      </div>
+
+      <!-- Eyes Tab -->
+      <div class="tab-panel" data-panel="eyes">
+        <h3>Choose Eye Style</h3>
+        <div class="parts-grid" id="eye-parts"></div>
+      </div>
+
+      <!-- Mouth Tab -->
+      <div class="tab-panel" data-panel="mouth">
+        <h3>Choose Mouth Style</h3>
+        <div class="parts-grid" id="mouth-parts"></div>
+      </div>
+
+      <!-- Accessories Tab -->
+      <div class="tab-panel" data-panel="accessories">
+        <h3>Add Accessories</h3>
+        <div class="accessory-controls">
+          <label>Accessory Color:</label>
+          <input type="color" id="accessory-color" value="#FF6B6B" />
+        </div>
+        <div class="parts-grid" id="accessory-parts"></div>
+        <div class="active-accessories" id="active-accessories"></div>
+      </div>
+
+      <!-- Colors Tab -->
+      <div class="tab-panel" data-panel="colors">
+        <h3>Customize Colors</h3>
+        <div class="color-controls">
+          <div class="color-picker-group">
+            <label for="body-color">Body Color:</label>
+            <input type="color" id="body-color" value="#8B4513" />
+          </div>
+          <div class="color-picker-group">
+            <label for="pattern-type">Pattern:</label>
+            <select id="pattern-type">
+              <option value="none">None</option>
+              <option value="stripes">Stripes</option>
+              <option value="spots">Spots</option>
+              <option value="stars">Stars</option>
+              <option value="hearts">Hearts</option>
+              <option value="dots">Dots</option>
+              <option value="zigzag">Zigzag</option>
+              <option value="waves">Waves</option>
+              <option value="flowers">Flowers</option>
+              <option value="sparkles">Sparkles</option>
+            </select>
+          </div>
+          <div class="color-picker-group">
+            <label for="pattern-color">Pattern Color:</label>
+            <input type="color" id="pattern-color" value="#654321" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Background Tab -->
+      <div class="tab-panel" data-panel="background">
+        <h3>Choose Background</h3>
+        <div class="color-picker-group">
+          <label for="bg-color">Background Color:</label>
+          <input type="color" id="bg-color" value="#87CEEB" />
+        </div>
+        <div class="parts-grid" id="background-parts"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="designer-actions">
+    <button id="save-character-btn" class="action-btn primary">
+      💾 Save Character
+    </button>
+    <button id="export-svg-btn" class="action-btn">
+      📥 Export SVG
+    </button>
+    <button id="export-png-btn" class="action-btn">
+      🖼️ Export PNG
+    </button>
+    <button id="use-in-story-btn" class="action-btn">
+      📖 Use in Story
+    </button>
+  </div>
+
+  <!-- Animation Preview Toggle -->
+  <div class="animation-controls">
+    <label>
+      <input type="checkbox" id="animation-toggle" />
+      Preview Animation
+    </label>
+    <select id="animation-type" disabled>
+      <option value="idle">Idle</option>
+      <option value="walking">Walking</option>
+      <option value="jumping">Jumping</option>
+      <option value="waving">Waving</option>
+    </select>
+  </div>
+</div>
+
+<style>
+  .character-designer {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    grid-template-rows: 1fr auto auto;
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 600px;
+  }
+
+  /* Canvas Area */
+  .designer-canvas {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .canvas-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 12px;
+    min-height: 500px;
+  }
+
+  .character-svg-container {
+    width: 100%;
+    max-width: 600px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .character-svg-container :global(svg) {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  }
+
+  .canvas-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .control-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    background: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+  }
+
+  .control-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .control-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  /* Character Info */
+  .character-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .character-name-input {
+    padding: 1rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  .gender-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .gender-btn {
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .gender-btn:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+  }
+
+  .gender-btn.active {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  /* Sidebar */
+  .designer-sidebar {
+    grid-column: 2;
+    grid-row: 1 / 4;
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    max-height: 800px;
+  }
+
+  .parts-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tab-btn {
+    padding: 0.75rem 0.5rem;
+    border: none;
+    border-radius: 8px;
+    background: #f5f5f5;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab-btn:hover {
+    background: #e0e0e0;
+  }
+
+  .tab-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .tab-content {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  .tab-panel h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+    color: #333;
+  }
+
+  /* Parts Grid */
+  .parts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .part-option {
+    aspect-ratio: 1;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+  }
+
+  .part-option:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .part-option.selected {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #667eea22 0%, #764ba222 100%);
+  }
+
+  /* Color Controls */
+  .color-picker-inline,
+  .color-picker-group,
+  .accessory-controls {
+    margin-bottom: 1rem;
+  }
+
+  .color-picker-group label,
+  .color-picker-inline label,
+  .accessory-controls label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #555;
+  }
+
+  .color-picker-group input[type="color"],
+  .color-picker-inline input[type="color"],
+  .accessory-controls input[type="color"] {
+    width: 100%;
+    height: 50px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .color-picker-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+
+  .color-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* Active Accessories */
+  .active-accessories {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e0e0e0;
+  }
+
+  .accessory-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+  }
+
+  .accessory-item button {
+    padding: 0.25rem 0.75rem;
+    border: none;
+    border-radius: 4px;
+    background: #ff4444;
+    color: white;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
+  /* Actions */
+  .designer-actions {
+    grid-column: 1;
+    grid-row: 3;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    flex: 1;
+    min-width: 150px;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    background: white;
+    border: 2px solid #667eea;
+    color: #667eea;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .action-btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+  }
+
+  /* Animation Controls */
+  .animation-controls {
+    grid-column: 1;
+    grid-row: 3;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .animation-controls label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  .animation-controls select {
+    padding: 0.5rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 4px;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .character-designer {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto;
+    }
+
+    .designer-canvas {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .designer-sidebar {
+      grid-column: 1;
+      grid-row: 2;
+      max-height: 500px;
+    }
+
+    .designer-actions,
+    .animation-controls {
+      grid-column: 1;
+      grid-row: 3;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .parts-tabs {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .parts-grid {
+      grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    }
+
+    .gender-selector {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import {
+    CharacterDesigner,
+    CharacterStorage,
+    BODY_TEMPLATES,
+    HAIR_TEMPLATES,
+    EYE_TEMPLATES,
+    MOUTH_TEMPLATES,
+    ACCESSORY_TEMPLATES,
+    BACKGROUND_TEMPLATES,
+    type BodyType,
+    type HairStyle,
+    type EyeStyle,
+    type MouthStyle,
+    type AccessoryType,
+    type BackgroundShape,
+    type Gender,
+  } from '../utils/character-designer';
+
+  let designer: CharacterDesigner;
+  let currentAccessoryColor = '#FF6B6B';
+
+  // Initialize designer
+  function initDesigner() {
+    designer = new CharacterDesigner();
+    renderCharacter();
+    updateUndoRedoButtons();
+  }
+
+  // Render character preview
+  function renderCharacter() {
+    const preview = document.getElementById('character-preview');
+    if (!preview) return;
+
+    const svg = designer.generateSVG(600, 600);
+    preview.innerHTML = svg;
+  }
+
+  // Populate parts grids
+  function populateBodyParts() {
+    const grid = document.getElementById('body-parts');
+    if (!grid) return;
+
+    const bodyTypes: BodyType[] = ['bear', 'fox', 'lion', 'mouse', 'rabbit', 'owl', 'tiger', 'human-boy', 'human-girl'];
+    const emojis: Record<BodyType, string> = {
+      bear: '🐻',
+      fox: '🦊',
+      lion: '🦁',
+      mouse: '🐭',
+      rabbit: '🐰',
+      owl: '🦉',
+      tiger: '🐯',
+      'human-boy': '👦',
+      'human-girl': '👧',
+    };
+
+    grid.innerHTML = bodyTypes.map(type =>
+      `<button class="part-option" data-body="${type}">${emojis[type]}</button>`
+    ).join('');
+
+    grid.querySelectorAll('.part-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const bodyType = (btn as HTMLElement).dataset.body as BodyType;
+        designer.updateCharacter({ bodyType });
+        renderCharacter();
+        updateSelection('body', bodyType);
+      });
+    });
+  }
+
+  function populateHairParts() {
+    const grid = document.getElementById('hair-parts');
+    if (!grid) return;
+
+    const hairStyles: HairStyle[] = ['none', 'short', 'long', 'curly', 'straight', 'pigtails', 'ponytail', 'mohawk', 'bald', 'afro', 'braids', 'bun', 'wavy', 'spiky', 'buzz', 'bob', 'shaggy', 'bangs', 'topknot', 'dreadlocks'];
+
+    grid.innerHTML = hairStyles.map(style =>
+      `<button class="part-option" data-hair="${style}" title="${style}">${style === 'none' ? '🚫' : '💇'}</button>`
+    ).join('');
+
+    grid.querySelectorAll('.part-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const hairStyle = (btn as HTMLElement).dataset.hair as HairStyle;
+        designer.updateCharacter({ hairStyle });
+        renderCharacter();
+        updateSelection('hair', hairStyle);
+      });
+    });
+  }
+
+  function populateEyeParts() {
+    const grid = document.getElementById('eye-parts');
+    if (!grid) return;
+
+    const eyeStyles: EyeStyle[] = ['happy', 'surprised', 'sleepy', 'winking', 'angry', 'sad', 'excited', 'curious', 'sparkle', 'heart', 'star', 'closed', 'squint', 'wide', 'dreamy'];
+    const emojis: Record<EyeStyle, string> = {
+      happy: '😊', surprised: '😲', sleepy: '😴', winking: '😉', angry: '😠',
+      sad: '😢', excited: '🤩', curious: '🤔', sparkle: '✨', heart: '😍',
+      star: '🤩', closed: '😌', squint: '😑', wide: '👀', dreamy: '😌'
+    };
+
+    grid.innerHTML = eyeStyles.map(style =>
+      `<button class="part-option" data-eye="${style}">${emojis[style]}</button>`
+    ).join('');
+
+    grid.querySelectorAll('.part-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const eyeStyle = (btn as HTMLElement).dataset.eye as EyeStyle;
+        designer.updateCharacter({ eyeStyle });
+        renderCharacter();
+        updateSelection('eye', eyeStyle);
+      });
+    });
+  }
+
+  function populateMouthParts() {
+    const grid = document.getElementById('mouth-parts');
+    if (!grid) return;
+
+    const mouthStyles: MouthStyle[] = ['smile', 'laugh', 'neutral', 'sad', 'surprised', 'whistle', 'tongue', 'grin', 'pout', 'open', 'teeth', 'singing'];
+    const emojis: Record<MouthStyle, string> = {
+      smile: '🙂', laugh: '😄', neutral: '😐', sad: '😞', surprised: '😮',
+      whistle: '😗', tongue: '😛', grin: '😁', pout: '😡', open: '😮',
+      teeth: '😬', singing: '🎤'
+    };
+
+    grid.innerHTML = mouthStyles.map(style =>
+      `<button class="part-option" data-mouth="${style}">${emojis[style]}</button>`
+    ).join('');
+
+    grid.querySelectorAll('.part-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const mouthStyle = (btn as HTMLElement).dataset.mouth as MouthStyle;
+        designer.updateCharacter({ mouthStyle });
+        renderCharacter();
+        updateSelection('mouth', mouthStyle);
+      });
+    });
+  }
+
+  function populateAccessoryParts() {
+    const grid = document.getElementById('accessory-parts');
+    if (!grid) return;
+
+    const accessories: AccessoryType[] = ['hat', 'glasses', 'bowtie', 'scarf', 'crown', 'flower', 'bandana', 'cape', 'necklace', 'earrings', 'headband', 'mask', 'wings', 'backpack', 'guitar', 'wand', 'balloon', 'umbrella', 'badge', 'watch', 'sunglasses', 'monocle', 'bow', 'tiara', 'baseballcap'];
+    const emojis: Record<AccessoryType, string> = {
+      hat: '🎩', glasses: '👓', bowtie: '🎀', scarf: '🧣', crown: '👑',
+      flower: '🌸', bandana: '🎽', cape: '🦸', necklace: '📿', earrings: '💍',
+      headband: '🎀', mask: '🎭', wings: '🦋', backpack: '🎒', guitar: '🎸',
+      wand: '🪄', balloon: '🎈', umbrella: '☂️', badge: '🏅', watch: '⌚',
+      sunglasses: '🕶️', monocle: '🧐', bow: '🎀', tiara: '👸', baseballcap: '🧢'
+    };
+
+    grid.innerHTML = accessories.map(acc =>
+      `<button class="part-option" data-accessory="${acc}">${emojis[acc]}</button>`
+    ).join('');
+
+    grid.querySelectorAll('.part-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const accessoryType = (btn as HTMLElement).dataset.accessory as AccessoryType;
+        addAccessory(accessoryType);
+      });
+    });
+  }
+
+  function populateBackgroundParts() {
+    const grid = document.getElementById('background-parts');
+    if (!grid) return;
+
+    const shapes: BackgroundShape[] = ['none', 'circle', 'square', 'star', 'heart', 'cloud', 'hexagon', 'diamond', 'rainbow', 'bubble', 'frame'];
+    const emojis: Record<BackgroundShape, string> = {
+      none: '🚫', circle: '⭕', square: '⬜', star: '⭐', heart: '❤️',
+      cloud: '☁️', hexagon: '⬡', diamond: '💎', rainbow: '🌈', bubble: '💭', frame: '🖼️'
+    };
+
+    grid.innerHTML = shapes.map(shape =>
+      `<button class="part-option" data-bg="${shape}">${emojis[shape]}</button>`
+    ).join('');
+
+    grid.querySelectorAll('.part-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const backgroundShape = (btn as HTMLElement).dataset.bg as BackgroundShape;
+        designer.updateCharacter({ backgroundShape });
+        renderCharacter();
+        updateSelection('bg', backgroundShape);
+      });
+    });
+  }
+
+  function addAccessory(type: AccessoryType) {
+    const char = designer.getCharacter();
+    const newAccessory = {
+      type,
+      color: currentAccessoryColor,
+      size: 1,
+      rotation: 0,
+      x: 0,
+      y: 0,
+    };
+
+    designer.updateCharacter({
+      accessories: [...char.accessories, newAccessory],
+    });
+    renderCharacter();
+    renderActiveAccessories();
+  }
+
+  function renderActiveAccessories() {
+    const container = document.getElementById('active-accessories');
+    if (!container) return;
+
+    const char = designer.getCharacter();
+    if (char.accessories.length === 0) {
+      container.innerHTML = '<p style="color: #999; text-align: center;">No accessories added</p>';
+      return;
+    }
+
+    container.innerHTML = char.accessories.map((acc, idx) => `
+      <div class="accessory-item">
+        <span>${acc.type}</span>
+        <button data-idx="${idx}">Remove</button>
+      </div>
+    `).join('');
+
+    container.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt((btn as HTMLElement).dataset.idx || '0');
+        removeAccessory(idx);
+      });
+    });
+  }
+
+  function removeAccessory(index: number) {
+    const char = designer.getCharacter();
+    const accessories = char.accessories.filter((_, idx) => idx !== index);
+    designer.updateCharacter({ accessories });
+    renderCharacter();
+    renderActiveAccessories();
+  }
+
+  function updateSelection(type: string, value: string) {
+    const selector = `[data-${type}="${value}"]`;
+    document.querySelectorAll(`[data-${type}]`).forEach(el => el.classList.remove('selected'));
+    document.querySelector(selector)?.classList.add('selected');
+  }
+
+  function updateUndoRedoButtons() {
+    const undoBtn = document.getElementById('undo-btn') as HTMLButtonElement;
+    const redoBtn = document.getElementById('redo-btn') as HTMLButtonElement;
+
+    if (undoBtn) undoBtn.disabled = !designer.canUndo();
+    if (redoBtn) redoBtn.disabled = !designer.canRedo();
+  }
+
+  // Event listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    initDesigner();
+    populateBodyParts();
+    populateHairParts();
+    populateEyeParts();
+    populateMouthParts();
+    populateAccessoryParts();
+    populateBackgroundParts();
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = (btn as HTMLElement).dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelector(`[data-panel="${tab}"]`)?.classList.add('active');
+      });
+    });
+
+    // Gender selection
+    document.querySelectorAll('.gender-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const gender = (btn as HTMLElement).dataset.gender as Gender;
+        document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        designer.updateCharacter({ gender });
+        renderCharacter();
+      });
+    });
+
+    // Color pickers
+    document.getElementById('body-color')?.addEventListener('input', (e) => {
+      designer.updateCharacter({ bodyColor: (e.target as HTMLInputElement).value });
+      renderCharacter();
+    });
+
+    document.getElementById('hair-color')?.addEventListener('input', (e) => {
+      designer.updateCharacter({ hairColor: (e.target as HTMLInputElement).value });
+      renderCharacter();
+    });
+
+    document.getElementById('pattern-color')?.addEventListener('input', (e) => {
+      designer.updateCharacter({ patternColor: (e.target as HTMLInputElement).value });
+      renderCharacter();
+    });
+
+    document.getElementById('bg-color')?.addEventListener('input', (e) => {
+      designer.updateCharacter({ backgroundColor: (e.target as HTMLInputElement).value });
+      renderCharacter();
+    });
+
+    document.getElementById('pattern-type')?.addEventListener('change', (e) => {
+      designer.updateCharacter({ pattern: (e.target as HTMLSelectElement).value as any });
+      renderCharacter();
+    });
+
+    document.getElementById('accessory-color')?.addEventListener('input', (e) => {
+      currentAccessoryColor = (e.target as HTMLInputElement).value;
+    });
+
+    // Character name
+    document.getElementById('character-name')?.addEventListener('input', (e) => {
+      designer.updateCharacter({ name: (e.target as HTMLInputElement).value });
+    });
+
+    // Control buttons
+    document.getElementById('undo-btn')?.addEventListener('click', () => {
+      designer.undo();
+      renderCharacter();
+      updateUndoRedoButtons();
+    });
+
+    document.getElementById('redo-btn')?.addEventListener('click', () => {
+      designer.redo();
+      renderCharacter();
+      updateUndoRedoButtons();
+    });
+
+    document.getElementById('reset-btn')?.addEventListener('click', () => {
+      if (confirm('Reset character to default?')) {
+        designer = new CharacterDesigner();
+        renderCharacter();
+        updateUndoRedoButtons();
+      }
+    });
+
+    // Action buttons
+    document.getElementById('save-character-btn')?.addEventListener('click', () => {
+      CharacterStorage.saveCharacter(designer.getCharacter());
+      alert('Character saved!');
+    });
+
+    document.getElementById('export-svg-btn')?.addEventListener('click', () => {
+      const svg = designer.generateSVG(600, 600);
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${designer.getCharacter().name || 'character'}.svg`;
+      a.click();
+    });
+
+    document.getElementById('export-png-btn')?.addEventListener('click', async () => {
+      const dataUrl = await designer.exportAsPNG(800, 800);
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = `${designer.getCharacter().name || 'character'}.png`;
+      a.click();
+    });
+
+    document.getElementById('use-in-story-btn')?.addEventListener('click', () => {
+      // TODO: Integration with story builder
+      alert('Story builder integration coming soon!');
+    });
+  });
+</script>
