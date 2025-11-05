@@ -1,0 +1,830 @@
+---
+/**
+ * InteractiveMap - Beautiful illustrated SVG world map with locations
+ * Features: Clickable pins, zoom/pan, journey paths, day/night toggle, minimap
+ */
+import type { Locale } from '@utils/i18n';
+import { getTranslation } from '@utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<div class="interactive-map-container">
+  <!-- Map Controls -->
+  <div class="map-controls">
+    <button id="zoom-in" class="control-btn" aria-label={getTranslation(locale, 'zoomIn')}>
+      <span aria-hidden="true">🔍+</span>
+    </button>
+    <button id="zoom-out" class="control-btn" aria-label={getTranslation(locale, 'zoomOut')}>
+      <span aria-hidden="true">🔍−</span>
+    </button>
+    <button id="reset-view" class="control-btn" aria-label={getTranslation(locale, 'resetView')}>
+      <span aria-hidden="true">↺</span>
+    </button>
+    <button id="toggle-day-night" class="control-btn" aria-label={getTranslation(locale, 'dayMode')}>
+      <span id="day-night-icon" aria-hidden="true">☀️</span>
+    </button>
+    <button id="toggle-paths" class="control-btn" aria-label={getTranslation(locale, 'showPaths')}>
+      <span aria-hidden="true">🛤️</span>
+    </button>
+    <button id="toggle-minimap" class="control-btn" aria-label={getTranslation(locale, 'minimap')}>
+      <span aria-hidden="true">🗺️</span>
+    </button>
+  </div>
+
+  <!-- Main Map SVG -->
+  <div class="map-viewport" id="map-viewport">
+    <svg
+      id="story-map"
+      viewBox="0 0 1000 800"
+      xmlns="http://www.w3.org/2000/svg"
+      class="story-world-map"
+    >
+      <!-- Background -->
+      <defs>
+        <!-- Gradients for day/night -->
+        <linearGradient id="sky-day" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#E0F6FF;stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="sky-night" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#191970;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#2C3E50;stop-opacity:1" />
+        </linearGradient>
+
+        <!-- Patterns for terrain -->
+        <pattern id="grass" patternUnits="userSpaceOnUse" width="20" height="20">
+          <rect width="20" height="20" fill="#90EE90" />
+          <circle cx="5" cy="5" r="1" fill="#7FBF7F" />
+          <circle cx="15" cy="15" r="1" fill="#7FBF7F" />
+        </pattern>
+        <pattern id="water" patternUnits="userSpaceOnUse" width="30" height="30">
+          <rect width="30" height="30" fill="#4FC3F7" />
+          <path d="M0,15 Q15,10 30,15 T60,15" stroke="#64B5F6" fill="none" stroke-width="2" opacity="0.5" />
+        </pattern>
+      </defs>
+
+      <!-- Sky Background -->
+      <rect id="sky-bg" width="1000" height="800" fill="url(#sky-day)" />
+
+      <!-- Clouds (day mode) -->
+      <g id="clouds" class="day-only">
+        <ellipse cx="100" cy="80" rx="40" ry="20" fill="white" opacity="0.7" />
+        <ellipse cx="130" cy="75" rx="30" ry="15" fill="white" opacity="0.7" />
+        <ellipse cx="300" cy="100" rx="50" ry="25" fill="white" opacity="0.6" />
+        <ellipse cx="700" cy="90" rx="35" ry="18" fill="white" opacity="0.7" />
+        <ellipse cx="900" cy="110" rx="45" ry="22" fill="white" opacity="0.6" />
+      </g>
+
+      <!-- Stars (night mode) -->
+      <g id="stars" class="night-only" style="display:none;">
+        <circle cx="50" cy="40" r="2" fill="white" opacity="0.9" />
+        <circle cx="150" cy="60" r="1.5" fill="white" opacity="0.8" />
+        <circle cx="250" cy="30" r="2" fill="yellow" opacity="0.9" />
+        <circle cx="400" cy="50" r="1" fill="white" opacity="0.7" />
+        <circle cx="550" cy="70" r="1.5" fill="white" opacity="0.8" />
+        <circle cx="700" cy="40" r="2" fill="white" opacity="0.9" />
+        <circle cx="850" cy="60" r="1" fill="white" opacity="0.7" />
+        <circle cx="920" cy="80" r="1.5" fill="yellow" opacity="0.9" />
+      </g>
+
+      <!-- Ocean/Water Base -->
+      <rect y="600" width="1000" height="200" fill="url(#water)" />
+      <ellipse cx="350" cy="750" rx="150" ry="80" fill="url(#water)" opacity="0.8" />
+
+      <!-- Land masses -->
+      <path id="main-land" d="M 100 200 Q 300 180 500 220 T 900 200 L 950 600 L 50 600 Z" fill="#90EE90" stroke="#228B22" stroke-width="3" />
+
+      <!-- Journey Paths Container (under locations) -->
+      <g id="journey-paths"></g>
+
+      <!-- LOCATION 1: Forest (200, 350) -->
+      <g class="location" data-location="forest" data-x="200" data-y="350">
+        <!-- Forest background -->
+        <circle cx="200" cy="350" r="70" fill="#2D5016" opacity="0.2" />
+        <circle cx="180" cy="340" r="25" fill="#228B22" />
+        <circle cx="205" cy="335" r="28" fill="#32CD32" />
+        <circle cx="220" cy="350" r="22" fill="#228B22" />
+        <text x="200" y="360" text-anchor="middle" font-size="48" class="location-emoji">🌲</text>
+        <circle class="location-hitbox" cx="200" cy="350" r="35" fill="transparent" />
+      </g>
+
+      <!-- LOCATION 2: City (650, 300) -->
+      <g class="location" data-location="city" data-x="650" data-y="300">
+        <!-- City background -->
+        <rect x="620" y="290" width="25" height="40" fill="#808080" rx="2" />
+        <rect x="650" y="280" width="30" height="50" fill="#A0A0A0" rx="2" />
+        <rect x="685" y="295" width="20" height="35" fill="#808080" rx="2" />
+        <text x="650" y="310" text-anchor="middle" font-size="48" class="location-emoji">🏙️</text>
+        <circle class="location-hitbox" cx="650" cy="300" r="35" fill="transparent" />
+      </g>
+
+      <!-- LOCATION 3: Beach (150, 650) -->
+      <g class="location" data-location="beach" data-x="150" data-y="650">
+        <!-- Beach sand -->
+        <ellipse cx="150" cy="650" r="60" ry="40" fill="#F4A460" />
+        <text x="150" y="660" text-anchor="middle" font-size="48" class="location-emoji">🏖️</text>
+        <circle class="location-hitbox" cx="150" cy="650" r="35" fill="transparent" />
+      </g>
+
+      <!-- LOCATION 4: Home (500, 500) -->
+      <g class="location" data-location="home" data-x="500" data-y="500">
+        <!-- House shape -->
+        <rect x="475" y="490" width="50" height="40" fill="#D2691E" />
+        <path d="M 465 490 L 500 465 L 535 490 Z" fill="#8B4513" />
+        <text x="500" y="510" text-anchor="middle" font-size="48" class="location-emoji">🏡</text>
+        <circle class="location-hitbox" cx="500" cy="500" r="35" fill="transparent" />
+      </g>
+
+      <!-- LOCATION 5: Space (800, 150) -->
+      <g class="location locked" data-location="space" data-x="800" data-y="150">
+        <!-- Space portal -->
+        <circle cx="800" cy="150" r="45" fill="#000033" opacity="0.5" />
+        <circle cx="800" cy="150" r="35" fill="#4B0082" opacity="0.7" />
+        <text x="800" y="165" text-anchor="middle" font-size="48" class="location-emoji">🚀</text>
+        <text x="800" y="120" text-anchor="middle" font-size="20" fill="#666" class="lock-icon">🔒</text>
+        <circle class="location-hitbox" cx="800" cy="150" r="35" fill="transparent" />
+      </g>
+
+      <!-- LOCATION 6: Underwater (350, 750) -->
+      <g class="location locked" data-location="underwater" data-x="350" data-y="750">
+        <!-- Underwater bubble -->
+        <circle cx="350" cy="750" r="50" fill="#006994" opacity="0.3" />
+        <circle cx="340" cy="745" r="8" fill="#B0E0E6" opacity="0.6" />
+        <circle cx="360" cy="755" r="6" fill="#B0E0E6" opacity="0.6" />
+        <text x="350" y="765" text-anchor="middle" font-size="48" class="location-emoji">🐠</text>
+        <text x="350" y="720" text-anchor="middle" font-size="20" fill="#666" class="lock-icon">🔒</text>
+        <circle class="location-hitbox" cx="350" cy="750" r="35" fill="transparent" />
+      </g>
+
+      <!-- LOCATION 7: Mountain (750, 550) -->
+      <g class="location" data-location="mountain" data-x="750" data-y="550">
+        <!-- Mountain peaks -->
+        <path d="M 720 580 L 750 520 L 780 580 Z" fill="#8B7355" />
+        <path d="M 745 545 L 750 520 L 755 545 Z" fill="white" />
+        <text x="750" y="565" text-anchor="middle" font-size="48" class="location-emoji">⛰️</text>
+        <circle class="location-hitbox" cx="750" cy="550" r="35" fill="transparent" />
+      </g>
+
+      <!-- LOCATION 8: Farm (450, 200) -->
+      <g class="location locked" data-location="farm" data-x="450" data-y="200">
+        <!-- Farm field -->
+        <rect x="420" y="180" width="60" height="40" fill="#FFD700" opacity="0.3" rx="5" />
+        <text x="450" y="210" text-anchor="middle" font-size="48" class="location-emoji">🚜</text>
+        <text x="450" y="170" text-anchor="middle" font-size="20" fill="#666" class="lock-icon">🔒</text>
+        <circle class="location-hitbox" cx="450" cy="200" r="35" fill="transparent" />
+      </g>
+
+      <!-- Character Markers Container -->
+      <g id="character-markers"></g>
+
+      <!-- Treasure Markers Container -->
+      <g id="treasure-markers"></g>
+    </svg>
+  </div>
+
+  <!-- Minimap -->
+  <div id="minimap" class="minimap">
+    <svg viewBox="0 0 1000 800" class="minimap-svg">
+      <use href="#main-land" opacity="0.5" />
+      <rect id="minimap-viewport" x="0" y="0" width="200" height="160" fill="none" stroke="red" stroke-width="3" />
+    </svg>
+  </div>
+
+  <!-- Location Info Card -->
+  <div id="location-info" class="location-info-card" style="display: none;">
+    <button class="close-btn" id="close-info" aria-label="Close">×</button>
+    <div class="info-content">
+      <h3 id="info-title"></h3>
+      <p id="info-description"></p>
+      <div id="info-stories"></div>
+      <div id="info-locked" style="display: none;">
+        <p class="locked-message">🔒 {getTranslation(locale, 'locationLocked')}</p>
+        <p class="unlock-hint">{getTranslation(locale, 'unlockBy')}: <span id="unlock-requirement"></span> {getTranslation(locale, 'completingStories')}</p>
+      </div>
+      <button id="explore-btn" class="explore-btn" style="display: none;">{getTranslation(locale, 'exploreLocation')}</button>
+    </div>
+  </div>
+
+  <!-- Progress Stats -->
+  <div class="progress-stats">
+    <div class="stat-item">
+      <span class="stat-icon">📍</span>
+      <span class="stat-label">{getTranslation(locale, 'locationsVisited')}</span>
+      <span class="stat-value" id="stat-locations">0/8</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">⭐</span>
+      <span class="stat-label">{getTranslation(locale, 'treasuresFound')}</span>
+      <span class="stat-value" id="stat-treasures">0/5</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .interactive-map-container {
+    position: relative;
+    width: 100%;
+    height: 80vh;
+    min-height: 600px;
+    background: linear-gradient(to bottom, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .map-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .control-btn {
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .control-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    background: #f0f0f0;
+  }
+
+  .control-btn:active {
+    transform: translateY(0);
+  }
+
+  .map-viewport {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    overflow: hidden;
+  }
+
+  .map-viewport:active {
+    cursor: grabbing;
+  }
+
+  .story-world-map {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease;
+  }
+
+  /* Location styling */
+  .location {
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .location:hover {
+    transform: scale(1.15);
+  }
+
+  .location.locked .location-emoji {
+    opacity: 0.5;
+    filter: grayscale(50%);
+  }
+
+  .location.visited {
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  .location-hitbox {
+    cursor: pointer;
+  }
+
+  .location-hitbox:hover {
+    fill: rgba(255, 255, 255, 0.2);
+  }
+
+  .lock-icon {
+    animation: float 2s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  /* Day/Night toggle */
+  .night-mode #sky-bg {
+    fill: url(#sky-night);
+  }
+
+  .night-mode .day-only {
+    display: none;
+  }
+
+  .night-mode .night-only {
+    display: block !important;
+  }
+
+  /* Journey paths */
+  .journey-path {
+    stroke-dasharray: 8 4;
+    stroke-width: 3;
+    fill: none;
+    opacity: 0.7;
+    animation: path-dash 30s linear infinite;
+  }
+
+  @keyframes path-dash {
+    to {
+      stroke-dashoffset: -1000;
+    }
+  }
+
+  /* Minimap */
+  .minimap {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 200px;
+    height: 160px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    display: none;
+  }
+
+  .minimap.active {
+    display: block;
+  }
+
+  .minimap-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Location Info Card */
+  .location-info-card {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 500px;
+    width: 90%;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    padding: 24px;
+    z-index: 110;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translate(-50%, 20px);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #f0f0f0;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1;
+    transition: background 0.2s;
+  }
+
+  .close-btn:hover {
+    background: #e0e0e0;
+  }
+
+  .info-content h3 {
+    margin: 0 0 12px 0;
+    color: var(--color-primary);
+    font-size: 24px;
+  }
+
+  .info-content p {
+    margin: 8px 0;
+    color: var(--color-text);
+  }
+
+  .locked-message {
+    color: #ff9800;
+    font-weight: 600;
+  }
+
+  .unlock-hint {
+    font-size: 14px;
+    color: #666;
+  }
+
+  .explore-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: var(--color-primary);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .explore-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Progress Stats */
+  .progress-stats {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .stat-item {
+    background: white;
+    padding: 12px 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+
+  .stat-icon {
+    font-size: 20px;
+  }
+
+  .stat-label {
+    flex: 1;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .stat-value {
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .interactive-map-container {
+      height: 60vh;
+      min-height: 400px;
+    }
+
+    .map-controls {
+      top: 10px;
+      right: 10px;
+      gap: 6px;
+    }
+
+    .control-btn {
+      width: 40px;
+      height: 40px;
+      font-size: 16px;
+    }
+
+    .progress-stats {
+      top: 10px;
+      left: 10px;
+      gap: 8px;
+    }
+
+    .stat-item {
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+
+    .stat-icon {
+      font-size: 16px;
+    }
+
+    .location-info-card {
+      max-width: 90%;
+      padding: 16px;
+    }
+
+    .minimap {
+      width: 120px;
+      height: 96px;
+      bottom: 10px;
+      right: 10px;
+    }
+  }
+</style>
+
+<script>
+  import {
+    mapLocations,
+    characters,
+    treasures,
+    loadMapProgress,
+    saveMapProgress,
+    completeStory,
+    discoverTreasure,
+    isLocationUnlocked,
+    getJourneyPaths,
+    type MapProgress,
+  } from '@utils/story-map';
+
+  let progress: MapProgress;
+  let currentZoom = 1;
+  let currentPan = { x: 0, y: 0 };
+  let isDragging = false;
+  let dragStart = { x: 0, y: 0 };
+  let isNightMode = false;
+  let showPaths = true;
+
+  // Initialize map
+  function initMap() {
+    progress = loadMapProgress();
+    updateStats();
+    renderCharacters();
+    renderTreasures();
+    renderJourneyPaths();
+    updateLocationStates();
+  }
+
+  // Update stats display
+  function updateStats() {
+    const locationsVisited = progress.visitedLocations.length;
+    const treasuresFound = progress.discoveredTreasures.length;
+
+    document.getElementById('stat-locations')!.textContent = `${locationsVisited}/8`;
+    document.getElementById('stat-treasures')!.textContent = `${treasuresFound}/${treasures.length}`;
+  }
+
+  // Update location visual states
+  function updateLocationStates() {
+    mapLocations.forEach((location) => {
+      const locationEl = document.querySelector(`[data-location="${location.id}"]`);
+      if (!locationEl) return;
+
+      const isUnlocked = isLocationUnlocked(location.id, progress);
+      const isVisited = progress.visitedLocations.includes(location.id);
+
+      locationEl.classList.toggle('locked', !isUnlocked);
+      locationEl.classList.toggle('visited', isVisited);
+    });
+  }
+
+  // Render character markers
+  function renderCharacters() {
+    const container = document.getElementById('character-markers');
+    if (!container) return;
+
+    container.innerHTML = '';
+    progress.characters.forEach((char) => {
+      const location = mapLocations.find((loc) => loc.id === char.currentLocation);
+      if (!location) return;
+
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.classList.add('character-marker');
+      g.setAttribute('data-character', char.characterId);
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', String(location.coordinates.x + 40));
+      text.setAttribute('y', String(location.coordinates.y - 20));
+      text.setAttribute('font-size', '24');
+      text.setAttribute('text-anchor', 'middle');
+      text.textContent = char.emoji;
+
+      g.appendChild(text);
+      container.appendChild(g);
+    });
+  }
+
+  // Render treasure markers
+  function renderTreasures() {
+    const container = document.getElementById('treasure-markers');
+    if (!container) return;
+
+    container.innerHTML = '';
+    treasures.forEach((treasure) => {
+      const isDiscovered = progress.discoveredTreasures.includes(treasure.id);
+      const location = mapLocations.find((loc) => loc.id === treasure.locationId);
+
+      if (!location || !isLocationUnlocked(treasure.locationId, progress)) return;
+
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.classList.add('treasure-marker');
+      g.setAttribute('data-treasure', treasure.id);
+      if (!isDiscovered) {
+        g.style.cursor = 'pointer';
+        g.addEventListener('click', () => handleTreasureClick(treasure.id));
+      }
+
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', String(treasure.coordinates.x));
+      circle.setAttribute('cy', String(treasure.coordinates.y));
+      circle.setAttribute('r', '15');
+      circle.setAttribute('fill', isDiscovered ? '#FFD700' : '#FFA500');
+      circle.setAttribute('opacity', isDiscovered ? '0.5' : '0.9');
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', String(treasure.coordinates.x));
+      text.setAttribute('y', String(treasure.coordinates.y + 5));
+      text.setAttribute('font-size', '16');
+      text.setAttribute('text-anchor', 'middle');
+      text.textContent = isDiscovered ? '✓' : '💎';
+
+      g.appendChild(circle);
+      g.appendChild(text);
+      container.appendChild(g);
+    });
+  }
+
+  // Render journey paths
+  function renderJourneyPaths() {
+    const container = document.getElementById('journey-paths');
+    if (!container) return;
+
+    container.innerHTML = '';
+    const paths = getJourneyPaths(progress);
+
+    paths.forEach((path) => {
+      const fromLoc = mapLocations.find((l) => l.id === path.from);
+      const toLoc = mapLocations.find((l) => l.id === path.to);
+
+      if (!fromLoc || !toLoc) return;
+
+      const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const d = `M ${fromLoc.coordinates.x} ${fromLoc.coordinates.y} Q ${
+        (fromLoc.coordinates.x + toLoc.coordinates.x) / 2
+      } ${(fromLoc.coordinates.y + toLoc.coordinates.y) / 2 - 50} ${toLoc.coordinates.x} ${toLoc.coordinates.y}`;
+
+      pathEl.setAttribute('d', d);
+      pathEl.setAttribute('class', 'journey-path');
+      pathEl.setAttribute('stroke', path.color);
+      pathEl.style.display = showPaths ? 'block' : 'none';
+
+      container.appendChild(pathEl);
+    });
+  }
+
+  // Handle location click
+  function handleLocationClick(locationId: string) {
+    const location = mapLocations.find((l) => l.id === locationId);
+    if (!location) return;
+
+    const isUnlocked = isLocationUnlocked(locationId, progress);
+    const infoCard = document.getElementById('location-info')!;
+    const locale = document.documentElement.lang as 'de' | 'ar' | 'en' | 'tr' | 'ur';
+
+    // Populate info card
+    document.getElementById('info-title')!.textContent = `${location.icon} ${location.name[locale]}`;
+    document.getElementById('info-description')!.textContent = location.description[locale];
+
+    if (isUnlocked) {
+      document.getElementById('info-locked')!.style.display = 'none';
+      document.getElementById('explore-btn')!.style.display = 'block';
+
+      // Show stories
+      const storiesContainer = document.getElementById('info-stories')!;
+      storiesContainer.innerHTML = `<p><strong>${location.stories.length} stories available</strong></p>`;
+    } else {
+      document.getElementById('info-locked')!.style.display = 'block';
+      document.getElementById('explore-btn')!.style.display = 'none';
+      document.getElementById('unlock-requirement')!.textContent = String(location.unlockRequirement || 0);
+    }
+
+    infoCard.style.display = 'block';
+  }
+
+  // Handle treasure click
+  function handleTreasureClick(treasureId: string) {
+    progress = discoverTreasure(treasureId, progress);
+    updateStats();
+    renderTreasures();
+
+    // Show toast notification
+    const treasure = treasures.find((t) => t.id === treasureId);
+    if (treasure && 'showToast' in window) {
+      (window as any).showToast(`💎 ${treasure.name.de} +${treasure.reward}⭐`);
+    }
+  }
+
+  // Zoom controls
+  function zoomIn() {
+    currentZoom = Math.min(currentZoom * 1.3, 3);
+    applyTransform();
+  }
+
+  function zoomOut() {
+    currentZoom = Math.max(currentZoom / 1.3, 0.5);
+    applyTransform();
+  }
+
+  function resetView() {
+    currentZoom = 1;
+    currentPan = { x: 0, y: 0 };
+    applyTransform();
+  }
+
+  function applyTransform() {
+    const map = document.getElementById('story-map')!;
+    map.style.transform = `translate(${currentPan.x}px, ${currentPan.y}px) scale(${currentZoom})`;
+  }
+
+  // Pan with drag
+  const viewport = document.getElementById('map-viewport')!;
+  viewport.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    dragStart = { x: e.clientX - currentPan.x, y: e.clientY - currentPan.y };
+  });
+
+  viewport.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    currentPan = { x: e.clientX - dragStart.x, y: e.clientY - dragStart.y };
+    applyTransform();
+  });
+
+  viewport.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+
+  viewport.addEventListener('mouseleave', () => {
+    isDragging = false;
+  });
+
+  // Day/Night toggle
+  document.getElementById('toggle-day-night')!.addEventListener('click', () => {
+    isNightMode = !isNightMode;
+    document.getElementById('story-map')!.classList.toggle('night-mode', isNightMode);
+    document.getElementById('day-night-icon')!.textContent = isNightMode ? '🌙' : '☀️';
+  });
+
+  // Path toggle
+  document.getElementById('toggle-paths')!.addEventListener('click', () => {
+    showPaths = !showPaths;
+    renderJourneyPaths();
+  });
+
+  // Minimap toggle
+  document.getElementById('toggle-minimap')!.addEventListener('click', () => {
+    document.getElementById('minimap')!.classList.toggle('active');
+  });
+
+  // Control buttons
+  document.getElementById('zoom-in')!.addEventListener('click', zoomIn);
+  document.getElementById('zoom-out')!.addEventListener('click', zoomOut);
+  document.getElementById('reset-view')!.addEventListener('click', resetView);
+
+  // Close info card
+  document.getElementById('close-info')!.addEventListener('click', () => {
+    document.getElementById('location-info')!.style.display = 'none';
+  });
+
+  // Location clicks
+  document.querySelectorAll('.location').forEach((loc) => {
+    loc.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const locationId = (loc as SVGElement).getAttribute('data-location');
+      if (locationId) {
+        handleLocationClick(locationId);
+      }
+    });
+  });
+
+  // Initialize on load
+  initMap();
+</script>

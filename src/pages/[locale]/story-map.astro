@@ -1,0 +1,429 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import InteractiveMap from '../../components/InteractiveMap.astro';
+import { getTranslation, type Locale } from '@utils/i18n';
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: 'ar' } },
+    { params: { locale: 'en' } },
+    { params: { locale: 'tr' } },
+    { params: { locale: 'ur' } },
+  ];
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const title = getTranslation(locale, 'storyMap');
+const description = getTranslation(locale, 'storyMapDescription');
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="story-map-page">
+    <div class="container-fluid">
+      <!-- Page Header -->
+      <div class="map-header">
+        <div class="header-content">
+          <h1>🗺️ {title}</h1>
+          <p class="map-subtitle">{description}</p>
+        </div>
+
+        <!-- Achievement Preview (Explorer Badge) -->
+        <div class="achievement-preview">
+          <div class="achievement-badge">
+            <span class="achievement-icon">🗺️</span>
+            <div class="achievement-details">
+              <strong>{getTranslation(locale, 'achievements')}</strong>
+              <small>🏆 {getTranslation(locale, 'explorer')}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Map Component -->
+      <InteractiveMap locale={locale} />
+
+      <!-- Map Legend -->
+      <div class="map-legend">
+        <h3>{getTranslation(locale, 'mapLegend')}</h3>
+        <div class="legend-items">
+          <div class="legend-item">
+            <span class="legend-symbol visited-symbol"></span>
+            <span>{getTranslation(locale, 'visitedLocation')}</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-symbol locked-symbol">🔒</span>
+            <span>{getTranslation(locale, 'lockedLocation')}</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-symbol treasure-symbol">💎</span>
+            <span>{getTranslation(locale, 'treasureLocation')}</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-symbol path-symbol"></span>
+            <span>{getTranslation(locale, 'journeyPaths')}</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-symbol character-symbol">🐻</span>
+            <span>{getTranslation(locale, 'characterMarkers')}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- How It Works Section -->
+      <div class="how-it-works">
+        <h2>💡 {getTranslation(locale, 'howItWorks')}</h2>
+        <div class="how-it-works-grid">
+          <div class="how-card">
+            <div class="how-icon">📖</div>
+            <h3>{getTranslation(locale, 'readStory')}</h3>
+            <p>{getTranslation(locale, 'story')}</p>
+          </div>
+          <div class="how-card">
+            <div class="how-icon">🗺️</div>
+            <h3>{getTranslation(locale, 'exploreLocation')}</h3>
+            <p>{getTranslation(locale, 'locations')}</p>
+          </div>
+          <div class="how-card">
+            <div class="how-icon">💎</div>
+            <h3>{getTranslation(locale, 'discoverTreasure')}</h3>
+            <p>{getTranslation(locale, 'treasures')}</p>
+          </div>
+          <div class="how-card">
+            <div class="how-icon">🏆</div>
+            <h3>{getTranslation(locale, 'achievements')}</h3>
+            <p>{getTranslation(locale, 'allAchievements')}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back to Stories Link -->
+      <div class="back-link">
+        <a href={`${import.meta.env.BASE_URL}/${locale}`} class="btn-secondary">
+          ← {getTranslation(locale, 'backToStories')}
+        </a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .story-map-page {
+    min-height: 100vh;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 50%, #fff3e0 100%);
+  }
+
+  .container-fluid {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* Header */
+  .map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .header-content h1 {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-primary);
+    background: linear-gradient(135deg, #FF6B6B, #4ECDC4, #45B7D1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .map-subtitle {
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+    margin: 0;
+  }
+
+  /* Achievement Preview */
+  .achievement-preview {
+    flex-shrink: 0;
+  }
+
+  .achievement-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    padding: 16px 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 3px solid #FFD700;
+  }
+
+  .achievement-icon {
+    font-size: 48px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .achievement-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .achievement-details strong {
+    color: var(--color-text);
+    font-size: 14px;
+  }
+
+  .achievement-details small {
+    color: #FFD700;
+    font-weight: 600;
+  }
+
+  /* Map Legend */
+  .map-legend {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin: 2rem 0;
+  }
+
+  .map-legend h3 {
+    margin: 0 0 16px 0;
+    color: var(--color-text);
+    font-size: 1.3rem;
+  }
+
+  .legend-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background 0.2s;
+  }
+
+  .legend-item:hover {
+    background: #f5f5f5;
+  }
+
+  .legend-symbol {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .visited-symbol {
+    background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  .locked-symbol {
+    background: #f5f5f5;
+    color: #999;
+  }
+
+  .treasure-symbol {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+  }
+
+  .path-symbol {
+    background: linear-gradient(135deg, #9C27B0, #E91E63);
+    position: relative;
+  }
+
+  .path-symbol::before {
+    content: '──';
+    color: white;
+    font-weight: bold;
+  }
+
+  .character-symbol {
+    background: #FFF3E0;
+  }
+
+  /* How It Works */
+  .how-it-works {
+    background: white;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin: 2rem 0;
+  }
+
+  .how-it-works h2 {
+    margin: 0 0 24px 0;
+    color: var(--color-text);
+    font-size: 1.8rem;
+  }
+
+  .how-it-works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+  }
+
+  .how-card {
+    text-align: center;
+    padding: 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    transition: all 0.3s;
+  }
+
+  .how-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .how-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+
+  .how-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+    color: var(--color-primary);
+  }
+
+  .how-card p {
+    margin: 0;
+    color: var(--color-text-light);
+    font-size: 14px;
+  }
+
+  /* Back Link */
+  .back-link {
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  .btn-secondary {
+    display: inline-block;
+    padding: 12px 24px;
+    background: white;
+    color: var(--color-primary);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    background: var(--color-primary);
+    color: white;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .container-fluid {
+      padding: 0 1rem;
+    }
+
+    .story-map-page {
+      padding: 1rem 0;
+    }
+
+    .map-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .header-content h1 {
+      font-size: 2rem;
+    }
+
+    .map-subtitle {
+      font-size: 1rem;
+    }
+
+    .achievement-badge {
+      padding: 12px 16px;
+    }
+
+    .achievement-icon {
+      font-size: 36px;
+    }
+
+    .legend-items {
+      grid-template-columns: 1fr;
+    }
+
+    .how-it-works-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .map-legend,
+    .how-it-works {
+      padding: 20px;
+    }
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .back-link .btn-secondary {
+    direction: rtl;
+  }
+
+  [dir='rtl'] .legend-item {
+    flex-direction: row-reverse;
+  }
+
+  [dir='rtl'] .achievement-badge {
+    flex-direction: row-reverse;
+  }
+</style>
+
+<script>
+  // Listen for achievement unlocks and show toast
+  window.addEventListener('DOMContentLoaded', () => {
+    // Check if Explorer achievement is earned
+    const progress = localStorage.getItem('story-map-progress');
+    if (progress) {
+      try {
+        const data = JSON.parse(progress);
+        if (data.achievements?.includes('explorer')) {
+          // Show confetti or special animation for completed explorer
+          console.log('Explorer achievement unlocked!');
+        }
+      } catch (err) {
+        console.error('Error reading map progress:', err);
+      }
+    }
+  });
+</script>
