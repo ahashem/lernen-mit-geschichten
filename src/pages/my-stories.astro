@@ -1,0 +1,550 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getTranslation } from '@utils/i18n';
+
+const locale = 'de';
+const title = getTranslation(locale, 'myStories');
+const description = getTranslation(locale, 'createdStories');
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="my-stories-page">
+    <div class="container">
+      <header class="page-header">
+        <div class="header-content">
+          <h1 class="page-title">📚 {title}</h1>
+          <a href="/story-builder" class="btn-create-new">
+            + {getTranslation(locale, 'createYourStory')}
+          </a>
+        </div>
+      </header>
+
+      <!-- Stats Section -->
+      <div class="stats-section" id="stats-section">
+        <div class="stat-card">
+          <div class="stat-icon">📖</div>
+          <div class="stat-value" id="total-stories">0</div>
+          <div class="stat-label">{getTranslation(locale, 'storiesCreated')}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-value" id="unlocked-items">0</div>
+          <div class="stat-label">{getTranslation(locale, 'unlockMore')}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-value">{getTranslation(locale, 'storyCreatorBadge')}</div>
+          <div class="stat-label">Badge</div>
+        </div>
+      </div>
+
+      <!-- Stories Grid -->
+      <div class="stories-container">
+        <div id="stories-grid" class="stories-grid">
+          <!-- Populated by JavaScript -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+          <div class="empty-icon">📝</div>
+          <h2>{getTranslation(locale, 'noStoriesYet')}</h2>
+          <p>{getTranslation(locale, 'createFirstStory')}</p>
+          <a href="/story-builder" class="btn-primary">
+            {getTranslation(locale, 'createYourStory')}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h3>{getTranslation(locale, 'deleteStory')}</h3>
+      <p>{getTranslation(locale, 'confirmDelete')}</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="cancel-delete">{getTranslation(locale, 'cancel')}</button>
+        <button class="btn-confirm" id="confirm-delete">{getTranslation(locale, 'deleteStory')}</button>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .my-stories-page {
+    min-height: 80vh;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  }
+
+  .page-header {
+    margin-bottom: 3rem;
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    color: #333;
+    margin: 0;
+  }
+
+  .btn-create-new {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+  }
+
+  .btn-create-new:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  /* Stats Section */
+  .stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ff9f40;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  /* Stories Grid */
+  .stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .story-item {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .story-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .story-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .story-emoji {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .story-info {
+    flex: 1;
+  }
+
+  .story-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .story-author {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+  }
+
+  .story-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    color: #888;
+  }
+
+  .story-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .story-actions button,
+  .story-actions a {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    font-family: inherit;
+  }
+
+  .btn-view {
+    background: #667eea;
+    color: white;
+  }
+
+  .btn-view:hover {
+    background: #5568d3;
+  }
+
+  .btn-edit {
+    background: #ffd93d;
+    color: #333;
+  }
+
+  .btn-edit:hover {
+    background: #ffcf1a;
+  }
+
+  .btn-delete {
+    background: #ff6b6b;
+    color: white;
+  }
+
+  .btn-delete:hover {
+    background: #ee5a6f;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .empty-icon {
+    font-size: 6rem;
+    margin-bottom: 1rem;
+    opacity: 0.7;
+  }
+
+  .empty-state h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+
+  .empty-state p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 2.5rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-block;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  /* Modal */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 1rem;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-content h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin: 0 0 1rem 0;
+  }
+
+  .modal-content p {
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+
+  .modal-actions button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+  .btn-cancel {
+    background: #e0e0e0;
+    color: #333;
+  }
+
+  .btn-cancel:hover {
+    background: #d0d0d0;
+  }
+
+  .btn-confirm {
+    background: #ff6b6b;
+    color: white;
+  }
+
+  .btn-confirm:hover {
+    background: #ee5a6f;
+  }
+
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .header-content {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .btn-create-new {
+      text-align: center;
+    }
+
+    .stories-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { getStoredStories, deleteStory, getUnlocks } from '@utils/story-builder';
+
+  let storyToDelete: string | null = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderStories();
+    updateStats();
+  });
+
+  function renderStories() {
+    const stories = getStoredStories();
+    const grid = document.getElementById('stories-grid');
+    const emptyState = document.getElementById('empty-state');
+
+    if (!grid) return;
+
+    if (stories.length === 0) {
+      grid.style.display = 'none';
+      if (emptyState) emptyState.style.display = 'block';
+      return;
+    }
+
+    grid.style.display = 'grid';
+    if (emptyState) emptyState.style.display = 'none';
+
+    // Sort by last modified
+    const sortedStories = [...stories].sort((a, b) => b.lastModified - a.lastModified);
+
+    grid.innerHTML = sortedStories
+      .map(
+        story => `
+      <div class="story-item">
+        <div class="story-header">
+          <div class="story-emoji">${getCharacterEmoji(story.character)}</div>
+          <div class="story-info">
+            <h3 class="story-title">${story.title}</h3>
+            ${story.author ? `<p class="story-author">von ${story.author}</p>` : ''}
+          </div>
+        </div>
+        <div class="story-meta">
+          <div>📍 ${getSettingName(story.setting)}</div>
+          <div>📖 ${story.events.length} Ereignisse</div>
+          <div>🎭 ${getMoodName(story.mood)}</div>
+          <div>📅 ${formatDate(story.lastModified)}</div>
+        </div>
+        <div class="story-actions">
+          <a href="/story-viewer?id=${story.id}" class="btn-view">Ansehen</a>
+          <a href="/story-builder?edit=${story.id}" class="btn-edit">Bearbeiten</a>
+          <button class="btn-delete" data-id="${story.id}">Löschen</button>
+        </div>
+      </div>
+    `
+      )
+      .join('');
+
+    // Attach delete handlers
+    grid.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        if (id) showDeleteModal(id);
+      });
+    });
+  }
+
+  function updateStats() {
+    const stories = getStoredStories();
+    const unlocks = getUnlocks();
+
+    const totalStoriesEl = document.getElementById('total-stories');
+    const unlockedItemsEl = document.getElementById('unlocked-items');
+
+    if (totalStoriesEl) totalStoriesEl.textContent = stories.length.toString();
+
+    let unlockedCount = 0;
+    if (unlocks.extraCharacters) unlockedCount += 2;
+    if (unlocks.extraSettings) unlockedCount += 2;
+    if (unlocks.allContent) unlockedCount += 4;
+
+    if (unlockedItemsEl) unlockedItemsEl.textContent = `${unlockedCount}/8`;
+  }
+
+  function showDeleteModal(id: string) {
+    storyToDelete = id;
+    const modal = document.getElementById('delete-modal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function hideDeleteModal() {
+    storyToDelete = null;
+    const modal = document.getElementById('delete-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function confirmDelete() {
+    if (storyToDelete) {
+      deleteStory(storyToDelete);
+      hideDeleteModal();
+      renderStories();
+      updateStats();
+    }
+  }
+
+  // Modal handlers
+  document.getElementById('cancel-delete')?.addEventListener('click', hideDeleteModal);
+  document.getElementById('confirm-delete')?.addEventListener('click', confirmDelete);
+
+  // Helper functions
+  function getCharacterEmoji(id: string): string {
+    const characters: Record<string, string> = {
+      bruno: '🐻',
+      fritz: '🦊',
+      lina: '🦁',
+      mila: '🐭',
+      tobi: '🐯',
+      moritz: '🐶',
+      leo: '🐰',
+      timmi: '👦',
+      elephant: '🐘',
+      panda: '🐼',
+      owl: '🦉',
+      penguin: '🐧',
+    };
+    return characters[id] || '🎭';
+  }
+
+  function getSettingName(id: string): string {
+    const settings: Record<string, string> = {
+      forest: 'Wald 🌲',
+      city: 'Stadt 🏙️',
+      beach: 'Strand 🏖️',
+      home: 'Zuhause 🏠',
+      space: 'Weltraum 🚀',
+      underwater: 'Unterwasser 🌊',
+      mountain: 'Berge ⛰️',
+      farm: 'Bauernhof 🚜',
+    };
+    return settings[id] || id;
+  }
+
+  function getMoodName(mood: string): string {
+    const moods: Record<string, string> = {
+      happy: 'Fröhlich',
+      adventurous: 'Abenteuerlich',
+      calm: 'Ruhig',
+      funny: 'Lustig',
+      mysterious: 'Geheimnisvoll',
+      exciting: 'Aufregend',
+    };
+    return moods[mood] || mood;
+  }
+
+  function formatDate(timestamp: number): string {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('de-DE', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  }
+</script>

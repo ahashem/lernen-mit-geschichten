@@ -1,0 +1,1047 @@
+---
+/**
+ * Story Builder Component
+ * Main visual editor for kids to create their own stories
+ */
+import type { Locale } from '@utils/i18n';
+import { getTranslation } from '@utils/i18n';
+
+interface Props {
+  locale: Locale;
+  editStoryId?: string;
+}
+
+const { locale, editStoryId } = Astro.props;
+const t = (key: string) => getTranslation(locale, key);
+---
+
+<div class="story-builder" data-locale={locale} data-edit-id={editStoryId}>
+  <!-- Progress Bar -->
+  <div class="progress-bar">
+    <div class="progress-fill" data-progress="0"></div>
+  </div>
+
+  <!-- Step Navigation -->
+  <div class="steps-nav">
+    <button class="step-indicator active" data-step="0">
+      <span class="step-number">1</span>
+      <span class="step-label">{t('chooseYourHero')}</span>
+    </button>
+    <button class="step-indicator" data-step="1">
+      <span class="step-number">2</span>
+      <span class="step-label">{t('pickAPlace')}</span>
+    </button>
+    <button class="step-indicator" data-step="2">
+      <span class="step-number">3</span>
+      <span class="step-label">{t('whatHappens')}</span>
+    </button>
+    <button class="step-indicator" data-step="3">
+      <span class="step-number">4</span>
+      <span class="step-label">{t('addFriends')}</span>
+    </button>
+    <button class="step-indicator" data-step="4">
+      <span class="step-number">5</span>
+      <span class="step-label">{t('theChallenge')}</span>
+    </button>
+    <button class="step-indicator" data-step="5">
+      <span class="step-number">6</span>
+      <span class="step-label">{t('happyEnding')}</span>
+    </button>
+    <button class="step-indicator" data-step="6">
+      <span class="step-number">7</span>
+      <span class="step-label">{t('storyPreview')}</span>
+    </button>
+  </div>
+
+  <!-- Steps Container -->
+  <div class="steps-container">
+    <!-- Step 0: Choose Hero -->
+    <div class="step active" data-step-content="0">
+      <h2 class="step-title">🦸 {t('chooseYourHero')}</h2>
+      <div class="character-grid" id="character-selector"></div>
+    </div>
+
+    <!-- Step 1: Pick Setting -->
+    <div class="step" data-step-content="1">
+      <h2 class="step-title">🌍 {t('pickAPlace')}</h2>
+      <div class="setting-grid" id="setting-selector"></div>
+    </div>
+
+    <!-- Step 2: Build Story -->
+    <div class="step" data-step-content="2">
+      <h2 class="step-title">📖 {t('whatHappens')}</h2>
+      <p class="step-description">{t('dragCards')}</p>
+
+      <!-- Story Templates -->
+      <div class="templates-section">
+        <h3>{t('useTemplate')}</h3>
+        <div class="templates-grid" id="templates"></div>
+      </div>
+
+      <!-- Story Cards Palette -->
+      <div class="cards-palette">
+        <div class="card-category">
+          <h4>🎬 {t('events')}</h4>
+          <div class="story-cards" id="action-cards"></div>
+        </div>
+        <div class="card-category">
+          <h4>❤️ Gefühle</h4>
+          <div class="story-cards" id="emotion-cards"></div>
+        </div>
+        <div class="card-category">
+          <h4>💬 Dialog</h4>
+          <div class="story-cards" id="dialogue-cards"></div>
+        </div>
+      </div>
+
+      <!-- Story Timeline (Drag Target) -->
+      <div class="story-timeline">
+        <h3>Deine Geschichte:</h3>
+        <div class="timeline-container" id="story-timeline">
+          <div class="timeline-placeholder">Ziehe Karten hierher...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Add Friends -->
+    <div class="step" data-step-content="3">
+      <h2 class="step-title">👥 {t('addFriends')}</h2>
+      <div class="friends-grid" id="friends-selector"></div>
+    </div>
+
+    <!-- Step 4: Challenge -->
+    <div class="step" data-step-content="4">
+      <h2 class="step-title">⚡ {t('theChallenge')}</h2>
+      <div class="challenge-cards" id="challenge-selector"></div>
+    </div>
+
+    <!-- Step 5: Resolution -->
+    <div class="step" data-step-content="5">
+      <h2 class="step-title">🌟 {t('happyEnding')}</h2>
+      <div class="resolution-cards" id="resolution-selector"></div>
+    </div>
+
+    <!-- Step 6: Preview & Save -->
+    <div class="step" data-step-content="6">
+      <h2 class="step-title">✨ {t('storyPreview')}</h2>
+
+      <div class="story-metadata">
+        <div class="form-group">
+          <label for="story-title">{t('storyTitle')}</label>
+          <input type="text" id="story-title" placeholder="Meine tolle Geschichte..." />
+        </div>
+        <div class="form-group">
+          <label for="story-author">{t('authorName')} ({t('optional')})</label>
+          <input type="text" id="story-author" placeholder="Dein Name..." />
+        </div>
+        <div class="form-group">
+          <label for="story-mood">{t('storyMood')}</label>
+          <select id="story-mood">
+            <option value="happy">{t('happy')}</option>
+            <option value="adventurous">{t('adventurous')}</option>
+            <option value="calm">{t('calm')}</option>
+            <option value="funny">{t('funny')}</option>
+            <option value="mysterious">{t('mysterious')}</option>
+            <option value="exciting">{t('exciting')}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="preview-container" id="story-preview"></div>
+
+      <div class="action-buttons">
+        <button class="btn-save" id="save-story-btn">{t('saveStory')}</button>
+        <button class="btn-share" id="share-story-btn">{t('shareStory')}</button>
+        <button class="btn-export" id="export-pdf-btn">{t('exportStoryPDF')}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Buttons -->
+  <div class="builder-nav">
+    <button class="btn-prev" id="prev-step" disabled>{t('previousStep')}</button>
+    <button class="btn-next" id="next-step">{t('nextStep')}</button>
+  </div>
+</div>
+
+<style>
+  .story-builder {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* Progress Bar */
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff9f40 0%, #ffd93d 100%);
+    width: 14.28%;
+    transition: width 0.3s ease;
+  }
+
+  /* Steps Navigation */
+  .steps-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+  }
+
+  .step-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    font-family: inherit;
+  }
+
+  .step-indicator:hover {
+    border-color: #ff9f40;
+    transform: translateY(-2px);
+  }
+
+  .step-indicator.active {
+    border-color: #ff9f40;
+    background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
+  }
+
+  .step-indicator.completed {
+    border-color: #6bcf7f;
+    background: #e8f5e9;
+  }
+
+  .step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.25rem;
+    color: #666;
+    transition: all 0.3s ease;
+  }
+
+  .step-indicator.active .step-number {
+    background: #ff9f40;
+    color: white;
+  }
+
+  .step-indicator.completed .step-number {
+    background: #6bcf7f;
+    color: white;
+  }
+
+  .step-label {
+    font-size: 0.85rem;
+    text-align: center;
+    color: #666;
+  }
+
+  .step-indicator.active .step-label {
+    color: #ff9f40;
+    font-weight: 600;
+  }
+
+  /* Steps Container */
+  .steps-container {
+    min-height: 500px;
+    position: relative;
+  }
+
+  .step {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .step.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .step-title {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .step-description {
+    text-align: center;
+    color: #666;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+  }
+
+  /* Character/Setting Grids */
+  .character-grid,
+  .setting-grid,
+  .friends-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .char-card,
+  .setting-card {
+    background: white;
+    border: 3px solid transparent;
+    border-radius: 16px;
+    padding: 2rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .char-card:hover,
+  .setting-card:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .char-card.selected,
+  .setting-card.selected {
+    border-color: #ff9f40;
+    background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
+  }
+
+  .char-card.locked,
+  .setting-card.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    position: relative;
+  }
+
+  .char-card.locked::after,
+  .setting-card.locked::after {
+    content: '🔒';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5rem;
+  }
+
+  .char-emoji,
+  .setting-emoji {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .char-name,
+  .setting-name {
+    font-weight: 600;
+    color: #333;
+  }
+
+  /* Story Cards */
+  .templates-section {
+    margin-bottom: 3rem;
+  }
+
+  .templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .template-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .template-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+  }
+
+  .cards-palette {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .card-category h4 {
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .story-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .story-card-item {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem;
+    cursor: grab;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+  }
+
+  .story-card-item:hover {
+    border-color: #ff9f40;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .story-card-item:active {
+    cursor: grabbing;
+  }
+
+  /* Story Timeline */
+  .story-timeline {
+    background: #f9f9f9;
+    border: 3px dashed #ccc;
+    border-radius: 16px;
+    padding: 2rem;
+    min-height: 200px;
+  }
+
+  .timeline-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .timeline-placeholder {
+    text-align: center;
+    color: #999;
+    font-size: 1.2rem;
+    padding: 3rem;
+  }
+
+  .timeline-item {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: move;
+    position: relative;
+  }
+
+  .timeline-item .remove-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .timeline-item .remove-btn:hover {
+    background: #ee5a6f;
+  }
+
+  /* Form Inputs */
+  .story-metadata {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: #ff9f40;
+  }
+
+  /* Preview */
+  .preview-container {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    min-height: 300px;
+  }
+
+  /* Action Buttons */
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .action-buttons button {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+
+  .btn-save {
+    background: linear-gradient(135deg, #6bcf7f 0%, #4caf50 100%);
+    color: white;
+  }
+
+  .btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(107, 207, 127, 0.4);
+  }
+
+  .btn-share {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .btn-share:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-export {
+    background: linear-gradient(135deg, #ff9f40 0%, #ffd93d 100%);
+    color: #333;
+  }
+
+  .btn-export:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 159, 64, 0.4);
+  }
+
+  /* Builder Navigation */
+  .builder-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3rem;
+    gap: 1rem;
+  }
+
+  .btn-prev,
+  .btn-next {
+    padding: 1rem 3rem;
+    border: 2px solid #ff9f40;
+    background: white;
+    color: #ff9f40;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+
+  .btn-next {
+    background: #ff9f40;
+    color: white;
+  }
+
+  .btn-prev:hover:not(:disabled),
+  .btn-next:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 159, 64, 0.3);
+  }
+
+  .btn-prev:disabled,
+  .btn-next:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .story-builder {
+      padding: 1rem;
+    }
+
+    .steps-nav {
+      gap: 0.25rem;
+    }
+
+    .step-indicator {
+      min-width: 80px;
+      padding: 0.75rem 0.5rem;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      font-size: 1rem;
+    }
+
+    .step-label {
+      font-size: 0.7rem;
+    }
+
+    .step-title {
+      font-size: 1.5rem;
+    }
+
+    .character-grid,
+    .setting-grid,
+    .friends-grid {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 1rem;
+    }
+
+    .builder-nav {
+      flex-direction: column-reverse;
+    }
+
+    .btn-prev,
+    .btn-next {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import {
+    CHARACTERS,
+    SETTINGS,
+    STORY_CARDS,
+    TEMPLATES,
+    saveStory,
+    getStoryById,
+    generateId,
+    generateShareLink,
+    type CreatedStory,
+    type StoryEvent,
+  } from '@utils/story-builder';
+
+  // State
+  let currentStep = 0;
+  let selectedCharacter = '';
+  let selectedSetting = '';
+  let selectedFriends: string[] = [];
+  let storyEvents: StoryEvent[] = [];
+  let storyTitle = '';
+  let authorName = '';
+  let storyMood: CreatedStory['mood'] = 'happy';
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    const builder = document.querySelector('.story-builder');
+    const editId = builder?.getAttribute('data-edit-id');
+
+    if (editId) {
+      loadExistingStory(editId);
+    }
+
+    renderCharacters();
+    renderSettings();
+    renderStoryCards();
+    renderTemplates();
+    setupNavigation();
+    setupDragAndDrop();
+  });
+
+  function renderCharacters() {
+    const grid = document.getElementById('character-selector');
+    if (!grid) return;
+
+    grid.innerHTML = CHARACTERS.map(char => `
+      <div class="char-card ${!char.unlocked ? 'locked' : ''}" data-id="${char.id}">
+        <span class="char-emoji">${char.emoji}</span>
+        <span class="char-name">${char.name}</span>
+      </div>
+    `).join('');
+
+    // Add click handlers
+    grid.querySelectorAll('.char-card').forEach(card => {
+      card.addEventListener('click', () => {
+        if (card.classList.contains('locked')) return;
+
+        grid.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedCharacter = card.getAttribute('data-id') || '';
+      });
+    });
+  }
+
+  function renderSettings() {
+    const grid = document.getElementById('setting-selector');
+    if (!grid) return;
+
+    grid.innerHTML = SETTINGS.map(setting => `
+      <div class="setting-card ${!setting.unlocked ? 'locked' : ''}" data-id="${setting.id}">
+        <span class="setting-emoji">${setting.emoji}</span>
+        <span class="setting-name">${setting.name}</span>
+      </div>
+    `).join('');
+
+    grid.querySelectorAll('.setting-card').forEach(card => {
+      card.addEventListener('click', () => {
+        if (card.classList.contains('locked')) return;
+
+        grid.querySelectorAll('.setting-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedSetting = card.getAttribute('data-id') || '';
+      });
+    });
+  }
+
+  function renderStoryCards() {
+    const actionCards = STORY_CARDS.filter(c => c.category === 'action');
+    const emotionCards = STORY_CARDS.filter(c => c.category === 'emotion');
+    const dialogueCards = STORY_CARDS.filter(c => c.category === 'dialogue');
+
+    renderCardCategory('action-cards', actionCards);
+    renderCardCategory('emotion-cards', emotionCards);
+    renderCardCategory('dialogue-cards', dialogueCards);
+  }
+
+  function renderCardCategory(containerId: string, cards: any[]) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = cards.map(card => `
+      <div class="story-card-item" draggable="true" data-card-id="${card.id}">
+        <span>${card.emoji}</span>
+        <span>${card.text}</span>
+      </div>
+    `).join('');
+  }
+
+  function renderTemplates() {
+    const container = document.getElementById('templates');
+    if (!container) return;
+
+    container.innerHTML = Object.entries(TEMPLATES).map(([key, template]) => `
+      <div class="template-card" data-template="${key}">
+        ${template.name}
+      </div>
+    `).join('');
+
+    container.querySelectorAll('.template-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const templateKey = card.getAttribute('data-template');
+        if (templateKey) applyTemplate(templateKey);
+      });
+    });
+  }
+
+  function applyTemplate(key: string) {
+    const template = TEMPLATES[key as keyof typeof TEMPLATES];
+    if (!template) return;
+
+    storyEvents = template.events.map(cardId => {
+      const card = STORY_CARDS.find(c => c.id === cardId);
+      return {
+        id: generateId(),
+        type: card?.type || 'action',
+        text: card?.text || '',
+        character: selectedCharacter,
+      };
+    });
+
+    storyMood = template.mood;
+    updateTimeline();
+  }
+
+  function setupDragAndDrop() {
+    const timeline = document.getElementById('story-timeline');
+    if (!timeline) return;
+
+    // Drag start
+    document.addEventListener('dragstart', (e: DragEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.classList.contains('story-card-item')) {
+        e.dataTransfer!.effectAllowed = 'copy';
+        e.dataTransfer!.setData('card-id', target.getAttribute('data-card-id') || '');
+      }
+    });
+
+    // Drop
+    timeline.addEventListener('dragover', (e: DragEvent) => {
+      e.preventDefault();
+      e.dataTransfer!.dropEffect = 'copy';
+    });
+
+    timeline.addEventListener('drop', (e: DragEvent) => {
+      e.preventDefault();
+      const cardId = e.dataTransfer!.getData('card-id');
+      const card = STORY_CARDS.find(c => c.id === cardId);
+
+      if (card) {
+        storyEvents.push({
+          id: generateId(),
+          type: card.type,
+          text: card.text,
+          character: selectedCharacter,
+        });
+        updateTimeline();
+      }
+    });
+  }
+
+  function updateTimeline() {
+    const timeline = document.getElementById('story-timeline');
+    if (!timeline) return;
+
+    if (storyEvents.length === 0) {
+      timeline.innerHTML = '<div class="timeline-placeholder">Ziehe Karten hierher...</div>';
+      return;
+    }
+
+    timeline.innerHTML = storyEvents.map((event, index) => `
+      <div class="timeline-item" data-index="${index}">
+        <span>${event.text}</span>
+        <button class="remove-btn" data-index="${index}">×</button>
+      </div>
+    `).join('');
+
+    // Remove buttons
+    timeline.querySelectorAll('.remove-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const index = parseInt(btn.getAttribute('data-index') || '0');
+        storyEvents.splice(index, 1);
+        updateTimeline();
+      });
+    });
+  }
+
+  function setupNavigation() {
+    const prevBtn = document.getElementById('prev-step');
+    const nextBtn = document.getElementById('next-step');
+
+    prevBtn?.addEventListener('click', () => navigateStep(-1));
+    nextBtn?.addEventListener('click', () => navigateStep(1));
+
+    // Step indicators
+    document.querySelectorAll('.step-indicator').forEach(indicator => {
+      indicator.addEventListener('click', () => {
+        const step = parseInt(indicator.getAttribute('data-step') || '0');
+        if (step <= currentStep) goToStep(step);
+      });
+    });
+  }
+
+  function navigateStep(direction: number) {
+    const newStep = currentStep + direction;
+    if (newStep < 0 || newStep > 6) return;
+
+    if (direction > 0 && !validateCurrentStep()) return;
+
+    goToStep(newStep);
+  }
+
+  function goToStep(step: number) {
+    currentStep = step;
+
+    // Update step content
+    document.querySelectorAll('[data-step-content]').forEach(el => {
+      el.classList.remove('active');
+    });
+    document.querySelector(`[data-step-content="${step}"]`)?.classList.add('active');
+
+    // Update step indicators
+    document.querySelectorAll('.step-indicator').forEach((el, i) => {
+      el.classList.remove('active');
+      if (i < step) el.classList.add('completed');
+      if (i === step) el.classList.add('active');
+    });
+
+    // Update progress bar
+    const progress = ((step + 1) / 7) * 100;
+    const progressFill = document.querySelector('.progress-fill') as HTMLElement;
+    if (progressFill) progressFill.style.width = `${progress}%`;
+
+    // Update nav buttons
+    const prevBtn = document.getElementById('prev-step') as HTMLButtonElement;
+    const nextBtn = document.getElementById('next-step') as HTMLButtonElement;
+    if (prevBtn) prevBtn.disabled = step === 0;
+    if (nextBtn) nextBtn.style.display = step === 6 ? 'none' : 'block';
+
+    // Render preview on last step
+    if (step === 6) renderPreview();
+  }
+
+  function validateCurrentStep(): boolean {
+    if (currentStep === 0 && !selectedCharacter) {
+      alert('Bitte wähle einen Charakter!');
+      return false;
+    }
+    if (currentStep === 1 && !selectedSetting) {
+      alert('Bitte wähle einen Schauplatz!');
+      return false;
+    }
+    if (currentStep === 2 && storyEvents.length === 0) {
+      alert('Bitte füge mindestens ein Ereignis hinzu!');
+      return false;
+    }
+    return true;
+  }
+
+  function renderPreview() {
+    const preview = document.getElementById('story-preview');
+    if (!preview) return;
+
+    const character = CHARACTERS.find(c => c.id === selectedCharacter);
+    const setting = SETTINGS.find(s => s.id === selectedSetting);
+
+    preview.innerHTML = `
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h3 style="font-size: 2rem; margin-bottom: 1rem;">
+          ${character?.emoji} ${storyTitle || 'Deine Geschichte'}
+        </h3>
+        ${authorName ? `<p style="color: #666;">von ${authorName}</p>` : ''}
+      </div>
+      <div style="margin-bottom: 1.5rem;">
+        <strong>Schauplatz:</strong> ${setting?.emoji} ${setting?.name}
+      </div>
+      <div style="line-height: 2; font-size: 1.1rem;">
+        ${storyEvents.map(e => `<p>• ${e.text}</p>`).join('')}
+      </div>
+    `;
+
+    // Connect save/share buttons
+    document.getElementById('save-story-btn')?.addEventListener('click', saveCurrentStory);
+    document.getElementById('share-story-btn')?.addEventListener('click', shareCurrentStory);
+    document.getElementById('export-pdf-btn')?.addEventListener('click', exportToPDF);
+  }
+
+  function saveCurrentStory() {
+    storyTitle = (document.getElementById('story-title') as HTMLInputElement)?.value || 'Meine Geschichte';
+    authorName = (document.getElementById('story-author') as HTMLInputElement)?.value || '';
+    storyMood = (document.getElementById('story-mood') as HTMLSelectElement)?.value as CreatedStory['mood'];
+
+    const story: CreatedStory = {
+      id: generateId(),
+      title: storyTitle,
+      author: authorName,
+      character: selectedCharacter,
+      secondaryCharacters: selectedFriends,
+      setting: selectedSetting,
+      events: storyEvents,
+      mood: storyMood,
+      illustrations: [],
+      music: '',
+      createdAt: Date.now(),
+      lastModified: Date.now(),
+    };
+
+    saveStory(story);
+    alert('Geschichte gespeichert!');
+
+    // Redirect to My Stories
+    const locale = document.querySelector('.story-builder')?.getAttribute('data-locale') || 'de';
+    window.location.href = locale === 'de' ? '/my-stories' : `/${locale}/my-stories`;
+  }
+
+  function shareCurrentStory() {
+    const story: CreatedStory = {
+      id: generateId(),
+      title: storyTitle || 'Meine Geschichte',
+      author: authorName,
+      character: selectedCharacter,
+      secondaryCharacters: selectedFriends,
+      setting: selectedSetting,
+      events: storyEvents,
+      mood: storyMood,
+      illustrations: [],
+      music: '',
+      createdAt: Date.now(),
+      lastModified: Date.now(),
+    };
+
+    const shareLink = generateShareLink(story);
+    navigator.clipboard.writeText(shareLink);
+    alert('Link in Zwischenablage kopiert!');
+  }
+
+  function exportToPDF() {
+    // TODO: Implement PDF export using jsPDF
+    alert('PDF-Export wird bald verfügbar sein!');
+  }
+
+  function loadExistingStory(id: string) {
+    const story = getStoryById(id);
+    if (!story) return;
+
+    selectedCharacter = story.character;
+    selectedSetting = story.setting;
+    selectedFriends = story.secondaryCharacters;
+    storyEvents = story.events;
+    storyTitle = story.title;
+    authorName = story.author;
+    storyMood = story.mood;
+  }
+</script>

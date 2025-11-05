@@ -1,0 +1,69 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import StoryBuilder from '@components/StoryBuilder.astro';
+import { getTranslation } from '@utils/i18n';
+
+const locale = 'de';
+const title = getTranslation(locale, 'storyBuilder');
+const description = getTranslation(locale, 'createYourStory');
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="builder-page">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">✨ {title}</h1>
+        <p class="page-description">{description}</p>
+      </header>
+
+      <StoryBuilder locale={locale} />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .builder-page {
+    min-height: 80vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 2rem 0;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: fadeInDown 0.6s ease;
+  }
+
+  .page-title {
+    font-size: 3rem;
+    color: #333;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .page-description {
+    font-size: 1.3rem;
+    color: #666;
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .page-description {
+      font-size: 1.1rem;
+    }
+  }
+</style>
