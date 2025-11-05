@@ -9,6 +9,43 @@ characterType: "squirrel"
 difficulty: "beginner"
 estimatedReadTime: 3
 publishDate: 2024-01-15
+questions:
+  - id: "tf1"
+    text: "Fritzchen fand eine goldene Nuss unter einem alten Baum."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf2"
+    text: "Niko war glücklich, als er Fritzchen bei der Nuss sah."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf3"
+    text: "Fritzchen blieb ruhig, als Niko wütend wurde."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "Was fand Fritzchen unter dem alten Baum?"
+    type: "multiplechoice"
+    options:
+      - "Eine goldene Nuss"
+      - "Eine braune Nuss"
+      - "Eine Eichel"
+    correctAnswer: "Eine goldene Nuss"
+  - id: "mc2"
+    text: "Wer wurde wütend?"
+    type: "multiplechoice"
+    options:
+      - "Fritzchen"
+      - "Niko"
+      - "Die Mama"
+    correctAnswer: "Niko"
+  - id: "mc3"
+    text: "Was bot Fritzchen Niko am Ende an?"
+    type: "multiplechoice"
+    options:
+      - "Ihm zu helfen, mehr Nüsse zu finden"
+      - "Wegzulaufen"
+      - "Die Nuss zu verstecken"
+    correctAnswer: "Ihm zu helfen, mehr Nüsse zu finden"
 ---
 
 ## Die Geschichte

@@ -9,6 +9,55 @@ publishDate: 2024-01-15
 characterType: "boy"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Timmi is a little raccoon."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf2"
+    text: "The branch broke and Timmi fell down."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf3"
+    text: "Lilli is a clever squirrel."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf4"
+    text: "Timmi used a stick to get the apples."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "What did Timmi want to do?"
+    type: "multiplechoice"
+    options:
+      - "Pick flowers"
+      - "Get apples from a tree"
+      - "Play with Lilli"
+    correctAnswer: "Get apples from a tree"
+  - id: "mc2"
+    text: "What did Lilli tell Timmi?"
+    type: "multiplechoice"
+    options:
+      - "To think first before acting"
+      - "To climb higher"
+      - "To run away"
+    correctAnswer: "To think first before acting"
+  - id: "mc3"
+    text: "How did Timmi get the apples in the end?"
+    type: "multiplechoice"
+    options:
+      - "He climbed up carefully"
+      - "He used a stick to knock them down"
+      - "Lilli got them for him"
+    correctAnswer: "He used a stick to knock them down"
+  - id: "mc4"
+    text: "What did Timmi learn?"
+    type: "multiplechoice"
+    options:
+      - "First think, then act"
+      - "Never climb trees"
+      - "Apples are dangerous"
+    correctAnswer: "First think, then act"
 ---
 
 ## The Story
@@ -36,36 +85,6 @@ Timmi found a long stick. He poked the apples gently – Plop! – and one apple
 They both laughed and ate happily.
 
 At the end, Timmi said proudly:
-“Today I learned: First think, then act!”
+"Today I learned: First think, then act!"
 
 ✨ Moral of the story: Children learn playfully that thinking about the consequences before acting leads to smarter and safer decisions.
-❓ Questions and Answers about the Story
-
-1. Who is the main character in the story?
-👉 The main character is Timmi, a little raccoon.
-
-2. What did Timmi want from the apple tree?
-👉 He wanted red apples.
-
-3. Why was it dangerous to climb the branch?
-👉 Because the branch could break.
-
-4. What did Lilli call out to Timmi?
-👉 She said: “Timmi! Think first! What will happen if the branch breaks?”
-
-5. What idea did Timmi have after thinking?
-👉 He wanted to use a stick.
-
-6. How did Timmi and Lilli finally get the apples?
-👉 Timmi poked the apple with a stick, and it fell down.
-
-7. What did Timmi learn at the end?
-👉 He learned to think first, then act.
-
-8. What would have happened if Timmi hadn’t thought first?
-👉 He would have fallen and hurt himself.
-
-9. Do you know other situations where you should think first before acting?
-👉 Yes, for example while playing, climbing, or crossing the street.
-10. Why is it important to think about the consequences?
-👉 Because it helps us make better and safer decisions.

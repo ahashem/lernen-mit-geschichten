@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "boy"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Fritzchen was sitting under a tree eating a banana."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf2"
+    text: "A squirrel took a piece of Fritzchen's apple."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "Fritzchen's grandmother taught him to count to five when angry."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "What was Fritzchen eating under the tree?"
+    type: "multiplechoice"
+    options:
+      - "An apple"
+      - "A banana"
+      - "A sandwich"
+    correctAnswer: "An apple"
+  - id: "mc2"
+    text: "What did Fritzchen do when he got angry?"
+    type: "multiplechoice"
+    options:
+      - "He screamed and stomped"
+      - "He took a deep breath and counted to five"
+      - "He ran away"
+    correctAnswer: "He took a deep breath and counted to five"
+  - id: "mc3"
+    text: "What did Fritzchen do at the end?"
+    type: "multiplechoice"
+    options:
+      - "He shared the apple with the squirrel"
+      - "He threw the apple away"
+      - "He chased the squirrel"
+    correctAnswer: "He shared the apple with the squirrel"
 ---
 
 🐿️ The Story of Fritzchen and the Angry Squirrel
@@ -23,17 +60,17 @@ Suddenly, a squirrel jumped down from a branch and snatched a piece of the apple
 
 Fritzchen shouted:
 
-"Hey! That’s MY apple!"
+"Hey! That's MY apple!"
 
 His face turned red with anger.
 
-He was about to scream and stomp his feet – but then he remembered his grandmother’s advice:
+He was about to scream and stomp his feet – but then he remembered his grandmother's advice:
 
-👉 “When you are angry, count slowly to five and take a deep breath.”
+👉 "When you are angry, count slowly to five and take a deep breath."
 
-So Fritzchen took a deep breath and said: “Puuuh…”
+So Fritzchen took a deep breath and said: "Puuuh…"
 
-Then he counted: “One… two… three… four… five…”
+Then he counted: "One… two… three… four… five…"
 
 And suddenly:
 
@@ -41,108 +78,14 @@ His heart beat calmly, his face brightened, and he started to laugh.
 
 The squirrel was nibbling the apple with its tiny mouth and looked so funny
 
-that Fritzchen couldn’t stay angry anymore.
+that Fritzchen couldn't stay angry anymore.
 
 He giggled and said:
 
-“Alright, little squirrel, we’ll share the apple.”
+"Alright, little squirrel, we'll share the apple."
 
 From that day on, Fritzchen knew:
 
 Whoever stays calm will have more fun in the end –
 
 and maybe even a new friend. 🐿️🍎
-
----
-
-❓ True or False Questions
-
-1. Fritzchen sat under a tree and ate a banana.
-
-➡️ False (He ate an apple.)
-
-2. A squirrel took a piece of Fritzchen’s apple.
-
-➡️ True
-
-3. At first, Fritzchen became very angry.
-
-➡️ True
-
-4. His grandmother told him: “Count to five and take a deep breath.”
-
-➡️ True
-
-5. Fritzchen screamed loudly and threw the apple away.
-
-➡️ False (He calmed down and didn’t throw the apple.)
-
-6. Fritzchen stayed calm and laughed at the squirrel.
-
-➡️ True
-
-7. In the end, Fritzchen shared the apple with the squirrel.
-
-➡️ True
-
----
-
-📝 Multiple-Choice Questions
-
-1. What is Fritzchen eating under the tree?
-
-a) A banana
-
-b) An apple ✔️
-
-c) A pear
-
----
-
-2. Who suddenly comes down from the tree?
-
-a) A dog
-
-b) A squirrel ✔️
-
-c) A cat
-
----
-
-3. What does Fritzchen feel first when the squirrel takes the apple?
-
-a) Joy
-
-b) Fear
-
-c) Anger ✔️
-
----
-
-4. What did Grandma advise Fritzchen?
-
-a) To run away quickly
-
-b) To count to five and breathe deeply ✔️
-
-c) To hide the apple
-
----
-
-5. What does Fritzchen do in the end?
-
-a) He throws the apple away
-
-b) He eats the apple alone
-
-c) He shares the apple with the squirrel ✔️
-
----
-
-هل تُريدُ أن أُعِدَّ نسخةً من القصة بالإنجليزية بأسلوب أبسط جدًّا للأطفال الصغار (4–6 سنوات) بجمل قصيرة جدًا؟
-
-تمام 🌸
-
-إليك ترجمة القصة كاملة مع أسئلة الصح والخطأ والاختيار من متعدد مترجمة إلى اللغة التركية الصحيحة مع الإجابات:
-
----

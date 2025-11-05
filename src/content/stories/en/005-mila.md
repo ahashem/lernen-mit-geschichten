@@ -9,6 +9,55 @@ publishDate: 2024-01-15
 characterType: "girl"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Mila is a cheerful girl full of ideas."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf2"
+    text: "Hoppel is a little dog."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf3"
+    text: "Hoppel wanted to play with the balloon quietly."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf4"
+    text: "They only played tag and didn't play with the balloon."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "mc1"
+    text: "What did Mila want to play at first?"
+    type: "multiplechoice"
+    options:
+      - "Tag"
+      - "Hide and seek"
+      - "With the balloon"
+    correctAnswer: "Tag"
+  - id: "mc2"
+    text: "Why did Hoppel want to play with the balloon?"
+    type: "multiplechoice"
+    options:
+      - "He felt tired and wanted to play quietly"
+      - "He didn't like Mila"
+      - "The balloon was new"
+    correctAnswer: "He felt tired and wanted to play quietly"
+  - id: "mc3"
+    text: "What solution did Mila suggest?"
+    type: "multiplechoice"
+    options:
+      - "First play with the balloon, then play tag"
+      - "Only play tag"
+      - "Go home"
+    correctAnswer: "First play with the balloon, then play tag"
+  - id: "mc4"
+    text: "What did Mila learn?"
+    type: "multiplechoice"
+    options:
+      - "That balloons are fun"
+      - "That expressing feelings clearly makes friendship stronger"
+      - "That Hoppel is lazy"
+    correctAnswer: "That expressing feelings clearly makes friendship stronger"
 ---
 
 ## The Story
@@ -54,115 +103,3 @@ We should always speak kindly and respectfully.
 When we listen well, we can find solutions that make both sides happy.
 
 Honest words make friendship stronger.
-
----
-
-❓ True or False Questions
-
-1. Mila wanted to play with the balloon first.
-→ False. Mila wanted to play tag first.
-
-2. Hoppel felt a little tired.
-→ True. He said he was tired and preferred to play quietly with the balloon.
-
-3. Mila didn’t listen to Hoppel.
-→ False. She listened well and found a solution.
-
-4. In the end, Mila and Hoppel played both games.
-→ True. First they played with the balloon, then tag.
-
-5. The story shows that we should express wishes and feelings clearly.
-→ True. That way, friends understand each other better.
-
-6. Hoppel didn’t want to play with Mila at all.
-→ False. He wanted to play with her, but in a different way.
-
----
-
-❓ Multiple-Choice Questions
-
-1. What did Mila want to play first?
-a) Balloon
-b) Tag
-c) Hide-and-seek
-→ ✔️ b) Tag
-
-2. Why did Hoppel want to play with the balloon?
-a) Because he was tired.
-b) Because he was afraid.
-c) Because he didn’t like tag.
-→ ✔️ a) Because he was tired.
-
-3. What did Mila do when Hoppel explained his feelings?
-a) She got angry.
-b) She suggested an idea.
-c) She walked away.
-→ ✔️ b) She suggested an idea.
-
-4. How did Mila and Hoppel play in the end?
-a) Only tag.
-b) Only with the balloon.
-c) First with the balloon, then tag.
-→ ✔️ c) First with the balloon, then tag.
-
-5. What is the main message of the story?
-a) You should always play alone.
-b) You should express wishes and feelings clearly and kindly.
-c) Balloons are more fun than tag.
-→ ✔️ b) You should express wishes and feelings clearly and kindly.
-
----
-
-✏️ Activities
-
-1. Fill in the blanks:
-
-(Words: Mila – Hoppel – balloon – tag – tired)
-
-a) __________ wanted to play tag first.
-→ Mila
-
-b) __________ felt a little __________.
-→ Hoppel – tired
-
-c) They first played with the __________.
-→ balloon
-
-d) In the end, they also played __________.
-→ tag
-
----
-
-2. Put the sentences in the correct order:
-
-1. Mila wanted to play tag.
-
-2. Hoppel explained his feelings.
-
-3. Mila suggested a solution.
-
-4. They first played with the balloon, then tag.
-
----
-
-3. Answer the questions:
-
-a) What did Hoppel feel?
-→ He felt tired.
-
-b) What did Mila want to play?
-→ She wanted to play tag.
-
-c) What is the message of the story?
-→ We should express wishes and feelings clearly and kindly.
-
----
-
-4. Drawing activity:
-
-Draw Mila and Hoppel with a big colorful balloon 🎈. Write below:
-“Honest words are like a colorful balloon – they bring joy and fly high!”
-
----
-
----

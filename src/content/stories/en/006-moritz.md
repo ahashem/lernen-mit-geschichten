@@ -9,6 +9,55 @@ publishDate: 2024-01-15
 characterType: "mouse"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Moritz is a small grey mouse."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf2"
+    text: "Fritz is a rabbit with long ears."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf3"
+    text: "Moritz laughed at Fritz because he looked like a cactus."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf4"
+    text: "Fritz was happy when Moritz laughed at him."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "mc1"
+    text: "Who is Moritz?"
+    type: "multiplechoice"
+    options:
+      - "A small mouse"
+      - "A dog"
+      - "A frog"
+    correctAnswer: "A small mouse"
+  - id: "mc2"
+    text: "What happened to Fritz?"
+    type: "multiplechoice"
+    options:
+      - "He found a flower"
+      - "A thorn pricked his foot"
+      - "He fell asleep"
+    correctAnswer: "A thorn pricked his foot"
+  - id: "mc3"
+    text: "What did Moritz do after realizing Fritz was sad?"
+    type: "multiplechoice"
+    options:
+      - "He ran away"
+      - "He apologized and helped him"
+      - "He ate cheese"
+    correctAnswer: "He apologized and helped him"
+  - id: "mc4"
+    text: "What nickname did the animals give Moritz?"
+    type: "multiplechoice"
+    options:
+      - "The fast mouse"
+      - "The little mouse with the big heart"
+      - "The mouse with long ears"
+    correctAnswer: "The little mouse with the big heart"
 ---
 
 ## The Story
@@ -40,77 +89,4 @@ From that day on, Moritz listened not only with his ears, but also with his hear
 And whenever he saw someone sad, he asked: “How can I help you?”
 
 All the animals in the forest liked him for that – and they even gave him a sweet nickname:
-“The little mouse with the big heart.” 💖
-
----
-
-❓ True or False Questions
-
-1. Moritz is a small grey mouse.
-👉 True
-
-2. Fritz is a rabbit with long ears.
-👉 False
-
-3. Moritz laughs at Fritz at first because he looks like a cactus.
-👉 True
-
-4. Fritz is very happy when Moritz laughs at him.
-👉 False
-
-5. Moritz helps Fritz by pulling out the thorn.
-👉 True
-
-6. In the end, all the animals understand that Moritz has a big heart.
-👉 True
-
----
-
-📝 Multiple-Choice Questions
-
-1. Who is Moritz?
-a) A dog
-b) A little mouse 🐭
-c) A frog
-
-👉 Answer: b) A little mouse
-
----
-
-2. What happens to Fritz?
-a) He finds a flower 🌸
-b) He pricks himself on a thorn 🌵
-c) He sleeps in the grass 🌿
-
-👉 Answer: b) He pricks himself on a thorn
-
----
-
-3. Why does Moritz laugh at first?
-a) Because Fritz looks like a cactus 🌵
-b) Because Fritz sings a song 🎵
-c) Because the sun is shining ☀️
-
-👉 Answer: a) Because Fritz looks like a cactus
-
----
-
-4. What does Moritz do after he notices that Fritz is sad?
-a) He runs away 🏃‍♂️
-b) He eats cheese 🧀
-c) He apologizes and helps him ❤️
-
-👉 Answer: c) He apologizes and helps him
-
----
-
-5. What do the animals call Moritz in the end?
-a) The mouse with long ears
-b) The little mouse with the big heart 💖
-c) The mouse with the fast feet
-
-👉 Answer: b) The little mouse with the big heart
-
----
-
----
+"The little mouse with the big heart." 💖

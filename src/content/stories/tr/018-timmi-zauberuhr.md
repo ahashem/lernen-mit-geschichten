@@ -9,6 +9,79 @@ publishDate: 2024-01-15
 characterType: "boy"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Timmi bütün gün oynamak istedi."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf2"
+    text: "Ona sihirli saati annesi verdi."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf3"
+    text: "Saatin yeşil rengi dinlenmek anlamına geliyordu."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf4"
+    text: "Saat mavi olduğunda Timmi hiçbir şey öğrenmedi."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf5"
+    text: "Akşam Timmi yorgun ve kızgın oldu."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf6"
+    text: "Hikâye bize şunu öğretiyor: Zamanını düzenleyen kişi öğrenmeye, oynamaya ve dinlenmeye vakit bulur."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "Timmi bütün gün ne yapmak istedi?"
+    type: "multiplechoice"
+    options:
+      - "Ders çalışmak"
+      - "Uyumak"
+      - "Oynamak"
+    correctAnswer: "Oynamak"
+  - id: "mc2"
+    text: "Timmi'ye sihirli saati kim verdi?"
+    type: "multiplechoice"
+    options:
+      - "Öğretmeni"
+      - "Peluş kedisi Minka"
+      - "Arkadaşı"
+    correctAnswer: "Peluş kedisi Minka"
+  - id: "mc3"
+    text: "Sihirli saatte hangi renk öğrenmek anlamına geliyordu?"
+    type: "multiplechoice"
+    options:
+      - "Mavi"
+      - "Sarı"
+      - "Yeşil"
+    correctAnswer: "Mavi"
+  - id: "mc4"
+    text: "Saat sarı olduğunda Timmi ne yaptı?"
+    type: "multiplechoice"
+    options:
+      - "Uyudu"
+      - "Yol yaptı ve oynadı"
+      - "Yemek yedi"
+    correctAnswer: "Yol yaptı ve oynadı"
+  - id: "mc5"
+    text: "Akşam Timmi nasıl hissetti?"
+    type: "multiplechoice"
+    options:
+      - "Yorgun ve üzgün"
+      - "Mutlu ve gururlu"
+      - "Kızgın"
+    correctAnswer: "Mutlu ve gururlu"
+  - id: "mc6"
+    text: "Hikâye bize ne öğretiyor?"
+    type: "multiplechoice"
+    options:
+      - "Hep oynayan kişi mutludur"
+      - "Zamanını iyi düzenleyen kişi her şeyi başarır"
+      - "Çok uyuyan kişinin öğrenmeye ihtiyacı yoktur"
+    correctAnswer: "Zamanını iyi düzenleyen kişi her şeyi başarır"
 ---
 
 ## Hikâye
@@ -52,55 +125,3 @@ Ve böylece Timmi sihirli saat yatağının yanında dururken huzurla uykuya dal
 
 ✨ Çocuklar için Ders:
 Zamanını düzenleyen biri, öğrenmeye, oynamaya ve dinlenmeye her zaman vakit bulur.
-
-📝 Çoktan Seçmeli Sorular 
-
-1. Timmi bütün gün ne yapmak istedi?
-a) Ders çalışmak
-b) Uyumak
-c) Oynamak ✅
-
-2. Timmi’ye sihirli saati kim verdi?
-a) Öğretmeni
-b) Peluş kedisi Minka ✅
-c) Arkadaşı
-
-3. Sihirli saatte hangi renk “öğrenmek” anlamına geliyordu?
-a) Mavi ✅
-b) Sarı
-c) Yeşil
-
-4. Saat sarı olduğunda Timmi ne yaptı?
-a) Uyudu
-b) Yol yaptı ve oynadı ✅
-c) Yemek yedi
-
-5. Akşam Timmi nasıl hissetti?
-a) Yorgun ve üzgün
-b) Mutlu ve gururlu ✅
-c) Kızgın
-
-6. Hikâye bize ne öğretiyor?
-a) Hep oynayan kişi mutludur
-b) Zamanını iyi düzenleyen kişi her şeyi başarır ✅
-c) Çok uyuyan kişinin öğrenmeye ihtiyacı yoktur
-
-📝 Doğru / Yanlış Soruları (True or False)
-
-1. Timmi bütün gün oynamak istedi.
-✅ Doğru
-
-2. Ona sihirli saati annesi verdi.
-❌ Yanlış (Sihirli saati peluş kedisi Minka verdi.)
-
-3. Saatin yeşil rengi “dinlenmek” anlamına geliyordu.
-✅ Doğru
-
-4. Saat mavi olduğunda Timmi hiçbir şey öğrenmedi.
-❌ Yanlış (Harfleri öğrendi.)
-
-5. Akşam Timmi yorgun ve kızgın oldu.
-❌ Yanlış (Mutlu ve gururluydu.)
-
-6. Hikâye bize şunu öğretiyor: Zamanını düzenleyen kişi öğrenmeye, oynamaya ve dinlenmeye vakit bulur.
-✅ Doğru

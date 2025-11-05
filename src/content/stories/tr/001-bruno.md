@@ -9,6 +9,55 @@ publishDate: 2024-01-15
 characterType: "bear"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Bruno küçük bir faredir."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf2"
+    text: "Bruno balı ve tırmanmayı sever."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "Bruno tırmanırken kaydı ve korktu."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf4"
+    text: "Mila bir kedidir."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "mc1"
+    text: "Bruno nedir?"
+    type: "multiplechoice"
+    options:
+      - "Küçük bir ayı"
+      - "Küçük bir fare"
+      - "Küçük bir aslan"
+    correctAnswer: "Küçük bir ayı"
+  - id: "mc2"
+    text: "Bruno korktuğunda ne yapar?"
+    type: "multiplechoice"
+    options:
+      - "Derin nefes alır"
+      - "Kaçar"
+      - "Yüksek sesle ağlar"
+    correctAnswer: "Derin nefes alır"
+  - id: "mc3"
+    text: "Bruno kızgın olduğunda ne yapar?"
+    type: "multiplechoice"
+    options:
+      - "Ayaklarını yere vurur"
+      - "Yüksek sesle bağırır"
+      - "Saklanır"
+    correctAnswer: "Ayaklarını yere vurur"
+  - id: "mc4"
+    text: "Bruno sonunda ne öğrendi?"
+    type: "multiplechoice"
+    options:
+      - "Tırmanmanın tehlikeli olduğunu"
+      - "Duygularını adlandırdığında daha iyi anlayabileceğini"
+      - "Mila'nın en iyi arkadaşı olduğunu"
+    correctAnswer: "Duygularını adlandırdığında daha iyi anlayabileceğini"
 ---
 
 # 🐻 Bruno'nun Renkli Duyguları
@@ -66,48 +115,3 @@ Vücuduma dikkat ettiğimde (kalbim hızlı atıyor, karnım garip hissediyor �
 Duyguyu adlandırdığımda (korkmuş, kızgın, mutlu …), daha iyi tepki vermeyi seçebilirim.
 
 Bu, öz-farkındalık süper gücüdür!
-
-## ✅ Doğru mu Yanlış mı Soruları
-
-1. Bruno küçük bir köpektir.
-2. Bruno balı sever.
-3. Bruno bir ağaca tırmanır ve kayar.
-4. Bruno korktuğunda der: "Karnım garip hissediyor."
-5. Mila bir kedidir.
-6. Bruno der ki: "Kızgın olduğumda ayaklarımı yere vururum."
-7. Akşam olduğunda Bruno üzgün hisseder.
-8. Bruno şunu öğrenir: Duygularını bildiğinde, ne yapacağına daha iyi karar verebilir.
-
-### ✔ Cevaplar
-
-1. ❌ Yanlış → Bruno küçük bir ayıdır.
-2. ✅ Doğru → Balı, ormanda oynamayı ve tırmanmayı sever.
-3. ✅ Doğru → Mila'ya ne kadar yükseğe tırmanabildiğini göstermek istedi.
-4. ✅ Doğru → Bruno korkusunu karnında fark eder.
-5. ❌ Yanlış → Mila bir baykuştur.
-6. ✅ Doğru → Bu, onun kendini daha iyi hissetmesine yardımcı olur.
-7. ❌ Yanlış → Akşam kendini mutlu hisseder.
-8. ✅ Doğru → Bu, öz-farkındalık süper gücüdür.
-
-## ❓ Açık Uçlu Sorular ve Cevaplar
-
-**1. Soru:** Hikâyedeki küçük ayının adı ne?
-**Cevap:** Onun adı Bruno.
-
-**2. Soru:** Hikâyede hangi hayvanlar var?
-**Cevap:** Bir ayı (Bruno) ve bir baykuş (Mila).
-
-**3. Soru:** Bruno neyi sever?
-**Cevap:** Balı, ormanda oynamayı ve tırmanmayı sever.
-
-**4. Soru:** Bruno ağaçtan kaydığında ne hisseder?
-**Cevap:** Korkar.
-
-**5. Soru:** Bruno kızgın olduğunda ne yapar?
-**Cevap:** Ayaklarını yere vurur.
-
-**6. Soru:** Bruno akşam nasıl hisseder?
-**Cevap:** Mutlu hisseder.
-
-**7. Soru:** Bruno ne öğrendi?
-**Cevap:** Duygularını bildiğinde, ne yapacağına daha iyi karar verebileceğini öğrendi.

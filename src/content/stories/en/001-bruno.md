@@ -9,6 +9,55 @@ publishDate: 2024-01-15
 characterType: "bear"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "Bruno is a little mouse."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf2"
+    text: "Bruno loves honey and climbing."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "Bruno slipped while climbing and felt scared."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf4"
+    text: "Mila is a cat."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "mc1"
+    text: "What is Bruno?"
+    type: "multiplechoice"
+    options:
+      - "A little bear"
+      - "A little mouse"
+      - "A little lion"
+    correctAnswer: "A little bear"
+  - id: "mc2"
+    text: "What does Bruno do when he is scared?"
+    type: "multiplechoice"
+    options:
+      - "He takes deep breaths"
+      - "He runs away"
+      - "He cries loudly"
+    correctAnswer: "He takes deep breaths"
+  - id: "mc3"
+    text: "What does Bruno do when he is angry?"
+    type: "multiplechoice"
+    options:
+      - "He stomps his feet"
+      - "He screams loudly"
+      - "He hides"
+    correctAnswer: "He stomps his feet"
+  - id: "mc4"
+    text: "What did Bruno learn at the end?"
+    type: "multiplechoice"
+    options:
+      - "That climbing is dangerous"
+      - "That he can better understand his feelings when he names them"
+      - "That Mila is his best friend"
+    correctAnswer: "That he can better understand his feelings when he names them"
 ---
 
 # 🐻 Bruno's Colorful Feelings
@@ -66,48 +115,3 @@ When I pay attention to my body (my heart beats fast, my tummy feels strange …
 When I name the feeling (scared, angry, happy …), I can choose a better way to react.
 
 This is the superpower of self-awareness!
-
-## ✅ True or False Questions
-
-1. Bruno is a little dog.
-2. Bruno loves honey.
-3. Bruno climbs a tree and slips down.
-4. When Bruno is scared, he says: "My tummy feels strange."
-5. Mila is a cat.
-6. Bruno says: "When I am angry, I stomp my feet."
-7. In the evening, Bruno feels sad.
-8. Bruno learns: When he knows his feelings, he can better decide what to do.
-
-### ✔ Answers
-
-1. ❌ False → Bruno is a little bear.
-2. ✅ True → He loves honey, playing in the forest, and climbing.
-3. ✅ True → He wanted to show Mila how high he could climb.
-4. ✅ True → Bruno notices his fear in his tummy.
-5. ❌ False → Mila is an owl.
-6. ✅ True → That helps him feel better.
-7. ❌ False → In the evening he feels happy.
-8. ✅ True → That is the superpower of self-awareness.
-
-## ❓ Open Questions with Answers
-
-**1. Question:** What is the name of the little bear in the story?
-**Answer:** His name is Bruno.
-
-**2. Question:** Which animals are in the story?
-**Answer:** A bear (Bruno) and an owl (Mila).
-
-**3. Question:** What does Bruno love?
-**Answer:** He loves honey, playing in the forest, and climbing.
-
-**4. Question:** What does Bruno feel when he slips from the tree?
-**Answer:** He feels scared.
-
-**5. Question:** What does Bruno do when he is angry?
-**Answer:** He stomps his feet.
-
-**6. Question:** How does Bruno feel in the evening?
-**Answer:** He feels happy.
-
-**7. Question:** What did Bruno learn?
-**Answer:** He learned that if he knows his feelings, he can better decide what to do.

@@ -9,6 +9,43 @@ publishDate: 2024-01-15
 characterType: "boy"
 difficulty: "beginner"
 estimatedReadTime: 3
+questions:
+  - id: "tf1"
+    text: "كان فْرِيتْسْشِن جالسًا تحت الشجرة يأكل موزة."
+    type: "truefalse"
+    correctAnswer: "false"
+  - id: "tf2"
+    text: "أخذ السنجاب قطعة من تفاحة فْرِيتْسْشِن."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "tf3"
+    text: "علّمت الجدة فْرِيتْسْشِن أن يعد إلى خمسة عندما يغضب."
+    type: "truefalse"
+    correctAnswer: "true"
+  - id: "mc1"
+    text: "ماذا كان فْرِيتْسْشِن يأكل تحت الشجرة؟"
+    type: "multiplechoice"
+    options:
+      - "تُفَّاحَة"
+      - "مَوْزَة"
+      - "سَنْدَوِيتْش"
+    correctAnswer: "تُفَّاحَة"
+  - id: "mc2"
+    text: "ماذا فعل فْرِيتْسْشِن عندما غضب؟"
+    type: "multiplechoice"
+    options:
+      - "صَرَخَ وَدَقَّ بِقَدَمَيْهِ"
+      - "أَخَذَ نَفَسًا عَمِيقًا وَعَدَّ إِلَى خَمْسَة"
+      - "هَرَبَ"
+    correctAnswer: "أَخَذَ نَفَسًا عَمِيقًا وَعَدَّ إِلَى خَمْسَة"
+  - id: "mc3"
+    text: "ماذا فعل فْرِيتْسْشِن في النهاية؟"
+    type: "multiplechoice"
+    options:
+      - "تَقَاسَمَ التُّفَّاحَةَ مَعَ السِّنْجَابِ"
+      - "رَمَى التُّفَّاحَةَ"
+      - "طَارَدَ السِّنْجَابَ"
+    correctAnswer: "تَقَاسَمَ التُّفَّاحَةَ مَعَ السِّنْجَابِ"
 ---
 
 # 🐿️ قِصَّةُ فْرِيتْسْشِن وَالسِّنجابِ الغاضِبِ
