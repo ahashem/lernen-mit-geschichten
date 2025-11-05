@@ -1,0 +1,610 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getTranslation } from '../utils/i18n';
+import type { Locale } from '../utils/i18n';
+
+const locale: Locale = 'de';
+
+const pageTitle = {
+  de: 'Mein Inventar',
+  ar: 'جردي',
+  en: 'My Inventory',
+  tr: 'Envanterim',
+  ur: 'میری انوینٹری',
+};
+
+const pageDescription = {
+  de: 'Verwalte deine gekauften Artikel und Ausrüstung',
+  ar: 'إدارة عناصرك المشتراة والمعدات',
+  en: 'Manage your purchased items and equipment',
+  tr: 'Satın alınan öğelerinizi ve ekipmanınızı yönetin',
+  ur: 'اپنی خریدی ہوئی اشیاء اور سامان کا نظم کریں',
+};
+---
+
+<BaseLayout title={pageTitle[locale]} description={pageDescription[locale]} locale={locale}>
+  <div class="inventory-page">
+    <!-- Header -->
+    <header class="inventory-header">
+      <a href={`${import.meta.env.BASE_URL}/shop`} class="btn-back">
+        ← {getTranslation(locale, 'starShop')}
+      </a>
+
+      <h1 class="inventory-title">
+        📦 {pageTitle[locale]}
+      </h1>
+      <p class="inventory-description">{pageDescription[locale]}</p>
+
+      <!-- Stats -->
+      <div class="inventory-stats">
+        <div class="stat-card">
+          <div class="stat-icon">🎁</div>
+          <div class="stat-info">
+            <span class="stat-value" id="total-items">0</span>
+            <span class="stat-label">Artikel</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-info">
+            <span class="stat-value" id="total-spent">0</span>
+            <span class="stat-label">Ausgegeben</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✨</div>
+          <div class="stat-info">
+            <span class="stat-value" id="equipped-count">0</span>
+            <span class="stat-label">Ausgerüstet</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Category Filter -->
+    <div class="category-filter">
+      <button class="filter-btn active" data-category="all">
+        Alle
+      </button>
+      <button class="filter-btn" data-category="characters">
+        {getTranslation(locale, 'characters')}
+      </button>
+      <button class="filter-btn" data-category="themes">
+        {getTranslation(locale, 'themes')}
+      </button>
+      <button class="filter-btn" data-category="avatars">
+        {getTranslation(locale, 'avatars')}
+      </button>
+      <button class="filter-btn" data-category="decorations">
+        {getTranslation(locale, 'decorations')}
+      </button>
+      <button class="filter-btn" data-category="powerups">
+        {getTranslation(locale, 'powerups')}
+      </button>
+      <button class="filter-btn" data-category="certificates">
+        {getTranslation(locale, 'certificates')}
+      </button>
+    </div>
+
+    <!-- Inventory Grid -->
+    <div class="inventory-grid" id="inventory-grid">
+      <!-- Items will be dynamically loaded -->
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="empty-state" style="display: none;">
+      <div class="empty-icon">📦</div>
+      <h2>Dein Inventar ist leer</h2>
+      <p>Besuche den Shop, um tolle Artikel zu kaufen!</p>
+      <a href={`${import.meta.env.BASE_URL}/shop`} class="btn-shop">
+        Zum Shop
+      </a>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import { inventory, RARITY_COLORS } from '../utils/shop-items';
+  import type { InventoryItem, ShopCategory } from '../utils/shop-items';
+  import { soundEffects } from '../utils/sound-effects';
+  import type { Locale } from '../utils/i18n';
+
+  const locale: Locale = 'de';
+
+  // State
+  let currentFilter: ShopCategory | 'all' = 'all';
+
+  // Elements
+  const gridEl = document.getElementById('inventory-grid');
+  const emptyState = document.getElementById('empty-state');
+  const totalItemsEl = document.getElementById('total-items');
+  const totalSpentEl = document.getElementById('total-spent');
+  const equippedCountEl = document.getElementById('equipped-count');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+
+  // Initialize
+  updateStats();
+  renderInventory();
+
+  // Update statistics
+  function updateStats() {
+    const stats = inventory.getStats();
+    const equippedCount = inventory.getEquipped().length;
+
+    if (totalItemsEl) totalItemsEl.textContent = stats.totalItems.toString();
+    if (totalSpentEl) totalSpentEl.textContent = stats.totalSpent.toString();
+    if (equippedCountEl) equippedCountEl.textContent = equippedCount.toString();
+  }
+
+  // Render inventory
+  function renderInventory() {
+    if (!gridEl || !emptyState) return;
+
+    let items = inventory.getAll();
+
+    // Filter by category
+    if (currentFilter !== 'all') {
+      items = items.filter(item => item.category === currentFilter);
+    }
+
+    // Sort: equipped first, then by purchase date (newest first)
+    items.sort((a, b) => {
+      if (a.equipped && !b.equipped) return -1;
+      if (!a.equipped && b.equipped) return 1;
+      return b.purchasedAt - a.purchasedAt;
+    });
+
+    if (items.length === 0) {
+      gridEl.style.display = 'none';
+      emptyState.style.display = 'flex';
+      return;
+    }
+
+    gridEl.style.display = 'grid';
+    emptyState.style.display = 'none';
+    gridEl.innerHTML = '';
+
+    items.forEach(item => {
+      const card = createInventoryCard(item);
+      gridEl.appendChild(card);
+    });
+  }
+
+  function createInventoryCard(item: InventoryItem): HTMLElement {
+    const card = document.createElement('div');
+    card.className = `inventory-item ${item.rarity} ${item.equipped ? 'equipped' : ''}`;
+    card.style.setProperty('--rarity-color', RARITY_COLORS[item.rarity]);
+
+    const canEquip = ['themes', 'avatars'].includes(item.category);
+    const purchaseDate = new Date(item.purchasedAt).toLocaleDateString();
+
+    card.innerHTML = `
+      <div class="item-card">
+        ${item.equipped ? '<div class="equipped-badge">✓ AUSGERÜSTET</div>' : ''}
+
+        <div class="item-preview">
+          <div class="item-icon">${item.preview}</div>
+        </div>
+
+        <div class="item-info">
+          <h3 class="item-name">${item.name[locale]}</h3>
+          <p class="item-description">${item.description[locale]}</p>
+
+          <div class="item-meta">
+            <span class="item-category">${item.category}</span>
+            <span class="item-rarity" style="color: ${RARITY_COLORS[item.rarity]}">${item.rarity}</span>
+          </div>
+
+          <div class="item-date">
+            Gekauft: ${purchaseDate}
+          </div>
+
+          ${
+            canEquip
+              ? `<button class="btn-equip ${item.equipped ? 'equipped' : ''}" data-item-id="${item.id}">
+                   ${item.equipped ? 'ABLEGEN' : 'AUSRÜSTEN'}
+                 </button>`
+              : ''
+          }
+        </div>
+
+        <div class="rarity-border"></div>
+      </div>
+    `;
+
+    // Add equip button handler
+    const equipBtn = card.querySelector('.btn-equip');
+    if (equipBtn) {
+      equipBtn.addEventListener('click', () => toggleEquip(item.id));
+    }
+
+    return card;
+  }
+
+  function toggleEquip(itemId: string) {
+    const item = inventory.getAll().find(i => i.id === itemId);
+    if (!item) return;
+
+    if (item.equipped) {
+      inventory.unequipItem(itemId);
+    } else {
+      inventory.equipItem(itemId);
+    }
+
+    soundEffects.playClick();
+    updateStats();
+    renderInventory();
+  }
+
+  // Filter handlers
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.getAttribute('data-category') as ShopCategory | 'all';
+      renderInventory();
+    });
+  });
+
+  // Listen for inventory updates
+  window.addEventListener('inventory-update', () => {
+    updateStats();
+    renderInventory();
+  });
+</script>
+
+<style>
+  .inventory-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  /* Header */
+  .inventory-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .btn-back {
+    display: inline-block;
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    background: #f0f0f0;
+    color: var(--color-text);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-back:hover {
+    background: #e0e0e0;
+    transform: translateX(-4px);
+  }
+
+  .inventory-title {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .inventory-description {
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+  }
+
+  .inventory-stats {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+  }
+
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    margin-top: 0.25rem;
+  }
+
+  /* Category Filter */
+  .category-filter {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding: 0.5rem 0 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .filter-btn {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--color-primary);
+    background: rgba(247, 151, 49, 0.1);
+  }
+
+  .filter-btn.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+
+  /* Inventory Grid */
+  .inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .inventory-item {
+    position: relative;
+    border-radius: 16px;
+    transition: transform 0.3s ease;
+  }
+
+  .inventory-item:hover {
+    transform: translateY(-8px);
+  }
+
+  .inventory-item.equipped {
+    animation: glow 2s ease-in-out infinite;
+  }
+
+  @keyframes glow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+    }
+  }
+
+  .item-card {
+    position: relative;
+    background: white;
+    border: 3px solid var(--rarity-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .equipped-badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.35rem 0.7rem;
+    background: #4CAF50;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 6px;
+    z-index: 1;
+  }
+
+  .item-preview {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .item-icon {
+    font-size: 4rem;
+    line-height: 1;
+  }
+
+  .item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .item-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .item-description {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    line-height: 1.4;
+    margin: 0 0 1rem 0;
+  }
+
+  .item-meta {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .item-category, .item-rarity {
+    padding: 0.25rem 0.6rem;
+    background: #f0f0f0;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .item-date {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    margin-bottom: 1rem;
+  }
+
+  .btn-equip {
+    padding: 0.75rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: auto;
+  }
+
+  .btn-equip:not(.equipped) {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  .btn-equip:not(.equipped):hover {
+    background: #E67E22;
+    transform: scale(1.05);
+  }
+
+  .btn-equip.equipped {
+    background: #f0f0f0;
+    color: var(--color-text);
+  }
+
+  .btn-equip.equipped:hover {
+    background: #e0e0e0;
+  }
+
+  .rarity-border {
+    position: absolute;
+    inset: -2px;
+    border-radius: 16px;
+    background: var(--rarity-color);
+    opacity: 0.2;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Empty State */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .empty-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .empty-state h2 {
+    font-size: 1.5rem;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-state p {
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+  }
+
+  .btn-shop {
+    padding: 1rem 2rem;
+    background: var(--color-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+  }
+
+  .btn-shop:hover {
+    background: #E67E22;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(247, 151, 49, 0.3);
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .inventory-page {
+      padding: 1.5rem 1rem;
+    }
+
+    .inventory-title {
+      font-size: 2rem;
+    }
+
+    .inventory-stats {
+      gap: 1rem;
+    }
+
+    .stat-card {
+      padding: 0.75rem 1rem;
+    }
+
+    .stat-icon {
+      font-size: 1.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+    }
+
+    .inventory-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .category-filter {
+      gap: 0.5rem;
+    }
+
+    .filter-btn {
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .btn-back {
+    transform: scaleX(-1);
+  }
+
+  [dir='rtl'] .btn-back:hover {
+    transform: scaleX(-1) translateX(-4px);
+  }
+
+  [dir='rtl'] .equipped-badge {
+    left: auto;
+    right: 0.75rem;
+  }
+</style>

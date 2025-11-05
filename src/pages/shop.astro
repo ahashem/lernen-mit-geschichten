@@ -1,0 +1,1036 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getTranslation } from '../utils/i18n';
+import type { Locale } from '../utils/i18n';
+
+const locale: Locale = 'de';
+
+const pageTitle = {
+  de: 'Sternenladen',
+  ar: 'متجر النجوم',
+  en: 'Star Shop',
+  tr: 'Yıldız Dükkanı',
+  ur: 'ستاروں کی دکان',
+};
+
+const pageDescription = {
+  de: 'Kaufe tolle Belohnungen mit deinen verdienten Sternen',
+  ar: 'اشترِ مكافآت رائعة بنجومك المكتسبة',
+  en: 'Buy awesome rewards with your earned stars',
+  tr: 'Kazandığınız yıldızlarla harika ödüller satın alın',
+  ur: 'اپنے کمائے ہوئے ستاروں سے شاندار انعامات خریدیں',
+};
+---
+
+<BaseLayout title={pageTitle[locale]} description={pageDescription[locale]} locale={locale}>
+  <div class="shop-page">
+    <!-- Star Balance Header -->
+    <header class="shop-header">
+      <div class="balance-section">
+        <div class="balance-card">
+          <div class="balance-icon">⭐</div>
+          <div class="balance-info">
+            <span class="balance-label">{getTranslation(locale, 'yourStars')}</span>
+            <span class="balance-value" id="star-balance">0</span>
+          </div>
+        </div>
+
+        <button class="btn-earn-info" id="earn-info-btn">
+          {getTranslation(locale, 'earnStars')}
+        </button>
+      </div>
+
+      <h1 class="shop-title">
+        {pageTitle[locale]}
+      </h1>
+      <p class="shop-description">{pageDescription[locale]}</p>
+    </header>
+
+    <!-- Filter and Sort Controls -->
+    <div class="shop-controls">
+      <div class="category-tabs" role="tablist">
+        <button class="category-tab active" data-category="all" role="tab">
+          {getTranslation(locale, 'allItems')}
+        </button>
+        <button class="category-tab" data-category="characters" role="tab">
+          {getTranslation(locale, 'characters')}
+        </button>
+        <button class="category-tab" data-category="themes" role="tab">
+          {getTranslation(locale, 'themes')}
+        </button>
+        <button class="category-tab" data-category="avatars" role="tab">
+          {getTranslation(locale, 'avatars')}
+        </button>
+        <button class="category-tab" data-category="decorations" role="tab">
+          {getTranslation(locale, 'decorations')}
+        </button>
+        <button class="category-tab" data-category="powerups" role="tab">
+          {getTranslation(locale, 'powerups')}
+        </button>
+        <button class="category-tab" data-category="certificates" role="tab">
+          {getTranslation(locale, 'certificates')}
+        </button>
+      </div>
+
+      <div class="sort-controls">
+        <label for="sort-select" class="visually-hidden">{getTranslation(locale, 'sortBy')}</label>
+        <select id="sort-select" class="sort-select">
+          <option value="price-low">{getTranslation(locale, 'sortPriceLow')}</option>
+          <option value="price-high">{getTranslation(locale, 'sortPriceHigh')}</option>
+          <option value="newest">{getTranslation(locale, 'sortNewest')}</option>
+          <option value="rarity">{getTranslation(locale, 'sortRarity')}</option>
+        </select>
+
+        <label class="checkbox-label">
+          <input type="checkbox" id="hide-owned" />
+          <span>{getTranslation(locale, 'hideOwned')}</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Shop Items Grid -->
+    <div class="shop-grid" id="shop-grid" role="list">
+      <!-- Items will be dynamically loaded -->
+    </div>
+
+    <!-- Inventory Link -->
+    <div class="inventory-link-section">
+      <a href={`${import.meta.env.BASE_URL}/inventory`} class="btn-inventory">
+        <span class="icon">📦</span>
+        <span>{getTranslation(locale, 'myItems')}</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Purchase Modal -->
+  <div id="purchase-modal" class="modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close" aria-label="Close">×</button>
+
+      <div class="modal-body" id="modal-body">
+        <!-- Modal content will be inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Earn Stars Info Modal -->
+  <div id="earn-modal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-overlay" id="earn-modal-overlay"></div>
+    <div class="modal-content">
+      <button class="modal-close" id="earn-modal-close" aria-label="Close">×</button>
+
+      <div class="earn-info-content">
+        <h2>{getTranslation(locale, 'earnStarsBy')}</h2>
+        <ul class="earn-list">
+          <li>⭐ {getTranslation(locale, 'earnStoryRead')}</li>
+          <li>⭐ {getTranslation(locale, 'earnQuizCompletion')}</li>
+          <li>⭐ {getTranslation(locale, 'earnPerfectQuiz')}</li>
+          <li>⭐ {getTranslation(locale, 'earnAchievement')}</li>
+          <li>⭐ {getTranslation(locale, 'earnEasterEgg')}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import { starWallet } from '../utils/star-wallet';
+  import { SHOP_ITEMS, inventory, RARITY_COLORS } from '../utils/shop-items';
+  import type { ShopItem, ShopCategory } from '../utils/shop-items';
+  import { confetti } from '../utils/confetti';
+  import { soundEffects } from '../utils/sound-effects';
+  import type { Locale } from '../utils/i18n';
+
+  const locale: Locale = 'de';
+
+  // State
+  let currentFilter: ShopCategory | 'all' = 'all';
+  let currentSort: 'price-low' | 'price-high' | 'newest' | 'rarity' = 'price-low';
+  let hideOwned = false;
+
+  // Elements
+  const balanceEl = document.getElementById('star-balance');
+  const gridEl = document.getElementById('shop-grid');
+  const categoryTabs = document.querySelectorAll('.category-tab');
+  const sortSelect = document.getElementById('sort-select') as HTMLSelectElement;
+  const hideOwnedCheckbox = document.getElementById('hide-owned') as HTMLInputElement;
+  const purchaseModal = document.getElementById('purchase-modal');
+  const modalOverlay = document.getElementById('modal-overlay');
+  const modalClose = document.getElementById('modal-close');
+  const modalBody = document.getElementById('modal-body');
+  const earnModal = document.getElementById('earn-modal');
+  const earnModalOverlay = document.getElementById('earn-modal-overlay');
+  const earnModalClose = document.getElementById('earn-modal-close');
+  const earnInfoBtn = document.getElementById('earn-info-btn');
+
+  // Initialize
+  updateBalance();
+  renderItems();
+
+  // Update balance
+  function updateBalance() {
+    const balance = starWallet.getBalance();
+    if (balanceEl) {
+      balanceEl.textContent = balance.toString();
+      animateBalance(balanceEl);
+    }
+  }
+
+  function animateBalance(el: HTMLElement) {
+    el.classList.add('balance-pulse');
+    setTimeout(() => el.classList.remove('balance-pulse'), 500);
+  }
+
+  // Render shop items
+  function renderItems() {
+    if (!gridEl) return;
+
+    let items = [...SHOP_ITEMS];
+
+    // Filter by category
+    if (currentFilter !== 'all') {
+      items = items.filter(item => item.category === currentFilter);
+    }
+
+    // Filter owned
+    if (hideOwned) {
+      items = items.filter(item => !inventory.hasItem(item.id));
+    }
+
+    // Sort
+    items = sortItems(items, currentSort);
+
+    // Render
+    gridEl.innerHTML = '';
+    items.forEach(item => {
+      const card = createItemCard(item);
+      gridEl.appendChild(card);
+    });
+
+    if (items.length === 0) {
+      gridEl.innerHTML = '<p class="no-items">Keine Artikel in dieser Kategorie</p>';
+    }
+  }
+
+  function sortItems(items: ShopItem[], sort: string): ShopItem[] {
+    const sorted = [...items];
+
+    switch (sort) {
+      case 'price-low':
+        return sorted.sort((a, b) => a.price - b.price);
+      case 'price-high':
+        return sorted.sort((a, b) => b.price - a.price);
+      case 'newest':
+        return sorted.sort((a, b) => (b.new ? 1 : 0) - (a.new ? 1 : 0));
+      case 'rarity':
+        const rarityOrder = { common: 0, rare: 1, epic: 2, legendary: 3 };
+        return sorted.sort((a, b) => rarityOrder[b.rarity] - rarityOrder[a.rarity]);
+      default:
+        return sorted;
+    }
+  }
+
+  function createItemCard(item: ShopItem): HTMLElement {
+    const card = document.createElement('div');
+    const isOwned = inventory.hasItem(item.id);
+    const canAfford = starWallet.canAfford(item.price);
+
+    card.className = `shop-item ${item.rarity} ${isOwned ? 'owned' : ''}`;
+    card.setAttribute('role', 'listitem');
+    card.style.setProperty('--rarity-color', RARITY_COLORS[item.rarity]);
+
+    card.innerHTML = `
+      <div class="item-card-inner">
+        ${item.new ? '<div class="badge badge-new">NEU</div>' : ''}
+        ${item.limited ? '<div class="badge badge-limited">LIMITIERT</div>' : ''}
+        ${item.sale ? `<div class="badge badge-sale">-${item.sale.discount}%</div>` : ''}
+
+        <div class="item-preview">
+          <div class="item-icon">${item.preview}</div>
+        </div>
+
+        <div class="item-info">
+          <h3 class="item-name">${item.name[locale]}</h3>
+          <p class="item-description">${item.description[locale]}</p>
+
+          <div class="item-footer">
+            <div class="item-price">
+              <span class="price-value">${item.price}</span>
+              <span class="price-icon">⭐</span>
+            </div>
+
+            ${
+              isOwned
+                ? '<button class="btn-owned" disabled><span>✓</span> GEKAUFT</button>'
+                : `<button class="btn-buy ${!canAfford ? 'disabled' : ''}" data-item-id="${item.id}" ${!canAfford ? 'disabled' : ''}>
+                     KAUFEN
+                   </button>`
+            }
+          </div>
+        </div>
+
+        <div class="rarity-badge">${item.rarity}</div>
+      </div>
+    `;
+
+    // Add click handler for buy button
+    const buyBtn = card.querySelector('.btn-buy');
+    if (buyBtn) {
+      buyBtn.addEventListener('click', () => openPurchaseModal(item));
+    }
+
+    return card;
+  }
+
+  // Purchase modal
+  function openPurchaseModal(item: ShopItem) {
+    if (!purchaseModal || !modalBody) return;
+
+    const balance = starWallet.getBalance();
+    const canAfford = balance >= item.price;
+
+    modalBody.innerHTML = `
+      <div class="purchase-preview">
+        <div class="preview-icon">${item.preview}</div>
+        <h2 class="preview-title">${item.name[locale]}</h2>
+        <p class="preview-description">${item.description[locale]}</p>
+
+        <div class="preview-price">
+          <span class="price-label">Preis:</span>
+          <span class="price-value">${item.price} ⭐</span>
+        </div>
+
+        <div class="preview-balance">
+          <span class="balance-label">Dein Guthaben:</span>
+          <span class="balance-value ${canAfford ? 'sufficient' : 'insufficient'}">${balance} ⭐</span>
+        </div>
+
+        ${
+          canAfford
+            ? `<button class="btn-confirm-purchase" id="confirm-purchase-btn">
+                 JETZT KAUFEN
+               </button>`
+            : '<p class="insufficient-message">Nicht genug Sterne!</p>'
+        }
+      </div>
+    `;
+
+    purchaseModal.classList.add('active');
+    purchaseModal.setAttribute('aria-hidden', 'false');
+
+    // Add purchase handler
+    const confirmBtn = document.getElementById('confirm-purchase-btn');
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', () => purchaseItem(item));
+    }
+  }
+
+  function closePurchaseModal() {
+    if (!purchaseModal) return;
+    purchaseModal.classList.remove('active');
+    purchaseModal.setAttribute('aria-hidden', 'true');
+  }
+
+  function purchaseItem(item: ShopItem) {
+    const success = starWallet.spendStars(item.price, item.id, item.name[locale]);
+
+    if (success) {
+      // Add to inventory
+      const lastTransaction = starWallet.getTransactions('spend', 1)[0];
+      inventory.addItem(item, lastTransaction.id);
+
+      // Celebrate!
+      confetti.fireworks(5, 600);
+      soundEffects.playCorrect();
+
+      // Close modal and update UI
+      closePurchaseModal();
+      updateBalance();
+      renderItems();
+
+      // Show success message
+      showSuccessToast('Erfolgreich gekauft!');
+    } else {
+      alert('Nicht genug Sterne!');
+    }
+  }
+
+  function showSuccessToast(message: string) {
+    const toast = document.createElement('div');
+    toast.className = 'success-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add('show'), 100);
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  // Event listeners
+  categoryTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      categoryTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentFilter = tab.getAttribute('data-category') as ShopCategory | 'all';
+      renderItems();
+    });
+  });
+
+  if (sortSelect) {
+    sortSelect.addEventListener('change', () => {
+      currentSort = sortSelect.value as any;
+      renderItems();
+    });
+  }
+
+  if (hideOwnedCheckbox) {
+    hideOwnedCheckbox.addEventListener('change', () => {
+      hideOwned = hideOwnedCheckbox.checked;
+      renderItems();
+    });
+  }
+
+  // Modal close handlers
+  if (modalClose) modalClose.addEventListener('click', closePurchaseModal);
+  if (modalOverlay) modalOverlay.addEventListener('click', closePurchaseModal);
+
+  // Earn info modal
+  if (earnInfoBtn) {
+    earnInfoBtn.addEventListener('click', () => {
+      if (earnModal) {
+        earnModal.classList.add('active');
+        earnModal.setAttribute('aria-hidden', 'false');
+      }
+    });
+  }
+
+  if (earnModalClose) {
+    earnModalClose.addEventListener('click', () => {
+      if (earnModal) {
+        earnModal.classList.remove('active');
+        earnModal.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+
+  if (earnModalOverlay) {
+    earnModalOverlay.addEventListener('click', () => {
+      if (earnModal) {
+        earnModal.classList.remove('active');
+        earnModal.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+
+  // Listen for wallet updates
+  window.addEventListener('star-wallet-update', () => {
+    updateBalance();
+    renderItems();
+  });
+
+  // Listen for inventory updates
+  window.addEventListener('inventory-update', () => {
+    renderItems();
+  });
+
+  // Keyboard accessibility
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closePurchaseModal();
+      if (earnModal) {
+        earnModal.classList.remove('active');
+        earnModal.setAttribute('aria-hidden', 'true');
+      }
+    }
+  });
+</script>
+
+<style>
+  .shop-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  /* Header */
+  .shop-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .balance-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .balance-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+  }
+
+  .balance-icon {
+    font-size: 2.5rem;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .balance-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .balance-label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+  }
+
+  .balance-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+  }
+
+  .balance-pulse {
+    animation: pulse 0.5s ease;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+
+  .btn-earn-info {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #FFD700;
+    border-radius: 50px;
+    font-weight: 600;
+    color: #FFA500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-earn-info:hover {
+    background: #FFD700;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+  }
+
+  .shop-title {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .shop-description {
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+  }
+
+  /* Controls */
+  .shop-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .category-tabs {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+  }
+
+  .category-tab {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .category-tab:hover {
+    border-color: var(--color-primary);
+    background: rgba(247, 151, 49, 0.1);
+  }
+
+  .category-tab.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+
+  .sort-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .sort-select {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  /* Shop Grid */
+  .shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .shop-item {
+    position: relative;
+    border-radius: 16px;
+    transition: transform 0.3s ease;
+  }
+
+  .shop-item:hover {
+    transform: translateY(-8px);
+  }
+
+  .item-card-inner {
+    position: relative;
+    background: white;
+    border: 3px solid var(--rarity-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .shop-item.owned .item-card-inner {
+    opacity: 0.7;
+    filter: grayscale(0.5);
+  }
+
+  .badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    z-index: 1;
+  }
+
+  .badge-new {
+    background: #4CAF50;
+    color: white;
+  }
+
+  .badge-limited {
+    background: #FF5722;
+    color: white;
+  }
+
+  .badge-sale {
+    background: #FF9800;
+    color: white;
+  }
+
+  .item-preview {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .item-icon {
+    font-size: 4rem;
+    line-height: 1;
+  }
+
+  .item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .item-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .item-description {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    line-height: 1.4;
+    margin: 0 0 auto 0;
+  }
+
+  .item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #f0f0f0;
+  }
+
+  .item-price {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  .price-icon {
+    font-size: 1.5rem;
+  }
+
+  .btn-buy, .btn-owned {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-buy {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  .btn-buy:hover:not(.disabled) {
+    background: #E67E22;
+    transform: scale(1.05);
+  }
+
+  .btn-buy.disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .btn-owned {
+    background: #4CAF50;
+    color: white;
+    cursor: default;
+  }
+
+  .rarity-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.35rem 0.7rem;
+    background: var(--rarity-color);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 6px;
+  }
+
+  /* Inventory Link */
+  .inventory-link-section {
+    text-align: center;
+    margin-top: 3rem;
+  }
+
+  .btn-inventory {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: var(--color-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-inventory:hover {
+    background: #E67E22;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(247, 151, 49, 0.3);
+  }
+
+  .btn-inventory .icon {
+    font-size: 1.5rem;
+  }
+
+  /* Modal */
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .modal.active {
+    display: flex;
+  }
+
+  .modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-content {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: #f0f0f0;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .modal-close:hover {
+    background: #e0e0e0;
+    transform: rotate(90deg);
+  }
+
+  .purchase-preview {
+    text-align: center;
+  }
+
+  .preview-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+  }
+
+  .preview-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .preview-description {
+    color: var(--color-text-light);
+    margin-bottom: 1.5rem;
+  }
+
+  .preview-price, .preview-balance {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+  }
+
+  .preview-price {
+    background: #f0f0f0;
+    font-weight: 700;
+  }
+
+  .preview-balance {
+    background: #fff3cd;
+  }
+
+  .balance-value.sufficient {
+    color: #4CAF50;
+    font-weight: 700;
+  }
+
+  .balance-value.insufficient {
+    color: #f44336;
+    font-weight: 700;
+  }
+
+  .btn-confirm-purchase {
+    width: 100%;
+    padding: 1rem;
+    margin-top: 1rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-confirm-purchase:hover {
+    background: #E67E22;
+    transform: scale(1.05);
+  }
+
+  .insufficient-message {
+    color: #f44336;
+    font-weight: 700;
+    margin-top: 1rem;
+  }
+
+  .earn-info-content {
+    text-align: center;
+  }
+
+  .earn-info-content h2 {
+    margin-bottom: 1.5rem;
+  }
+
+  .earn-list {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+  }
+
+  .earn-list li {
+    padding: 0.75rem 1rem;
+    background: #f0f0f0;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .success-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #4CAF50;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+  }
+
+  .success-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .no-items {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    color: var(--color-text-light);
+    font-size: 1.1rem;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .shop-page {
+      padding: 1.5rem 1rem;
+    }
+
+    .shop-title {
+      font-size: 2rem;
+    }
+
+    .balance-card {
+      padding: 0.75rem 1.5rem;
+    }
+
+    .balance-icon {
+      font-size: 2rem;
+    }
+
+    .balance-value {
+      font-size: 1.5rem;
+    }
+
+    .shop-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .category-tabs {
+      gap: 0.5rem;
+    }
+
+    .category-tab {
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+    }
+
+    .success-toast {
+      right: 1rem;
+      left: 1rem;
+      bottom: 1rem;
+    }
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .balance-info {
+    align-items: flex-end;
+  }
+
+  [dir='rtl'] .badge {
+    left: auto;
+    right: 0.75rem;
+  }
+
+  [dir='rtl'] .rarity-badge {
+    right: auto;
+    left: 1rem;
+  }
+</style>
