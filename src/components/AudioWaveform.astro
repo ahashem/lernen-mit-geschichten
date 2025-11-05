@@ -1,0 +1,261 @@
+---
+/**
+ * Audio Waveform Visualization Component
+ * Real-time waveform display during recording
+ */
+
+interface Props {
+  width?: number;
+  height?: number;
+  color?: string;
+  backgroundColor?: string;
+}
+
+const {
+  width = 600,
+  height = 100,
+  color = '#FF9F40',
+  backgroundColor = '#F9F9F9',
+} = Astro.props;
+---
+
+<div class="audio-waveform" data-width={width} data-height={height}>
+  <canvas
+    class="waveform-canvas"
+    width={width}
+    height={height}
+    aria-label="Audio waveform visualization"
+  ></canvas>
+  <div class="waveform-overlay">
+    <div class="time-indicator">
+      <span class="current-time">0:00</span>
+      <span class="separator">/</span>
+      <span class="max-time">5:00</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  export class WaveformVisualizer {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private animationId: number | null = null;
+    private color: string;
+    private backgroundColor: string;
+    private waveHistory: number[] = [];
+    private maxHistoryLength: number = 100;
+
+    constructor(
+      canvas: HTMLCanvasElement,
+      color: string = '#FF9F40',
+      backgroundColor: string = '#F9F9F9'
+    ) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d')!;
+      this.color = color;
+      this.backgroundColor = backgroundColor;
+    }
+
+    start(dataCallback: () => Uint8Array | null): void {
+      const draw = () => {
+        const data = dataCallback();
+        if (data) {
+          this.drawWaveform(data);
+        }
+        this.animationId = requestAnimationFrame(draw);
+      };
+
+      draw();
+    }
+
+    stop(): void {
+      if (this.animationId !== null) {
+        cancelAnimationFrame(this.animationId);
+        this.animationId = null;
+      }
+    }
+
+    clear(): void {
+      this.ctx.fillStyle = this.backgroundColor;
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.waveHistory = [];
+    }
+
+    private drawWaveform(data: Uint8Array): void {
+      const width = this.canvas.width;
+      const height = this.canvas.height;
+
+      // Clear canvas
+      this.ctx.fillStyle = this.backgroundColor;
+      this.ctx.fillRect(0, 0, width, height);
+
+      // Draw center line
+      this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+      this.ctx.lineWidth = 1;
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, height / 2);
+      this.ctx.lineTo(width, height / 2);
+      this.ctx.stroke();
+
+      // Calculate average amplitude for this frame
+      let sum = 0;
+      for (let i = 0; i < data.length; i++) {
+        sum += Math.abs(data[i] - 128);
+      }
+      const avg = sum / data.length;
+
+      // Add to history
+      this.waveHistory.push(avg);
+      if (this.waveHistory.length > this.maxHistoryLength) {
+        this.waveHistory.shift();
+      }
+
+      // Draw waveform from history
+      this.ctx.strokeStyle = this.color;
+      this.ctx.lineWidth = 2;
+      this.ctx.beginPath();
+
+      const sliceWidth = width / this.maxHistoryLength;
+      let x = 0;
+
+      for (let i = 0; i < this.waveHistory.length; i++) {
+        const amplitude = this.waveHistory[i];
+        const y = height / 2 + (amplitude / 128) * (height / 2);
+
+        if (i === 0) {
+          this.ctx.moveTo(x, y);
+        } else {
+          this.ctx.lineTo(x, y);
+        }
+
+        x += sliceWidth;
+      }
+
+      this.ctx.stroke();
+
+      // Draw bars style (alternative visualization)
+      this.ctx.fillStyle = this.color;
+      const barGap = 2;
+      const barWidth = sliceWidth - barGap;
+
+      for (let i = 0; i < this.waveHistory.length; i++) {
+        const amplitude = this.waveHistory[i];
+        const barHeight = (amplitude / 128) * height;
+        const x = i * sliceWidth;
+        const y = (height - barHeight) / 2;
+
+        this.ctx.globalAlpha = 0.3;
+        this.ctx.fillRect(x, y, barWidth, barHeight);
+      }
+
+      this.ctx.globalAlpha = 1.0;
+    }
+
+    drawStaticWaveform(audioBuffer: AudioBuffer): void {
+      const width = this.canvas.width;
+      const height = this.canvas.height;
+      const data = audioBuffer.getChannelData(0);
+
+      // Clear canvas
+      this.ctx.fillStyle = this.backgroundColor;
+      this.ctx.fillRect(0, 0, width, height);
+
+      // Draw center line
+      this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+      this.ctx.lineWidth = 1;
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, height / 2);
+      this.ctx.lineTo(width, height / 2);
+      this.ctx.stroke();
+
+      // Draw waveform
+      this.ctx.strokeStyle = this.color;
+      this.ctx.lineWidth = 1;
+      this.ctx.beginPath();
+
+      const step = Math.ceil(data.length / width);
+      const amp = height / 2;
+
+      for (let i = 0; i < width; i++) {
+        let min = 1.0;
+        let max = -1.0;
+
+        for (let j = 0; j < step; j++) {
+          const datum = data[i * step + j];
+          if (datum < min) min = datum;
+          if (datum > max) max = datum;
+        }
+
+        const yMin = (1 + min) * amp;
+        const yMax = (1 + max) * amp;
+
+        if (i === 0) {
+          this.ctx.moveTo(i, yMin);
+        } else {
+          this.ctx.lineTo(i, yMin);
+        }
+      }
+
+      this.ctx.stroke();
+    }
+  }
+</script>
+
+<style>
+  .audio-waveform {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .waveform-canvas {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    background: var(--color-background, #f9f9f9);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: block;
+  }
+
+  .waveform-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0.5rem;
+  }
+
+  .time-indicator {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .current-time {
+    color: var(--color-primary);
+  }
+
+  .separator {
+    opacity: 0.5;
+  }
+
+  @media (max-width: 768px) {
+    .time-indicator {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+    }
+  }
+</style>
