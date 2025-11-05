@@ -1,0 +1,480 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProgressStats from '../../components/ProgressStats.astro';
+import ProgressChart from '../../components/ProgressChart.astro';
+import SkillsRadar from '../../components/SkillsRadar.astro';
+import AchievementsBadges from '../../components/AchievementsBadges.astro';
+import type { Locale } from '../../utils/i18n';
+
+export async function getStaticPaths() {
+  const locales: Locale[] = ['ar', 'en', 'tr', 'ur'];
+  return locales.map(locale => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+
+const labels = {
+  ar: {
+    title: 'تقدمك في التعلم',
+    subtitle: 'انظر كم وصلت بعيداً!',
+    recentActivity: 'الأنشطة الأخيرة',
+    exportProgress: 'تصدير التقدم',
+    printCertificate: 'طباعة الشهادة',
+    resetProgress: 'إعادة تعيين التقدم',
+    noRecentActivity: 'لا توجد أنشطة حتى الآن. اقرأ قصتك الأولى!',
+    viewStory: 'عرض القصة',
+    completed: 'مكتمل',
+    inProgress: 'قيد التنفيذ',
+  },
+  en: {
+    title: 'Your Learning Progress',
+    subtitle: 'See how far you\'ve come!',
+    recentActivity: 'Recent Activity',
+    exportProgress: 'Export Progress',
+    printCertificate: 'Print Certificate',
+    resetProgress: 'Reset Progress',
+    noRecentActivity: 'No activity yet. Read your first story!',
+    viewStory: 'View Story',
+    completed: 'Completed',
+    inProgress: 'In Progress',
+  },
+  tr: {
+    title: 'Öğrenme İlerlemeniz',
+    subtitle: 'Ne kadar ilerlediğinizi görün!',
+    recentActivity: 'Son Aktiviteler',
+    exportProgress: 'İlerlemeyi Dışa Aktar',
+    printCertificate: 'Sertifikayı Yazdır',
+    resetProgress: 'İlerlemeyi Sıfırla',
+    noRecentActivity: 'Henüz aktivite yok. İlk hikayenizi okuyun!',
+    viewStory: 'Hikayeyi Görüntüle',
+    completed: 'Tamamlandı',
+    inProgress: 'Devam Ediyor',
+  },
+  ur: {
+    title: 'آپ کی سیکھنے کی پیش رفت',
+    subtitle: 'دیکھیں آپ کتنا آگے بڑھ چکے ہیں!',
+    recentActivity: 'حالیہ سرگرمی',
+    exportProgress: 'پیش رفت برآمد کریں',
+    printCertificate: 'سرٹیفکیٹ پرنٹ کریں',
+    resetProgress: 'پیش رفت دوبارہ ترتیب دیں',
+    noRecentActivity: 'ابھی تک کوئی سرگرمی نہیں۔ اپنی پہلی کہانی پڑھیں!',
+    viewStory: 'کہانی دیکھیں',
+    completed: 'مکمل',
+    inProgress: 'جاری ہے',
+  },
+};
+
+const t = labels[locale];
+---
+
+<BaseLayout title={t.title} description={t.subtitle} locale={locale}>
+  <div class="container progress-page" data-locale={locale}>
+    <div class="page-header">
+      <h1 class="page-title">{t.title}</h1>
+      <p class="page-subtitle">{t.subtitle}</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="action-btn export-btn" id="export-btn">
+        <span class="btn-icon">📥</span>
+        {t.exportProgress}
+      </button>
+      <button class="action-btn print-btn" id="print-btn">
+        <span class="btn-icon">🖨️</span>
+        {t.printCertificate}
+      </button>
+      <button class="action-btn reset-btn" id="reset-btn">
+        <span class="btn-icon">🔄</span>
+        {t.resetProgress}
+      </button>
+    </div>
+
+    <!-- Statistics Cards -->
+    <ProgressStats locale={locale} />
+
+    <!-- Activity Chart -->
+    <ProgressChart locale={locale} />
+
+    <!-- Skills Radar -->
+    <SkillsRadar locale={locale} />
+
+    <!-- Achievements -->
+    <AchievementsBadges locale={locale} />
+
+    <!-- Recent Activity -->
+    <div class="recent-activity">
+      <h3 class="section-title">{t.recentActivity}</h3>
+      <div class="activity-list" id="activity-list">
+        <!-- Will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import { ProgressTracker } from '../../utils/progress-tracker';
+  import { confetti } from '../../utils/confetti';
+  import { soundEffects } from '../../utils/sound-effects';
+
+  function initProgressPage() {
+    const container = document.querySelector('.progress-page');
+    if (!container) return;
+
+    const locale = container.getAttribute('data-locale') || 'de';
+    const stats = ProgressTracker.getProgressStats();
+
+    const labels = {
+      ar: {
+        confirmReset: 'هل تريد حقاً حذف كل تقدمك؟ لا يمكن التراجع عن هذا الإجراء.',
+        resetSuccess: 'تم إعادة تعيين التقدم بنجاح!',
+        noRecentActivity: 'لا توجد أنشطة حتى الآن. اقرأ قصتك الأولى!',
+        viewStory: 'عرض القصة',
+        completed: 'مكتمل',
+        inProgress: 'قيد التنفيذ',
+      },
+      en: {
+        confirmReset: 'Are you sure you want to delete all your progress? This action cannot be undone.',
+        resetSuccess: 'Progress reset successfully!',
+        noRecentActivity: 'No activity yet. Read your first story!',
+        viewStory: 'View Story',
+        completed: 'Completed',
+        inProgress: 'In Progress',
+      },
+      tr: {
+        confirmReset: 'Tüm ilerlemenizi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
+        resetSuccess: 'İlerleme başarıyla sıfırlandı!',
+        noRecentActivity: 'Henüz aktivite yok. İlk hikayenizi okuyun!',
+        viewStory: 'Hikayeyi Görüntüle',
+        completed: 'Tamamlandı',
+        inProgress: 'Devam Ediyor',
+      },
+      ur: {
+        confirmReset: 'کیا آپ واقعی اپنی تمام پیش رفت کو حذف کرنا چاہتے ہیں؟ یہ عمل واپس نہیں کیا جا سکتا۔',
+        resetSuccess: 'پیش رفت کامیابی سے دوبارہ ترتیب دی گئی!',
+        noRecentActivity: 'ابھی تک کوئی سرگرمی نہیں۔ اپنی پہلی کہانی پڑھیں!',
+        viewStory: 'کہانی دیکھیں',
+        completed: 'مکمل',
+        inProgress: 'جاری ہے',
+      },
+    };
+
+    const t = labels[locale as keyof typeof labels] || labels.en;
+
+    // Export Progress
+    const exportBtn = document.getElementById('export-btn');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
+        const data = ProgressTracker.exportProgress();
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `learning-progress-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        soundEffects.playCorrect();
+      });
+    }
+
+    // Print Certificate
+    const printBtn = document.getElementById('print-btn');
+    if (printBtn) {
+      printBtn.addEventListener('click', () => {
+        window.print();
+        soundEffects.playClick();
+      });
+    }
+
+    // Reset Progress
+    const resetBtn = document.getElementById('reset-btn');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        if (confirm(t.confirmReset)) {
+          ProgressTracker.clearAllProgress();
+          alert(t.resetSuccess);
+          window.location.reload();
+        }
+      });
+    }
+
+    // Populate Recent Activity
+    const activityList = document.getElementById('activity-list');
+    if (activityList) {
+      if (stats.recentStories.length === 0) {
+        activityList.innerHTML = `<p class="no-activity">${t.noRecentActivity}</p>`;
+      } else {
+        activityList.innerHTML = stats.recentStories
+          .map(story => {
+            const completionPercent =
+              story.totalQuestions > 0 ? Math.round((story.quizScore / story.totalQuestions) * 100) : 0;
+            const isCompleted = completionPercent === 100;
+            const date = new Date(story.lastAccessed).toLocaleDateString();
+
+            return `
+            <div class="activity-item">
+              <div class="activity-icon">${isCompleted ? '✅' : '📖'}</div>
+              <div class="activity-content">
+                <h4 class="activity-title">${story.storyId}</h4>
+                <p class="activity-meta">${date}</p>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: ${completionPercent}%"></div>
+                </div>
+                <p class="activity-status">
+                  ${isCompleted ? t.completed : t.inProgress} (${story.quizScore}/${story.totalQuestions})
+                </p>
+              </div>
+              <a href="/${locale}/stories/${story.storyId}" class="activity-link">
+                ${t.viewStory}
+              </a>
+            </div>
+          `;
+          })
+          .join('');
+      }
+    }
+
+    // Celebration for first visit
+    const firstVisit = !localStorage.getItem('progress-page-visited');
+    if (firstVisit && stats.totalStoriesRead > 0) {
+      localStorage.setItem('progress-page-visited', 'true');
+      setTimeout(() => {
+        soundEffects.playCompletion();
+        confetti.fireworks(5, 400);
+      }, 500);
+    }
+  }
+
+  // Initialize on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProgressPage);
+  } else {
+    initProgressPage();
+  }
+</script>
+
+<style>
+  .progress-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 3rem;
+    color: #333;
+    margin: 0 0 1rem 0;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-subtitle {
+    font-size: 1.25rem;
+    color: #666;
+    margin: 0;
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-icon {
+    font-size: 1.25rem;
+  }
+
+  .export-btn {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+  }
+
+  .print-btn {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    color: white;
+  }
+
+  .reset-btn {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .recent-activity {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin: 2rem 0;
+  }
+
+  .section-title {
+    font-size: 1.75rem;
+    color: #333;
+    margin: 0 0 1.5rem 0;
+    font-weight: 700;
+  }
+
+  .activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .activity-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .activity-item:hover {
+    background: #e0e7ff;
+    transform: translateX(5px);
+  }
+
+  .activity-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+  }
+
+  .activity-content {
+    flex: 1;
+  }
+
+  .activity-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .activity-meta {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e0e7ff;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.5s ease;
+  }
+
+  .activity-status {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+  }
+
+  .activity-link {
+    padding: 0.5rem 1rem;
+    background: #667eea;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .activity-link:hover {
+    background: #764ba2;
+    transform: scale(1.05);
+  }
+
+  .no-activity {
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+    padding: 2rem;
+  }
+
+  /* Print Styles */
+  @media print {
+    .action-buttons,
+    header,
+    footer,
+    .nav-links {
+      display: none !important;
+    }
+
+    .progress-page {
+      max-width: 100%;
+    }
+
+    .page-title {
+      -webkit-text-fill-color: #667eea;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .page-subtitle {
+      font-size: 1rem;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+    }
+
+    .action-btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .activity-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .activity-link {
+      width: 100%;
+      text-align: center;
+    }
+  }
+</style>

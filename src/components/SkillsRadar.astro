@@ -1,0 +1,365 @@
+---
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const labels = {
+  de: {
+    title: 'Deine Fähigkeiten',
+    emotional: 'Emotional',
+    social: 'Sozial',
+    cognitive: 'Kognitiv',
+    behavioral: 'Verhalten',
+  },
+  ar: {
+    title: 'مهاراتك',
+    emotional: 'عاطفي',
+    social: 'اجتماعي',
+    cognitive: 'معرفي',
+    behavioral: 'سلوكي',
+  },
+  en: {
+    title: 'Your Skills',
+    emotional: 'Emotional',
+    social: 'Social',
+    cognitive: 'Cognitive',
+    behavioral: 'Behavioral',
+  },
+  tr: {
+    title: 'Becerileriniz',
+    emotional: 'Duygusal',
+    social: 'Sosyal',
+    cognitive: 'Bilişsel',
+    behavioral: 'Davranışsal',
+  },
+  ur: {
+    title: 'آپ کی مہارتیں',
+    emotional: 'جذباتی',
+    social: 'سماجی',
+    cognitive: 'ذہنی',
+    behavioral: 'رویہ',
+  },
+};
+
+const t = labels[locale] || labels.de;
+---
+
+<div class="skills-radar" data-locale={locale}>
+  <h3 class="radar-title">{t.title}</h3>
+
+  <div class="radar-container">
+    <canvas id="skills-radar-canvas" width="400" height="400"></canvas>
+    <div class="radar-legend" id="radar-legend"></div>
+  </div>
+</div>
+
+<script>
+  import { ProgressTracker } from '../utils/progress-tracker';
+  import { skillsCategories } from '../utils/skills-taxonomy';
+
+  function initRadar() {
+    const container = document.querySelector('.skills-radar');
+    if (!container) return;
+
+    const locale = container.getAttribute('data-locale') || 'de';
+    const stats = ProgressTracker.getProgressStats();
+
+    const labels = {
+      de: {
+        emotional: 'Emotional',
+        social: 'Sozial',
+        cognitive: 'Kognitiv',
+        behavioral: 'Verhalten',
+      },
+      ar: {
+        emotional: 'عاطفي',
+        social: 'اجتماعي',
+        cognitive: 'معرفي',
+        behavioral: 'سلوكي',
+      },
+      en: {
+        emotional: 'Emotional',
+        social: 'Social',
+        cognitive: 'Cognitive',
+        behavioral: 'Behavioral',
+      },
+      tr: {
+        emotional: 'Duygusal',
+        social: 'Sosyal',
+        cognitive: 'Bilişsel',
+        behavioral: 'Davranışsal',
+      },
+      ur: {
+        emotional: 'جذباتی',
+        social: 'سماجی',
+        cognitive: 'ذہنی',
+        behavioral: 'رویہ',
+      },
+    };
+
+    const t = labels[locale as keyof typeof labels] || labels.de;
+
+    // Count skills by category
+    const categoryCounts = {
+      emotional: 0,
+      social: 0,
+      cognitive: 0,
+      behavioral: 0,
+    };
+
+    const categoryTotals = {
+      emotional: skillsCategories.emotional.skills.length,
+      social: skillsCategories.social.skills.length,
+      cognitive: skillsCategories.cognitive.skills.length,
+      behavioral: skillsCategories.behavioral.skills.length,
+    };
+
+    stats.skillsEncountered.forEach(skillId => {
+      for (const [categoryKey, category] of Object.entries(skillsCategories)) {
+        if (category.skills.some(s => s.id === skillId)) {
+          categoryCounts[categoryKey as keyof typeof categoryCounts]++;
+        }
+      }
+    });
+
+    // Calculate percentages
+    const data = [
+      {
+        label: t.emotional,
+        value: (categoryCounts.emotional / categoryTotals.emotional) * 100,
+        count: categoryCounts.emotional,
+        total: categoryTotals.emotional,
+        color: '#667eea',
+      },
+      {
+        label: t.social,
+        value: (categoryCounts.social / categoryTotals.social) * 100,
+        count: categoryCounts.social,
+        total: categoryTotals.social,
+        color: '#f093fb',
+      },
+      {
+        label: t.cognitive,
+        value: (categoryCounts.cognitive / categoryTotals.cognitive) * 100,
+        count: categoryCounts.cognitive,
+        total: categoryTotals.cognitive,
+        color: '#4facfe',
+      },
+      {
+        label: t.behavioral,
+        value: (categoryCounts.behavioral / categoryTotals.behavioral) * 100,
+        count: categoryCounts.behavioral,
+        total: categoryTotals.behavioral,
+        color: '#fa709a',
+      },
+    ];
+
+    // Draw radar chart
+    const canvas = document.getElementById('skills-radar-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = Math.min(centerX, centerY) - 60;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw background circles
+    ctx.strokeStyle = '#e0e7ff';
+    ctx.lineWidth = 1;
+    for (let i = 1; i <= 5; i++) {
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, (radius / 5) * i, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Draw axes
+    const angleStep = (Math.PI * 2) / data.length;
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1;
+
+    data.forEach((_, index) => {
+      const angle = angleStep * index - Math.PI / 2;
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    });
+
+    // Draw data polygon
+    ctx.beginPath();
+    data.forEach((item, index) => {
+      const angle = angleStep * index - Math.PI / 2;
+      const distance = (item.value / 100) * radius;
+      const x = centerX + distance * Math.cos(angle);
+      const y = centerY + distance * Math.sin(angle);
+
+      if (index === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    });
+    ctx.closePath();
+
+    // Fill
+    const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+    gradient.addColorStop(0, 'rgba(102, 126, 234, 0.4)');
+    gradient.addColorStop(1, 'rgba(118, 75, 162, 0.1)');
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    // Stroke
+    ctx.strokeStyle = '#667eea';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Draw data points
+    data.forEach((item, index) => {
+      const angle = angleStep * index - Math.PI / 2;
+      const distance = (item.value / 100) * radius;
+      const x = centerX + distance * Math.cos(angle);
+      const y = centerY + distance * Math.sin(angle);
+
+      // Point
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.fillStyle = item.color;
+      ctx.fill();
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Label
+      const labelDistance = radius + 30;
+      const labelX = centerX + labelDistance * Math.cos(angle);
+      const labelY = centerY + labelDistance * Math.sin(angle);
+
+      ctx.fillStyle = '#333';
+      ctx.font = 'bold 14px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(item.label, labelX, labelY);
+    });
+
+    // Create legend
+    const legend = document.getElementById('radar-legend');
+    if (legend) {
+      legend.innerHTML = data.map(item => `
+        <div class="legend-item">
+          <div class="legend-color" style="background: ${item.color}"></div>
+          <div class="legend-text">
+            <strong>${item.label}</strong>: ${item.count}/${item.total}
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  // Initialize on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initRadar);
+  } else {
+    initRadar();
+  }
+</script>
+
+<style>
+  .skills-radar {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin: 2rem 0;
+  }
+
+  .radar-title {
+    font-size: 1.75rem;
+    color: #333;
+    margin: 0 0 1.5rem 0;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .radar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  #skills-radar-canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .radar-legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .legend-item:hover {
+    background: #e0e7ff;
+    transform: translateX(5px);
+  }
+
+  .legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .legend-text {
+    font-size: 0.9rem;
+    color: #333;
+  }
+
+  .legend-text strong {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .skills-radar {
+      padding: 1.5rem;
+    }
+
+    .radar-title {
+      font-size: 1.5rem;
+    }
+
+    #skills-radar-canvas {
+      width: 100%;
+      height: auto;
+    }
+
+    .radar-legend {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

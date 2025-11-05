@@ -1,0 +1,396 @@
+---
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const labels = {
+  de: {
+    storiesRead: 'Geschichten gelesen',
+    quizzesCompleted: 'Quiz abgeschlossen',
+    favoriteCharacter: 'Lieblingscharakter',
+    readingStreak: 'Lese-Serie',
+    skillsMastered: 'Fähigkeiten kennengelernt',
+    languagesExplored: 'Sprachen erkundet',
+    totalReadingTime: 'Lesezeit insgesamt',
+    completionRate: 'Erfolgsquote',
+    days: 'Tage',
+    minutes: 'Minuten',
+  },
+  ar: {
+    storiesRead: 'القصص المقروءة',
+    quizzesCompleted: 'الاختبارات المكتملة',
+    favoriteCharacter: 'الشخصية المفضلة',
+    readingStreak: 'سلسلة القراءة',
+    skillsMastered: 'المهارات المكتسبة',
+    languagesExplored: 'اللغات المستكشفة',
+    totalReadingTime: 'إجمالي وقت القراءة',
+    completionRate: 'معدل النجاح',
+    days: 'أيام',
+    minutes: 'دقائق',
+  },
+  en: {
+    storiesRead: 'Stories Read',
+    quizzesCompleted: 'Quizzes Completed',
+    favoriteCharacter: 'Favorite Character',
+    readingStreak: 'Reading Streak',
+    skillsMastered: 'Skills Mastered',
+    languagesExplored: 'Languages Explored',
+    totalReadingTime: 'Total Reading Time',
+    completionRate: 'Success Rate',
+    days: 'Days',
+    minutes: 'Minutes',
+  },
+  tr: {
+    storiesRead: 'Okunan Hikayeler',
+    quizzesCompleted: 'Tamamlanan Testler',
+    favoriteCharacter: 'Favori Karakter',
+    readingStreak: 'Okuma Serisi',
+    skillsMastered: 'Kazanılan Beceriler',
+    languagesExplored: 'Keşfedilen Diller',
+    totalReadingTime: 'Toplam Okuma Süresi',
+    completionRate: 'Başarı Oranı',
+    days: 'Gün',
+    minutes: 'Dakika',
+  },
+  ur: {
+    storiesRead: 'پڑھی گئی کہانیاں',
+    quizzesCompleted: 'مکمل کوئز',
+    favoriteCharacter: 'پسندیدہ کردار',
+    readingStreak: 'پڑھنے کا سلسلہ',
+    skillsMastered: 'سیکھی گئی مہارتیں',
+    languagesExplored: 'دریافت شدہ زبانیں',
+    totalReadingTime: 'کل پڑھنے کا وقت',
+    completionRate: 'کامیابی کی شرح',
+    days: 'دن',
+    minutes: 'منٹ',
+  },
+};
+
+const t = labels[locale] || labels.de;
+
+const characterEmojis: Record<string, string> = {
+  bear: '🐻',
+  fox: '🦊',
+  rabbit: '🐰',
+  owl: '🦉',
+  elephant: '🐘',
+  lion: '🦁',
+  squirrel: '🐿️',
+  hedgehog: '🦔',
+  flamingo: '🦩',
+  dinosaur: '🦕',
+};
+---
+
+<div class="stats-grid" id="stats-grid">
+  <!-- Stats will be populated by JavaScript -->
+</div>
+
+<script>
+  import { ProgressTracker } from '../utils/progress-tracker';
+
+  function initStats() {
+    const stats = ProgressTracker.getProgressStats();
+    const grid = document.getElementById('stats-grid');
+    if (!grid) return;
+
+    const locale = grid.closest('[data-locale]')?.getAttribute('data-locale') || 'de';
+
+    const labels = {
+      de: {
+        storiesRead: 'Geschichten gelesen',
+        quizzesCompleted: 'Quiz abgeschlossen',
+        favoriteCharacter: 'Lieblingscharakter',
+        readingStreak: 'Lese-Serie',
+        skillsMastered: 'Fähigkeiten kennengelernt',
+        languagesExplored: 'Sprachen erkundet',
+        totalReadingTime: 'Lesezeit insgesamt',
+        completionRate: 'Erfolgsquote',
+        days: 'Tage',
+        minutes: 'Minuten',
+      },
+      ar: {
+        storiesRead: 'القصص المقروءة',
+        quizzesCompleted: 'الاختبارات المكتملة',
+        favoriteCharacter: 'الشخصية المفضلة',
+        readingStreak: 'سلسلة القراءة',
+        skillsMastered: 'المهارات المكتسبة',
+        languagesExplored: 'اللغات المستكشفة',
+        totalReadingTime: 'إجمالي وقت القراءة',
+        completionRate: 'معدل النجاح',
+        days: 'أيام',
+        minutes: 'دقائق',
+      },
+      en: {
+        storiesRead: 'Stories Read',
+        quizzesCompleted: 'Quizzes Completed',
+        favoriteCharacter: 'Favorite Character',
+        readingStreak: 'Reading Streak',
+        skillsMastered: 'Skills Mastered',
+        languagesExplored: 'Languages Explored',
+        totalReadingTime: 'Total Reading Time',
+        completionRate: 'Success Rate',
+        days: 'Days',
+        minutes: 'Minutes',
+      },
+      tr: {
+        storiesRead: 'Okunan Hikayeler',
+        quizzesCompleted: 'Tamamlanan Testler',
+        favoriteCharacter: 'Favori Karakter',
+        readingStreak: 'Okuma Serisi',
+        skillsMastered: 'Kazanılan Beceriler',
+        languagesExplored: 'Keşfedilen Diller',
+        totalReadingTime: 'Toplam Okuma Süresi',
+        completionRate: 'Başarı Oranı',
+        days: 'Gün',
+        minutes: 'Dakika',
+      },
+      ur: {
+        storiesRead: 'پڑھی گئی کہانیاں',
+        quizzesCompleted: 'مکمل کوئز',
+        favoriteCharacter: 'پسندیدہ کردار',
+        readingStreak: 'پڑھنے کا سلسلہ',
+        skillsMastered: 'سیکھی گئی مہارتیں',
+        languagesExplored: 'دریافت شدہ زبانیں',
+        totalReadingTime: 'کل پڑھنے کا وقت',
+        completionRate: 'کامیابی کی شرح',
+        days: 'دن',
+        minutes: 'منٹ',
+      },
+    };
+
+    const t = labels[locale as keyof typeof labels] || labels.de;
+
+    const characterEmojis: Record<string, string> = {
+      bear: '🐻',
+      fox: '🦊',
+      rabbit: '🐰',
+      owl: '🦉',
+      elephant: '🐘',
+      lion: '🦁',
+      squirrel: '🐿️',
+      hedgehog: '🦔',
+      flamingo: '🦩',
+      dinosaur: '🦕',
+    };
+
+    const statCards = [
+      {
+        icon: '📚',
+        label: t.storiesRead,
+        value: stats.totalStoriesRead,
+        gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      },
+      {
+        icon: '✅',
+        label: t.quizzesCompleted,
+        value: stats.totalQuizzesCompleted,
+        gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      },
+      {
+        icon: characterEmojis[stats.favoriteCharacter] || '🐻',
+        label: t.favoriteCharacter,
+        value: characterEmojis[stats.favoriteCharacter] || '🐻',
+        gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        isEmoji: true,
+      },
+      {
+        icon: '🔥',
+        label: t.readingStreak,
+        value: stats.readingStreak,
+        suffix: t.days,
+        gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      },
+      {
+        icon: '🌟',
+        label: t.skillsMastered,
+        value: stats.skillsEncountered.size,
+        gradient: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+      },
+      {
+        icon: '🌍',
+        label: t.languagesExplored,
+        value: stats.languagesExplored.size,
+        gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+      },
+      {
+        icon: '⏱️',
+        label: t.totalReadingTime,
+        value: stats.totalReadingTime,
+        suffix: t.minutes,
+        gradient: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+      },
+      {
+        icon: '🎯',
+        label: t.completionRate,
+        value: stats.completionRate,
+        suffix: '%',
+        gradient: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+      },
+    ];
+
+    grid.innerHTML = statCards.map(card => `
+      <div class="stat-card" style="background: ${card.gradient}">
+        <div class="stat-icon">${card.icon}</div>
+        <div class="stat-value ${card.isEmoji ? 'emoji-value' : ''}" data-target="${card.value}">
+          ${card.isEmoji ? card.value : '0'}
+        </div>
+        <div class="stat-label">${card.label}</div>
+        ${card.suffix && !card.isEmoji ? `<div class="stat-suffix">${card.suffix}</div>` : ''}
+      </div>
+    `).join('');
+
+    // Animate numbers
+    setTimeout(() => {
+      document.querySelectorAll('.stat-value:not(.emoji-value)').forEach((el, index) => {
+        const target = parseInt(el.getAttribute('data-target') || '0', 10);
+        animateValue(el as HTMLElement, 0, target, 1000 + (index * 100));
+      });
+    }, 100);
+  }
+
+  function animateValue(element: HTMLElement, start: number, end: number, duration: number) {
+    const range = end - start;
+    const increment = range / (duration / 16);
+    let current = start;
+
+    const timer = setInterval(() => {
+      current += increment;
+      if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+        current = end;
+        clearInterval(timer);
+      }
+      element.textContent = Math.floor(current).toString();
+    }, 16);
+  }
+
+  // Initialize on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initStats);
+  } else {
+    initStats();
+  }
+</script>
+
+<style>
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    color: white;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .stat-card:hover::before {
+    opacity: 1;
+  }
+
+  .stat-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    animation: bounce 2s infinite;
+  }
+
+  .stat-value {
+    font-size: 3rem;
+    font-weight: bold;
+    line-height: 1;
+    margin: 0.5rem 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .stat-value.emoji-value {
+    font-size: 4rem;
+    animation: pulse 2s infinite;
+  }
+
+  .stat-label {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    margin-top: 0.5rem;
+    font-weight: 500;
+  }
+
+  .stat-suffix {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-top: 0.25rem;
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      padding: 1.5rem 1rem;
+    }
+
+    .stat-icon {
+      font-size: 2.5rem;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+    }
+
+    .stat-value.emoji-value {
+      font-size: 3rem;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+    }
+  }
+</style>

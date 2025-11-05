@@ -1,0 +1,277 @@
+---
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const labels = {
+  de: {
+    title: 'Deine Aktivität',
+    lastDays: 'Letzte 7 Tage',
+    stories: 'Geschichten',
+    noActivity: 'Noch keine Aktivität in dieser Woche',
+  },
+  ar: {
+    title: 'نشاطك',
+    lastDays: 'آخر 7 أيام',
+    stories: 'قصص',
+    noActivity: 'لا يوجد نشاط هذا الأسبوع',
+  },
+  en: {
+    title: 'Your Activity',
+    lastDays: 'Last 7 Days',
+    stories: 'Stories',
+    noActivity: 'No activity this week yet',
+  },
+  tr: {
+    title: 'Aktiviteniz',
+    lastDays: 'Son 7 Gün',
+    stories: 'Hikayeler',
+    noActivity: 'Bu hafta henüz aktivite yok',
+  },
+  ur: {
+    title: 'آپ کی سرگرمی',
+    lastDays: 'آخری 7 دن',
+    stories: 'کہانیاں',
+    noActivity: 'اس ہفتے ابھی تک کوئی سرگرمی نہیں',
+  },
+};
+
+const t = labels[locale] || labels.de;
+---
+
+<div class="activity-chart" data-locale={locale}>
+  <h3 class="chart-title">{t.title}</h3>
+  <p class="chart-subtitle">{t.lastDays}</p>
+
+  <div class="chart-container">
+    <canvas id="activity-canvas"></canvas>
+    <div class="chart-bars" id="chart-bars">
+      <!-- Bars will be populated by JavaScript -->
+    </div>
+  </div>
+</div>
+
+<script>
+  import { ProgressTracker } from '../utils/progress-tracker';
+
+  function initChart() {
+    const container = document.querySelector('.activity-chart');
+    if (!container) return;
+
+    const locale = container.getAttribute('data-locale') || 'de';
+    const stats = ProgressTracker.getProgressStats();
+
+    const labels = {
+      de: { days: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'], stories: 'Geschichten' },
+      ar: { days: ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'], stories: 'قصص' },
+      en: { days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], stories: 'Stories' },
+      tr: { days: ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'], stories: 'Hikayeler' },
+      ur: { days: ['اتوار', 'پیر', 'منگل', 'بدھ', 'جمعرات', 'جمعہ', 'ہفتہ'], stories: 'کہانیاں' },
+    };
+
+    const t = labels[locale as keyof typeof labels] || labels.de;
+
+    // Get last 7 days
+    const last7Days: Array<{ date: string; count: number; dayName: string }> = [];
+    const today = new Date();
+
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      const dayName = t.days[date.getDay()];
+      const count = stats.dailyActivity.get(dateStr) || 0;
+
+      last7Days.push({ date: dateStr, count, dayName });
+    }
+
+    const maxCount = Math.max(...last7Days.map(d => d.count), 1);
+
+    // Create bar chart
+    const barsContainer = document.getElementById('chart-bars');
+    if (!barsContainer) return;
+
+    barsContainer.innerHTML = last7Days.map((day, index) => {
+      const heightPercent = (day.count / maxCount) * 100;
+      return `
+        <div class="bar-wrapper" style="animation-delay: ${index * 0.1}s">
+          <div class="bar-value">${day.count > 0 ? day.count : ''}</div>
+          <div class="bar" style="height: ${heightPercent}%" data-count="${day.count}">
+            <div class="bar-fill"></div>
+          </div>
+          <div class="bar-label">${day.dayName}</div>
+        </div>
+      `;
+    }).join('');
+
+    // Add hover effect
+    document.querySelectorAll('.bar').forEach(bar => {
+      bar.addEventListener('mouseenter', () => {
+        const count = bar.getAttribute('data-count');
+        if (count && parseInt(count) > 0) {
+          bar.classList.add('active');
+        }
+      });
+      bar.addEventListener('mouseleave', () => {
+        bar.classList.remove('active');
+      });
+    });
+  }
+
+  // Initialize on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initChart);
+  } else {
+    initChart();
+  }
+</script>
+
+<style>
+  .activity-chart {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin: 2rem 0;
+  }
+
+  .chart-title {
+    font-size: 1.75rem;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+    font-weight: 700;
+  }
+
+  .chart-subtitle {
+    color: #666;
+    margin: 0 0 2rem 0;
+    font-size: 1rem;
+  }
+
+  .chart-container {
+    position: relative;
+    min-height: 300px;
+  }
+
+  .chart-bars {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    gap: 1rem;
+    height: 250px;
+    padding: 1rem 0;
+  }
+
+  .bar-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: slideUp 0.5s ease forwards;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .bar-value {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #667eea;
+    min-height: 1.2rem;
+  }
+
+  .bar {
+    width: 100%;
+    max-width: 60px;
+    min-height: 30px;
+    background: linear-gradient(180deg, #e0e7ff 0%, #c7d2fe 100%);
+    border-radius: 10px 10px 0 0;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .bar-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px 10px 0 0;
+    animation: fillBar 1s ease forwards;
+    animation-delay: inherit;
+  }
+
+  .bar[data-count="0"] {
+    opacity: 0.3;
+  }
+
+  .bar.active,
+  .bar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  @keyframes fillBar {
+    from {
+      height: 0;
+    }
+    to {
+      height: 100%;
+    }
+  }
+
+  .bar-label {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 500;
+    margin-top: 0.5rem;
+  }
+
+  /* RTL support */
+  [dir='rtl'] .chart-bars {
+    direction: ltr; /* Keep chart bars LTR for consistency */
+  }
+
+  @media (max-width: 768px) {
+    .activity-chart {
+      padding: 1.5rem;
+    }
+
+    .chart-title {
+      font-size: 1.5rem;
+    }
+
+    .chart-bars {
+      gap: 0.5rem;
+      height: 200px;
+    }
+
+    .bar {
+      max-width: 40px;
+    }
+
+    .bar-label {
+      font-size: 0.75rem;
+    }
+
+    .bar-value {
+      font-size: 0.8rem;
+    }
+  }
+</style>

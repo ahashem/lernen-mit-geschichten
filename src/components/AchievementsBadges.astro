@@ -1,0 +1,277 @@
+---
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const labels = {
+  de: {
+    title: 'Erfolge',
+    locked: 'Noch nicht freigeschaltet',
+    unlocked: 'Freigeschaltet!',
+    noAchievements: 'Lies mehr Geschichten, um Erfolge freizuschalten!',
+  },
+  ar: {
+    title: 'الإنجازات',
+    locked: 'لم يتم فتحه بعد',
+    unlocked: 'تم الفتح!',
+    noAchievements: 'اقرأ المزيد من القصص لفتح الإنجازات!',
+  },
+  en: {
+    title: 'Achievements',
+    locked: 'Not unlocked yet',
+    unlocked: 'Unlocked!',
+    noAchievements: 'Read more stories to unlock achievements!',
+  },
+  tr: {
+    title: 'Başarılar',
+    locked: 'Henüz açılmadı',
+    unlocked: 'Açıldı!',
+    noAchievements: 'Başarıların kilidini açmak için daha fazla hikaye okuyun!',
+  },
+  ur: {
+    title: 'کامیابیاں',
+    locked: 'ابھی تک کھلا نہیں',
+    unlocked: 'کھل گیا!',
+    noAchievements: 'کامیابیاں کھولنے کے لیے مزید کہانیاں پڑھیں!',
+  },
+};
+
+const t = labels[locale] || labels.de;
+---
+
+<div class="achievements-section" data-locale={locale}>
+  <h3 class="achievements-title">{t.title}</h3>
+  <div class="achievements-grid" id="achievements-grid">
+    <!-- Achievements will be populated by JavaScript -->
+  </div>
+</div>
+
+<script>
+  import { ProgressTracker } from '../utils/progress-tracker';
+  import { confetti } from '../utils/confetti';
+  import { soundEffects } from '../utils/sound-effects';
+
+  function initAchievements() {
+    const container = document.querySelector('.achievements-section');
+    if (!container) return;
+
+    const locale = container.getAttribute('data-locale') || 'de';
+    const stats = ProgressTracker.getProgressStats();
+    const achievements = stats.achievements;
+
+    const labels = {
+      de: { unlocked: 'Freigeschaltet!', noAchievements: 'Lies mehr Geschichten, um Erfolge freizuschalten!' },
+      ar: { unlocked: 'تم الفتح!', noAchievements: 'اقرأ المزيد من القصص لفتح الإنجازات!' },
+      en: { unlocked: 'Unlocked!', noAchievements: 'Read more stories to unlock achievements!' },
+      tr: { unlocked: 'Açıldı!', noAchievements: 'Başarıların kilidini açmak için daha fazla hikaye okuyun!' },
+      ur: { unlocked: 'کھل گیا!', noAchievements: 'کامیابیاں کھولنے کے لیے مزید کہانیاں پڑھیں!' },
+    };
+
+    const t = labels[locale as keyof typeof labels] || labels.de;
+
+    const grid = document.getElementById('achievements-grid');
+    if (!grid) return;
+
+    if (achievements.length === 0) {
+      grid.innerHTML = `<p class="no-achievements">${t.noAchievements}</p>`;
+      return;
+    }
+
+    grid.innerHTML = achievements.map((achievement, index) => `
+      <div class="achievement-badge unlocked" style="animation-delay: ${index * 0.1}s">
+        <div class="badge-icon">${achievement.icon}</div>
+        <div class="badge-content">
+          <h4 class="badge-title">${achievement.title}</h4>
+          <p class="badge-description">${achievement.description}</p>
+          <span class="badge-status">${t.unlocked}</span>
+        </div>
+      </div>
+    `).join('');
+
+    // Add click animation
+    document.querySelectorAll('.achievement-badge').forEach((badge, index) => {
+      badge.addEventListener('click', () => {
+        soundEffects.playAchievement();
+        const rect = badge.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        confetti.burst(x, y, 30);
+      });
+    });
+  }
+
+  // Initialize on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAchievements);
+  } else {
+    initAchievements();
+  }
+</script>
+
+<style>
+  .achievements-section {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin: 2rem 0;
+  }
+
+  .achievements-title {
+    font-size: 1.75rem;
+    color: #333;
+    margin: 0 0 1.5rem 0;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .achievement-badge {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    opacity: 0;
+    animation: fadeInUp 0.5s ease forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .achievement-badge::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .achievement-badge:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .achievement-badge:hover::before {
+    opacity: 1;
+  }
+
+  .achievement-badge.unlocked {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .achievement-badge.locked {
+    background: linear-gradient(135deg, #e0e7ff 0%, #cbd5e1 100%);
+    color: #64748b;
+    opacity: 0.6;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .badge-icon {
+    font-size: 3rem;
+    flex-shrink: 0;
+    animation: rotate 3s ease-in-out infinite;
+  }
+
+  @keyframes rotate {
+    0%, 100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-10deg);
+    }
+    75% {
+      transform: rotate(10deg);
+    }
+  }
+
+  .badge-content {
+    flex: 1;
+  }
+
+  .badge-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .badge-description {
+    font-size: 0.9rem;
+    margin: 0 0 0.5rem 0;
+    opacity: 0.9;
+  }
+
+  .badge-status {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+  }
+
+  .no-achievements {
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+    padding: 2rem;
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 768px) {
+    .achievements-section {
+      padding: 1.5rem;
+    }
+
+    .achievements-title {
+      font-size: 1.5rem;
+    }
+
+    .achievements-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .achievement-badge {
+      padding: 1rem;
+    }
+
+    .badge-icon {
+      font-size: 2.5rem;
+    }
+
+    .badge-title {
+      font-size: 1rem;
+    }
+
+    .badge-description {
+      font-size: 0.85rem;
+    }
+  }
+</style>
