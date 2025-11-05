@@ -1,0 +1,709 @@
+---
+/**
+ * Story Sync Component
+ *
+ * Admin panel for syncing stories from Google Drive.
+ * Allows educators to add new Google Doc URLs and preview/sync stories.
+ */
+
+import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
+
+interface Props {
+  language: Locale;
+}
+
+const { language } = Astro.props;
+---
+
+<div class="story-sync-panel" data-language={language}>
+  <div class="sync-header">
+    <h2>{getTranslation(language, 'syncStories')}</h2>
+    <button class="sync-all-btn" aria-label="Sync all stories">
+      🔄 {getTranslation(language, 'syncAll')}
+    </button>
+  </div>
+
+  <div class="sync-status">
+    <div class="status-badge" data-status="idle">
+      <span class="status-icon">⏸️</span>
+      <span class="status-text">{getTranslation(language, 'ready')}</span>
+    </div>
+    <div class="last-sync">
+      {getTranslation(language, 'lastSync')}: <span class="sync-time">-</span>
+    </div>
+  </div>
+
+  <div class="add-doc-form">
+    <h3>{getTranslation(language, 'addNewStory')}</h3>
+    <div class="form-group">
+      <label for="doc-url">{getTranslation(language, 'googleDocsUrl')}:</label>
+      <input
+        type="text"
+        id="doc-url"
+        placeholder="https://docs.google.com/document/d/..."
+        aria-label="Google Docs URL"
+      />
+      <button class="add-doc-btn" type="button">
+        ➕ {getTranslation(language, 'addDocument')}
+      </button>
+    </div>
+  </div>
+
+  <div class="preview-section" style="display: none;">
+    <h3>{getTranslation(language, 'preview')}</h3>
+    <div class="preview-content">
+      <div class="preview-loading">
+        <div class="spinner"></div>
+        <p>{getTranslation(language, 'loadingPreview')}</p>
+      </div>
+      <div class="preview-story" style="display: none;">
+        <div class="preview-meta">
+          <h4 class="preview-title"></h4>
+          <div class="preview-info">
+            <span class="preview-language"></span>
+            <span class="preview-skills"></span>
+            <span class="preview-read-time"></span>
+          </div>
+        </div>
+        <div class="preview-body"></div>
+        <div class="preview-actions">
+          <button class="publish-btn">
+            ✅ {getTranslation(language, 'publishStory')}
+          </button>
+          <button class="cancel-btn">
+            ❌ {getTranslation(language, 'cancel')}
+          </button>
+        </div>
+      </div>
+      <div class="preview-error" style="display: none;">
+        <p class="error-message"></p>
+        <button class="retry-btn">{getTranslation(language, 'retry')}</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="synced-stories">
+    <h3>{getTranslation(language, 'syncedStories')}</h3>
+    <div class="stories-list">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+</div>
+
+<style>
+  .story-sync-panel {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .sync-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .sync-header h2 {
+    margin: 0;
+    color: #333;
+  }
+
+  .sync-all-btn {
+    padding: 0.75rem 1.5rem;
+    background: #6BCF7F;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .sync-all-btn:hover {
+    background: #5BB86E;
+  }
+
+  .sync-all-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+
+  .sync-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .status-badge[data-status="idle"] {
+    background: #e3f2fd;
+    color: #1976d2;
+  }
+
+  .status-badge[data-status="syncing"] {
+    background: #fff3e0;
+    color: #f57c00;
+  }
+
+  .status-badge[data-status="success"] {
+    background: #e8f5e9;
+    color: #388e3c;
+  }
+
+  .status-badge[data-status="error"] {
+    background: #ffebee;
+    color: #d32f2f;
+  }
+
+  .last-sync {
+    color: #666;
+    font-size: 0.9rem;
+  }
+
+  .add-doc-form {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+
+  .add-doc-form h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .form-group {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #555;
+  }
+
+  .form-group input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: #FF9F40;
+  }
+
+  .add-doc-btn {
+    padding: 0.75rem 1.5rem;
+    background: #FF9F40;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+
+  .add-doc-btn:hover {
+    background: #E88F30;
+  }
+
+  .preview-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #fff;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+  }
+
+  .preview-section h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .preview-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #FF9F40;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .preview-story {
+    padding: 1rem;
+  }
+
+  .preview-meta {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+  }
+
+  .preview-title {
+    margin: 0 0 1rem 0;
+    color: #333;
+    font-size: 1.5rem;
+  }
+
+  .preview-info {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .preview-info span {
+    padding: 0.25rem 0.75rem;
+    background: #f0f0f0;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .preview-body {
+    margin-bottom: 1.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 1rem;
+    background: #fafafa;
+    border-radius: 8px;
+  }
+
+  .preview-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+
+  .preview-actions button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .publish-btn {
+    background: #4CAF50;
+    color: white;
+  }
+
+  .publish-btn:hover {
+    background: #45a049;
+  }
+
+  .cancel-btn {
+    background: #f44336;
+    color: white;
+  }
+
+  .cancel-btn:hover {
+    background: #da190b;
+  }
+
+  .preview-error {
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .error-message {
+    color: #d32f2f;
+    margin-bottom: 1rem;
+  }
+
+  .retry-btn {
+    padding: 0.75rem 1.5rem;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .retry-btn:hover {
+    background: #0b7dda;
+  }
+
+  .synced-stories {
+    margin-top: 2rem;
+  }
+
+  .synced-stories h3 {
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .stories-list {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .story-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    transition: background 0.2s;
+  }
+
+  .story-item:hover {
+    background: #f0f0f0;
+  }
+
+  .story-item-info {
+    flex: 1;
+  }
+
+  .story-item-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+  }
+
+  .story-item-meta {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .story-item-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .story-item-actions button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .sync-btn {
+    background: #2196F3;
+    color: white;
+  }
+
+  .sync-btn:hover {
+    background: #0b7dda;
+  }
+
+  .remove-btn {
+    background: #f44336;
+    color: white;
+  }
+
+  .remove-btn:hover {
+    background: #da190b;
+  }
+
+  /* RTL Support */
+  [dir="rtl"] .form-group {
+    flex-direction: row-reverse;
+  }
+
+  [dir="rtl"] .preview-info {
+    direction: rtl;
+  }
+
+  [dir="rtl"] .story-item {
+    direction: rtl;
+  }
+</style>
+
+<script>
+  import { GoogleDriveClient } from '../utils/google-drive';
+  import { googleDriveConfig, isGoogleDriveEnabled } from '../config/google-drive.config';
+
+  // Initialize component
+  document.addEventListener('DOMContentLoaded', () => {
+    const panel = document.querySelector('.story-sync-panel');
+    if (!panel) return;
+
+    const language = panel.getAttribute('data-language') || 'de';
+
+    // Check if Google Drive is enabled
+    if (!isGoogleDriveEnabled()) {
+      showError('Google Drive integration is not configured. Please set GOOGLE_DRIVE_CREDENTIALS and GOOGLE_DRIVE_FOLDER_ID environment variables.');
+      return;
+    }
+
+    const client = new GoogleDriveClient(googleDriveConfig);
+
+    // Elements
+    const addDocBtn = panel.querySelector('.add-doc-btn');
+    const docUrlInput = panel.querySelector('#doc-url') as HTMLInputElement;
+    const syncAllBtn = panel.querySelector('.sync-all-btn');
+    const previewSection = panel.querySelector('.preview-section') as HTMLElement;
+    const statusBadge = panel.querySelector('.status-badge');
+    const statusText = statusBadge?.querySelector('.status-text');
+    const syncTime = panel.querySelector('.sync-time');
+    const storiesList = panel.querySelector('.stories-list');
+
+    // Add document handler
+    addDocBtn?.addEventListener('click', async () => {
+      const url = docUrlInput?.value.trim();
+      if (!url) return;
+
+      const docId = GoogleDriveClient.extractDocIdFromUrl(url);
+      if (!docId) {
+        showError('Invalid Google Docs URL. Please check the URL and try again.');
+        return;
+      }
+
+      await loadPreview(docId);
+      docUrlInput.value = '';
+    });
+
+    // Sync all handler
+    syncAllBtn?.addEventListener('click', async () => {
+      await syncAllStories();
+    });
+
+    // Load preview
+    async function loadPreview(docId: string) {
+      previewSection.style.display = 'block';
+      showPreviewLoading();
+
+      try {
+        setStatus('syncing', 'Fetching story...');
+        const story = await client.fetchStory(docId, language as any);
+        showPreviewStory(story);
+        setStatus('success', 'Story loaded');
+      } catch (error) {
+        console.error('Error loading preview:', error);
+        showPreviewError(error instanceof Error ? error.message : 'Failed to load story');
+        setStatus('error', 'Failed to load');
+      }
+    }
+
+    // Show preview loading
+    function showPreviewLoading() {
+      panel.querySelector('.preview-loading')?.setAttribute('style', 'display: flex;');
+      panel.querySelector('.preview-story')?.setAttribute('style', 'display: none;');
+      panel.querySelector('.preview-error')?.setAttribute('style', 'display: none;');
+    }
+
+    // Show preview story
+    function showPreviewStory(story: any) {
+      panel.querySelector('.preview-loading')?.setAttribute('style', 'display: none;');
+      const previewStory = panel.querySelector('.preview-story') as HTMLElement;
+      previewStory.style.display = 'block';
+
+      // Populate preview
+      const title = previewStory.querySelector('.preview-title');
+      const languageSpan = previewStory.querySelector('.preview-language');
+      const skillsSpan = previewStory.querySelector('.preview-skills');
+      const readTimeSpan = previewStory.querySelector('.preview-read-time');
+      const body = previewStory.querySelector('.preview-body');
+
+      if (title) title.textContent = story.title;
+      if (languageSpan) languageSpan.textContent = `Language: ${story.metadata.language}`;
+      if (skillsSpan) skillsSpan.textContent = `Skills: ${story.metadata.skills.join(', ') || 'None'}`;
+      if (readTimeSpan) readTimeSpan.textContent = `${story.metadata.estimatedReadTime || 3} min read`;
+      if (body) body.innerHTML = `<pre>${story.content}</pre>`;
+
+      // Publish handler
+      const publishBtn = previewStory.querySelector('.publish-btn');
+      publishBtn?.addEventListener('click', () => {
+        addToSyncedStories(story);
+        previewSection.style.display = 'none';
+      });
+
+      // Cancel handler
+      const cancelBtn = previewStory.querySelector('.cancel-btn');
+      cancelBtn?.addEventListener('click', () => {
+        previewSection.style.display = 'none';
+      });
+    }
+
+    // Show preview error
+    function showPreviewError(message: string) {
+      panel.querySelector('.preview-loading')?.setAttribute('style', 'display: none;');
+      panel.querySelector('.preview-story')?.setAttribute('style', 'display: none;');
+      const errorDiv = panel.querySelector('.preview-error') as HTMLElement;
+      errorDiv.style.display = 'block';
+
+      const errorMsg = errorDiv.querySelector('.error-message');
+      if (errorMsg) errorMsg.textContent = message;
+    }
+
+    // Add to synced stories list
+    function addToSyncedStories(story: any) {
+      const syncedStories = getSyncedStories();
+      if (!syncedStories.find((s: any) => s.id === story.id)) {
+        syncedStories.push(story);
+        saveSyncedStories(syncedStories);
+        renderStoriesList();
+      }
+    }
+
+    // Sync all stories from folder
+    async function syncAllStories() {
+      try {
+        setStatus('syncing', 'Syncing stories...');
+        syncAllBtn?.setAttribute('disabled', 'true');
+
+        const folderId = googleDriveConfig.folderId;
+        if (!folderId) {
+          throw new Error('Folder ID not configured');
+        }
+
+        const files = await client.listFilesInFolder(folderId);
+        console.log(`Found ${files.length} documents in folder`);
+
+        const stories = [];
+        for (const file of files) {
+          try {
+            const story = await client.fetchStory(file.id, language as any);
+            stories.push(story);
+          } catch (error) {
+            console.error(`Failed to fetch story ${file.name}:`, error);
+          }
+        }
+
+        saveSyncedStories(stories);
+        renderStoriesList();
+        setStatus('success', `Synced ${stories.length} stories`);
+        updateSyncTime();
+      } catch (error) {
+        console.error('Error syncing stories:', error);
+        setStatus('error', 'Sync failed');
+        showError(error instanceof Error ? error.message : 'Failed to sync stories');
+      } finally {
+        syncAllBtn?.removeAttribute('disabled');
+      }
+    }
+
+    // Render stories list
+    function renderStoriesList() {
+      const stories = getSyncedStories();
+      if (!storiesList) return;
+
+      if (stories.length === 0) {
+        storiesList.innerHTML = '<p style="color: #666; text-align: center; padding: 2rem;">No synced stories yet.</p>';
+        return;
+      }
+
+      storiesList.innerHTML = stories.map((story: any) => `
+        <div class="story-item" data-story-id="${story.id}">
+          <div class="story-item-info">
+            <div class="story-item-title">${story.title}</div>
+            <div class="story-item-meta">
+              ${story.metadata.language} • ${story.metadata.skills.join(', ') || 'No skills'}
+            </div>
+          </div>
+          <div class="story-item-actions">
+            <button class="sync-btn" data-action="sync" data-id="${story.id}">🔄 Sync</button>
+            <button class="remove-btn" data-action="remove" data-id="${story.id}">🗑️ Remove</button>
+          </div>
+        </div>
+      `).join('');
+
+      // Add event listeners
+      storiesList.querySelectorAll('[data-action="sync"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = (e.target as HTMLElement).getAttribute('data-id');
+          if (id) loadPreview(id);
+        });
+      });
+
+      storiesList.querySelectorAll('[data-action="remove"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = (e.target as HTMLElement).getAttribute('data-id');
+          if (id) {
+            const stories = getSyncedStories().filter((s: any) => s.id !== id);
+            saveSyncedStories(stories);
+            renderStoriesList();
+          }
+        });
+      });
+    }
+
+    // Set status
+    function setStatus(status: string, text: string) {
+      statusBadge?.setAttribute('data-status', status);
+      if (statusText) statusText.textContent = text;
+    }
+
+    // Update sync time
+    function updateSyncTime() {
+      if (syncTime) {
+        const now = new Date();
+        syncTime.textContent = now.toLocaleTimeString();
+      }
+    }
+
+    // Show error
+    function showError(message: string) {
+      alert(message);
+    }
+
+    // LocalStorage helpers
+    function getSyncedStories(): any[] {
+      try {
+        const stored = localStorage.getItem('gdrive-synced-stories');
+        return stored ? JSON.parse(stored) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveSyncedStories(stories: any[]) {
+      localStorage.setItem('gdrive-synced-stories', JSON.stringify(stories));
+    }
+
+    // Initial render
+    renderStoriesList();
+    const lastSync = localStorage.getItem('gdrive-last-sync');
+    if (lastSync && syncTime) {
+      syncTime.textContent = new Date(parseInt(lastSync)).toLocaleTimeString();
+    }
+  });
+</script>

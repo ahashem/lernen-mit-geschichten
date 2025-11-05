@@ -33,7 +33,17 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Google Drive credentials (NEVER COMMIT)
+google-credentials.json
+service-account.json
+*-credentials.json
 
 # vercel
 .vercel
