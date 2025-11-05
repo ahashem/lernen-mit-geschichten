@@ -1,0 +1,247 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import QRScanner from '@components/QRScanner.astro';
+import { getTranslation } from '@utils/i18n';
+
+const locale = 'de';
+const title = getTranslation(locale, 'scanQR');
+const description = getTranslation(locale, 'scanQRDescription');
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="qr-scanner-page">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">{title}</h1>
+        <p class="page-description">{description}</p>
+      </header>
+
+      <QRScanner locale={locale} />
+
+      <!-- Manual Entry Section -->
+      <div class="manual-entry-section">
+        <h3>{getTranslation(locale, 'manualEntry')}</h3>
+        <p>{getTranslation(locale, 'manualEntryDescription')}</p>
+        <form id="manual-entry-form" class="manual-entry-form">
+          <input
+            type="text"
+            id="manual-url"
+            placeholder={getTranslation(locale, 'pasteShareLink')}
+            class="manual-url-input"
+          />
+          <button type="submit" class="btn-load-story">
+            {getTranslation(locale, 'loadStory')}
+          </button>
+        </form>
+      </div>
+
+      <div class="back-link-container">
+        <a href="/my-stories" class="btn-back">
+          ← {getTranslation(locale, 'backToMyStories')}
+        </a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .qr-scanner-page {
+    min-height: 80vh;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    color: white;
+    margin: 0 0 1rem 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .page-description {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+  }
+
+  .manual-entry-section {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-top: 3rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .manual-entry-section h3 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+    font-size: 1.5rem;
+  }
+
+  .manual-entry-section p {
+    margin: 0 0 1.5rem 0;
+    color: #666;
+    font-size: 0.95rem;
+  }
+
+  .manual-entry-form {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+  }
+
+  .manual-url-input {
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.3s ease;
+  }
+
+  .manual-url-input:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+
+  .btn-load-story {
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+
+  .btn-load-story:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-load-story:active {
+    transform: translateY(0);
+  }
+
+  .back-link-container {
+    text-align: center;
+    margin-top: 3rem;
+  }
+
+  .btn-back {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background: white;
+    color: #667eea;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-back:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    .qr-scanner-page {
+      padding: 1.5rem 0;
+    }
+
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .page-description {
+      font-size: 1rem;
+    }
+
+    .manual-entry-section {
+      padding: 1.5rem;
+    }
+
+    .manual-entry-form {
+      gap: 0.75rem;
+    }
+  }
+</style>
+
+<script>
+  import { decompressStoryData, isValidQRData } from '@utils/qr-code';
+  import { saveStory, generateId, type CreatedStory } from '@utils/story-builder';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('manual-entry-form') as HTMLFormElement;
+    const input = document.getElementById('manual-url') as HTMLInputElement;
+
+    if (form && input) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const url = input.value.trim();
+        if (!url) return;
+
+        // Extract data parameter from URL
+        let storyData = '';
+        try {
+          const parsedUrl = new URL(url);
+          storyData = parsedUrl.searchParams.get('data') || '';
+        } catch {
+          // If not a URL, treat as raw data
+          storyData = url;
+        }
+
+        if (!isValidQRData(storyData)) {
+          alert('Ungültiger Link oder QR-Code Daten');
+          return;
+        }
+
+        // Import story
+        importStory(storyData);
+      });
+    }
+
+    function importStory(compressedData: string) {
+      const storyData = decompressStoryData(compressedData);
+      if (!storyData) {
+        alert('Ungültiger QR-Code');
+        return;
+      }
+
+      // Create full story object
+      const story: CreatedStory = {
+        id: generateId(),
+        title: storyData.title || 'Importierte Geschichte',
+        author: storyData.author || 'Unbekannt',
+        character: storyData.character || 'bruno',
+        secondaryCharacters: storyData.secondaryCharacters || [],
+        setting: storyData.setting || 'forest',
+        events: storyData.events || [],
+        mood: storyData.mood || 'happy',
+        illustrations: storyData.illustrations || [],
+        music: storyData.music || '',
+        createdAt: Date.now(),
+        lastModified: Date.now(),
+      };
+
+      // Save to localStorage
+      saveStory(story);
+
+      // Redirect to story viewer
+      window.location.href = `/story-viewer?id=${story.id}`;
+    }
+  });
+</script>

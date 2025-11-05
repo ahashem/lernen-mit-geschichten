@@ -1,0 +1,311 @@
+---
+/**
+ * QR Code Generator Component
+ * Generates a QR code for sharing stories
+ */
+import { getTranslation } from '@utils/i18n';
+import type { Locale } from '@utils/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'de' } = Astro.props;
+---
+
+<div class="qr-generator">
+  <div class="qr-canvas-container">
+    <canvas id="qr-canvas"></canvas>
+    <div id="qr-loading" class="qr-loading">
+      <div class="spinner"></div>
+      <p>{getTranslation(locale, 'generatingQR')}</p>
+    </div>
+  </div>
+
+  <div class="qr-actions">
+    <button class="btn-download" id="download-qr">
+      📥 {getTranslation(locale, 'downloadQR')}
+    </button>
+    <button class="btn-copy" id="copy-link">
+      🔗 {getTranslation(locale, 'copyLink')}
+    </button>
+  </div>
+
+  <div class="qr-info">
+    <p class="info-text">
+      {getTranslation(locale, 'qrScanInfo')}
+    </p>
+  </div>
+</div>
+
+<style>
+  .qr-generator {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .qr-canvas-container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto 2rem;
+    aspect-ratio: 1;
+    background: #f5f5f5;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  #qr-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .qr-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  .qr-loading.hidden {
+    display: none;
+  }
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f0f0f0;
+    border-top: 4px solid #ff9f40;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .qr-loading p {
+    font-size: 1rem;
+    color: #666;
+    margin: 0;
+  }
+
+  .qr-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .qr-actions button {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    font-size: 1rem;
+  }
+
+  .btn-download {
+    background: linear-gradient(135deg, #6bcf7f 0%, #4caf50 100%);
+    color: white;
+  }
+
+  .btn-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(107, 207, 127, 0.4);
+  }
+
+  .btn-copy {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .btn-copy:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-download:active,
+  .btn-copy:active {
+    transform: translateY(0);
+  }
+
+  .qr-info {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    padding: 1rem;
+    border-radius: 12px;
+    border-left: 4px solid #2196f3;
+  }
+
+  .info-text {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .qr-generator {
+      padding: 1.5rem;
+    }
+
+    .qr-actions {
+      flex-direction: column;
+    }
+
+    .qr-actions button {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import {
+    compressStoryData,
+    downloadQRCode,
+  } from '@utils/qr-code';
+  import { getStoryById } from '@utils/story-builder';
+  import { achievementTracker } from '@utils/achievements';
+  import { starWallet } from '@utils/star-wallet';
+  import { confetti } from '@utils/confetti';
+
+  // Load QRCode library from CDN
+  function loadQRCodeLibrary(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if ((window as any).QRCode) {
+        resolve();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js';
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('Failed to load QRCode library'));
+      document.head.appendChild(script);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement;
+    const loading = document.getElementById('qr-loading');
+    const downloadBtn = document.getElementById('download-qr');
+    const copyBtn = document.getElementById('copy-link');
+
+    if (!canvas || !loading || !downloadBtn || !copyBtn) return;
+
+    // Get story ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const storyId = urlParams.get('id');
+
+    if (!storyId) {
+      console.error('No story ID provided');
+      return;
+    }
+
+    const story = getStoryById(storyId);
+    if (!story) {
+      console.error('Story not found');
+      return;
+    }
+
+    try {
+      // Load QR code library
+      await loadQRCodeLibrary();
+
+      // Generate compressed data
+      const compressedData = compressStoryData(story);
+      const shareUrl = `${window.location.origin}/qr-scanner?data=${compressedData}`;
+
+      // Generate QR code using QRCode.js
+      const QRCode = (window as any).QRCode;
+
+      // Clear canvas container
+      const container = canvas.parentElement;
+      if (container) {
+        canvas.remove();
+        const qrDiv = document.createElement('div');
+        qrDiv.id = 'qr-canvas';
+        qrDiv.style.display = 'flex';
+        qrDiv.style.justifyContent = 'center';
+        qrDiv.style.alignItems = 'center';
+        qrDiv.style.width = '100%';
+        qrDiv.style.height = '100%';
+        container.appendChild(qrDiv);
+
+        // Generate QR code
+        const qr = new QRCode(qrDiv, {
+          text: shareUrl,
+          width: 400,
+          height: 400,
+          colorDark: '#000000',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M,
+        });
+
+        // Hide loading state
+        loading.classList.add('hidden');
+
+        // Track story sharing (award stars and check achievements)
+        const starsEarned = starWallet.earnStars('story-shared');
+        const unlockedAchievements = achievementTracker.trackStoryShare(storyId);
+
+        // Show confetti for stars earned
+        confetti.burst(10);
+
+        // Show achievement unlocks
+        unlockedAchievements.forEach(achievementId => {
+          achievementTracker.showAchievementUnlock(achievementId);
+        });
+      }
+
+      // Download QR code
+      downloadBtn.addEventListener('click', () => {
+        const qrCanvas = container?.querySelector('canvas') as HTMLCanvasElement;
+        if (qrCanvas) {
+          const filename = `qr-${story.title.toLowerCase().replace(/\s+/g, '-')}.png`;
+          downloadQRCode(qrCanvas, filename);
+        }
+      });
+
+      // Copy link to clipboard
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          const originalText = copyBtn.textContent;
+          copyBtn.textContent = '✓ Kopiert!';
+          setTimeout(() => {
+            copyBtn.textContent = originalText;
+          }, 2000);
+        } catch (error) {
+          console.error('Failed to copy link:', error);
+          alert('Link konnte nicht kopiert werden');
+        }
+      });
+    } catch (error) {
+      console.error('QR generation failed:', error);
+      loading.innerHTML = `
+        <div style="text-align: center; color: #e57373;">
+          <p>QR-Code konnte nicht erstellt werden</p>
+          <p style="font-size: 0.9rem;">Bitte versuche es später erneut</p>
+        </div>
+      `;
+    }
+  });
+</script>

@@ -246,6 +246,15 @@ const description = getTranslation(locale, 'createdStories');
     background: #ffcf1a;
   }
 
+  .btn-qr {
+    background: #ff9f40;
+    color: white;
+  }
+
+  .btn-qr:hover {
+    background: #ff8c1a;
+  }
+
   .btn-delete {
     background: #ff6b6b;
     color: white;
@@ -434,9 +443,10 @@ const description = getTranslation(locale, 'createdStories');
           <div>📅 ${formatDate(story.lastModified)}</div>
         </div>
         <div class="story-actions">
-          <a href="/story-viewer?id=${story.id}" class="btn-view">Ansehen</a>
-          <a href="/story-builder?edit=${story.id}" class="btn-edit">Bearbeiten</a>
-          <button class="btn-delete" data-id="${story.id}">Löschen</button>
+          <a href="/story-viewer?id=${story.id}" class="btn-view">👁️ Ansehen</a>
+          <a href="/qr-generator?id=${story.id}" class="btn-qr">📱 Teilen</a>
+          <a href="/story-builder?edit=${story.id}" class="btn-edit">✏️ Bearbeiten</a>
+          <button class="btn-delete" data-id="${story.id}">🗑️ Löschen</button>
         </div>
       </div>
     `

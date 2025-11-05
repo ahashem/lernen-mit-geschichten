@@ -220,6 +220,16 @@ const description = 'Deine selbst erstellte Geschichte';
     box-shadow: 0 6px 16px rgba(107, 207, 127, 0.4);
   }
 
+  .btn-qr {
+    background: linear-gradient(135deg, #ff9f40 0%, #ff6b35 100%);
+    color: white;
+  }
+
+  .btn-qr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 159, 64, 0.4);
+  }
+
   /* Loading State */
   .loading-state {
     text-align: center;
@@ -400,9 +410,10 @@ const description = 'Deine selbst erstellte Geschichte';
 
       <div class="story-actions">
         <a href="/my-stories" class="btn-back">← Zurück</a>
-        ${story.id ? `<a href="/story-builder?edit=${story.id}" class="btn-edit">Bearbeiten</a>` : ''}
-        <button class="btn-share" onclick="shareStory()">Teilen</button>
-        <button class="btn-print" onclick="window.print()">Drucken</button>
+        ${story.id ? `<a href="/story-builder?edit=${story.id}" class="btn-edit">✏️ Bearbeiten</a>` : ''}
+        ${story.id ? `<a href="/qr-generator?id=${story.id}" class="btn-qr">📱 QR-Code</a>` : ''}
+        <button class="btn-share" onclick="shareStory()">🔗 Teilen</button>
+        <button class="btn-print" onclick="window.print()">🖨️ Drucken</button>
       </div>
     `;
   }

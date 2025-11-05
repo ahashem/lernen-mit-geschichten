@@ -1,0 +1,510 @@
+---
+/**
+ * QR Code Scanner Component
+ * Uses device camera to scan QR codes for story sharing
+ */
+import { getTranslation } from '@utils/i18n';
+import type { Locale } from '@utils/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'de' } = Astro.props;
+---
+
+<div class="qr-scanner">
+  <div class="scanner-container">
+    <video id="qr-video" playsinline></video>
+    <canvas id="qr-canvas-overlay" class="scanner-overlay"></canvas>
+
+    <div class="scanner-frame">
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+    </div>
+
+    <div id="scanner-status" class="scanner-status">
+      {getTranslation(locale, 'positionQR')}
+    </div>
+  </div>
+
+  <div class="scanner-controls">
+    <button class="btn-scan" id="start-scan">
+      📷 {getTranslation(locale, 'startScanning')}
+    </button>
+    <button class="btn-stop" id="stop-scan" style="display: none;">
+      ⏹️ {getTranslation(locale, 'stopScanning')}
+    </button>
+    <button class="btn-switch-camera" id="switch-camera" style="display: none;">
+      🔄 {getTranslation(locale, 'switchCamera')}
+    </button>
+  </div>
+
+  <div class="scanner-info">
+    <p class="info-icon">💡</p>
+    <p class="info-text">
+      {getTranslation(locale, 'scannerInfo')}
+    </p>
+  </div>
+
+  <!-- Permission Denied State -->
+  <div id="permission-denied" class="permission-denied" style="display: none;">
+    <div class="denied-icon">🚫</div>
+    <h3>{getTranslation(locale, 'cameraPermissionDenied')}</h3>
+    <p>{getTranslation(locale, 'cameraPermissionInfo')}</p>
+  </div>
+
+  <!-- Success State -->
+  <div id="scan-success" class="scan-success" style="display: none;">
+    <div class="success-icon">✅</div>
+    <h3>{getTranslation(locale, 'qrScanned')}</h3>
+    <p>{getTranslation(locale, 'loadingStory')}</p>
+  </div>
+</div>
+
+<style>
+  .qr-scanner {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .scanner-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 2rem;
+    aspect-ratio: 1;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  #qr-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+  }
+
+  #qr-video.active {
+    display: block;
+  }
+
+  .scanner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .scanner-frame {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 70%;
+    pointer-events: none;
+  }
+
+  .corner {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border: 4px solid #4caf50;
+  }
+
+  .corner-tl {
+    top: 0;
+    left: 0;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 12px 0 0 0;
+  }
+
+  .corner-tr {
+    top: 0;
+    right: 0;
+    border-left: none;
+    border-bottom: none;
+    border-radius: 0 12px 0 0;
+  }
+
+  .corner-bl {
+    bottom: 0;
+    left: 0;
+    border-right: none;
+    border-top: none;
+    border-radius: 0 0 0 12px;
+  }
+
+  .corner-br {
+    bottom: 0;
+    right: 0;
+    border-left: none;
+    border-top: none;
+    border-radius: 0 0 12px 0;
+  }
+
+  .scanner-status {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 24px;
+    font-size: 0.95rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+
+  .scanner-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .scanner-controls button {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    font-size: 1rem;
+    min-width: 150px;
+  }
+
+  .btn-scan {
+    background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+    color: white;
+  }
+
+  .btn-scan:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+  }
+
+  .btn-stop {
+    background: linear-gradient(135deg, #e57373 0%, #ef5350 100%);
+    color: white;
+  }
+
+  .btn-stop:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(229, 115, 115, 0.4);
+  }
+
+  .btn-switch-camera {
+    background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
+    color: white;
+  }
+
+  .btn-switch-camera:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(100, 181, 246, 0.4);
+  }
+
+  .scanner-controls button:active {
+    transform: translateY(0);
+  }
+
+  .scanner-info {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    padding: 1rem;
+    border-radius: 12px;
+    border-left: 4px solid #ff9800;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .info-icon {
+    font-size: 2rem;
+    margin: 0;
+  }
+
+  .info-text {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.6;
+    flex: 1;
+  }
+
+  .permission-denied,
+  .scan-success {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+    border-radius: 12px;
+    margin-top: 2rem;
+  }
+
+  .scan-success {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  }
+
+  .denied-icon,
+  .success-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  .permission-denied h3,
+  .scan-success h3 {
+    margin: 0 0 1rem 0;
+    color: #333;
+    font-size: 1.5rem;
+  }
+
+  .permission-denied p,
+  .scan-success p {
+    margin: 0;
+    color: #666;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .qr-scanner {
+      padding: 1.5rem;
+    }
+
+    .scanner-controls {
+      flex-direction: column;
+    }
+
+    .scanner-controls button {
+      width: 100%;
+    }
+
+    .scanner-info {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  import { decompressStoryData, isValidQRData } from '@utils/qr-code';
+  import { saveStory, generateId, type CreatedStory } from '@utils/story-builder';
+
+  let stream: MediaStream | null = null;
+  let scanning = false;
+  let currentCamera = 'environment';
+  let scanInterval: number | null = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const video = document.getElementById('qr-video') as HTMLVideoElement;
+    const canvas = document.getElementById('qr-canvas-overlay') as HTMLCanvasElement;
+    const startBtn = document.getElementById('start-scan');
+    const stopBtn = document.getElementById('stop-scan');
+    const switchBtn = document.getElementById('switch-camera');
+    const status = document.getElementById('scanner-status');
+    const permissionDenied = document.getElementById('permission-denied');
+    const scanSuccess = document.getElementById('scan-success');
+
+    if (!video || !canvas || !startBtn || !stopBtn || !switchBtn) return;
+
+    // Check for data in URL (direct link from QR)
+    checkUrlForData();
+
+    // Start scanning
+    startBtn.addEventListener('click', async () => {
+      try {
+        await startScanning();
+        startBtn.style.display = 'none';
+        stopBtn.style.display = 'block';
+        switchBtn.style.display = 'block';
+        if (permissionDenied) permissionDenied.style.display = 'none';
+      } catch (error) {
+        console.error('Failed to start camera:', error);
+        if (permissionDenied) permissionDenied.style.display = 'block';
+      }
+    });
+
+    // Stop scanning
+    stopBtn.addEventListener('click', () => {
+      stopScanning();
+      startBtn.style.display = 'block';
+      stopBtn.style.display = 'none';
+      switchBtn.style.display = 'none';
+    });
+
+    // Switch camera
+    switchBtn.addEventListener('click', async () => {
+      currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
+      if (scanning) {
+        stopScanning();
+        await startScanning();
+      }
+    });
+
+    async function startScanning() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: currentCamera,
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+        });
+
+        video.srcObject = stream;
+        video.classList.add('active');
+        await video.play();
+
+        scanning = true;
+
+        // Set canvas size to match video
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        // Start scanning for QR codes
+        scanInterval = window.setInterval(() => {
+          scanForQRCode();
+        }, 500);
+      } catch (error: any) {
+        console.error('Camera access error:', error);
+        throw error;
+      }
+    }
+
+    function stopScanning() {
+      scanning = false;
+
+      if (scanInterval) {
+        clearInterval(scanInterval);
+        scanInterval = null;
+      }
+
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+      }
+
+      video.classList.remove('active');
+    }
+
+    function scanForQRCode() {
+      if (!scanning || !video.videoWidth || !video.videoHeight) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Draw video frame to canvas
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Get image data
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+      // Use jsQR library to decode QR code
+      try {
+        const jsQR = (window as any).jsQR;
+        if (!jsQR) {
+          loadJsQRLibrary();
+          return;
+        }
+
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: 'dontInvert',
+        });
+
+        if (code && code.data) {
+          handleQRCodeDetected(code.data);
+        }
+      } catch (error) {
+        console.error('QR scan error:', error);
+      }
+    }
+
+    function handleQRCodeDetected(data: string) {
+      console.log('QR Code detected:', data);
+
+      // Extract data parameter from URL
+      let storyData = '';
+      try {
+        const url = new URL(data);
+        storyData = url.searchParams.get('data') || '';
+      } catch {
+        // Not a URL, might be raw data
+        storyData = data;
+      }
+
+      if (isValidQRData(storyData)) {
+        stopScanning();
+        if (status) status.textContent = 'QR-Code erkannt!';
+        if (scanSuccess) scanSuccess.style.display = 'block';
+
+        // Import story
+        setTimeout(() => {
+          importStory(storyData);
+        }, 1500);
+      }
+    }
+
+    function importStory(compressedData: string) {
+      const storyData = decompressStoryData(compressedData);
+      if (!storyData) {
+        alert('Ungültiger QR-Code');
+        return;
+      }
+
+      // Create full story object
+      const story: CreatedStory = {
+        id: generateId(),
+        title: storyData.title || 'Importierte Geschichte',
+        author: storyData.author || 'Unbekannt',
+        character: storyData.character || 'bruno',
+        secondaryCharacters: storyData.secondaryCharacters || [],
+        setting: storyData.setting || 'forest',
+        events: storyData.events || [],
+        mood: storyData.mood || 'happy',
+        illustrations: storyData.illustrations || [],
+        music: storyData.music || '',
+        createdAt: Date.now(),
+        lastModified: Date.now(),
+      };
+
+      // Save to localStorage
+      saveStory(story);
+
+      // Redirect to story viewer
+      window.location.href = `/story-viewer?id=${story.id}`;
+    }
+
+    function checkUrlForData() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const data = urlParams.get('data');
+
+      if (data && isValidQRData(data)) {
+        importStory(data);
+      }
+    }
+
+    function loadJsQRLibrary() {
+      if ((window as any).jsQR) return;
+
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+      script.onload = () => console.log('jsQR library loaded');
+      document.head.appendChild(script);
+    }
+
+    // Load jsQR library on page load
+    loadJsQRLibrary();
+  });
+</script>
