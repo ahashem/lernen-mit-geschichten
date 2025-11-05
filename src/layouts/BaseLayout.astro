@@ -114,6 +114,21 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
               class="nav-shop-link"
               >⭐ {getTranslation(locale, 'starShop')}</a
             >
+            <a href={locale === 'de' ? `${base}/story-map` : `${base}/${locale}/story-map`}
+              >🗺️ {getTranslation(locale, 'storyMap')}</a
+            >
+            <a href={locale === 'de' ? `${base}/games` : `${base}/${locale}/games`}
+              >🎮 {getTranslation(locale, 'games')}</a
+            >
+            <a href={locale === 'de' ? `${base}/character-designer` : `${base}/${locale}/character-designer`}
+              >🎭 {getTranslation(locale, 'characterDesigner')}</a
+            >
+            <a href={locale === 'de' ? `${base}/print-studio` : `${base}/${locale}/print-studio`}
+              >🖨️ {getTranslation(locale, 'printStudio')}</a
+            >
+            <a href={locale === 'de' ? `${base}/challenges` : `${base}/${locale}/challenges`}
+              >🔥 {getTranslation(locale, 'challenges')}</a
+            >
             <button
               class="nav-accessibility-btn"
               aria-label={getTranslation(locale, 'accessibility')}
