@@ -13,6 +13,13 @@ import { googleDriveConfig, isGoogleDriveEnabled } from '../../../config/google-
 import type { Locale } from '../../../utils/i18n';
 import { getTranslation } from '../../../utils/i18n';
 
+// Export static paths for build time (empty for now, stories are fetched at runtime)
+export async function getStaticPaths() {
+  // Return empty array - this page is meant for client-side fetching
+  // Or you could pre-fetch known stories from localStorage during build
+  return [];
+}
+
 // Get document ID from params
 const { id } = Astro.params;
 
