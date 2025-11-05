@@ -1,0 +1,368 @@
+/* Accessibility Themes & Modes */
+
+/* OpenDyslexic Font (loaded from CDN) */
+@import url('https://cdn.jsdelivr.net/npm/opendyslexic@2.0.3/fonts/OpenDyslexic-Regular.css');
+
+/* ========================================
+   CSS Custom Properties for Accessibility
+   ======================================== */
+
+:root {
+  /* Spacing adjustments */
+  --a11y-letter-spacing: normal;
+  --a11y-word-spacing: normal;
+  --a11y-line-height: 1.6;
+
+  /* Font adjustments */
+  --a11y-font-family: var(--font-base);
+  --a11y-font-weight: normal;
+
+  /* Color adjustments */
+  --a11y-bg-color: var(--color-background);
+  --a11y-text-color: var(--color-text);
+  --a11y-link-color: var(--color-primary);
+
+  /* Visual effects */
+  --a11y-animation-duration: 0.3s;
+  --a11y-blur-filter: none;
+  --a11y-brightness: 1;
+  --a11y-contrast: 1;
+}
+
+/* ========================================
+   Dyslexia-Friendly Mode
+   ======================================== */
+
+body.dyslexia-mode {
+  --a11y-font-family: 'OpenDyslexic', var(--font-base);
+  --a11y-letter-spacing: 0.15em;
+  --a11y-word-spacing: 0.2em;
+  --a11y-line-height: 2;
+}
+
+body.dyslexia-mode * {
+  font-family: var(--a11y-font-family) !important;
+  letter-spacing: var(--a11y-letter-spacing);
+  word-spacing: var(--a11y-word-spacing);
+  line-height: var(--a11y-line-height);
+}
+
+/* ========================================
+   High Contrast Modes
+   ======================================== */
+
+body.high-contrast-black {
+  --a11y-bg-color: #000000;
+  --a11y-text-color: #ffffff;
+  --a11y-link-color: #ffff00;
+}
+
+body.high-contrast-black {
+  background: var(--a11y-bg-color) !important;
+  color: var(--a11y-text-color) !important;
+}
+
+body.high-contrast-black * {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+body.high-contrast-black a {
+  color: #ffff00 !important;
+  text-decoration: underline !important;
+}
+
+body.high-contrast-black button {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  border: 2px solid #ffffff !important;
+}
+
+body.high-contrast-yellow {
+  --a11y-bg-color: #ffff00;
+  --a11y-text-color: #000000;
+  --a11y-link-color: #0000ff;
+}
+
+body.high-contrast-yellow {
+  background: var(--a11y-bg-color) !important;
+  color: var(--a11y-text-color) !important;
+}
+
+body.high-contrast-yellow * {
+  background-color: #ffff00 !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
+}
+
+body.high-contrast-yellow a {
+  color: #0000ff !important;
+  text-decoration: underline !important;
+}
+
+body.high-contrast-yellow button {
+  background: #000000 !important;
+  color: #ffff00 !important;
+  border: 2px solid #000000 !important;
+}
+
+/* ========================================
+   Custom Color Themes
+   ======================================== */
+
+body.theme-blue-friendly {
+  --a11y-bg-color: #e8f4f8;
+  --a11y-text-color: #1a3a52;
+  --a11y-link-color: #0066cc;
+}
+
+body.theme-blue-friendly {
+  background: var(--a11y-bg-color) !important;
+  color: var(--a11y-text-color) !important;
+}
+
+body.theme-blue-friendly * {
+  background-color: #e8f4f8 !important;
+  color: #1a3a52 !important;
+}
+
+body.theme-blue-friendly a {
+  color: #0066cc !important;
+}
+
+body.theme-warm-tones {
+  --a11y-bg-color: #fef5e7;
+  --a11y-text-color: #5d4037;
+  --a11y-link-color: #d84315;
+}
+
+body.theme-warm-tones {
+  background: var(--a11y-bg-color) !important;
+  color: var(--a11y-text-color) !important;
+}
+
+body.theme-warm-tones * {
+  background-color: #fef5e7 !important;
+  color: #5d4037 !important;
+}
+
+body.theme-warm-tones a {
+  color: #d84315 !important;
+}
+
+body.theme-pastel {
+  --a11y-bg-color: #f5f0ff;
+  --a11y-text-color: #4a148c;
+  --a11y-link-color: #7b1fa2;
+}
+
+body.theme-pastel {
+  background: var(--a11y-bg-color) !important;
+  color: var(--a11y-text-color) !important;
+}
+
+body.theme-pastel * {
+  background-color: #f5f0ff !important;
+  color: #4a148c !important;
+}
+
+body.theme-pastel a {
+  color: #7b1fa2 !important;
+}
+
+/* ========================================
+   Dark Mode
+   ======================================== */
+
+body.dark-mode {
+  --a11y-bg-color: #1a1a1a;
+  --a11y-text-color: #e0e0e0;
+  --a11y-link-color: #ffa726;
+}
+
+body.dark-mode {
+  background: var(--a11y-bg-color) !important;
+  color: var(--a11y-text-color) !important;
+}
+
+body.dark-mode * {
+  background-color: #1a1a1a !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode a {
+  color: #ffa726 !important;
+}
+
+body.dark-mode button {
+  background: #424242 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #616161 !important;
+}
+
+/* ========================================
+   Colorblind-Friendly Palettes
+   ======================================== */
+
+body.colorblind-protanopia {
+  filter: url('#protanopia-filter');
+}
+
+body.colorblind-deuteranopia {
+  filter: url('#deuteranopia-filter');
+}
+
+body.colorblind-tritanopia {
+  filter: url('#tritanopia-filter');
+}
+
+/* ========================================
+   Reduce Motion Mode
+   ======================================== */
+
+body.reduce-motion,
+body.reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ========================================
+   Focus Mode (ADHD-Friendly)
+   ======================================== */
+
+body.focus-mode .story-content > * {
+  opacity: 0.3;
+  transition: opacity 0.2s ease;
+}
+
+body.focus-mode .story-content > *:hover,
+body.focus-mode .story-content > *.focused {
+  opacity: 1;
+}
+
+/* ========================================
+   Reading Ruler
+   ======================================== */
+
+body.reading-ruler-enabled {
+  cursor: none;
+}
+
+.reading-ruler {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 159, 64, 0.8);
+  pointer-events: none;
+  z-index: 9998;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
+  display: none;
+}
+
+body.reading-ruler-enabled .reading-ruler {
+  display: block;
+}
+
+/* ========================================
+   Text Highlight on Hover
+   ======================================== */
+
+body.text-highlight-enabled .story-content p:hover,
+body.text-highlight-enabled .story-content li:hover,
+body.text-highlight-enabled .story-content h1:hover,
+body.text-highlight-enabled .story-content h2:hover,
+body.text-highlight-enabled .story-content h3:hover {
+  background: rgba(255, 235, 59, 0.3) !important;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* ========================================
+   Remove Distractions Mode
+   ======================================== */
+
+body.remove-distractions header,
+body.remove-distractions footer,
+body.remove-distractions .story-card .emoji,
+body.remove-distractions .decorative,
+body.remove-distractions .filter-sidebar,
+body.remove-distractions .search-bar {
+  opacity: 0.1 !important;
+}
+
+body.remove-distractions .story-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   Spacing Adjustments
+   ======================================== */
+
+body.increased-letter-spacing * {
+  letter-spacing: var(--a11y-letter-spacing) !important;
+}
+
+body.increased-word-spacing * {
+  word-spacing: var(--a11y-word-spacing) !important;
+}
+
+body.increased-line-height * {
+  line-height: var(--a11y-line-height) !important;
+}
+
+/* ========================================
+   Preserve Accessibility Panel & Controls
+   ======================================== */
+
+body[class*='high-contrast'] .accessibility-panel,
+body[class*='high-contrast'] .reading-controls,
+body[class*='theme-'] .accessibility-panel,
+body[class*='theme-'] .reading-controls,
+body.dark-mode .accessibility-panel,
+body.dark-mode .reading-controls {
+  background: rgba(255, 255, 255, 0.98) !important;
+  color: #333333 !important;
+  border: 2px solid #666666 !important;
+}
+
+body[class*='high-contrast'] .accessibility-panel *,
+body[class*='high-contrast'] .reading-controls *,
+body[class*='theme-'] .accessibility-panel *,
+body[class*='theme-'] .reading-controls *,
+body.dark-mode .accessibility-panel *,
+body.dark-mode .reading-controls * {
+  color: #333333 !important;
+}
+
+body[class*='high-contrast'] .accessibility-panel button,
+body[class*='high-contrast'] .reading-controls button,
+body[class*='theme-'] .accessibility-panel button,
+body[class*='theme-'] .reading-controls button,
+body.dark-mode .accessibility-panel button,
+body.dark-mode .reading-controls button {
+  background: #f0f0f0 !important;
+  color: #333333 !important;
+  border: 1px solid #999999 !important;
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
+
+@media print {
+  .reading-ruler,
+  body[class*='high-contrast'],
+  body[class*='theme-'],
+  body.dark-mode,
+  body.focus-mode,
+  body.reading-ruler-enabled,
+  body.text-highlight-enabled,
+  body.remove-distractions {
+    all: revert !important;
+  }
+}

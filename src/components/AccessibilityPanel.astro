@@ -1,0 +1,859 @@
+---
+import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+// Translations
+const t = {
+  accessibility: getTranslation(locale, 'accessibility') || 'Accessibility',
+  close: getTranslation(locale, 'close') || 'Close',
+  resetDefaults: getTranslation(locale, 'resetDefaults') || 'Reset to Defaults',
+
+  // Sections
+  fontOptions: getTranslation(locale, 'fontOptions') || 'Font Options',
+  colorContrast: getTranslation(locale, 'colorContrast') || 'Color & Contrast',
+  readingAids: getTranslation(locale, 'readingAids') || 'Reading Aids',
+  presets: getTranslation(locale, 'presets') || 'Quick Presets',
+
+  // Font options
+  dyslexiaFont: getTranslation(locale, 'dyslexiaFont') || 'Dyslexia-Friendly Font',
+  fontSize: getTranslation(locale, 'fontSize') || 'Font Size',
+  letterSpacing: getTranslation(locale, 'letterSpacing') || 'Letter Spacing',
+  wordSpacing: getTranslation(locale, 'wordSpacing') || 'Word Spacing',
+  lineHeight: getTranslation(locale, 'lineHeight') || 'Line Height',
+
+  // Color themes
+  colorTheme: getTranslation(locale, 'colorTheme') || 'Color Theme',
+  themeDefault: getTranslation(locale, 'themeDefault') || 'Default',
+  themeHighContrastBlack:
+    getTranslation(locale, 'themeHighContrastBlack') || 'High Contrast (Black)',
+  themeHighContrastYellow:
+    getTranslation(locale, 'themeHighContrastYellow') || 'High Contrast (Yellow)',
+  themeBlueFriendly: getTranslation(locale, 'themeBlueFriendly') || 'Blue-Friendly',
+  themeWarmTones: getTranslation(locale, 'themeWarmTones') || 'Warm Tones',
+  themePastel: getTranslation(locale, 'themePastel') || 'Pastel',
+  themeDarkMode: getTranslation(locale, 'themeDarkMode') || 'Dark Mode',
+
+  // Colorblind options
+  colorblindMode: getTranslation(locale, 'colorblindMode') || 'Colorblind Mode',
+  colorblindNone: getTranslation(locale, 'colorblindNone') || 'None',
+  colorblindProtanopia: getTranslation(locale, 'colorblindProtanopia') || 'Protanopia (Red-Blind)',
+  colorblindDeuteranopia:
+    getTranslation(locale, 'colorblindDeuteranopia') || 'Deuteranopia (Green-Blind)',
+  colorblindTritanopia:
+    getTranslation(locale, 'colorblindTritanopia') || 'Tritanopia (Blue-Blind)',
+
+  // Reading aids
+  readingRuler: getTranslation(locale, 'readingRuler') || 'Reading Ruler',
+  focusMode: getTranslation(locale, 'focusMode') || 'Focus Mode',
+  textHighlight: getTranslation(locale, 'textHighlight') || 'Text Highlight',
+  removeDistractions: getTranslation(locale, 'removeDistractions') || 'Remove Distractions',
+  reduceMotion: getTranslation(locale, 'reduceMotion') || 'Reduce Motion',
+
+  // Presets
+  presetDyslexia: getTranslation(locale, 'presetDyslexia') || 'Dyslexia-Friendly',
+  presetADHD: getTranslation(locale, 'presetADHD') || 'ADHD-Friendly',
+  presetVisualImpairment:
+    getTranslation(locale, 'presetVisualImpairment') || 'Visual Impairment',
+};
+---
+
+<div class="accessibility-panel" data-expanded="false">
+  <!-- Toggle Button -->
+  <button class="a11y-toggle-btn" aria-label={t.accessibility} title={t.accessibility}>
+    <span class="icon" aria-hidden="true">♿</span>
+  </button>
+
+  <!-- Panel Content -->
+  <div class="a11y-panel-content">
+    <!-- Header -->
+    <div class="a11y-header">
+      <h2>{t.accessibility}</h2>
+      <button class="a11y-close-btn" aria-label={t.close}>
+        <span aria-hidden="true">✕</span>
+      </button>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="a11y-scrollable">
+      <!-- Quick Presets -->
+      <section class="a11y-section">
+        <h3>{t.presets}</h3>
+        <div class="preset-buttons">
+          <button class="preset-btn" data-preset="dyslexia-friendly">
+            <span class="preset-icon">📖</span>
+            <span class="preset-name">{t.presetDyslexia}</span>
+          </button>
+          <button class="preset-btn" data-preset="adhd-friendly">
+            <span class="preset-icon">🎯</span>
+            <span class="preset-name">{t.presetADHD}</span>
+          </button>
+          <button class="preset-btn" data-preset="visual-impairment">
+            <span class="preset-icon">👁️</span>
+            <span class="preset-name">{t.presetVisualImpairment}</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Font Options -->
+      <section class="a11y-section">
+        <h3>{t.fontOptions}</h3>
+
+        <!-- Dyslexia Font -->
+        <div class="control-row">
+          <label class="toggle-label">
+            <input type="checkbox" class="toggle-input" data-pref="dyslexiaFont" />
+            <span class="toggle-slider"></span>
+            <span class="toggle-text">{t.dyslexiaFont}</span>
+          </label>
+        </div>
+
+        <!-- Font Size -->
+        <div class="control-row">
+          <label class="range-label">
+            <span class="label-text">{t.fontSize}</span>
+            <input
+              type="range"
+              class="range-input"
+              data-pref="fontSize"
+              min="14"
+              max="32"
+              step="2"
+              value="18"
+            />
+            <span class="range-value">18px</span>
+          </label>
+        </div>
+
+        <!-- Letter Spacing -->
+        <div class="control-row">
+          <label class="range-label">
+            <span class="label-text">{t.letterSpacing}</span>
+            <input
+              type="range"
+              class="range-input"
+              data-pref="letterSpacing"
+              min="0"
+              max="0.5"
+              step="0.05"
+              value="0"
+            />
+            <span class="range-value">0em</span>
+          </label>
+        </div>
+
+        <!-- Word Spacing -->
+        <div class="control-row">
+          <label class="range-label">
+            <span class="label-text">{t.wordSpacing}</span>
+            <input
+              type="range"
+              class="range-input"
+              data-pref="wordSpacing"
+              min="0"
+              max="0.5"
+              step="0.05"
+              value="0"
+            />
+            <span class="range-value">0em</span>
+          </label>
+        </div>
+
+        <!-- Line Height -->
+        <div class="control-row">
+          <label class="range-label">
+            <span class="label-text">{t.lineHeight}</span>
+            <input
+              type="range"
+              class="range-input"
+              data-pref="lineHeight"
+              min="1.2"
+              max="2.5"
+              step="0.1"
+              value="1.6"
+            />
+            <span class="range-value">1.6</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Color & Contrast -->
+      <section class="a11y-section">
+        <h3>{t.colorContrast}</h3>
+
+        <!-- Color Theme -->
+        <div class="control-row">
+          <label class="select-label">
+            <span class="label-text">{t.colorTheme}</span>
+            <select class="select-input" data-pref="colorTheme">
+              <option value="default">{t.themeDefault}</option>
+              <option value="high-contrast-black">{t.themeHighContrastBlack}</option>
+              <option value="high-contrast-yellow">{t.themeHighContrastYellow}</option>
+              <option value="blue-friendly">{t.themeBlueFriendly}</option>
+              <option value="warm-tones">{t.themeWarmTones}</option>
+              <option value="pastel">{t.themePastel}</option>
+              <option value="dark-mode">{t.themeDarkMode}</option>
+            </select>
+          </label>
+        </div>
+
+        <!-- Colorblind Mode -->
+        <div class="control-row">
+          <label class="select-label">
+            <span class="label-text">{t.colorblindMode}</span>
+            <select class="select-input" data-pref="colorblindMode">
+              <option value="none">{t.colorblindNone}</option>
+              <option value="protanopia">{t.colorblindProtanopia}</option>
+              <option value="deuteranopia">{t.colorblindDeuteranopia}</option>
+              <option value="tritanopia">{t.colorblindTritanopia}</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <!-- Reading Aids -->
+      <section class="a11y-section">
+        <h3>{t.readingAids}</h3>
+
+        <!-- Reading Ruler -->
+        <div class="control-row">
+          <label class="toggle-label">
+            <input type="checkbox" class="toggle-input" data-pref="readingRuler" />
+            <span class="toggle-slider"></span>
+            <span class="toggle-text">{t.readingRuler}</span>
+          </label>
+        </div>
+
+        <!-- Focus Mode -->
+        <div class="control-row">
+          <label class="toggle-label">
+            <input type="checkbox" class="toggle-input" data-pref="focusMode" />
+            <span class="toggle-slider"></span>
+            <span class="toggle-text">{t.focusMode}</span>
+          </label>
+        </div>
+
+        <!-- Text Highlight -->
+        <div class="control-row">
+          <label class="toggle-label">
+            <input type="checkbox" class="toggle-input" data-pref="textHighlight" />
+            <span class="toggle-slider"></span>
+            <span class="toggle-text">{t.textHighlight}</span>
+          </label>
+        </div>
+
+        <!-- Remove Distractions -->
+        <div class="control-row">
+          <label class="toggle-label">
+            <input type="checkbox" class="toggle-input" data-pref="removeDistractions" />
+            <span class="toggle-slider"></span>
+            <span class="toggle-text">{t.removeDistractions}</span>
+          </label>
+        </div>
+
+        <!-- Reduce Motion -->
+        <div class="control-row">
+          <label class="toggle-label">
+            <input type="checkbox" class="toggle-input" data-pref="reduceMotion" />
+            <span class="toggle-slider"></span>
+            <span class="toggle-text">{t.reduceMotion}</span>
+          </label>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <div class="a11y-footer">
+      <button class="reset-btn">{t.resetDefaults}</button>
+    </div>
+  </div>
+</div>
+
+<!-- SVG Filters for Colorblind Simulation -->
+<svg style="display: none;" aria-hidden="true">
+  <defs>
+    <!-- Protanopia (Red-Blind) -->
+    <filter id="protanopia-filter">
+      <feColorMatrix
+        type="matrix"
+        values="0.567, 0.433, 0,     0, 0
+                0.558, 0.442, 0,     0, 0
+                0,     0.242, 0.758, 0, 0
+                0,     0,     0,     1, 0"
+      ></feColorMatrix>
+    </filter>
+
+    <!-- Deuteranopia (Green-Blind) -->
+    <filter id="deuteranopia-filter">
+      <feColorMatrix
+        type="matrix"
+        values="0.625, 0.375, 0,   0, 0
+                0.7,   0.3,   0,   0, 0
+                0,     0.3,   0.7, 0, 0
+                0,     0,     0,   1, 0"
+      ></feColorMatrix>
+    </filter>
+
+    <!-- Tritanopia (Blue-Blind) -->
+    <filter id="tritanopia-filter">
+      <feColorMatrix
+        type="matrix"
+        values="0.95, 0.05,  0,     0, 0
+                0,    0.433, 0.567, 0, 0
+                0,    0.475, 0.525, 0, 0
+                0,    0,     0,     1, 0"
+      ></feColorMatrix>
+    </filter>
+  </defs>
+</svg>
+
+<script>
+  import {
+    loadPreferences,
+    savePreferences,
+    applyPreferences,
+    resetPreferences,
+    applyPreset,
+    initializeReadingRuler,
+    initializeFocusMode,
+    type AccessibilityPreferences,
+  } from '../utils/accessibility';
+
+  class AccessibilityPanelManager {
+    private panel: HTMLElement;
+    private toggleBtn: HTMLElement;
+    private closeBtn: HTMLElement;
+    private resetBtn: HTMLElement;
+    private preferences: AccessibilityPreferences;
+    private isExpanded: boolean = false;
+
+    constructor() {
+      const panel = document.querySelector('.accessibility-panel');
+      const toggleBtn = document.querySelector('.a11y-toggle-btn');
+      const closeBtn = document.querySelector('.a11y-close-btn');
+      const resetBtn = document.querySelector('.reset-btn');
+
+      if (!panel || !toggleBtn || !closeBtn || !resetBtn) return;
+
+      this.panel = panel as HTMLElement;
+      this.toggleBtn = toggleBtn as HTMLElement;
+      this.closeBtn = closeBtn as HTMLElement;
+      this.resetBtn = resetBtn as HTMLElement;
+
+      // Load saved preferences
+      this.preferences = loadPreferences();
+      this.applyAndSync();
+
+      this.setupToggle();
+      this.setupControls();
+      this.setupPresets();
+      this.setupKeyboardShortcut();
+      initializeReadingRuler();
+      initializeFocusMode();
+    }
+
+    private setupToggle() {
+      this.toggleBtn.addEventListener('click', () => this.toggle());
+      this.closeBtn.addEventListener('click', () => this.close());
+
+      // Click outside to close
+      document.addEventListener('click', e => {
+        const target = e.target as HTMLElement;
+        if (this.isExpanded && !this.panel.contains(target)) {
+          this.close();
+        }
+      });
+    }
+
+    private setupControls() {
+      // Checkbox controls
+      const checkboxes = this.panel.querySelectorAll('.toggle-input');
+      checkboxes.forEach(checkbox => {
+        const input = checkbox as HTMLInputElement;
+        const pref = input.dataset.pref as keyof AccessibilityPreferences;
+
+        // Set initial state
+        input.checked = this.preferences[pref] as boolean;
+
+        // Listen for changes
+        input.addEventListener('change', () => {
+          this.preferences[pref] = input.checked as any;
+          this.applyAndSync();
+        });
+      });
+
+      // Range controls
+      const ranges = this.panel.querySelectorAll('.range-input');
+      ranges.forEach(range => {
+        const input = range as HTMLInputElement;
+        const pref = input.dataset.pref as keyof AccessibilityPreferences;
+        const valueDisplay = input.nextElementSibling as HTMLElement;
+
+        // Set initial state
+        input.value = this.preferences[pref]?.toString() || input.value;
+        this.updateRangeDisplay(input, valueDisplay);
+
+        // Listen for changes
+        input.addEventListener('input', () => {
+          this.updateRangeDisplay(input, valueDisplay);
+          this.preferences[pref] = parseFloat(input.value) as any;
+          this.applyAndSync();
+        });
+      });
+
+      // Select controls
+      const selects = this.panel.querySelectorAll('.select-input');
+      selects.forEach(select => {
+        const input = select as HTMLSelectElement;
+        const pref = input.dataset.pref as keyof AccessibilityPreferences;
+
+        // Set initial state
+        input.value = this.preferences[pref] as string;
+
+        // Listen for changes
+        input.addEventListener('change', () => {
+          this.preferences[pref] = input.value as any;
+          this.applyAndSync();
+        });
+      });
+
+      // Reset button
+      this.resetBtn.addEventListener('click', () => {
+        this.preferences = resetPreferences();
+        this.applyAndSync();
+        this.syncControlsToPreferences();
+      });
+    }
+
+    private setupPresets() {
+      const presetButtons = this.panel.querySelectorAll('.preset-btn');
+      presetButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const presetName = (btn as HTMLElement).dataset.preset;
+          if (presetName) {
+            this.preferences = applyPreset(
+              presetName as 'dyslexia-friendly' | 'adhd-friendly' | 'visual-impairment',
+            );
+            this.syncControlsToPreferences();
+          }
+        });
+      });
+    }
+
+    private setupKeyboardShortcut() {
+      // Alt+A to toggle accessibility panel
+      document.addEventListener('keydown', e => {
+        if (e.altKey && e.key === 'a') {
+          e.preventDefault();
+          this.toggle();
+        }
+      });
+    }
+
+    private toggle() {
+      this.isExpanded = !this.isExpanded;
+      this.panel.setAttribute('data-expanded', this.isExpanded.toString());
+    }
+
+    private close() {
+      this.isExpanded = false;
+      this.panel.setAttribute('data-expanded', 'false');
+    }
+
+    private applyAndSync() {
+      applyPreferences(this.preferences);
+      savePreferences(this.preferences);
+    }
+
+    private syncControlsToPreferences() {
+      // Sync checkboxes
+      const checkboxes = this.panel.querySelectorAll('.toggle-input');
+      checkboxes.forEach(checkbox => {
+        const input = checkbox as HTMLInputElement;
+        const pref = input.dataset.pref as keyof AccessibilityPreferences;
+        input.checked = this.preferences[pref] as boolean;
+      });
+
+      // Sync ranges
+      const ranges = this.panel.querySelectorAll('.range-input');
+      ranges.forEach(range => {
+        const input = range as HTMLInputElement;
+        const pref = input.dataset.pref as keyof AccessibilityPreferences;
+        const valueDisplay = input.nextElementSibling as HTMLElement;
+        input.value = this.preferences[pref]?.toString() || input.value;
+        this.updateRangeDisplay(input, valueDisplay);
+      });
+
+      // Sync selects
+      const selects = this.panel.querySelectorAll('.select-input');
+      selects.forEach(select => {
+        const input = select as HTMLSelectElement;
+        const pref = input.dataset.pref as keyof AccessibilityPreferences;
+        input.value = this.preferences[pref] as string;
+      });
+    }
+
+    private updateRangeDisplay(input: HTMLInputElement, display: HTMLElement) {
+      const pref = input.dataset.pref;
+      const value = parseFloat(input.value);
+
+      if (pref === 'fontSize') {
+        display.textContent = `${value}px`;
+      } else if (pref === 'letterSpacing' || pref === 'wordSpacing') {
+        display.textContent = `${value}em`;
+      } else {
+        display.textContent = value.toString();
+      }
+    }
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new AccessibilityPanelManager());
+  } else {
+    new AccessibilityPanelManager();
+  }
+</script>
+
+<style>
+  .accessibility-panel {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    pointer-events: none;
+  }
+
+  /* Toggle Button */
+  .a11y-toggle-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(135deg, #6bcf7f 0%, #4caf50 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 1rem;
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(76, 175, 80, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    pointer-events: all;
+  }
+
+  .a11y-toggle-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 24px rgba(76, 175, 80, 0.5);
+  }
+
+  .a11y-toggle-btn:active {
+    transform: scale(0.95);
+  }
+
+  .a11y-toggle-btn .icon {
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+
+  /* Panel Content */
+  .a11y-panel-content {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 400px;
+    max-height: 600px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 2px solid #e0e0e0;
+    transform: translateY(120%) scale(0.9);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .accessibility-panel[data-expanded='true'] .a11y-panel-content {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .accessibility-panel[data-expanded='true'] .a11y-toggle-btn {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Header */
+  .a11y-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .a11y-header h2 {
+    font-size: 1.25rem;
+    margin: 0;
+    color: var(--color-text);
+  }
+
+  .a11y-close-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    font-size: 1.5rem;
+    color: var(--color-text-light);
+    transition: color 0.2s;
+    line-height: 1;
+  }
+
+  .a11y-close-btn:hover {
+    color: var(--color-text);
+  }
+
+  /* Scrollable Content */
+  .a11y-scrollable {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+
+  /* Sections */
+  .a11y-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .a11y-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .a11y-section h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-primary);
+  }
+
+  /* Control Rows */
+  .control-row {
+    margin-bottom: 1rem;
+  }
+
+  .control-row:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Toggle Switch */
+  .toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .toggle-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .toggle-slider {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: #ccc;
+    border-radius: 24px;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.2s;
+  }
+
+  .toggle-input:checked + .toggle-slider {
+    background: var(--color-success);
+  }
+
+  .toggle-input:checked + .toggle-slider::before {
+    transform: translateX(20px);
+  }
+
+  .toggle-text {
+    font-size: 0.95rem;
+    color: var(--color-text);
+  }
+
+  /* Range Input */
+  .range-label {
+    display: block;
+  }
+
+  .label-text {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+  }
+
+  .range-input {
+    width: 100%;
+    accent-color: var(--color-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .range-value {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    text-align: right;
+  }
+
+  /* Select Input */
+  .select-label {
+    display: block;
+  }
+
+  .select-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: white;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+
+  .select-input:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Preset Buttons */
+  .preset-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .preset-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0.75rem;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+    color: var(--color-text);
+  }
+
+  .preset-btn:hover {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 159, 64, 0.3);
+  }
+
+  .preset-icon {
+    font-size: 1.5rem;
+  }
+
+  .preset-name {
+    font-weight: 500;
+    text-align: center;
+  }
+
+  /* Footer */
+  .a11y-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .reset-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: white;
+    color: var(--color-text);
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover {
+    background: #f5f5f5;
+    border-color: var(--color-error);
+    color: var(--color-error);
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .accessibility-panel {
+      bottom: 1rem;
+      right: 1rem;
+    }
+
+    .a11y-toggle-btn {
+      width: 3rem;
+      height: 3rem;
+      padding: 0.75rem;
+    }
+
+    .a11y-toggle-btn .icon {
+      font-size: 1.4rem;
+    }
+
+    .a11y-panel-content {
+      width: calc(100vw - 2rem);
+      max-width: 400px;
+      max-height: 500px;
+    }
+
+    .a11y-scrollable {
+      padding: 1rem;
+    }
+
+    .preset-buttons {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Print - hide panel */
+  @media print {
+    .accessibility-panel {
+      display: none !important;
+    }
+  }
+</style>
