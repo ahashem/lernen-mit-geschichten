@@ -293,6 +293,114 @@ export const ACHIEVEMENTS: Achievement[] = [
       total: 10,
     },
   },
+  {
+    id: 'storyteller',
+    emoji: '📣',
+    rarity: 'rare',
+    unlocked: false,
+    title: {
+      de: 'Geschichtenerzähler',
+      ar: 'راوي القصص',
+      en: 'Storyteller',
+      tr: 'Hikaye Anlatıcısı',
+      ur: 'کہانی سنانے والا',
+    },
+    description: {
+      de: '5 Geschichten geteilt',
+      ar: 'شاركت 5 قصص',
+      en: 'Share 5 stories',
+      tr: '5 hikaye paylaş',
+      ur: '5 کہانیاں شیئر کریں',
+    },
+    progress: {
+      current: 0,
+      total: 5,
+    },
+  },
+  {
+    id: 'coloring-artist',
+    emoji: '🎨',
+    rarity: 'common',
+    unlocked: false,
+    title: {
+      de: 'Künstler',
+      ar: 'فنان',
+      en: 'Artist',
+      tr: 'Sanatçı',
+      ur: 'فنکار',
+    },
+    description: {
+      de: '10 Ausmalbilder fertiggestellt',
+      ar: 'أكملت 10 صفحات تلوين',
+      en: 'Complete 10 coloring pages',
+      tr: '10 boyama sayfası tamamla',
+      ur: '10 رنگ بھرنے کے صفحات مکمل کریں',
+    },
+    progress: {
+      current: 0,
+      total: 10,
+    },
+  },
+  {
+    id: 'rainbow-master',
+    emoji: '🌈',
+    rarity: 'rare',
+    unlocked: false,
+    title: {
+      de: 'Regenbogenmeister',
+      ar: 'سيد قوس قزح',
+      en: 'Rainbow Master',
+      tr: 'Gökkuşağı Ustası',
+      ur: 'قوس قزح ماسٹر',
+    },
+    description: {
+      de: 'Alle 20+ Farben in einem Bild verwendet',
+      ar: 'استخدمت جميع الألوان الـ 20+ في صورة واحدة',
+      en: 'Use all 20+ colors in one picture',
+      tr: 'Bir resimde 20+ renk kullan',
+      ur: 'ایک تصویر میں 20+ رنگ استعمال کریں',
+    },
+  },
+  {
+    id: 'perfectionist',
+    emoji: '✨',
+    rarity: 'epic',
+    unlocked: false,
+    title: {
+      de: 'Perfektionist',
+      ar: 'الكمالي',
+      en: 'Perfectionist',
+      tr: 'Mükemmeliyetçi',
+      ur: 'کامل پسند',
+    },
+    description: {
+      de: 'Ausmalbild ohne über die Linien zu malen fertiggestellt',
+      ar: 'أكملت صفحة تلوين دون التلوين خارج الخطوط',
+      en: 'Complete a coloring page without going outside lines',
+      tr: 'Çizgilerin dışına taşmadan boyama sayfası tamamla',
+      ur: 'لائنوں کے باہر جائے بغیر رنگ بھرنے کا صفحہ مکمل کریں',
+    },
+  },
+  {
+    id: 'coloring-collector',
+    emoji: '🖼️',
+    rarity: 'legendary',
+    unlocked: false,
+    title: {
+      de: 'Sammler',
+      ar: 'جامع',
+      en: 'Collector',
+      tr: 'Koleksiyoncu',
+      ur: 'جمع کرنے والا',
+    },
+    description: {
+      de: 'Alle 25+ Ausmalbilder fertiggestellt',
+      ar: 'أكملت جميع صفحات التلوين الـ 25+',
+      en: 'Complete all 25+ coloring pages',
+      tr: 'Tüm 25+ boyama sayfasını tamamla',
+      ur: 'تمام 25+ رنگ بھرنے کے صفحات مکمل کریں',
+    },
+  },
 ];
 
 // Rarity colors for visual styling
@@ -501,6 +609,34 @@ export class AchievementTracker {
     return unlockedAchievements;
   }
 
+  // Track story sharing
+  trackStoryShare(storyId: string): string[] {
+    const unlockedAchievements: string[] = [];
+
+    // Get or create shared stories tracker
+    const sharedStories = this.getSharedStories();
+    if (!sharedStories.includes(storyId)) {
+      sharedStories.push(storyId);
+      localStorage.setItem('shared-stories', JSON.stringify(sharedStories));
+    }
+
+    // Check storyteller achievement (5 stories shared)
+    if (sharedStories.length >= 5) {
+      const unlocked = this.unlockAchievement('storyteller');
+      if (unlocked) unlockedAchievements.push('storyteller');
+    }
+
+    this.saveProgress();
+    return unlockedAchievements;
+  }
+
+  // Get list of shared stories
+  private getSharedStories(): string[] {
+    if (typeof window === 'undefined') return [];
+    const stored = localStorage.getItem('shared-stories');
+    return stored ? JSON.parse(stored) : [];
+  }
+
   // Unlock achievement
   private unlockAchievement(achievementId: string): boolean {
     const existing = this.progress.achievements.get(achievementId);
@@ -556,6 +692,9 @@ export class AchievementTracker {
             break;
           case 'quiz-master':
             progress.current = this.progress.perfectQuizzes.length;
+            break;
+          case 'storyteller':
+            progress.current = this.getSharedStories().length;
             break;
         }
       }

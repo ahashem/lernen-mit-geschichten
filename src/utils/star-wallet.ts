@@ -27,6 +27,7 @@ export type EarnReason =
   | 'achievement-unlock'
   | 'easter-egg'
   | 'story-created'
+  | 'story-shared'
   | 'streak-milestone'
   | 'first-story'
   | 'language-explorer'
@@ -40,6 +41,7 @@ export const EARN_AMOUNTS: Record<EarnReason, number> = {
   'achievement-unlock': 15,
   'easter-egg': 2,
   'story-created': 20,
+  'story-shared': 10,
   'streak-milestone': 25,
   'first-story': 10,
   'language-explorer': 5,
