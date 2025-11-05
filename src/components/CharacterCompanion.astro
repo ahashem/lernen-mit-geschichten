@@ -1,0 +1,769 @@
+---
+import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
+
+interface Props {
+  language: Locale;
+}
+
+const { language } = Astro.props;
+---
+
+<div class="companion-selector" id="companion-selector">
+  <button class="companion-toggle-btn" id="companion-toggle" aria-label={getTranslation(language, 'companion')}>
+    <span class="companion-icon">🐻</span>
+  </button>
+
+  <div class="companion-panel" id="companion-panel">
+    <div class="companion-panel-header">
+      <h3>{getTranslation(language, 'companionTitle')}</h3>
+      <button class="close-panel-btn" id="close-panel" aria-label={getTranslation(language, 'close')}>✕</button>
+    </div>
+
+    <div class="companion-panel-content">
+      <!-- Enable/Disable Toggle -->
+      <div class="setting-row">
+        <label class="toggle-label">
+          <input type="checkbox" id="companion-enabled" checked />
+          <span class="toggle-switch"></span>
+          <span class="toggle-text">{getTranslation(language, 'companionEnabled')}</span>
+        </label>
+      </div>
+
+      <!-- Character Selection -->
+      <div class="setting-section">
+        <h4>{getTranslation(language, 'chooseCompanion')}</h4>
+        <div class="character-grid" id="character-grid">
+          <button class="character-btn active" data-type="bruno" aria-label="Bruno der Bär">
+            <span class="character-emoji">🐻</span>
+            <span class="character-name">Bruno</span>
+          </button>
+          <button class="character-btn" data-type="mila" aria-label="Mila die Eule">
+            <span class="character-emoji">🦉</span>
+            <span class="character-name">Mila</span>
+          </button>
+          <button class="character-btn" data-type="fritz" aria-label="Fritz der Fuchs">
+            <span class="character-emoji">🦊</span>
+            <span class="character-name">Fritz</span>
+          </button>
+          <button class="character-btn" data-type="butterfly" aria-label="Schmetterling">
+            <span class="character-emoji">🦋</span>
+            <span class="character-name">{getTranslation(language, 'butterfly')}</span>
+          </button>
+          <button class="character-btn" data-type="star" aria-label="Stern">
+            <span class="character-emoji">⭐</span>
+            <span class="character-name">{getTranslation(language, 'star')}</span>
+          </button>
+          <button class="character-btn" data-type="cloud" aria-label="Wolke">
+            <span class="character-emoji">☁️</span>
+            <span class="character-name">{getTranslation(language, 'cloud')}</span>
+          </button>
+          <button class="character-btn" data-type="rainbow" aria-label="Regenbogen">
+            <span class="character-emoji">🌈</span>
+            <span class="character-name">{getTranslation(language, 'rainbow')}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Size Selection -->
+      <div class="setting-section">
+        <h4>{getTranslation(language, 'companionSize')}</h4>
+        <div class="button-group" id="size-group">
+          <button class="option-btn" data-size="small">{getTranslation(language, 'small')}</button>
+          <button class="option-btn active" data-size="medium">{getTranslation(language, 'medium')}</button>
+          <button class="option-btn" data-size="large">{getTranslation(language, 'large')}</button>
+        </div>
+      </div>
+
+      <!-- Speed Selection -->
+      <div class="setting-section">
+        <h4>{getTranslation(language, 'companionSpeed')}</h4>
+        <div class="button-group" id="speed-group">
+          <button class="option-btn" data-speed="slow">{getTranslation(language, 'slow')}</button>
+          <button class="option-btn active" data-speed="normal">{getTranslation(language, 'normal')}</button>
+          <button class="option-btn" data-speed="fast">{getTranslation(language, 'fast')}</button>
+        </div>
+      </div>
+
+      <!-- Trail Effect -->
+      <div class="setting-section">
+        <h4>{getTranslation(language, 'trailEffect')}</h4>
+        <div class="button-group" id="trail-group">
+          <button class="option-btn active" data-trail="sparkle">✨ {getTranslation(language, 'sparkle')}</button>
+          <button class="option-btn" data-trail="rainbow">🌈 {getTranslation(language, 'rainbow')}</button>
+          <button class="option-btn" data-trail="hearts">💕 {getTranslation(language, 'hearts')}</button>
+          <button class="option-btn" data-trail="stardust">⭐ {getTranslation(language, 'stardust')}</button>
+          <button class="option-btn" data-trail="none">{getTranslation(language, 'none')}</button>
+        </div>
+      </div>
+
+      <!-- Trail Density -->
+      <div class="setting-section">
+        <h4>{getTranslation(language, 'trailDensity')}</h4>
+        <input type="range" id="trail-density" min="1" max="10" value="3" class="slider" />
+        <span class="slider-value" id="trail-density-value">3</span>
+      </div>
+
+      <!-- Dialogue Toggle -->
+      <div class="setting-row">
+        <label class="toggle-label">
+          <input type="checkbox" id="show-dialogue" checked />
+          <span class="toggle-switch"></span>
+          <span class="toggle-text">{getTranslation(language, 'showDialogue')}</span>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { initCompanion, getCompanion } from '../utils/character-companion';
+  import type { CompanionType, TrailEffect } from '../utils/character-companion';
+
+  // Initialize companion
+  const companion = initCompanion();
+
+  // UI Elements
+  const toggleBtn = document.getElementById('companion-toggle') as HTMLButtonElement;
+  const panel = document.getElementById('companion-panel') as HTMLDivElement;
+  const closeBtn = document.getElementById('close-panel') as HTMLButtonElement;
+  const enabledCheckbox = document.getElementById('companion-enabled') as HTMLInputElement;
+  const characterGrid = document.getElementById('character-grid') as HTMLDivElement;
+  const sizeGroup = document.getElementById('size-group') as HTMLDivElement;
+  const speedGroup = document.getElementById('speed-group') as HTMLDivElement;
+  const trailGroup = document.getElementById('trail-group') as HTMLDivElement;
+  const trailDensitySlider = document.getElementById('trail-density') as HTMLInputElement;
+  const trailDensityValue = document.getElementById('trail-density-value') as HTMLSpanElement;
+  const showDialogueCheckbox = document.getElementById('show-dialogue') as HTMLInputElement;
+
+  // Load saved settings
+  const settings = companion.getSettings();
+  enabledCheckbox.checked = settings.enabled;
+  showDialogueCheckbox.checked = settings.showDialogue;
+  trailDensitySlider.value = settings.trailDensity.toString();
+  trailDensityValue.textContent = settings.trailDensity.toString();
+
+  // Toggle panel
+  toggleBtn.addEventListener('click', () => {
+    const isOpen = panel.classList.toggle('open');
+    toggleBtn.setAttribute('aria-expanded', isOpen.toString());
+  });
+
+  closeBtn.addEventListener('click', () => {
+    panel.classList.remove('open');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+  });
+
+  // Enable/Disable companion
+  enabledCheckbox.addEventListener('change', () => {
+    companion.updateSettings({ enabled: enabledCheckbox.checked });
+  });
+
+  // Character selection
+  characterGrid.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.character-btn') as HTMLButtonElement;
+    if (!btn) return;
+
+    const type = btn.getAttribute('data-type') as CompanionType;
+
+    // Update active state
+    characterGrid.querySelectorAll('.character-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Update companion icon in toggle button
+    const emoji = btn.querySelector('.character-emoji')?.textContent || '🐻';
+    const icon = toggleBtn.querySelector('.companion-icon');
+    if (icon) icon.textContent = emoji;
+
+    // Update companion
+    companion.updateSettings({ type });
+  });
+
+  // Size selection
+  sizeGroup.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.option-btn') as HTMLButtonElement;
+    if (!btn) return;
+
+    const size = btn.getAttribute('data-size') as 'small' | 'medium' | 'large';
+
+    sizeGroup.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    companion.updateSettings({ size });
+  });
+
+  // Speed selection
+  speedGroup.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.option-btn') as HTMLButtonElement;
+    if (!btn) return;
+
+    const speed = btn.getAttribute('data-speed') as 'slow' | 'normal' | 'fast';
+
+    speedGroup.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    companion.updateSettings({ speed });
+  });
+
+  // Trail selection
+  trailGroup.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.option-btn') as HTMLButtonElement;
+    if (!btn) return;
+
+    const trail = btn.getAttribute('data-trail') as TrailEffect;
+
+    trailGroup.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    companion.updateSettings({ trail });
+  });
+
+  // Trail density
+  trailDensitySlider.addEventListener('input', () => {
+    const density = parseInt(trailDensitySlider.value, 10);
+    trailDensityValue.textContent = density.toString();
+    companion.updateSettings({ trailDensity: density });
+  });
+
+  // Show dialogue toggle
+  showDialogueCheckbox.addEventListener('change', () => {
+    companion.updateSettings({ showDialogue: showDialogueCheckbox.checked });
+  });
+
+  // Integration with quiz achievements
+  document.addEventListener('quiz-correct-answer', () => {
+    companion.celebrate();
+    const phrases = {
+      de: 'Super gemacht!',
+      ar: 'أحسنت!',
+      en: 'Great job!',
+      tr: 'Aferin!',
+      ur: 'بہت اچھا!'
+    };
+    const lang = document.documentElement.lang || 'de';
+    companion.say(phrases[lang as keyof typeof phrases] || phrases.de);
+  });
+
+  // Integration with story start
+  document.addEventListener('story-started', () => {
+    const phrases = {
+      de: 'Viel Spaß beim Lesen!',
+      ar: 'استمتع بالقراءة!',
+      en: 'Enjoy reading!',
+      tr: 'İyi okumalar!',
+      ur: 'پڑھنے کا لطف اٹھائیں!'
+    };
+    const lang = document.documentElement.lang || 'de';
+    companion.say(phrases[lang as keyof typeof phrases] || phrases.de);
+  });
+</script>
+
+<style>
+  .companion-selector {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+
+  .companion-toggle-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .companion-toggle-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .companion-toggle-btn:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+  }
+
+  .companion-toggle-btn:hover::before {
+    opacity: 1;
+  }
+
+  .companion-toggle-btn:active {
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  .companion-icon {
+    animation: bounce-gentle 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce-gentle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  .companion-panel {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 320px;
+    max-height: 600px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+  }
+
+  .companion-panel.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .companion-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .companion-panel-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .close-panel-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+  }
+
+  .close-panel-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .companion-panel-content {
+    padding: 20px;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  .setting-row {
+    margin-bottom: 16px;
+  }
+
+  .setting-section {
+    margin-bottom: 24px;
+  }
+
+  .setting-section h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .toggle-label input[type="checkbox"] {
+    display: none;
+  }
+
+  .toggle-switch {
+    width: 48px;
+    height: 24px;
+    background: #ddd;
+    border-radius: 12px;
+    position: relative;
+    transition: background 0.3s ease;
+  }
+
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .toggle-label input:checked + .toggle-switch {
+    background: #4CAF50;
+  }
+
+  .toggle-label input:checked + .toggle-switch::after {
+    transform: translateX(24px);
+  }
+
+  .toggle-text {
+    font-size: 14px;
+    color: #333;
+  }
+
+  .character-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .character-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 8px;
+    background: #f9f9f9;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .character-btn:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+  }
+
+  .character-btn.active {
+    border-color: #667eea;
+    background: #f0f4ff;
+  }
+
+  .character-emoji {
+    font-size: 32px;
+  }
+
+  .character-name {
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .option-btn {
+    padding: 8px 16px;
+    background: #f9f9f9;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    flex: 1;
+    min-width: fit-content;
+  }
+
+  .option-btn:hover {
+    background: #f0f0f0;
+  }
+
+  .option-btn.active {
+    border-color: #667eea;
+    background: #f0f4ff;
+    color: #667eea;
+    font-weight: 600;
+  }
+
+  .slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #667eea;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #667eea;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .slider-value {
+    display: inline-block;
+    margin-left: 8px;
+    font-weight: 600;
+    color: #667eea;
+  }
+
+  /* RTL Support */
+  [dir="rtl"] .companion-selector {
+    left: 20px;
+    right: auto;
+  }
+
+  [dir="rtl"] .companion-panel {
+    left: 0;
+    right: auto;
+  }
+
+  @media (max-width: 768px) {
+    .companion-selector {
+      bottom: 80px;
+    }
+
+    .companion-panel {
+      width: calc(100vw - 40px);
+      max-width: 320px;
+      right: 50%;
+      transform: translateX(50%) translateY(20px);
+    }
+
+    .companion-panel.open {
+      transform: translateX(50%) translateY(0);
+    }
+
+    [dir="rtl"] .companion-panel {
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+    }
+
+    [dir="rtl"] .companion-panel.open {
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+</style>
+
+<style is:global>
+  /* Companion animations */
+  @keyframes companion-idle {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  @keyframes companion-walk {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }
+
+  @keyframes companion-run {
+    0%, 100% {
+      transform: translateY(0) rotate(-2deg);
+    }
+    50% {
+      transform: translateY(-5px) rotate(2deg);
+    }
+  }
+
+  @keyframes companion-jump {
+    0% {
+      transform: translateY(0);
+    }
+    30% {
+      transform: translateY(-40px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes companion-celebrate {
+    0%, 100% {
+      transform: rotate(0deg) scale(1);
+    }
+    25% {
+      transform: rotate(-15deg) scale(1.1);
+    }
+    75% {
+      transform: rotate(15deg) scale(1.1);
+    }
+  }
+
+  @keyframes companion-sleep {
+    0%, 100% {
+      transform: translateY(0);
+      opacity: 0.8;
+    }
+    50% {
+      transform: translateY(-2px);
+      opacity: 0.6;
+    }
+  }
+
+  @keyframes companion-curious {
+    0%, 100% {
+      transform: translateY(0) scale(1);
+    }
+    25% {
+      transform: translateY(-5px) scale(1.05);
+    }
+    75% {
+      transform: translateY(5px) scale(0.95);
+    }
+  }
+
+  @keyframes companion-flip {
+    0% {
+      transform: rotateY(0deg);
+    }
+    50% {
+      transform: rotateY(180deg) scale(1.2);
+    }
+    100% {
+      transform: rotateY(360deg);
+    }
+  }
+
+  /* Companion body animations based on state */
+  .companion-body {
+    transform-origin: center center;
+  }
+
+  [data-state="idle"] .companion-eye {
+    animation: blink 3s ease-in-out infinite;
+  }
+
+  [data-state="sleeping"] .companion-eye {
+    transform: scaleY(0.1);
+  }
+
+  [data-state="sleeping"] .companion-mouth {
+    animation: snore 2s ease-in-out infinite;
+  }
+
+  [data-state="curious"] .companion-eye {
+    transform: scale(1.2);
+  }
+
+  [data-state="walking"] .companion-wing,
+  [data-state="running"] .companion-wing {
+    animation: flap 0.4s ease-in-out infinite;
+  }
+
+  [data-state="walking"] .companion-tail,
+  [data-state="running"] .companion-tail {
+    animation: wag 0.5s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 96%, 100% {
+      transform: scaleY(1);
+    }
+    98% {
+      transform: scaleY(0.1);
+    }
+  }
+
+  @keyframes snore {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes flap {
+    0%, 100% {
+      transform: scaleY(1);
+    }
+    50% {
+      transform: scaleY(0.7);
+    }
+  }
+
+  @keyframes wag {
+    0%, 100% {
+      transform: rotate(-30deg);
+    }
+    50% {
+      transform: rotate(-45deg);
+    }
+  }
+
+  .sparkle {
+    animation: sparkle-twinkle 1.5s ease-in-out infinite;
+  }
+
+  @keyframes sparkle-twinkle {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.3;
+      transform: scale(0.5);
+    }
+  }
+
+  /* Reduce motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .companion-body,
+    .companion-eye,
+    .companion-wing,
+    .companion-tail,
+    .sparkle {
+      animation: none !important;
+    }
+
+    .character-companion {
+      transition: none !important;
+    }
+  }
+</style>
