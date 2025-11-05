@@ -14,6 +14,10 @@ difficulty: "beginner"
 estimatedReadTime: 3
 publishDate: 2024-01-15
 storyFormat: "interactive"
+mood: "happy"
+ambientSound: "forest"
+musicIntensity: "medium"
+autoPlayMusic: false
 questions:
   - id: "tf1"
     text: "Bruno ist eine kleine Maus."

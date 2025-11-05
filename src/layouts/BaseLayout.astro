@@ -98,11 +98,21 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
             <a href={locale === 'de' ? `${base}/about` : `${base}/${locale}/about`}
               >{getTranslation(locale, 'about')}</a
             >
+            <a href={locale === 'de' ? `${base}/story-builder` : `${base}/${locale}/story-builder`}
+              >✨ {getTranslation(locale, 'storyBuilder')}</a
+            >
+            <a href={locale === 'de' ? `${base}/my-stories` : `${base}/${locale}/my-stories`}
+              >📚 {getTranslation(locale, 'myStories')}</a
+            >
             <a href={locale === 'de' ? `${base}/progress` : `${base}/${locale}/progress`}
               >📊 {getTranslation(locale, 'progressDashboard')}</a
             >
             <a href={locale === 'de' ? `${base}/achievements` : `${base}/${locale}/achievements`}
               >🏆 {getTranslation(locale, 'achievements')}</a
+            >
+            <a href={locale === 'de' ? `${base}/shop` : `${base}/${locale}/shop`}
+              class="nav-shop-link"
+              >⭐ {getTranslation(locale, 'starShop')}</a
             >
             <button
               class="nav-accessibility-btn"
@@ -206,6 +216,29 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
 
       .nav-links a:hover {
         color: var(--color-primary);
+      }
+
+      .nav-shop-link {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        color: white !important;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+        animation: shop-pulse 2s ease-in-out infinite;
+      }
+
+      .nav-shop-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+      }
+
+      @keyframes shop-pulse {
+        0%, 100% {
+          box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+        }
+        50% {
+          box-shadow: 0 2px 12px rgba(255, 215, 0, 0.5);
+        }
       }
 
       .nav-accessibility-btn {

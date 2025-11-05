@@ -114,6 +114,7 @@ const { questions, language, storyId, title } = Astro.props;
   import { SpeechRecognizer, getSpeechLocale, matchAnswer, createSparkleEffect } from '../utils/speech-recognition';
   import { achievementTracker } from '../utils/achievements';
   import { ProgressTracker } from '../utils/progress-tracker';
+  import { starWallet } from '../utils/star-wallet';
   import type { Locale } from '../utils/i18n';
 
   document.querySelectorAll('.quiz-interactive').forEach(quiz => {
@@ -175,6 +176,14 @@ const { questions, language, storyId, title } = Astro.props;
             isPerfect
           );
 
+          // Award stars for quiz completion
+          const starsEarned = isPerfect
+            ? starWallet.earnStars('perfect-quiz')
+            : starWallet.earnStars('quiz-completion');
+
+          // Show star notification
+          showStarNotification(starsEarned, isPerfect);
+
           // Show achievement notifications
           unlockedAchievements.forEach(achievementId => {
             achievementTracker.showAchievementUnlock(achievementId, language as Locale);
@@ -220,6 +229,9 @@ const { questions, language, storyId, title } = Astro.props;
             const x = rect.left + rect.width / 2;
             const y = rect.top + rect.height / 2;
             confetti.burst(x, y, 30);
+
+            // Dispatch event for companion
+            document.dispatchEvent(new CustomEvent('quiz-correct-answer'));
           } else {
             soundEffects.playIncorrect();
           }
@@ -491,6 +503,27 @@ const { questions, language, storyId, title } = Astro.props;
           }
         });
       });
+    }
+
+    // Star notification function
+    function showStarNotification(stars: number, isPerfect: boolean) {
+      const notification = document.createElement('div');
+      notification.className = 'star-notification';
+      notification.innerHTML = `
+        <div class="star-icon">⭐</div>
+        <div class="star-message">
+          <strong>+${stars} Sterne</strong>
+          ${isPerfect ? '<br><span class="perfect-badge">Perfekt!</span>' : ''}
+        </div>
+      `;
+
+      document.body.appendChild(notification);
+
+      setTimeout(() => notification.classList.add('show'), 100);
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
     }
   });
 </script>
@@ -772,6 +805,64 @@ const { questions, language, storyId, title } = Astro.props;
 
     .voice-btn {
       padding: 0.65rem 0.85rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Star Notification */
+  .star-notification {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 2000;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
+  }
+
+  .star-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .star-notification .star-icon {
+    font-size: 2rem;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .star-notification .star-message {
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .perfect-badge {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 768px) {
+    .star-notification {
+      top: 1rem;
+      right: 1rem;
+      left: 1rem;
+      padding: 0.75rem 1rem;
+    }
+
+    .star-notification .star-icon {
+      font-size: 1.5rem;
+    }
+
+    .star-notification .star-message {
       font-size: 0.9rem;
     }
   }

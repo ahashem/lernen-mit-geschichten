@@ -6,6 +6,7 @@
 import type { Locale } from './i18n';
 import { confetti } from './confetti';
 import { soundEffects } from './sound-effects';
+import { starWallet } from './star-wallet';
 
 export type AchievementRarity = 'common' | 'rare' | 'epic' | 'legendary';
 
@@ -511,6 +512,15 @@ export class AchievementTracker {
       unlocked: true,
       unlockedAt: Date.now(),
     });
+
+    // Award stars for achievement unlock
+    const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
+    if (achievement) {
+      const starAmount = achievement.rarity === 'legendary' ? 50 :
+                         achievement.rarity === 'epic' ? 30 :
+                         achievement.rarity === 'rare' ? 20 : 15;
+      starWallet.earnStars('achievement-unlock', starAmount);
+    }
 
     this.saveProgress();
     return true;
