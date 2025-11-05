@@ -1,0 +1,569 @@
+---
+import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
+import type { MoodType, AmbientType, MusicIntensity } from '../utils/background-music';
+
+interface Props {
+  locale: Locale;
+  mood?: MoodType;
+  ambientSound?: AmbientType;
+  musicIntensity?: MusicIntensity;
+  autoPlay?: boolean;
+}
+
+const {
+  locale,
+  mood = 'calm',
+  ambientSound = 'none',
+  musicIntensity = 'medium',
+  autoPlay = false,
+} = Astro.props;
+
+// Translations
+const t = {
+  music: getTranslation(locale, 'music') || 'Music',
+  ambientSounds: getTranslation(locale, 'ambientSounds') || 'Ambient Sounds',
+  musicVolume:
+    locale === 'de'
+      ? 'Musik-Lautstärke'
+      : locale === 'ar'
+        ? 'مستوى صوت الموسيقى'
+        : locale === 'en'
+          ? 'Music Volume'
+          : locale === 'tr'
+            ? 'Müzik Ses Seviyesi'
+            : 'موسیقی کی آواز',
+  ambientVolume:
+    locale === 'de'
+      ? 'Umgebungsgeräusche'
+      : locale === 'ar'
+        ? 'الأصوات المحيطة'
+        : locale === 'en'
+          ? 'Ambient Volume'
+          : locale === 'tr'
+            ? 'Ortam Sesi'
+            : 'ماحول کی آواز',
+  mood:
+    locale === 'de'
+      ? 'Stimmung'
+      : locale === 'ar'
+        ? 'المزاج'
+        : locale === 'en'
+          ? 'Mood'
+          : locale === 'tr'
+            ? 'Ruh Hali'
+            : 'موڈ',
+};
+---
+
+<div class="story-music-control" data-mood={mood} data-ambient={ambientSound} data-intensity={musicIntensity} data-autoplay={autoPlay}>
+  <button class="music-toggle-btn" aria-label={t.music} title={t.music}>
+    <span class="icon music-icon">🎵</span>
+  </button>
+
+  <div class="music-panel" hidden>
+    <div class="panel-header">
+      <h3>{t.music}</h3>
+      <button class="close-panel" aria-label="Close">×</button>
+    </div>
+
+    <div class="control-section">
+      <div class="control-row">
+        <label class="control-label">
+          <span class="icon">🎵</span>
+          <span class="text">{t.music}</span>
+        </label>
+        <label class="toggle-switch">
+          <input type="checkbox" class="music-enabled" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="control-row volume-row">
+        <label class="control-label">
+          <span class="icon">🔊</span>
+          <span class="text">{t.musicVolume}</span>
+        </label>
+        <input type="range" class="music-volume-slider" min="0" max="100" value="30" />
+        <span class="volume-display">30%</span>
+      </div>
+    </div>
+
+    <div class="control-section">
+      <div class="control-row">
+        <label class="control-label">
+          <span class="icon">🌳</span>
+          <span class="text">{t.ambientSounds}</span>
+        </label>
+        <label class="toggle-switch">
+          <input type="checkbox" class="ambient-enabled" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="control-row volume-row">
+        <label class="control-label">
+          <span class="icon">🔊</span>
+          <span class="text">{t.ambientVolume}</span>
+        </label>
+        <input type="range" class="ambient-volume-slider" min="0" max="100" value="40" />
+        <span class="ambient-volume-display">40%</span>
+      </div>
+    </div>
+
+    <div class="mood-info">
+      <span class="mood-label">{t.mood}:</span>
+      <span class="mood-value">{mood}</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { backgroundMusic, ambientSounds } from '../utils/background-music';
+  import type { MoodType, AmbientType, MusicIntensity } from '../utils/background-music';
+
+  document.querySelectorAll('.story-music-control').forEach(musicControl => {
+    const toggleBtn = musicControl.querySelector('.music-toggle-btn');
+    const panel = musicControl.querySelector('.music-panel') as HTMLElement;
+    const closeBtn = musicControl.querySelector('.close-panel');
+    const musicIcon = musicControl.querySelector('.music-icon');
+
+    const musicEnabledToggle = musicControl.querySelector('.music-enabled') as HTMLInputElement;
+    const ambientEnabledToggle = musicControl.querySelector(
+      '.ambient-enabled'
+    ) as HTMLInputElement;
+    const musicVolumeSlider = musicControl.querySelector(
+      '.music-volume-slider'
+    ) as HTMLInputElement;
+    const ambientVolumeSlider = musicControl.querySelector(
+      '.ambient-volume-slider'
+    ) as HTMLInputElement;
+    const volumeDisplay = musicControl.querySelector('.volume-display');
+    const ambientVolumeDisplay = musicControl.querySelector('.ambient-volume-display');
+
+    // Get config from data attributes
+    const mood = (musicControl.getAttribute('data-mood') || 'calm') as MoodType;
+    const ambient = (musicControl.getAttribute('data-ambient') || 'none') as AmbientType;
+    const intensity = (musicControl.getAttribute('data-intensity') || 'medium') as MusicIntensity;
+    const autoPlay = musicControl.getAttribute('data-autoplay') === 'true';
+
+    // Initialize from state
+    const state = backgroundMusic.getState();
+    musicEnabledToggle.checked = state.musicEnabled;
+    ambientEnabledToggle.checked = state.ambientEnabled;
+    musicVolumeSlider.value = String(state.musicVolume * 100);
+    ambientVolumeSlider.value = String(state.ambientVolume * 100);
+    if (volumeDisplay) volumeDisplay.textContent = `${Math.round(state.musicVolume * 100)}%`;
+    if (ambientVolumeDisplay)
+      ambientVolumeDisplay.textContent = `${Math.round(state.ambientVolume * 100)}%`;
+
+    // Update icon based on state
+    function updateIcon() {
+      if (!musicIcon) return;
+      const musicState = backgroundMusic.getState();
+      if (musicState.musicEnabled || musicState.ambientEnabled) {
+        musicIcon.textContent = '🎵';
+        toggleBtn?.classList.add('active');
+      } else {
+        musicIcon.textContent = '🔇';
+        toggleBtn?.classList.remove('active');
+      }
+    }
+
+    updateIcon();
+
+    // Auto-play if enabled
+    if (autoPlay && state.musicEnabled) {
+      backgroundMusic.playMusic(mood, intensity);
+    }
+
+    if (autoPlay && state.ambientEnabled && ambient !== 'none') {
+      ambientSounds.playAmbient(ambient, {
+        type: ambient,
+        intensity: 0.7,
+        variation: 0.5,
+      });
+    }
+
+    // Toggle panel
+    toggleBtn?.addEventListener('click', () => {
+      if (panel) {
+        const isHidden = panel.hasAttribute('hidden');
+        if (isHidden) {
+          panel.removeAttribute('hidden');
+        } else {
+          panel.setAttribute('hidden', '');
+        }
+      }
+    });
+
+    closeBtn?.addEventListener('click', () => {
+      panel?.setAttribute('hidden', '');
+    });
+
+    // Music controls
+    musicEnabledToggle?.addEventListener('change', () => {
+      const enabled = backgroundMusic.toggleMusic();
+      if (enabled) {
+        backgroundMusic.playMusic(mood, intensity);
+      }
+      updateIcon();
+    });
+
+    musicVolumeSlider?.addEventListener('input', e => {
+      const volume = parseInt((e.target as HTMLInputElement).value) / 100;
+      backgroundMusic.setMusicVolume(volume);
+      if (volumeDisplay) {
+        volumeDisplay.textContent = `${(e.target as HTMLInputElement).value}%`;
+      }
+    });
+
+    // Ambient controls
+    ambientEnabledToggle?.addEventListener('change', () => {
+      const enabled = ambientSounds.toggleAmbient();
+      if (enabled && ambient !== 'none') {
+        ambientSounds.playAmbient(ambient, {
+          type: ambient,
+          intensity: 0.7,
+          variation: 0.5,
+        });
+      }
+      updateIcon();
+    });
+
+    ambientVolumeSlider?.addEventListener('input', e => {
+      const volume = parseInt((e.target as HTMLInputElement).value) / 100;
+      ambientSounds.setAmbientVolume(volume);
+      if (ambientVolumeDisplay) {
+        ambientVolumeDisplay.textContent = `${(e.target as HTMLInputElement).value}%`;
+      }
+    });
+
+    // Clean up on page leave
+    window.addEventListener('beforeunload', () => {
+      backgroundMusic.stopMusic(0.5);
+      ambientSounds.stopAmbient(0.5);
+    });
+
+    // Pause music during TTS narration (lower volume)
+    const storyNarrator = document.querySelector('.interactive-storybook');
+    if (storyNarrator) {
+      storyNarrator.addEventListener('tts-start', () => {
+        const currentVolume = backgroundMusic.getState().musicVolume;
+        backgroundMusic.setMusicVolume(currentVolume * 0.3, 0.3); // Lower to 30%
+      });
+
+      storyNarrator.addEventListener('tts-end', () => {
+        const savedVolume = parseFloat(musicVolumeSlider.value) / 100;
+        backgroundMusic.setMusicVolume(savedVolume, 0.5);
+      });
+    }
+  });
+</script>
+
+<style>
+  .story-music-control {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+  }
+
+  .music-toggle-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 1.5rem;
+  }
+
+  .music-toggle-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+  }
+
+  .music-toggle-btn:active {
+    transform: scale(0.95);
+  }
+
+  .music-toggle-btn.active {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      box-shadow: 0 4px 20px rgba(245, 87, 108, 0.4);
+    }
+    50% {
+      box-shadow: 0 4px 30px rgba(245, 87, 108, 0.6);
+    }
+  }
+
+  .music-icon {
+    line-height: 1;
+  }
+
+  .music-panel {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 0;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+    min-width: 320px;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .music-panel[hidden] {
+    display: none;
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f0f0f0;
+  }
+
+  .panel-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+  }
+
+  .close-panel {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #999;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+  }
+
+  .close-panel:hover {
+    background: #f0f0f0;
+    color: #333;
+  }
+
+  .control-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .control-section:last-of-type {
+    border-bottom: none;
+  }
+
+  .control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .control-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .volume-row {
+    gap: 0.75rem;
+  }
+
+  .control-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #555;
+  }
+
+  .control-label .icon {
+    font-size: 1.2rem;
+  }
+
+  /* Toggle Switch */
+  .toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 26px;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 26px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: '';
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(24px);
+  }
+
+  /* Volume Sliders */
+  .music-volume-slider,
+  .ambient-volume-slider {
+    flex: 1;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ddd;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .music-volume-slider::-webkit-slider-thumb,
+  .ambient-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .music-volume-slider::-moz-range-thumb,
+  .ambient-volume-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .volume-display,
+  .ambient-volume-display {
+    min-width: 45px;
+    text-align: right;
+    font-size: 0.85rem;
+    color: #777;
+    font-weight: 500;
+  }
+
+  .mood-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+
+  .mood-label {
+    font-weight: 600;
+    color: #555;
+  }
+
+  .mood-value {
+    text-transform: capitalize;
+    color: #764ba2;
+    font-weight: 600;
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .story-music-control {
+    left: auto;
+    right: 20px;
+  }
+
+  [dir='rtl'] .music-panel {
+    left: auto;
+    right: 0;
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .music-toggle-btn {
+      width: 48px;
+      height: 48px;
+      font-size: 1.3rem;
+    }
+
+    .music-panel {
+      min-width: 280px;
+      padding: 1.25rem;
+    }
+
+    .panel-header h3 {
+      font-size: 1.1rem;
+    }
+
+    .control-label {
+      font-size: 0.85rem;
+    }
+  }
+
+  /* Accessibility: Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .music-toggle-btn,
+    .music-panel,
+    .slider {
+      animation: none;
+      transition: none;
+    }
+  }
+</style>
