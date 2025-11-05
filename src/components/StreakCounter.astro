@@ -1,0 +1,375 @@
+---
+/**
+ * Streak Counter Component
+ * Displays animated flame that grows with streak
+ */
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale?: Locale;
+  showDetails?: boolean;
+}
+
+const { locale = 'de', showDetails = true } = Astro.props;
+---
+
+<div class="streak-counter" data-locale={locale}>
+  <div class="streak-flame">
+    <div class="flame" data-streak="0">
+      <div class="flame-inner"></div>
+      <div class="flame-spark"></div>
+    </div>
+    <div class="streak-number">
+      <span class="number">0</span>
+      <span class="days-label" data-i18n="daysStreak">Days</span>
+    </div>
+  </div>
+
+  {showDetails && (
+    <div class="streak-details">
+      <div class="streak-stat">
+        <span class="label" data-i18n="currentStreak">Current</span>
+        <span class="value current-streak">0</span>
+      </div>
+      <div class="streak-stat">
+        <span class="label" data-i18n="longestStreak">Longest</span>
+        <span class="value longest-streak">0</span>
+      </div>
+      <div class="streak-stat">
+        <span class="label" data-i18n="totalStars">Stars</span>
+        <span class="value total-stars">0</span>
+      </div>
+    </div>
+  )}
+
+  <div class="freeze-items">
+    <div class="freeze-icon">❄️</div>
+    <span class="freeze-count">0</span>
+  </div>
+</div>
+
+<style>
+  .streak-counter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(255, 159, 64, 0.2);
+  }
+
+  .streak-flame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .flame {
+    position: relative;
+    width: 100px;
+    height: 120px;
+    animation: flicker 2s ease-in-out infinite;
+    transition: transform 0.3s ease;
+  }
+
+  .flame[data-streak="0"] {
+    filter: grayscale(100%);
+    opacity: 0.4;
+  }
+
+  .flame[data-streak="1"],
+  .flame[data-streak="2"] {
+    transform: scale(1);
+  }
+
+  .flame[data-streak="3"],
+  .flame[data-streak="4"],
+  .flame[data-streak="5"],
+  .flame[data-streak="6"] {
+    transform: scale(1.1);
+  }
+
+  .flame[data-streak="7"],
+  .flame[data-streak="8"],
+  .flame[data-streak="9"],
+  .flame[data-streak="10"],
+  .flame[data-streak="11"],
+  .flame[data-streak="12"],
+  .flame[data-streak="13"] {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 10px #ff6b35);
+  }
+
+  .flame[data-streak="14"],
+  .flame[data-streak="15"],
+  .flame[data-streak="16"],
+  .flame[data-streak="17"],
+  .flame[data-streak="18"],
+  .flame[data-streak="19"],
+  .flame[data-streak="20"],
+  .flame[data-streak="21"],
+  .flame[data-streak="22"],
+  .flame[data-streak="23"],
+  .flame[data-streak="24"],
+  .flame[data-streak="25"],
+  .flame[data-streak="26"],
+  .flame[data-streak="27"],
+  .flame[data-streak="28"],
+  .flame[data-streak="29"] {
+    transform: scale(1.3);
+    filter: drop-shadow(0 0 20px #ff4500);
+  }
+
+  .flame[data-streak^="3"],
+  .flame[data-streak^="4"],
+  .flame[data-streak^="5"],
+  .flame[data-streak^="6"],
+  .flame[data-streak^="7"],
+  .flame[data-streak^="8"],
+  .flame[data-streak^="9"] {
+    transform: scale(1.5);
+    filter: drop-shadow(0 0 30px #ff0000);
+  }
+
+  .flame[data-streak^="100"] {
+    transform: scale(2);
+    filter: drop-shadow(0 0 50px #ffd700) drop-shadow(0 0 80px #ff0000);
+    animation: legendary-flicker 1.5s ease-in-out infinite;
+  }
+
+  .flame-inner {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 80px;
+    background: linear-gradient(to top, #ff6b35 0%, #ff9f40 50%, #ffd93d 100%);
+    border-radius: 50% 50% 0 0;
+    animation: flame-dance 1.5s ease-in-out infinite;
+  }
+
+  .flame-spark {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 40px;
+    background: radial-gradient(circle, #fff 0%, #ffd93d 40%, transparent 70%);
+    border-radius: 50%;
+    animation: spark-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes flicker {
+    0%, 100% {
+      transform: scale(1) translateY(0);
+    }
+    50% {
+      transform: scale(1.02) translateY(-2px);
+    }
+  }
+
+  @keyframes legendary-flicker {
+    0%, 100% {
+      transform: scale(2) translateY(0) rotate(-2deg);
+    }
+    33% {
+      transform: scale(2.05) translateY(-5px) rotate(2deg);
+    }
+    66% {
+      transform: scale(1.98) translateY(-3px) rotate(-1deg);
+    }
+  }
+
+  @keyframes flame-dance {
+    0%, 100% {
+      border-radius: 50% 50% 0 0;
+    }
+    25% {
+      border-radius: 45% 55% 0 0;
+    }
+    50% {
+      border-radius: 55% 45% 0 0;
+    }
+    75% {
+      border-radius: 48% 52% 0 0;
+    }
+  }
+
+  @keyframes spark-pulse {
+    0%, 100% {
+      opacity: 0.8;
+      transform: translateX(-50%) scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: translateX(-50%) scale(1.2);
+    }
+  }
+
+  .streak-number {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #ff6b35;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    line-height: 1;
+  }
+
+  .days-label {
+    font-size: 0.875rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .streak-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .streak-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .streak-stat .label {
+    font-size: 0.75rem;
+    color: #999;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .streak-stat .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .freeze-items {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 50px;
+    box-shadow: 0 2px 10px rgba(33, 150, 243, 0.2);
+  }
+
+  .freeze-icon {
+    font-size: 1.5rem;
+    animation: freeze-rotate 3s linear infinite;
+  }
+
+  @keyframes freeze-rotate {
+    0%, 100% {
+      transform: rotate(-10deg);
+    }
+    50% {
+      transform: rotate(10deg);
+    }
+  }
+
+  .freeze-count {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1976d2;
+  }
+
+  @media (max-width: 640px) {
+    .streak-counter {
+      padding: 1.5rem;
+    }
+
+    .flame {
+      width: 80px;
+      height: 100px;
+    }
+
+    .number {
+      font-size: 2.5rem;
+    }
+
+    .streak-details {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .streak-stat {
+      padding: 0.75rem;
+    }
+
+    .streak-stat .value {
+      font-size: 1.25rem;
+    }
+  }
+</style>
+
+<script>
+  import { dailyChallengeManager } from '../utils/daily-challenges';
+
+  function updateStreakDisplay() {
+    const streak = dailyChallengeManager.getStreak();
+    const totalStars = dailyChallengeManager.getTotalStars();
+
+    // Update flame
+    const flame = document.querySelector('.flame') as HTMLElement;
+    if (flame) {
+      flame.dataset.streak = streak.currentStreak.toString();
+    }
+
+    // Update streak number
+    const numberEl = document.querySelector('.streak-number .number');
+    if (numberEl) {
+      numberEl.textContent = streak.currentStreak.toString();
+    }
+
+    // Update stats
+    const currentStreakEl = document.querySelector('.current-streak');
+    const longestStreakEl = document.querySelector('.longest-streak');
+    const totalStarsEl = document.querySelector('.total-stars');
+
+    if (currentStreakEl) currentStreakEl.textContent = streak.currentStreak.toString();
+    if (longestStreakEl) longestStreakEl.textContent = streak.longestStreak.toString();
+    if (totalStarsEl) totalStarsEl.textContent = totalStars.toString();
+
+    // Update freeze count
+    const freezeCount = document.querySelector('.freeze-count');
+    if (freezeCount) {
+      freezeCount.textContent = streak.freezeItemsAvailable.toString();
+    }
+
+    // Show freeze active indicator
+    if (streak.freezeActive) {
+      const freezeItems = document.querySelector('.freeze-items');
+      freezeItems?.classList.add('active');
+    }
+  }
+
+  // Initial load
+  if (typeof window !== 'undefined') {
+    updateStreakDisplay();
+
+    // Listen for challenge completion events
+    window.addEventListener('challenge-completed', updateStreakDisplay);
+    window.addEventListener('streak-updated', updateStreakDisplay);
+  }
+</script>

@@ -1,0 +1,596 @@
+---
+/**
+ * Daily Challenges Page (German - default)
+ * Main hub for daily and weekly challenges with streak tracking
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DailyChallengeCard from '../components/DailyChallengeCard.astro';
+import StreakCounter from '../components/StreakCounter.astro';
+import ChallengeCalendar from '../components/ChallengeCalendar.astro';
+import { getTranslation } from '../utils/i18n';
+
+const locale = 'de';
+const t = (key: string) => getTranslation(key, locale);
+
+const pageTitle = t('challenges');
+const pageDescription = t('challengesDescription') || 'Täglich neue Herausforderungen meistern und Belohnungen verdienen';
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} locale={locale}>
+  <div class="challenges-page">
+    <!-- Page Header -->
+    <header class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">{t('challenges')}</h1>
+        <p class="page-subtitle">
+          Meistere tägliche Herausforderungen und baue deine Leseserie auf!
+        </p>
+      </div>
+    </header>
+
+    <div class="challenges-container">
+      <!-- Top Section: Today's Challenge + Streak -->
+      <section class="challenges-top">
+        <div class="today-challenge-section">
+          <DailyChallengeCard locale={locale} />
+
+          <!-- Quick Actions -->
+          <div class="quick-actions">
+            <button class="action-btn primary" id="start-challenge">
+              <span class="btn-icon">🎯</span>
+              <span>Herausforderung starten</span>
+            </button>
+            <button class="action-btn secondary" id="view-stories">
+              <span class="btn-icon">📚</span>
+              <span>Geschichten ansehen</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="streak-section">
+          <StreakCounter locale={locale} showDetails={true} />
+
+          <!-- Streak Milestones -->
+          <div class="milestone-progress">
+            <h3 class="section-title">Nächster Meilenstein</h3>
+            <div class="milestone-card">
+              <div class="milestone-icon">🏆</div>
+              <div class="milestone-info">
+                <p class="milestone-name">7-Tage Serie</p>
+                <p class="milestone-reward">+10 ⭐ Belohnung</p>
+              </div>
+              <div class="milestone-progress-bar">
+                <div class="milestone-fill" data-progress="0"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Weekly Challenge Section -->
+      <section class="weekly-challenge-section">
+        <h2 class="section-title">
+          <span class="title-icon">🎁</span>
+          {t('weeklyChallenge')}
+        </h2>
+
+        <div class="weekly-challenge-card">
+          <div class="weekly-header">
+            <h3 class="weekly-title">Vielfältiger Leser</h3>
+            <div class="weekly-reward">
+              <span class="reward-label">Belohnung:</span>
+              <span class="reward-value">25 ⭐</span>
+            </div>
+          </div>
+
+          <div class="weekly-tasks">
+            <div class="task-item" data-completed="false">
+              <div class="task-checkbox">
+                <svg class="checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <span class="task-text">Lies 5 verschiedene Charaktergeschichten</span>
+            </div>
+
+            <div class="task-item" data-completed="false">
+              <div class="task-checkbox">
+                <svg class="checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <span class="task-text">Schließe alle Quizze perfekt ab</span>
+            </div>
+
+            <div class="task-item" data-completed="false">
+              <div class="task-checkbox">
+                <svg class="checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <span class="task-text">Lies in mindestens 2 Sprachen</span>
+            </div>
+          </div>
+
+          <div class="weekly-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" data-progress="0"></div>
+            </div>
+            <span class="progress-text">0 / 3 Aufgaben</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Calendar Section -->
+      <section class="calendar-section">
+        <ChallengeCalendar locale={locale} />
+      </section>
+
+      <!-- Upcoming Challenges Preview -->
+      <section class="upcoming-section">
+        <h2 class="section-title">
+          <span class="title-icon">📅</span>
+          {t('upcomingChallenges')}
+        </h2>
+
+        <div class="upcoming-grid">
+          <div class="upcoming-card">
+            <div class="upcoming-day">Morgen</div>
+            <div class="upcoming-icon">📖</div>
+            <p class="upcoming-title">Lesefreund</p>
+            <p class="upcoming-desc">Lies 2 Geschichten</p>
+          </div>
+
+          <div class="upcoming-card">
+            <div class="upcoming-day">Übermorgen</div>
+            <div class="upcoming-icon">🌍</div>
+            <p class="upcoming-title">Sprachforscher</p>
+            <p class="upcoming-desc">Neue Sprache erkunden</p>
+          </div>
+
+          <div class="upcoming-card">
+            <div class="upcoming-day">In 3 Tagen</div>
+            <div class="upcoming-icon">🏆</div>
+            <p class="upcoming-title">Quiz-Champion</p>
+            <p class="upcoming-desc">3 Quizze perfekt</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tips Section -->
+      <section class="tips-section">
+        <div class="tip-card">
+          <div class="tip-icon">💡</div>
+          <div class="tip-content">
+            <h4 class="tip-title">Tipp: Serie-Freeze</h4>
+            <p class="tip-text">
+              Verdiene Freeze-Items bei Meilensteinen. Sie schützen deine Serie,
+              wenn du mal einen Tag nicht lesen kannst!
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .challenges-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #f7f9fc 0%, #ffffff 100%);
+  }
+
+  .page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 2rem 3rem;
+    text-align: center;
+  }
+
+  .header-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .page-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 1rem 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .page-subtitle {
+    font-size: 1.25rem;
+    opacity: 0.95;
+    margin: 0;
+  }
+
+  .challenges-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .challenges-top {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 2rem;
+  }
+
+  .today-challenge-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+  }
+
+  .action-btn .btn-icon {
+    font-size: 1.5rem;
+  }
+
+  .action-btn.primary {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+    box-shadow: 0 4px 20px rgba(67, 233, 123, 0.3);
+  }
+
+  .action-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(67, 233, 123, 0.4);
+  }
+
+  .action-btn.secondary {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+  }
+
+  .action-btn.secondary:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .streak-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .milestone-progress {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .section-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .title-icon {
+    font-size: 1.5rem;
+  }
+
+  .milestone-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .milestone-icon {
+    font-size: 2.5rem;
+  }
+
+  .milestone-info {
+    flex: 1;
+  }
+
+  .milestone-name {
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .milestone-reward {
+    font-size: 0.875rem;
+    color: #ff9f40;
+    margin: 0;
+  }
+
+  .milestone-progress-bar {
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 100px;
+    overflow: hidden;
+    width: 100px;
+  }
+
+  .milestone-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 100px;
+    transition: width 0.5s ease;
+  }
+
+  .weekly-challenge-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .weekly-challenge-card {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .weekly-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .weekly-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+  }
+
+  .weekly-reward {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50px;
+  }
+
+  .reward-label {
+    font-weight: 600;
+    color: #666;
+  }
+
+  .reward-value {
+    font-weight: 700;
+    color: #ff9f40;
+    font-size: 1.125rem;
+  }
+
+  .weekly-tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+  }
+
+  .task-checkbox {
+    width: 28px;
+    height: 28px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+  }
+
+  .task-item[data-completed="true"] .task-checkbox {
+    background: #43e97b;
+    border-color: #43e97b;
+  }
+
+  .checkmark {
+    width: 18px;
+    height: 18px;
+    opacity: 0;
+    color: white;
+    transition: opacity 0.3s ease;
+  }
+
+  .task-item[data-completed="true"] .checkmark {
+    opacity: 1;
+  }
+
+  .task-text {
+    flex: 1;
+    font-weight: 500;
+    color: #333;
+  }
+
+  .task-item[data-completed="true"] .task-text {
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+
+  .weekly-progress {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .weekly-progress .progress-bar {
+    flex: 1;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .weekly-progress .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+    border-radius: 100px;
+    transition: width 0.5s ease;
+  }
+
+  .progress-text {
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+  }
+
+  .upcoming-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .upcoming-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .upcoming-card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 1.5rem;
+    border-radius: 16px;
+    text-align: center;
+  }
+
+  .upcoming-day {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #667eea;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .upcoming-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .upcoming-title {
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .upcoming-desc {
+    font-size: 0.875rem;
+    color: #666;
+    margin: 0;
+  }
+
+  .tips-section {
+    margin-top: 1rem;
+  }
+
+  .tip-card {
+    background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
+    padding: 1.5rem;
+    border-radius: 16px;
+    display: flex;
+    gap: 1rem;
+    border-left: 4px solid #ff9f40;
+  }
+
+  .tip-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .tip-content {
+    flex: 1;
+  }
+
+  .tip-title {
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .tip-text {
+    color: #666;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 1024px) {
+    .challenges-top {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .page-header {
+      padding: 3rem 1.5rem 2rem;
+    }
+
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .page-subtitle {
+      font-size: 1rem;
+    }
+
+    .challenges-container {
+      padding: 1.5rem;
+    }
+
+    .quick-actions {
+      grid-template-columns: 1fr;
+    }
+
+    .upcoming-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Handle challenge start
+  document.getElementById('start-challenge')?.addEventListener('click', () => {
+    window.location.href = '/stories';
+  });
+
+  // Handle view stories
+  document.getElementById('view-stories')?.addEventListener('click', () => {
+    window.location.href = '/stories';
+  });
+</script>

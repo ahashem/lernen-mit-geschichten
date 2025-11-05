@@ -1,0 +1,269 @@
+---
+/**
+ * Challenge Calendar Component
+ * Shows 30-day history of completed challenges with heat map
+ */
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'de' } = Astro.props;
+---
+
+<div class="challenge-calendar" data-locale={locale}>
+  <div class="calendar-header">
+    <h3 class="calendar-title" data-i18n="challengeHistory">Challenge History</h3>
+    <p class="calendar-subtitle">Last 30 days</p>
+  </div>
+
+  <div class="calendar-grid">
+    <!-- Days will be dynamically generated -->
+  </div>
+
+  <div class="calendar-legend">
+    <span class="legend-label">Less</span>
+    <div class="legend-squares">
+      <div class="legend-square" data-level="0"></div>
+      <div class="legend-square" data-level="1"></div>
+      <div class="legend-square" data-level="2"></div>
+      <div class="legend-square" data-level="3"></div>
+    </div>
+    <span class="legend-label">More</span>
+  </div>
+</div>
+
+<style>
+  .challenge-calendar {
+    padding: 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .calendar-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .calendar-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .calendar-subtitle {
+    font-size: 0.875rem;
+    color: #999;
+    margin: 0;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .calendar-day {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    background: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #999;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .calendar-day:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1;
+  }
+
+  .calendar-day[data-completed="true"] {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+  }
+
+  .calendar-day[data-completed="true"]::after {
+    content: '✓';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 0.875rem;
+  }
+
+  .calendar-day[data-streak="true"] {
+    background: linear-gradient(135deg, #ff6b35 0%, #ff9f40 100%);
+    box-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+  }
+
+  .calendar-day[data-streak="true"]::before {
+    content: '🔥';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1rem;
+  }
+
+  .calendar-day[data-milestone="true"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+  }
+
+  .calendar-day[data-milestone="true"]::before {
+    content: '⭐';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+  }
+
+  .calendar-day .day-number {
+    font-size: 0.875rem;
+    line-height: 1;
+  }
+
+  .calendar-day .day-name {
+    font-size: 0.625rem;
+    opacity: 0.7;
+    margin-top: 2px;
+  }
+
+  .calendar-day[data-today="true"] {
+    border: 2px solid #667eea;
+  }
+
+  .calendar-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .legend-label {
+    font-size: 0.75rem;
+    color: #999;
+  }
+
+  .legend-squares {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .legend-square {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+  }
+
+  .legend-square[data-level="0"] {
+    background: #f0f0f0;
+  }
+
+  .legend-square[data-level="1"] {
+    background: #c8e6c9;
+  }
+
+  .legend-square[data-level="2"] {
+    background: #81c784;
+  }
+
+  .legend-square[data-level="3"] {
+    background: #43a047;
+  }
+
+  @media (max-width: 640px) {
+    .challenge-calendar {
+      padding: 1.5rem;
+    }
+
+    .calendar-grid {
+      gap: 0.375rem;
+    }
+
+    .calendar-day {
+      font-size: 0.625rem;
+    }
+
+    .calendar-day .day-name {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { dailyChallengeManager } from '../utils/daily-challenges';
+
+  function renderCalendar() {
+    const grid = document.querySelector('.calendar-grid');
+    if (!grid) return;
+
+    const history = dailyChallengeManager.getHistory();
+    const today = new Date().toISOString().split('T')[0];
+    const streak = dailyChallengeManager.getStreak();
+
+    grid.innerHTML = '';
+
+    history.forEach((day, index) => {
+      const date = new Date(day.date);
+      const dayEl = document.createElement('div');
+      dayEl.className = 'calendar-day';
+      dayEl.dataset.date = day.date;
+      dayEl.dataset.completed = day.completed.toString();
+      dayEl.dataset.today = (day.date === today).toString();
+
+      // Check if part of current streak
+      const daysDiff = Math.floor(
+        (new Date(today).getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      if (daysDiff < streak.currentStreak && day.completed) {
+        dayEl.dataset.streak = 'true';
+      }
+
+      // Check for milestones
+      if (streak.streakMilestones.length > 0 && day.completed) {
+        const streakDayNumber = index + 1;
+        if ([7, 14, 30, 60, 100].includes(streakDayNumber)) {
+          dayEl.dataset.milestone = 'true';
+        }
+      }
+
+      const dayNumber = document.createElement('span');
+      dayNumber.className = 'day-number';
+      dayNumber.textContent = date.getDate().toString();
+
+      const dayName = document.createElement('span');
+      dayName.className = 'day-name';
+      dayName.textContent = date.toLocaleDateString('en-US', { weekday: 'short' });
+
+      dayEl.appendChild(dayNumber);
+      dayEl.appendChild(dayName);
+
+      // Tooltip
+      dayEl.title = `${date.toLocaleDateString()} - ${day.completed ? 'Completed ✓' : 'Not completed'}`;
+
+      grid.appendChild(dayEl);
+    });
+  }
+
+  // Initialize
+  if (typeof window !== 'undefined') {
+    renderCalendar();
+
+    // Re-render on challenge completion
+    window.addEventListener('challenge-completed', renderCalendar);
+  }
+</script>
