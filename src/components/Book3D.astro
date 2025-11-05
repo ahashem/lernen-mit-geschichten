@@ -1,0 +1,1247 @@
+---
+import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
+
+export interface StoryPage {
+  text: string;
+  image?: string;
+}
+
+interface Props {
+  pages: StoryPage[];
+  storyId: string;
+  locale: Locale;
+  title: string;
+  theme?: 'modern' | 'classic' | 'storybook' | 'comic' | 'vintage';
+}
+
+const { pages, storyId, locale, title, theme = 'storybook' } = Astro.props;
+
+// Translations
+const t = {
+  autoPlay: getTranslation(locale, 'autoPlay'),
+  volume: getTranslation(locale, 'volume'),
+  speed: getTranslation(locale, 'speed'),
+  print: getTranslation(locale, 'print'),
+  theme: getTranslation(locale, 'theme') || 'Theme',
+  settings: getTranslation(locale, 'settings') || 'Settings',
+  previous: getTranslation(locale, 'previous') || 'Previous',
+  next: getTranslation(locale, 'next') || 'Next',
+};
+---
+
+<div class="book3d-container" data-story-id={storyId} data-locale={locale} data-theme={theme}>
+  <h2 class="story-title">{title}</h2>
+
+  <!-- 3D Book -->
+  <div class="book3d-wrapper">
+    <div class="book3d">
+      <!-- Book spine -->
+      <div class="book-spine"></div>
+
+      <!-- Book cover (front) -->
+      <div class="book-cover front">
+        <div class="cover-content">
+          <h3>{title}</h3>
+          <div class="cover-decoration"></div>
+        </div>
+      </div>
+
+      <!-- Pages container -->
+      <div class="book-pages">
+        {
+          pages.map((page, index) => (
+            <div
+              class="page-spread"
+              data-page-index={index}
+              data-visible={index === 0 ? 'true' : 'false'}
+            >
+              {/* Left page */}
+              <div class="page left-page">
+                <div class="page-content">
+                  <div class="page-number">{index * 2 + 1}</div>
+                  {index > 0 && pages[index - 1]?.image && (
+                    <div class="page-image">
+                      <img
+                        src={pages[index - 1].image}
+                        alt={`Page ${index * 2}`}
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  {index > 0 && (
+                    <div class="page-text" data-page={index * 2 - 1}>
+                      {pages[index - 1].text}
+                    </div>
+                  )}
+                </div>
+                <div class="page-shadow left"></div>
+              </div>
+
+              {/* Right page */}
+              <div class="page right-page">
+                <div class="page-content">
+                  <div class="page-number">{index * 2 + 2}</div>
+                  {page.image && (
+                    <div class="page-image">
+                      <img src={page.image} alt={`Page ${index * 2 + 2}`} loading="lazy" />
+                    </div>
+                  )}
+                  <div class="page-text" data-page={index * 2}>
+                    {page.text}
+                  </div>
+                </div>
+                <div class="page-shadow right"></div>
+              </div>
+
+              {/* Page curl overlay (for flip animation) */}
+              <div class="page-curl">
+                <div class="curl-gradient"></div>
+              </div>
+
+              {/* Corner fold indicators */}
+              <div class="corner-fold top-right" data-corner="top-right"></div>
+              <div class="corner-fold bottom-right" data-corner="bottom-right"></div>
+              <div class="corner-fold top-left" data-corner="top-left"></div>
+              <div class="corner-fold bottom-left" data-corner="bottom-left"></div>
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- Book cover (back) -->
+      <div class="book-cover back">
+        <div class="cover-content">
+          <p>The End</p>
+        </div>
+      </div>
+
+      <!-- Bookmark ribbon -->
+      <div class="bookmark-ribbon"></div>
+    </div>
+
+    <!-- Drop shadow -->
+    <div class="book-shadow"></div>
+  </div>
+
+  <!-- Navigation arrows -->
+  <div class="book-navigation">
+    <button class="nav-btn prev-page" aria-label={t.previous} disabled>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+    <button class="nav-btn next-page" aria-label={t.next}>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Floating Control Island (same as InteractiveStorybook) -->
+  <div class="control-island">
+    <div class="control-island-content">
+      <!-- Primary Controls -->
+      <div class="primary-controls">
+        <button class="control-btn play-pause" data-action="play" aria-label="Play/Pause">
+          <span class="icon">▶️</span>
+        </button>
+
+        <button
+          class="control-btn auto-play"
+          data-enabled="false"
+          aria-label="Auto-play"
+          title={t.autoPlay}
+        >
+          <span class="icon">🔄</span>
+        </button>
+
+        <div class="page-indicator">
+          <span class="current-page">1</span>
+          <span class="separator">/</span>
+          <span class="total-pages">{pages.length * 2}</span>
+        </div>
+      </div>
+
+      <!-- Expandable Settings -->
+      <button class="control-btn settings-toggle" aria-label={t.settings}>
+        <span class="icon">⚙️</span>
+      </button>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" hidden>
+      <div class="setting-row">
+        <label class="setting-label">
+          <span class="icon">🔊</span>
+          <span class="text">{t.volume}</span>
+        </label>
+        <input
+          type="range"
+          class="volume-slider"
+          min="0"
+          max="100"
+          value="80"
+          aria-label={t.volume}
+        />
+        <span class="value-display">80%</span>
+      </div>
+
+      <div class="setting-row">
+        <label class="setting-label">
+          <span class="icon">⏱️</span>
+          <span class="text">{t.speed}</span>
+        </label>
+        <select class="speed-select" aria-label={t.speed}>
+          <option value="0.75">0.75x</option>
+          <option value="0.85" selected>0.85x</option>
+          <option value="1.0">1.0x</option>
+          <option value="1.2">1.2x</option>
+        </select>
+      </div>
+
+      <div class="setting-row">
+        <label class="setting-label">
+          <span class="icon">🎨</span>
+          <span class="text">{t.theme}</span>
+        </label>
+        <select class="theme-select" aria-label={t.theme}>
+          <option value="modern">Modern</option>
+          <option value="classic">Classic</option>
+          <option value="storybook" selected>Storybook</option>
+          <option value="comic">Comic</option>
+          <option value="vintage">Vintage</option>
+        </select>
+      </div>
+
+      <div class="setting-row action-row">
+        <button class="action-btn print-btn" aria-label={t.print}>
+          <span class="icon">🖨️</span>
+          <span class="text">{t.print}</span>
+        </button>
+      </div>
+
+      <div class="setting-row action-row">
+        <button
+          class="action-btn export-booklet-interactive"
+          data-story-title={title}
+          data-locale={locale}
+        >
+          <span class="icon">📖</span>
+          <span class="text">{getTranslation(locale, 'exportBooklet')}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { StoryNarrator, getTTSLocale } from '../utils/text-to-speech';
+  import { achievementTracker } from '../utils/achievements';
+  import type { Locale } from '../utils/i18n';
+  import {
+    DEFAULT_BOOK_CONFIG,
+    BOOK_THEMES,
+    Easing,
+    calculatePageTransform,
+    calculateShadowGradient,
+    calculateSpineShadow,
+    detectGrabbedCorner,
+    calculateSwipeVelocity,
+    triggerHapticFeedback,
+    playFlipSound,
+    prefersReducedMotion,
+    getReducedMotionTransform,
+    requestAnimFrame,
+    cancelAnimFrame,
+    type Book3DConfig,
+    type PageFlipState,
+    type Point,
+  } from '../utils/book-3d';
+
+  document.querySelectorAll('.book3d-container').forEach(container => {
+    const storyId = container.getAttribute('data-story-id');
+    const locale = (container.getAttribute('data-locale') || 'de') as Locale;
+    const initialTheme = container.getAttribute('data-theme') as keyof typeof BOOK_THEMES || 'storybook';
+    const ttsLocale = getTTSLocale(locale);
+
+    // Track story start
+    if (storyId) {
+      achievementTracker.trackStoryStart(storyId);
+    }
+
+    // Configuration
+    let config: Book3DConfig = {
+      ...DEFAULT_BOOK_CONFIG,
+      theme: initialTheme,
+      soundEffects: false, // Default off
+      vibration: false, // Default off
+    };
+
+    // Check for reduced motion preference
+    const reducedMotion = prefersReducedMotion();
+    if (reducedMotion) {
+      config.enablePageCurl = false;
+      config.flipDuration = 300; // Faster for reduced motion
+    }
+
+    // Initialize narrator
+    const narrator = new StoryNarrator(ttsLocale);
+    let autoPlayEnabled = false;
+    let currentRate = 0.85;
+    let currentVolume = 0.8;
+
+    // Page flip state
+    const state: PageFlipState = {
+      currentPage: 0,
+      targetPage: 0,
+      isFlipping: false,
+      flipProgress: 0,
+      dragPosition: null,
+      flipDirection: 'forward',
+      isDragging: false,
+      curlAmount: 0,
+    };
+
+    // Get elements
+    const book = container.querySelector('.book3d') as HTMLElement;
+    const pages = Array.from(container.querySelectorAll('.page-spread')) as HTMLElement[];
+    const prevBtn = container.querySelector('.prev-page') as HTMLButtonElement;
+    const nextBtn = container.querySelector('.next-page') as HTMLButtonElement;
+    const playPauseBtn = container.querySelector('.play-pause') as HTMLButtonElement;
+    const autoPlayBtn = container.querySelector('.auto-play') as HTMLButtonElement;
+    const currentPageEl = container.querySelector('.current-page') as HTMLElement;
+    const totalPagesEl = container.querySelector('.total-pages') as HTMLElement;
+    const settingsToggle = container.querySelector('.settings-toggle') as HTMLButtonElement;
+    const settingsPanel = container.querySelector('.settings-panel') as HTMLElement;
+    const volumeSlider = container.querySelector('.volume-slider') as HTMLInputElement;
+    const speedSelect = container.querySelector('.speed-select') as HTMLSelectElement;
+    const themeSelect = container.querySelector('.theme-select') as HTMLSelectElement;
+    const valueDisplay = container.querySelector('.value-display') as HTMLElement;
+    const spine = container.querySelector('.book-spine') as HTMLElement;
+
+    // Apply initial theme
+    applyTheme(config.theme);
+
+    // Set theme select value
+    if (themeSelect) {
+      themeSelect.value = config.theme;
+    }
+
+    /**
+     * Apply book theme
+     */
+    function applyTheme(theme: keyof typeof BOOK_THEMES) {
+      const themeConfig = BOOK_THEMES[theme];
+      const bookWrapper = container.querySelector('.book3d-wrapper') as HTMLElement;
+
+      if (bookWrapper) {
+        bookWrapper.style.setProperty('--page-color', themeConfig.pageColor);
+        bookWrapper.style.setProperty('--background-color', themeConfig.backgroundColor);
+        bookWrapper.style.setProperty('--shadow-color', themeConfig.shadowColor);
+        bookWrapper.style.setProperty('--text-color', themeConfig.textColor);
+
+        // Apply texture if enabled
+        if (config.pageTexture && themeConfig.texture !== 'none') {
+          pages.forEach(pageSpread => {
+            const leftPage = pageSpread.querySelector('.left-page') as HTMLElement;
+            const rightPage = pageSpread.querySelector('.right-page') as HTMLElement;
+            if (leftPage) leftPage.style.backgroundImage = themeConfig.texture;
+            if (rightPage) rightPage.style.backgroundImage = themeConfig.texture;
+          });
+        }
+      }
+
+      // Update spine shadow
+      updateSpineShadow();
+    }
+
+    /**
+     * Update spine shadow based on current page
+     */
+    function updateSpineShadow() {
+      if (spine) {
+        const shadow = calculateSpineShadow(state.currentPage, pages.length, config.theme);
+        spine.style.boxShadow = shadow;
+      }
+    }
+
+    /**
+     * Flip to specific page
+     */
+    function flipToPage(pageIndex: number) {
+      if (state.isFlipping || pageIndex < 0 || pageIndex >= pages.length) return;
+
+      state.targetPage = pageIndex;
+      state.flipDirection = pageIndex > state.currentPage ? 'forward' : 'backward';
+      state.isFlipping = true;
+      state.flipProgress = 0;
+
+      // Play sound and haptic feedback
+      if (config.soundEffects) {
+        playFlipSound(state.flipDirection);
+      }
+      if (config.vibration) {
+        triggerHapticFeedback('light');
+      }
+
+      // Animate flip
+      animateFlip();
+    }
+
+    /**
+     * Animate page flip
+     */
+    function animateFlip() {
+      const startTime = performance.now();
+
+      function animate(currentTime: number) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / config.flipDuration, 1);
+
+        // Update flip progress with easing
+        state.flipProgress = Easing.easeInOutQuart(progress);
+
+        // Apply transform to current page
+        const currentPageEl = pages[state.currentPage];
+        const targetPageEl = pages[state.targetPage];
+
+        if (currentPageEl && reducedMotion) {
+          // Reduced motion: simple fade and slide
+          const transform = getReducedMotionTransform(state.flipProgress, state.flipDirection);
+          currentPageEl.style.transform = transform;
+          currentPageEl.style.opacity = String(1 - state.flipProgress);
+        } else if (currentPageEl) {
+          // Full 3D flip animation
+          const transform = calculatePageTransform(state.flipProgress, state.flipDirection, config);
+          currentPageEl.style.transform = transform;
+
+          // Update shadows
+          if (config.enableShadows) {
+            const shadowGradient = calculateShadowGradient(
+              state.flipProgress,
+              state.flipDirection,
+              config.theme
+            );
+            const shadowEl = currentPageEl.querySelector(
+              `.page-shadow.${state.flipDirection === 'forward' ? 'left' : 'right'}`
+            ) as HTMLElement;
+            if (shadowEl) {
+              shadowEl.style.background = shadowGradient;
+              shadowEl.style.opacity = String(state.flipProgress);
+            }
+          }
+        }
+
+        // Continue animation or finish
+        if (progress < 1) {
+          requestAnimFrame(animate);
+        } else {
+          finishFlip();
+        }
+      }
+
+      requestAnimFrame(animate);
+    }
+
+    /**
+     * Finish page flip
+     */
+    function finishFlip() {
+      // Hide current page, show target page
+      pages[state.currentPage]?.setAttribute('data-visible', 'false');
+      pages[state.targetPage]?.setAttribute('data-visible', 'true');
+
+      // Reset transform
+      pages[state.currentPage]?.style.removeProperty('transform');
+      pages[state.currentPage]?.style.removeProperty('opacity');
+
+      // Update state
+      state.currentPage = state.targetPage;
+      state.isFlipping = false;
+      state.flipProgress = 0;
+
+      // Update UI
+      updatePageIndicator();
+      updateNavigationButtons();
+      updateSpineShadow();
+
+      // Save progress
+      if (storyId) {
+        localStorage.setItem(`story-progress-${storyId}`, String(state.currentPage));
+
+        // Track completion
+        if (state.currentPage === pages.length - 1) {
+          const unlockedAchievements = achievementTracker.trackStoryRead(
+            storyId,
+            locale,
+            undefined
+          );
+          unlockedAchievements.forEach(achievementId => {
+            achievementTracker.showAchievementUnlock(achievementId, locale);
+          });
+        }
+      }
+
+      // Auto-play: read current page
+      if (autoPlayEnabled) {
+        setTimeout(() => readCurrentPage(), 300);
+      }
+    }
+
+    /**
+     * Update page indicator
+     */
+    function updatePageIndicator() {
+      if (currentPageEl) {
+        currentPageEl.textContent = String(state.currentPage * 2 + 1);
+      }
+    }
+
+    /**
+     * Update navigation buttons
+     */
+    function updateNavigationButtons() {
+      if (prevBtn) {
+        prevBtn.disabled = state.currentPage === 0;
+      }
+      if (nextBtn) {
+        nextBtn.disabled = state.currentPage === pages.length - 1;
+      }
+    }
+
+    /**
+     * Read current page with TTS
+     */
+    function readCurrentPage() {
+      const pageSpread = pages[state.currentPage];
+      if (!pageSpread) return;
+
+      // Get text from both pages
+      const leftText = pageSpread.querySelector('.left-page .page-text')?.textContent?.trim() || '';
+      const rightText = pageSpread.querySelector('.right-page .page-text')?.textContent?.trim() || '';
+      const text = `${leftText} ${rightText}`.trim();
+
+      if (!text) return;
+
+      // Split into words for highlighting
+      const pageTexts = [
+        pageSpread.querySelector('.left-page .page-text'),
+        pageSpread.querySelector('.right-page .page-text'),
+      ].filter(Boolean) as HTMLElement[];
+
+      pageTexts.forEach(pageText => {
+        const words = pageText.textContent?.trim().split(/(\s+)/) || [];
+        pageText.innerHTML = '';
+        words.forEach(word => {
+          if (word.trim()) {
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.textContent = word;
+            pageText.appendChild(span);
+          } else {
+            pageText.appendChild(document.createTextNode(word));
+          }
+        });
+      });
+
+      let currentWordIndex = 0;
+      const allWords = pageTexts.flatMap(pt => Array.from(pt.querySelectorAll('.word')));
+
+      narrator.speak(text, {
+        rate: currentRate,
+        volume: currentVolume,
+        onWordHighlight: () => {
+          allWords.forEach(el => el.classList.remove('highlight'));
+          if (allWords[currentWordIndex]) {
+            allWords[currentWordIndex].classList.add('highlight');
+            currentWordIndex++;
+          }
+        },
+        onEnd: () => {
+          allWords.forEach(el => el.classList.remove('highlight'));
+          if (autoPlayEnabled && state.currentPage < pages.length - 1) {
+            setTimeout(() => flipToPage(state.currentPage + 1), 1000);
+          } else {
+            updatePlayPauseButton(false);
+          }
+        },
+        onStart: () => {
+          updatePlayPauseButton(true);
+        },
+      });
+    }
+
+    /**
+     * Update play/pause button
+     */
+    function updatePlayPauseButton(isPlaying: boolean) {
+      if (!playPauseBtn) return;
+      const icon = playPauseBtn.querySelector('.icon');
+      if (icon) {
+        icon.textContent = isPlaying ? '⏸️' : '▶️';
+      }
+      playPauseBtn.setAttribute('data-action', isPlaying ? 'pause' : 'play');
+    }
+
+    // Event listeners
+    prevBtn?.addEventListener('click', () => flipToPage(state.currentPage - 1));
+    nextBtn?.addEventListener('click', () => flipToPage(state.currentPage + 1));
+
+    playPauseBtn?.addEventListener('click', () => {
+      const action = playPauseBtn.getAttribute('data-action');
+      if (action === 'play') {
+        readCurrentPage();
+      } else {
+        narrator.stop();
+        updatePlayPauseButton(false);
+      }
+    });
+
+    autoPlayBtn?.addEventListener('click', () => {
+      autoPlayEnabled = !autoPlayEnabled;
+      autoPlayBtn.setAttribute('data-enabled', String(autoPlayEnabled));
+      const icon = autoPlayBtn.querySelector('.icon');
+      if (icon) {
+        icon.textContent = autoPlayEnabled ? '⏸️' : '🔄';
+      }
+      if (autoPlayEnabled) {
+        readCurrentPage();
+      }
+    });
+
+    volumeSlider?.addEventListener('input', e => {
+      currentVolume = parseInt((e.target as HTMLInputElement).value) / 100;
+      if (valueDisplay) {
+        valueDisplay.textContent = `${(e.target as HTMLInputElement).value}%`;
+      }
+    });
+
+    speedSelect?.addEventListener('change', e => {
+      currentRate = parseFloat((e.target as HTMLSelectElement).value);
+    });
+
+    themeSelect?.addEventListener('change', e => {
+      const newTheme = (e.target as HTMLSelectElement).value as keyof typeof BOOK_THEMES;
+      config.theme = newTheme;
+      applyTheme(newTheme);
+    });
+
+    settingsToggle?.addEventListener('click', () => {
+      const isHidden = settingsPanel?.hasAttribute('hidden');
+      if (isHidden) {
+        settingsPanel?.removeAttribute('hidden');
+        settingsToggle?.setAttribute('aria-expanded', 'true');
+      } else {
+        settingsPanel?.setAttribute('hidden', '');
+        settingsToggle?.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') {
+        flipToPage(state.currentPage - 1);
+      } else if (e.key === 'ArrowRight') {
+        flipToPage(state.currentPage + 1);
+      }
+    });
+
+    // Touch gestures
+    let touchStart: Point | null = null;
+    let touchStartTime = 0;
+
+    book?.addEventListener('touchstart', e => {
+      const touch = e.touches[0];
+      touchStart = { x: touch.clientX, y: touch.clientY };
+      touchStartTime = performance.now();
+    });
+
+    book?.addEventListener('touchend', e => {
+      if (!touchStart) return;
+
+      const touch = e.changedTouches[0];
+      const touchEnd: Point = { x: touch.clientX, y: touch.clientY };
+      const touchEndTime = performance.now();
+
+      const { velocity, direction } = calculateSwipeVelocity(
+        touchStart,
+        touchEnd,
+        touchStartTime,
+        touchEndTime
+      );
+
+      // Swipe threshold
+      if (velocity > 0.5) {
+        if (direction === 'left') {
+          flipToPage(state.currentPage + 1);
+        } else if (direction === 'right') {
+          flipToPage(state.currentPage - 1);
+        }
+      }
+
+      touchStart = null;
+    });
+
+    // Load saved progress
+    if (storyId) {
+      const saved = localStorage.getItem(`story-progress-${storyId}`);
+      if (saved) {
+        const savedPage = parseInt(saved, 10);
+        state.currentPage = savedPage;
+        pages.forEach((page, index) => {
+          page.setAttribute('data-visible', index === savedPage ? 'true' : 'false');
+        });
+        updatePageIndicator();
+        updateNavigationButtons();
+      }
+    }
+
+    // Initialize
+    updateNavigationButtons();
+  });
+</script>
+
+<style>
+  .book3d-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .story-title {
+    text-align: center;
+    color: var(--color-primary);
+    margin-bottom: 3rem;
+    font-size: 2.5rem;
+  }
+
+  .book3d-wrapper {
+    --page-color: #fffef8;
+    --background-color: #ff9f40;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --text-color: #333333;
+    --page-thickness: 3px;
+
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto 3rem;
+    perspective: 2000px;
+    perspective-origin: center;
+  }
+
+  .book3d {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 11;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+  }
+
+  /* Book spine */
+  .book-spine {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    transform: translateX(-50%) rotateY(90deg);
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.2),
+      var(--background-color) 20%,
+      var(--background-color) 80%,
+      rgba(0, 0, 0, 0.2)
+    );
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+  }
+
+  /* Page spread (contains left and right pages) */
+  .page-spread {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+    display: none;
+  }
+
+  .page-spread[data-visible='true'] {
+    display: block;
+  }
+
+  /* Individual pages */
+  .page {
+    position: absolute;
+    top: 5%;
+    width: 48%;
+    height: 90%;
+    background: var(--page-color);
+    box-shadow: 0 2px 10px var(--shadow-color);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .left-page {
+    left: 1%;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
+
+  .right-page {
+    right: 1%;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+
+  /* Page content */
+  .page-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 2.5rem 2rem;
+    color: var(--text-color);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .page-number {
+    position: absolute;
+    bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-color);
+    opacity: 0.5;
+    font-weight: 600;
+  }
+
+  .left-page .page-number {
+    left: 1rem;
+  }
+
+  .right-page .page-number {
+    right: 1rem;
+  }
+
+  .page-image {
+    width: 100%;
+    max-height: 50%;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .page-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .page-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    text-align: justify;
+  }
+
+  .page-text .word {
+    display: inline;
+    transition: all 0.2s ease;
+    padding: 2px;
+    border-radius: 3px;
+  }
+
+  .page-text .word.highlight {
+    background: var(--color-secondary);
+    font-weight: 600;
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(255, 217, 61, 0.4);
+  }
+
+  /* Page shadows */
+  .page-shadow {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 30%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .page-shadow.left {
+    left: 0;
+  }
+
+  .page-shadow.right {
+    right: 0;
+  }
+
+  /* Corner fold indicators */
+  .corner-fold {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .corner-fold::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+
+  .corner-fold.top-right {
+    top: 0;
+    right: 0;
+  }
+
+  .corner-fold.top-right::after {
+    top: 0;
+    right: 0;
+    border-width: 0 30px 30px 0;
+    border-color: transparent rgba(0, 0, 0, 0.1) transparent transparent;
+  }
+
+  .corner-fold.bottom-right {
+    bottom: 0;
+    right: 0;
+  }
+
+  .corner-fold.bottom-right::after {
+    bottom: 0;
+    right: 0;
+    border-width: 0 0 30px 30px;
+    border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+  }
+
+  .page:hover .corner-fold {
+    opacity: 1;
+  }
+
+  /* Bookmark ribbon */
+  .bookmark-ribbon {
+    position: absolute;
+    top: 0;
+    right: 30%;
+    width: 25px;
+    height: 120%;
+    background: linear-gradient(to bottom, #e74c3c, #c0392b);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    clip-path: polygon(0 0, 100% 0, 100% 95%, 50% 90%, 0 95%);
+    z-index: 1;
+    opacity: 0.85;
+    transition: opacity 0.3s ease;
+  }
+
+  .bookmark-ribbon:hover {
+    opacity: 1;
+  }
+
+  /* Book shadow */
+  .book-shadow {
+    position: absolute;
+    bottom: -20px;
+    left: 10%;
+    right: 10%;
+    height: 20px;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0.3) 0%,
+      transparent 70%
+    );
+    filter: blur(10px);
+    z-index: -1;
+  }
+
+  /* Navigation buttons */
+  .book-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border: none;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--color-primary);
+  }
+
+  .nav-btn:hover:not(:disabled) {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .nav-btn:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  .nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .nav-btn svg {
+    stroke-width: 3;
+  }
+
+  /* Control island (reuse from InteractiveStorybook) */
+  .control-island {
+    position: sticky;
+    bottom: 20px;
+    margin: 2rem auto 1rem;
+    max-width: fit-content;
+    z-index: 100;
+  }
+
+  .control-island-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .primary-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.3rem;
+    transition: all 0.2s ease;
+  }
+
+  .control-btn:hover {
+    background: rgba(247, 151, 49, 0.1);
+    transform: scale(1.1);
+  }
+
+  .control-btn:active {
+    transform: scale(0.95);
+  }
+
+  .auto-play[data-enabled='true'] {
+    background: rgba(247, 151, 49, 0.2);
+  }
+
+  .page-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 0 0.5rem;
+  }
+
+  .current-page {
+    color: var(--color-primary);
+  }
+
+  /* Settings panel (reuse styles) */
+  .settings-panel {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 10px;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    min-width: 300px;
+    animation: slideUp 0.2s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  .settings-panel[hidden] {
+    display: none;
+  }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .setting-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .action-row {
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .setting-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 80px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .volume-slider,
+  .speed-select,
+  .theme-select {
+    flex: 1;
+  }
+
+  .volume-slider {
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ddd;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+
+  .value-display {
+    min-width: 45px;
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+  }
+
+  .speed-select,
+  .theme-select {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    background: white;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .action-btn:hover {
+    background: #e88f30;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .book3d-container {
+      padding: 1rem 0.5rem;
+    }
+
+    .story-title {
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+    }
+
+    .book3d-wrapper {
+      max-width: 100%;
+    }
+
+    .page-content {
+      padding: 1.5rem 1rem;
+    }
+
+    .page-text {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .nav-btn {
+      width: 50px;
+      height: 50px;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .page-spread {
+      transition: opacity 0.3s ease;
+    }
+
+    .book3d,
+    .control-btn,
+    .nav-btn {
+      transition: none;
+    }
+  }
+</style>
