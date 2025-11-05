@@ -39,5 +39,21 @@
   "bilingualMode": "دو لسانی موڈ",
   "fontSize": "فونٹ سائز",
   "textToSpeech": "بلند آواز میں پڑھیں",
-  "settings": "ترتیبات"
+  "settings": "ترتیبات",
+  "voiceInput": "آواز کا جواب",
+  "listening": "سن رہا ہے...",
+  "tapToSpeak": "بولنے کے لیے ٹیپ کریں",
+  "pressSpaceToSpeak": "بولنے کے لیے اسپیس دبائیں",
+  "tryAgain": "دوبارہ کوشش کریں",
+  "voiceNotRecognized": "سمجھ نہیں آیا",
+  "micPermissionDenied": "مائیکروفون تک رسائی مسترد",
+  "speakYourAnswer": "اپنا جواب بولیں",
+  "transcribing": "نقل کیا جا رہا ہے...",
+  "achievements": "کامیابیاں",
+  "achievementsDescription": "اپنے سیکھنے کے سفر کو ٹریک کریں اور کامیابیاں حاصل کریں",
+  "achievementUnlocked": "کامیابی حاصل کی!",
+  "allAchievements": "تمام کامیابیاں",
+  "unlockedAchievements": "کھولی گئیں",
+  "lockedAchievements": "بند",
+  "progressDashboard": "پیش رفت"
 }

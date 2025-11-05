@@ -65,6 +65,10 @@ const { questions, language, storyId, title } = Astro.props;
                       ? 'False'
                       : 'Falsch'}
             </button>
+            <button class="voice-btn" data-question-type="truefalse" title={getTranslation(language, 'voiceInput')} aria-label={getTranslation(language, 'voiceInput')}>
+              <span class="mic-icon">🎤</span>
+              <span class="voice-status">{getTranslation(language, 'tapToSpeak')}</span>
+            </button>
           </div>
         )}
 
@@ -75,6 +79,10 @@ const { questions, language, storyId, title } = Astro.props;
                 {String.fromCharCode(97 + i)}) {opt}
               </button>
             ))}
+            <button class="voice-btn" data-question-type="multiplechoice" title={getTranslation(language, 'voiceInput')} aria-label={getTranslation(language, 'voiceInput')}>
+              <span class="mic-icon">🎤</span>
+              <span class="voice-status">{getTranslation(language, 'tapToSpeak')}</span>
+            </button>
           </div>
         )}
 
@@ -83,6 +91,9 @@ const { questions, language, storyId, title } = Astro.props;
             <input type="text" placeholder="..." class="fill-blank-input" />
             <button class="check-btn">
               {getTranslation(language, 'correct').replace('!', '')}
+            </button>
+            <button class="voice-btn voice-btn-fill" data-question-type="fillinblank" title={getTranslation(language, 'voiceInput')} aria-label={getTranslation(language, 'voiceInput')}>
+              <span class="mic-icon">🎤</span>
             </button>
           </div>
         )}
@@ -98,11 +109,30 @@ const { questions, language, storyId, title } = Astro.props;
 </div>
 
 <script>
+  import { confetti } from '../utils/confetti';
+  import { soundEffects } from '../utils/sound-effects';
+  import { SpeechRecognizer, getSpeechLocale, matchAnswer, createSparkleEffect } from '../utils/speech-recognition';
+  import { achievementTracker } from '../utils/achievements';
+  import { ProgressTracker } from '../utils/progress-tracker';
+  import type { Locale } from '../utils/i18n';
+
   document.querySelectorAll('.quiz-interactive').forEach(quiz => {
     let correctCount = 0;
+    let totalAttempts = 0;
     const totalQuestions = quiz.querySelectorAll('.quiz-question').length;
     const progressSpan = quiz.querySelector('.progress-count');
     const language = quiz.getAttribute('data-language') || 'de';
+    const storyId = quiz.getAttribute('data-story-id');
+
+    // Track story view
+    if (storyId) {
+      ProgressTracker.trackStoryView(storyId);
+      // Save basic metadata for progress tracking
+      ProgressTracker.saveStoryMetadata(storyId, {
+        totalQuestions: totalQuestions,
+        language: language,
+      });
+    }
 
     const labels = {
       de: { correct: 'Richtig!', incorrect: 'Nicht ganz', answer: 'Antwort' },
@@ -114,19 +144,46 @@ const { questions, language, storyId, title } = Astro.props;
 
     const label = labels[language as keyof typeof labels] || labels.de;
 
+    // Initialize Speech Recognition
+    const speechLocale = getSpeechLocale(language);
+    const speechRecognizer = new SpeechRecognizer(speechLocale);
+    const isVoiceSupported = SpeechRecognizer.isSupported();
+
+    // Store voice usage stats
+    const voiceStatsKey = `voice-usage-${language}`;
+    let voiceUsageCount = parseInt(localStorage.getItem(voiceStatsKey) || '0', 10);
+
     const updateProgress = () => {
       if (progressSpan) {
         progressSpan.textContent = correctCount.toString();
       }
 
-      const storyId = quiz.getAttribute('data-story-id');
       if (storyId) {
         localStorage.setItem(`quiz-progress-${storyId}`, correctCount.toString());
+      }
+
+      // Check if quiz is completed
+      if (correctCount === totalQuestions) {
+        setTimeout(() => {
+          soundEffects.playCompletion();
+          confetti.fireworks(3, 600);
+
+          // Track achievement: quiz completion
+          const isPerfect = totalAttempts === totalQuestions;
+          const unlockedAchievements = achievementTracker.trackQuizCompletion(
+            storyId || 'unknown',
+            isPerfect
+          );
+
+          // Show achievement notifications
+          unlockedAchievements.forEach(achievementId => {
+            achievementTracker.showAchievementUnlock(achievementId, language as Locale);
+          });
+        }, 500);
       }
     };
 
     // Load saved progress
-    const storyId = quiz.getAttribute('data-story-id');
     if (storyId) {
       const saved = localStorage.getItem(`quiz-progress-${storyId}`);
       if (saved) {
@@ -140,13 +197,37 @@ const { questions, language, storyId, title } = Astro.props;
       const feedbackDiv = question.querySelector('.feedback') as HTMLElement;
       const feedbackText = question.querySelector('.feedback-text') as HTMLElement;
 
+      // Voice input button
+      const voiceBtn = question.querySelector('.voice-btn') as HTMLButtonElement;
+      if (voiceBtn && !isVoiceSupported) {
+        voiceBtn.style.display = 'none'; // Hide if not supported
+      }
+
       // Handle True/False and Multiple Choice buttons
       question.querySelectorAll('.option-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
           const userAnswer = btn.getAttribute('data-value');
           const isCorrect = Array.isArray(correctAnswer)
             ? correctAnswer.includes(userAnswer)
             : userAnswer === correctAnswer.toString();
+
+          // Play sound effect
+          if (isCorrect) {
+            soundEffects.playCorrect();
+
+            // Confetti burst from button position
+            const rect = (e.target as HTMLElement).getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            confetti.burst(x, y, 30);
+          } else {
+            soundEffects.playIncorrect();
+          }
+
+          // Track attempts (only count first attempt per question)
+          if (!question.classList.contains('answered-correctly')) {
+            totalAttempts++;
+          }
 
           // Show feedback
           if (feedbackDiv && feedbackText) {
@@ -171,10 +252,187 @@ const { questions, language, storyId, title } = Astro.props;
         });
       });
 
+      // Handle Voice Input
+      if (voiceBtn && isVoiceSupported) {
+        const questionType = voiceBtn.getAttribute('data-question-type') as 'truefalse' | 'multiplechoice' | 'fillinblank';
+        const voiceStatus = voiceBtn.querySelector('.voice-status') as HTMLElement;
+        const micIcon = voiceBtn.querySelector('.mic-icon') as HTMLElement;
+
+        // Get options for multiple choice
+        const mcOptions = questionType === 'multiplechoice'
+          ? Array.from(question.querySelectorAll('.option-btn'))
+              .filter(btn => !btn.classList.contains('voice-btn'))
+              .map(btn => btn.getAttribute('data-value') || '')
+          : undefined;
+
+        // Keyboard shortcut: Space to activate
+        voiceBtn.addEventListener('keydown', (e) => {
+          if (e.code === 'Space') {
+            e.preventDefault();
+            voiceBtn.click();
+          }
+        });
+
+        voiceBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+
+          if (speechRecognizer.isActive()) {
+            speechRecognizer.stop();
+            return;
+          }
+
+          // Add listening animation
+          voiceBtn.classList.add('listening');
+          micIcon.classList.add('pulse');
+          if (voiceStatus) {
+            const listeningText = {
+              de: 'Höre zu...',
+              ar: 'استمع...',
+              en: 'Listening...',
+              tr: 'Dinleniyor...',
+              ur: 'سن رہا ہے...'
+            }[language] || 'Listening...';
+            voiceStatus.textContent = listeningText;
+          }
+
+          // Play recording start sound
+          soundEffects.playClick();
+
+          try {
+            const result = await speechRecognizer.listen({
+              language: speechLocale,
+              onResult: (transcript, confidence, isFinal) => {
+                if (voiceStatus && !isFinal) {
+                  const transcribingText = {
+                    de: 'Transkribiere...',
+                    ar: 'النسخ...',
+                    en: 'Transcribing...',
+                    tr: 'Yazıya Dönüştürülüyor...',
+                    ur: 'نقل کیا جا رہا ہے...'
+                  }[language] || 'Transcribing...';
+                  voiceStatus.textContent = `${transcribingText} "${transcript}"`;
+                }
+              },
+              onError: (error) => {
+                console.error('Speech recognition error:', error);
+              }
+            });
+
+            // Reset UI
+            voiceBtn.classList.remove('listening');
+            micIcon.classList.remove('pulse');
+            if (voiceStatus) {
+              const tapToSpeakText = {
+                de: 'Tippen zum Sprechen',
+                ar: 'اضغط للتحدث',
+                en: 'Tap to Speak',
+                tr: 'Konuşmak İçin Dokunun',
+                ur: 'بولنے کے لیے ٹیپ کریں'
+              }[language] || 'Tap to Speak';
+              voiceStatus.textContent = tapToSpeakText;
+            }
+
+            // Match answer
+            const matchResult = matchAnswer({
+              correctAnswer,
+              userInput: result.transcript,
+              language,
+              questionType,
+              options: mcOptions
+            });
+
+            if (matchResult.isMatch) {
+              // Correct answer via voice!
+              soundEffects.playVoiceSuccess();
+
+              // Sparkle effect at microphone position
+              const rect = voiceBtn.getBoundingClientRect();
+              const x = rect.left + rect.width / 2;
+              const y = rect.top + rect.height / 2;
+              createSparkleEffect(x, y);
+              confetti.burst(x, y, 40);
+
+              // Show feedback
+              if (feedbackDiv && feedbackText) {
+                feedbackDiv.style.display = 'block';
+                feedbackText.textContent = `✓ ${label.correct} 🎤`;
+                feedbackDiv.className = 'feedback correct';
+              }
+
+              // Update progress if correct
+              if (!question.classList.contains('answered-correctly')) {
+                question.classList.add('answered-correctly');
+                correctCount++;
+                updateProgress();
+
+                // Track voice usage
+                voiceUsageCount++;
+                localStorage.setItem(voiceStatsKey, voiceUsageCount.toString());
+              }
+
+              // Disable voice button and regular buttons
+              voiceBtn.disabled = true;
+              if (questionType === 'fillinblank') {
+                const input = question.querySelector('.fill-blank-input') as HTMLInputElement;
+                const checkBtn = question.querySelector('.check-btn') as HTMLButtonElement;
+                if (input) input.disabled = true;
+                if (checkBtn) checkBtn.disabled = true;
+                if (input && matchResult.matchedValue) {
+                  input.value = matchResult.matchedValue;
+                }
+              } else {
+                question.querySelectorAll('.option-btn').forEach(btn => {
+                  (btn as HTMLButtonElement).disabled = true;
+                });
+              }
+            } else {
+              // Incorrect or not recognized
+              soundEffects.playIncorrect();
+
+              if (feedbackDiv && feedbackText) {
+                feedbackDiv.style.display = 'block';
+                const tryAgainText = {
+                  de: 'Nochmal versuchen',
+                  ar: 'حاول مرة أخرى',
+                  en: 'Try Again',
+                  tr: 'Tekrar Deneyin',
+                  ur: 'دوبارہ کوشش کریں'
+                }[language] || 'Try Again';
+                feedbackText.textContent = `✗ ${tryAgainText}: "${result.transcript}"`;
+                feedbackDiv.className = 'feedback incorrect';
+              }
+            }
+
+          } catch (error: any) {
+            // Reset UI
+            voiceBtn.classList.remove('listening');
+            micIcon.classList.remove('pulse');
+
+            // Show error message
+            if (feedbackDiv && feedbackText) {
+              feedbackDiv.style.display = 'block';
+              feedbackText.textContent = `⚠️ ${error.message}`;
+              feedbackDiv.className = 'feedback incorrect';
+            }
+
+            if (voiceStatus) {
+              const tapToSpeakText = {
+                de: 'Tippen zum Sprechen',
+                ar: 'اضغط للتحدث',
+                en: 'Tap to Speak',
+                tr: 'Konuşmak İçin Dokunun',
+                ur: 'بولنے کے لیے ٹیپ کریں'
+              }[language] || 'Tap to Speak';
+              voiceStatus.textContent = tapToSpeakText;
+            }
+          }
+        });
+      }
+
       // Handle Fill-in-the-Blank
       const checkBtn = question.querySelector('.check-btn');
       if (checkBtn) {
-        checkBtn.addEventListener('click', () => {
+        checkBtn.addEventListener('click', (e) => {
           const input = question.querySelector('.fill-blank-input') as HTMLInputElement;
           if (!input) return;
 
@@ -186,6 +444,19 @@ const { questions, language, storyId, title } = Astro.props;
           const isCorrect = correctAnswers.some(
             ans => userAnswer.includes(ans) || ans.includes(userAnswer)
           );
+
+          // Play sound effect
+          if (isCorrect) {
+            soundEffects.playCorrect();
+
+            // Confetti burst from button position
+            const rect = (e.target as HTMLElement).getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            confetti.burst(x, y, 30);
+          } else {
+            soundEffects.playIncorrect();
+          }
 
           if (feedbackDiv && feedbackText) {
             feedbackDiv.style.display = 'block';
@@ -361,10 +632,114 @@ const { questions, language, storyId, title } = Astro.props;
     background: #0056b3;
   }
 
+  /* Voice Input Button Styles */
+  .voice-btn {
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .voice-btn-fill {
+    padding: 0.75rem;
+    min-width: 48px;
+  }
+
+  .voice-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .voice-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .voice-btn.listening {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    animation: pulse-glow 1.5s ease-in-out infinite;
+  }
+
+  .mic-icon {
+    font-size: 1.3rem;
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  .mic-icon.pulse {
+    animation: mic-pulse 0.8s ease-in-out infinite;
+  }
+
+  .voice-status {
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 4px 6px rgba(240, 147, 251, 0.4),
+                  0 0 20px rgba(240, 147, 251, 0.3);
+    }
+    50% {
+      box-shadow: 0 6px 12px rgba(240, 147, 251, 0.6),
+                  0 0 30px rgba(240, 147, 251, 0.5);
+    }
+  }
+
+  @keyframes mic-pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+  }
+
+  /* Waveform animation for listening state */
+  .voice-btn.listening::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    animation: wave-ripple 1.5s ease-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes wave-ripple {
+    0% {
+      transform: translate(-50%, -50%) scale(0.8);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1.5);
+      opacity: 0;
+    }
+  }
+
   /* RTL support */
   [dir='rtl'] .answer-options,
   [dir='rtl'] .option-btn {
     text-align: right;
+  }
+
+  [dir='rtl'] .voice-btn {
+    flex-direction: row-reverse;
   }
 
   @media (max-width: 768px) {
@@ -386,6 +761,18 @@ const { questions, language, storyId, title } = Astro.props;
 
     .fill-blank-input {
       min-width: 100%;
+    }
+
+    .voice-status {
+      font-size: 0.75rem;
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .voice-btn {
+      padding: 0.65rem 0.85rem;
+      font-size: 0.9rem;
     }
   }
 </style>

@@ -143,11 +143,18 @@ const t = {
   import 'swiper/css/navigation';
   import 'swiper/css/pagination';
   import { StoryNarrator, getTTSLocale } from '../utils/text-to-speech';
+  import { achievementTracker } from '../utils/achievements';
+  import type { Locale } from '../utils/i18n';
 
   document.querySelectorAll('.interactive-storybook').forEach(storybookEl => {
     const storyId = storybookEl.getAttribute('data-story-id');
     const locale = storybookEl.getAttribute('data-locale') || 'de';
     const ttsLocale = getTTSLocale(locale);
+
+    // Track story start time for achievement tracking
+    if (storyId) {
+      achievementTracker.trackStoryStart(storyId);
+    }
 
     const narrator = new StoryNarrator(ttsLocale);
     let autoPlayEnabled = false;
@@ -431,6 +438,20 @@ const t = {
     swiper.on('slideChange', () => {
       if (storyId) {
         localStorage.setItem(`story-progress-${storyId}`, swiper.activeIndex.toString());
+
+        // Track story completion when reaching last page
+        if (swiper.activeIndex === swiper.slides.length - 1) {
+          const unlockedAchievements = achievementTracker.trackStoryRead(
+            storyId,
+            locale,
+            undefined // characterType would need to be passed as prop
+          );
+
+          // Show achievement notifications
+          unlockedAchievements.forEach(achievementId => {
+            achievementTracker.showAchievementUnlock(achievementId, locale as Locale);
+          });
+        }
       }
     });
 

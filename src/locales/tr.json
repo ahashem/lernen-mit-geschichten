@@ -39,5 +39,21 @@
   "bilingualMode": "İki Dilli Mod",
   "fontSize": "Yazı Boyutu",
   "textToSpeech": "Sesli Oku",
-  "settings": "Ayarlar"
+  "settings": "Ayarlar",
+  "voiceInput": "Sesli Cevap",
+  "listening": "Dinleniyor...",
+  "tapToSpeak": "Konuşmak İçin Dokunun",
+  "pressSpaceToSpeak": "Konuşmak İçin Boşluk Tuşuna Basın",
+  "tryAgain": "Tekrar Deneyin",
+  "voiceNotRecognized": "Anlaşılmadı",
+  "micPermissionDenied": "Mikrofon Erişimi Reddedildi",
+  "speakYourAnswer": "Cevabınızı Söyleyin",
+  "transcribing": "Yazıya Dönüştürülüyor...",
+  "achievements": "Başarılar",
+  "achievementsDescription": "Öğrenme yolculuğunuzu takip edin ve başarıları kazanın",
+  "achievementUnlocked": "Başarı Kazanıldı!",
+  "allAchievements": "Tüm Başarılar",
+  "unlockedAchievements": "Kazanıldı",
+  "lockedAchievements": "Kilitli",
+  "progressDashboard": "İlerleme"
 }

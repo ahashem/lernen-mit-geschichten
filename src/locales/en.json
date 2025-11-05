@@ -39,5 +39,21 @@
   "bilingualMode": "Bilingual Mode",
   "fontSize": "Font Size",
   "textToSpeech": "Read Aloud",
-  "settings": "Settings"
+  "settings": "Settings",
+  "voiceInput": "Voice Answer",
+  "listening": "Listening...",
+  "tapToSpeak": "Tap to Speak",
+  "pressSpaceToSpeak": "Press Space to Speak",
+  "tryAgain": "Try Again",
+  "voiceNotRecognized": "Not Understood",
+  "micPermissionDenied": "Microphone Access Denied",
+  "speakYourAnswer": "Speak Your Answer",
+  "transcribing": "Transcribing...",
+  "achievements": "Achievements",
+  "achievementsDescription": "Track your learning journey and unlock achievements",
+  "achievementUnlocked": "Achievement Unlocked!",
+  "allAchievements": "All Achievements",
+  "unlockedAchievements": "Unlocked",
+  "lockedAchievements": "Locked",
+  "progressDashboard": "Progress"
 }

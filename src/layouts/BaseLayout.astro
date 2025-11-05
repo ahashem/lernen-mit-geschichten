@@ -1,7 +1,10 @@
 ---
 import '@styles/global.css';
 import '@styles/rtl.css';
+import '@styles/accessibility-themes.css';
 import LanguageSelector from '@components/LanguageSelector.astro';
+import AccessibilityPanel from '@components/AccessibilityPanel.astro';
+import AchievementToast from '@components/AchievementToast.astro';
 import GTMTracking from '@components/GTMTracking.astro';
 import type { Locale } from '@utils/i18n';
 import { getTranslation, isRTL } from '@utils/i18n';
@@ -95,6 +98,19 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
             <a href={locale === 'de' ? `${base}/about` : `${base}/${locale}/about`}
               >{getTranslation(locale, 'about')}</a
             >
+            <a href={locale === 'de' ? `${base}/progress` : `${base}/${locale}/progress`}
+              >📊 {getTranslation(locale, 'progressDashboard')}</a
+            >
+            <a href={locale === 'de' ? `${base}/achievements` : `${base}/${locale}/achievements`}
+              >🏆 {getTranslation(locale, 'achievements')}</a
+            >
+            <button
+              class="nav-accessibility-btn"
+              aria-label={getTranslation(locale, 'accessibility')}
+              title={getTranslation(locale, 'accessibility')}
+            >
+              <span aria-hidden="true">♿</span>
+            </button>
           </div>
 
           <LanguageSelector currentLocale={locale} currentPath={Astro.url.pathname} />
@@ -120,6 +136,26 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
         </p>
       </div>
     </footer>
+
+    <!-- Accessibility Panel (Global) -->
+    <AccessibilityPanel locale={locale} />
+
+    <!-- Achievement Toast (Global) -->
+    <AchievementToast />
+
+    <script>
+      // Connect nav accessibility button to panel
+      document.addEventListener('DOMContentLoaded', () => {
+        const navBtn = document.querySelector('.nav-accessibility-btn');
+        const panelToggle = document.querySelector('.a11y-toggle-btn');
+
+        if (navBtn && panelToggle) {
+          navBtn.addEventListener('click', () => {
+            (panelToggle as HTMLElement).click();
+          });
+        }
+      });
+    </script>
 
     <style>
       header {
@@ -170,6 +206,31 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
 
       .nav-links a:hover {
         color: var(--color-primary);
+      }
+
+      .nav-accessibility-btn {
+        background: transparent;
+        border: 2px solid var(--color-accent);
+        color: var(--color-accent);
+        padding: 0.4rem 0.75rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: inherit;
+      }
+
+      .nav-accessibility-btn:hover {
+        background: var(--color-accent);
+        color: white;
+        transform: scale(1.05);
+      }
+
+      .nav-accessibility-btn:active {
+        transform: scale(0.95);
       }
 
       main {
