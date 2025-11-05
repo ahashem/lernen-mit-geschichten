@@ -1,0 +1,548 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const locale = 'de';
+const title = 'Karten-Sammlung';
+const description = 'Deine gesammelten Geschichtenkarten';
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="collection-page">
+    <div class="container">
+      <header class="page-header">
+        <h1>📚 {title}</h1>
+        <p>{description}</p>
+      </header>
+
+      <div class="collection-stats" id="collection-stats">
+        <div class="stat-card">
+          <div class="stat-number" id="total-cards">0</div>
+          <div class="stat-label">Gesammelte Karten</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="common-cards">0</div>
+          <div class="stat-label">Gewöhnlich</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="rare-cards">0</div>
+          <div class="stat-label">Selten</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="epic-cards">0</div>
+          <div class="stat-label">Episch</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="legendary-cards">0</div>
+          <div class="stat-label">Legendär</div>
+        </div>
+      </div>
+
+      <div class="collection-filters">
+        <select id="rarity-filter" class="filter-select">
+          <option value="all">Alle Seltenheiten</option>
+          <option value="common">Gewöhnlich</option>
+          <option value="rare">Selten</option>
+          <option value="epic">Episch</option>
+          <option value="legendary">Legendär</option>
+        </select>
+
+        <select id="character-filter" class="filter-select">
+          <option value="all">Alle Charaktere</option>
+        </select>
+
+        <button id="clear-collection" class="action-btn danger">
+          🗑️ Sammlung leeren
+        </button>
+      </div>
+
+      <div class="card-grid" id="card-grid">
+        <div class="empty-state" id="empty-state">
+          <p>📭 Du hast noch keine Karten gesammelt!</p>
+          <a href="/print-studio" class="action-btn primary">
+            ✨ Erste Karte erstellen
+          </a>
+        </div>
+      </div>
+
+      <div class="achievement-tracker">
+        <h3>🏆 Sammel-Erfolge</h3>
+        <div class="achievement-list">
+          <div class="achievement-item" id="achievement-collector">
+            <span class="achievement-icon">🎴</span>
+            <div class="achievement-info">
+              <div class="achievement-name">Karten-Sammler</div>
+              <div class="achievement-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="collector-progress" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="collector-text">0 / 25</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="achievement-item" id="achievement-printer">
+            <span class="achievement-icon">🖨️</span>
+            <div class="achievement-info">
+              <div class="achievement-name">Master Printer</div>
+              <div class="achievement-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="printer-progress" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="printer-text">0 / 100</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .collection-page {
+    min-height: 100vh;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    font-size: 2.5rem;
+    color: #333;
+  }
+
+  .collection-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .collection-filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-select {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .empty-state p {
+    font-size: 1.5rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-item {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    cursor: pointer;
+  }
+
+  .card-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-preview-mini {
+    width: 100%;
+    aspect-ratio: 2.5 / 3.5;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    position: relative;
+  }
+
+  .card-info {
+    text-align: center;
+  }
+
+  .card-info h4 {
+    font-size: 1rem;
+    margin: 0.5rem 0;
+    color: #333;
+  }
+
+  .card-rarity {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .card-action-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .card-action-btn.view {
+    background: #667eea;
+    color: white;
+  }
+
+  .card-action-btn.delete {
+    background: #ef4444;
+    color: white;
+  }
+
+  .achievement-tracker {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .achievement-tracker h3 {
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+
+  .achievement-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .achievement-item {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 12px;
+  }
+
+  .achievement-item.unlocked {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    box-shadow: 0 4px 12px rgba(255, 159, 64, 0.3);
+  }
+
+  .achievement-icon {
+    font-size: 3rem;
+  }
+
+  .achievement-info {
+    flex: 1;
+  }
+
+  .achievement-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .achievement-progress {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 20px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.5s ease;
+  }
+
+  .progress-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #666;
+    white-space: nowrap;
+  }
+
+  .action-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .action-btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .action-btn.danger {
+    background: #ef4444;
+    color: white;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  @media (max-width: 768px) {
+    .collection-filters {
+      flex-direction: column;
+    }
+
+    .filter-select {
+      min-width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import {
+    getCardCollection,
+    getCollectionStats,
+    type StoryCardData,
+  } from '../utils/print-cards';
+  import { getPrintStats } from '../utils/print-cards';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadCollectionStats();
+    loadCollection();
+    setupEventListeners();
+    updateAchievements();
+  });
+
+  function loadCollectionStats() {
+    const stats = getCollectionStats();
+
+    document.getElementById('total-cards')!.textContent = stats.total.toString();
+    document.getElementById('common-cards')!.textContent = stats.common.toString();
+    document.getElementById('rare-cards')!.textContent = stats.rare.toString();
+    document.getElementById('epic-cards')!.textContent = stats.epic.toString();
+    document.getElementById('legendary-cards')!.textContent = stats.legendary.toString();
+  }
+
+  function loadCollection() {
+    const collection = getCardCollection();
+    const grid = document.getElementById('card-grid')!;
+    const emptyState = document.getElementById('empty-state')!;
+
+    if (collection.length === 0) {
+      emptyState.style.display = 'block';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    grid.innerHTML = '';
+
+    // Populate character filter
+    const characterFilter = document.getElementById('character-filter') as HTMLSelectElement;
+    const characters = new Set(collection.map((c) => c.characterType).filter(Boolean));
+    characterFilter.innerHTML = '<option value="all">Alle Charaktere</option>';
+    characters.forEach((char) => {
+      const option = document.createElement('option');
+      option.value = char!;
+      option.textContent = char!;
+      characterFilter.appendChild(option);
+    });
+
+    // Render cards
+    collection.forEach((card) => {
+      const cardElement = createCardElement(card);
+      grid.appendChild(cardElement);
+    });
+  }
+
+  function createCardElement(card: StoryCardData): HTMLElement {
+    const div = document.createElement('div');
+    div.className = 'card-item';
+    div.dataset.rarity = card.rarity;
+    div.dataset.character = card.characterType || '';
+
+    const rarityColors = {
+      common: '#9ca3af',
+      rare: '#3b82f6',
+      epic: '#a855f7',
+      legendary: '#f59e0b',
+    };
+
+    const rarityLabels = {
+      common: 'Gewöhnlich',
+      rare: 'Selten',
+      epic: 'Episch',
+      legendary: 'Legendär',
+    };
+
+    div.innerHTML = `
+      <div class="card-preview-mini" style="background: linear-gradient(135deg, ${rarityColors[card.rarity]} 0%, ${rarityColors[card.rarity]}99 100%)">
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: white;">
+          <div style="font-size: 4rem;">${card.emoji}</div>
+          <div style="font-weight: bold; margin-top: 1rem;">${card.title}</div>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-rarity" style="background: ${rarityColors[card.rarity]}">
+          ${rarityLabels[card.rarity]}
+        </div>
+        <h4>${card.title}</h4>
+        <p style="font-size: 0.9rem; color: #666;">${card.characterType || 'Unbekannt'}</p>
+        <div class="card-actions">
+          <button class="card-action-btn view" data-card-id="${card.storyId}">👁️ Ansehen</button>
+          <button class="card-action-btn delete" data-card-id="${card.storyId}">🗑️ Löschen</button>
+        </div>
+      </div>
+    `;
+
+    return div;
+  }
+
+  function setupEventListeners() {
+    document.getElementById('rarity-filter')?.addEventListener('change', filterCards);
+    document.getElementById('character-filter')?.addEventListener('change', filterCards);
+    document.getElementById('clear-collection')?.addEventListener('click', clearCollection);
+
+    // Delegate card actions
+    document.getElementById('card-grid')?.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (target.classList.contains('card-action-btn')) {
+        const cardId = target.dataset.cardId;
+        if (target.classList.contains('view')) {
+          viewCard(cardId!);
+        } else if (target.classList.contains('delete')) {
+          deleteCard(cardId!);
+        }
+      }
+    });
+  }
+
+  function filterCards() {
+    const rarityFilter = (document.getElementById('rarity-filter') as HTMLSelectElement)?.value;
+    const characterFilter = (document.getElementById('character-filter') as HTMLSelectElement)?.value;
+
+    const cards = document.querySelectorAll('.card-item');
+    cards.forEach((card) => {
+      const cardElement = card as HTMLElement;
+      const matchesRarity = rarityFilter === 'all' || cardElement.dataset.rarity === rarityFilter;
+      const matchesCharacter = characterFilter === 'all' || cardElement.dataset.character === characterFilter;
+
+      cardElement.style.display = matchesRarity && matchesCharacter ? 'block' : 'none';
+    });
+  }
+
+  function viewCard(cardId: string) {
+    window.location.href = `/print-studio?view=${cardId}`;
+  }
+
+  function deleteCard(cardId: string) {
+    if (!confirm('Möchtest du diese Karte wirklich löschen?')) return;
+
+    const collection = getCardCollection();
+    const updatedCollection = collection.filter((c) => c.storyId !== cardId);
+    localStorage.setItem('story-card-collection', JSON.stringify(updatedCollection));
+
+    loadCollectionStats();
+    loadCollection();
+    updateAchievements();
+  }
+
+  function clearCollection() {
+    if (!confirm('Möchtest du wirklich die gesamte Sammlung löschen?')) return;
+
+    localStorage.removeItem('story-card-collection');
+    loadCollectionStats();
+    loadCollection();
+    updateAchievements();
+  }
+
+  function updateAchievements() {
+    const stats = getCollectionStats();
+    const printStats = getPrintStats();
+
+    // Card Collector achievement (25 cards)
+    const collectorProgress = Math.min(100, (stats.total / 25) * 100);
+    document.getElementById('collector-progress')!.style.width = `${collectorProgress}%`;
+    document.getElementById('collector-text')!.textContent = `${stats.total} / 25`;
+
+    const collectorAchievement = document.getElementById('achievement-collector')!;
+    if (stats.total >= 25) {
+      collectorAchievement.classList.add('unlocked');
+    }
+
+    // Master Printer achievement (100 cards printed)
+    const printerProgress = Math.min(100, (printStats.totalPrinted / 100) * 100);
+    document.getElementById('printer-progress')!.style.width = `${printerProgress}%`;
+    document.getElementById('printer-text')!.textContent = `${printStats.totalPrinted} / 100`;
+
+    const printerAchievement = document.getElementById('achievement-printer')!;
+    if (printStats.totalPrinted >= 100) {
+      printerAchievement.classList.add('unlocked');
+    }
+  }
+</script>

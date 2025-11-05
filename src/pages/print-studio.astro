@@ -1,0 +1,647 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PrintableCard from '../components/PrintableCard.astro';
+
+const locale = 'de';
+const title = 'Druck-Studio';
+const description = 'Erstelle wunderschöne Karten zum Ausdrucken!';
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="print-studio-page">
+    <div class="container">
+      <header class="page-header">
+        <h1>🖨️ {title}</h1>
+        <p>{description}</p>
+      </header>
+
+      <div class="studio-layout">
+        <aside class="design-options">
+          <h3>✨ Design-Optionen</h3>
+          
+          <div class="option-group">
+            <label>Kartentyp:</label>
+            <select id="card-type" class="styled-select">
+              <option value="trading">Sammelkarte (2.5x3.5")</option>
+              <option value="postcard">Postkarte (4x6")</option>
+              <option value="bookmark">Lesezeichen</option>
+            </select>
+          </div>
+
+          <div class="option-group">
+            <label>Vorlage:</label>
+            <select id="template" class="styled-select">
+              <option value="colorful">Bunt & Fröhlich</option>
+              <option value="minimal">Minimal & Elegant</option>
+              <option value="playful">Verspielt</option>
+              <option value="nature">Natur</option>
+              <option value="elegant">Elegant</option>
+              <option value="gradient">Farbverlauf</option>
+            </select>
+          </div>
+
+          <div class="option-group">
+            <label>Muster:</label>
+            <select id="pattern" class="styled-select">
+              <option value="stars">Sterne</option>
+              <option value="dots">Punkte</option>
+              <option value="waves">Wellen</option>
+              <option value="hearts">Herzen</option>
+              <option value="geometric">Geometrisch</option>
+            </select>
+          </div>
+
+          <div class="option-group">
+            <label>Hauptfarbe:</label>
+            <input type="color" id="primary-color" value="#FF6B6B" class="color-picker">
+          </div>
+
+          <div class="option-group">
+            <label>Geschichte wählen:</label>
+            <select id="story-select" class="styled-select">
+              <option value="">Wähle eine Geschichte...</option>
+            </select>
+          </div>
+
+          <div class="option-group">
+            <label>
+              <input type="checkbox" id="include-qr" checked>
+              QR-Code einschließen
+            </label>
+          </div>
+
+          <div class="option-group">
+            <label>
+              <input type="checkbox" id="show-back" checked>
+              Rückseite anzeigen
+            </label>
+          </div>
+
+          <div class="option-group">
+            <label>Layout:</label>
+            <select id="layout" class="styled-select">
+              <option value="4">4 Karten pro Seite (2x2)</option>
+              <option value="9">9 Karten pro Seite (3x3)</option>
+            </select>
+          </div>
+
+          <button id="generate-btn" class="action-btn primary">
+            ✨ Karte generieren
+          </button>
+        </aside>
+
+        <main class="preview-area">
+          <div class="preview-controls">
+            <button id="zoom-in">🔍+</button>
+            <button id="zoom-out">🔍-</button>
+            <span id="page-info">Seite 1 von 1</span>
+          </div>
+
+          <div class="preview-canvas" id="preview-canvas">
+            <div class="card-preview" id="card-preview">
+              <div class="preview-placeholder">
+                <p>👆 Wähle Optionen und klicke auf "Karte generieren"</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="print-actions">
+            <button id="save-pdf-btn" class="action-btn">💾 Als PDF speichern</button>
+            <button id="print-btn" class="action-btn">🖨️ Drucken</button>
+            <button id="save-collection-btn" class="action-btn">📚 Zur Sammlung hinzufügen</button>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .print-studio-page {
+    min-height: 100vh;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    font-size: 2.5rem;
+    color: #333;
+  }
+
+  .studio-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+  }
+
+  .design-options {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+  }
+
+  .design-options h3 {
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+
+  .option-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .option-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #666;
+  }
+
+  .styled-select, .color-picker {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+
+  .preview-area {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .preview-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .preview-controls button {
+    padding: 0.5rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+  .preview-canvas {
+    min-height: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 2rem;
+  }
+
+  .card-preview {
+    background: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+  }
+
+  .preview-placeholder {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: #999;
+    font-size: 1.2rem;
+  }
+
+  .print-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  .action-btn {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #ddd;
+    color: #333;
+  }
+
+  .action-btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  @media (max-width: 968px) {
+    .studio-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Card Styles */
+  .printable-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: white;
+    transition: transform 0.3s;
+  }
+
+  .format-trading {
+    width: 250px;
+    height: 350px;
+  }
+
+  .format-postcard {
+    width: 400px;
+    height: 600px;
+  }
+
+  .format-bookmark {
+    width: 200px;
+    height: 700px;
+  }
+
+  .card-side {
+    width: 100%;
+    height: 100%;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .character-emoji {
+    font-size: 48px;
+    line-height: 1;
+  }
+
+  .rarity-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+    letter-spacing: 0.5px;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+    text-align: center;
+  }
+
+  .card-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .skill-tag {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .key-message {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+  }
+
+  .message-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  .key-message p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .author {
+    font-size: 12px;
+    text-align: center;
+    margin-top: auto;
+    opacity: 0.8;
+  }
+
+  .qr-code-container {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    width: 60px;
+    height: 60px;
+    background: white;
+    padding: 4px;
+    border-radius: 6px;
+  }
+
+  .qr-code {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Print Styles */
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+
+    .card-preview,
+    .card-preview * {
+      visibility: visible;
+    }
+
+    .card-preview {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .printable-card {
+      page-break-inside: avoid;
+      break-inside: avoid;
+      box-shadow: none;
+      border: 1px solid #ddd;
+    }
+
+    .design-options,
+    .preview-controls,
+    .print-actions {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { getStoredStories } from '../utils/story-builder';
+  import {
+    createCardFromStory,
+    saveCardToCollection,
+    incrementPrintCounter,
+    checkCardCollectorAchievement,
+    checkMasterPrinterAchievement,
+    type CardFormat,
+    type CardDesign,
+    generateQRCodeDataURL,
+  } from '../utils/print-cards';
+  import { starWallet } from '../utils/star-wallet';
+
+  let currentCardData: any = null;
+  let currentOptions: any = null;
+  let zoomLevel = 1;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadStories();
+    setupEventListeners();
+  });
+
+  function loadStories() {
+    const stories = getStoredStories();
+    const select = document.getElementById('story-select') as HTMLSelectElement;
+    if (select) {
+      select.innerHTML = '<option value="">Wähle eine Geschichte...</option>';
+      stories.forEach((story) => {
+        const option = document.createElement('option');
+        option.value = story.id;
+        option.textContent = `${story.title} (${story.character})`;
+        select.appendChild(option);
+      });
+    }
+  }
+
+  function setupEventListeners() {
+    document.getElementById('generate-btn')?.addEventListener('click', generateCard);
+    document.getElementById('print-btn')?.addEventListener('click', printCards);
+    document.getElementById('save-pdf-btn')?.addEventListener('click', savePDF);
+    document.getElementById('save-collection-btn')?.addEventListener('click', saveToCollection);
+    document.getElementById('zoom-in')?.addEventListener('click', () => zoom(0.1));
+    document.getElementById('zoom-out')?.addEventListener('click', () => zoom(-0.1));
+
+    // Update preview on option change
+    ['template', 'pattern', 'card-type'].forEach((id) => {
+      document.getElementById(id)?.addEventListener('change', updatePreview);
+    });
+  }
+
+  function generateCard() {
+    const storyId = (document.getElementById('story-select') as HTMLSelectElement)?.value;
+    if (!storyId) {
+      alert('Bitte wähle eine Geschichte aus!');
+      return;
+    }
+
+    const stories = getStoredStories();
+    const story = stories.find((s) => s.id === storyId);
+    if (!story) return;
+
+    // Get selected options
+    const cardType = (document.getElementById('card-type') as HTMLSelectElement)?.value as CardFormat;
+    const template = (document.getElementById('template') as HTMLSelectElement)?.value as CardDesign;
+    const includeQR = (document.getElementById('include-qr') as HTMLInputElement)?.checked;
+    const showBack = (document.getElementById('show-back') as HTMLInputElement)?.checked;
+
+    // Create card data
+    currentCardData = createCardFromStory(story, 'de');
+    currentOptions = {
+      format: cardType || 'trading',
+      design: template || 'colorful',
+      includeQRCode: includeQR ?? true,
+      qrCodeUrl: includeQR ? generateQRCodeDataURL(window.location.origin + '/stories/' + storyId) : undefined,
+      showBackSide: showBack ?? true,
+    };
+
+    // Render the card preview
+    renderCardPreview();
+
+    // Award stars for creating a card
+    starWallet.addStars(10, 'Karte erstellt!');
+  }
+
+  function renderCardPreview() {
+    const preview = document.getElementById('card-preview');
+    if (!preview || !currentCardData) return;
+
+    // Import and render the PrintableCard component dynamically
+    // For now, create a simple HTML representation
+    const cardHTML = createCardHTML(currentCardData, currentOptions, true);
+    preview.innerHTML = cardHTML;
+
+    // Enable action buttons
+    document.getElementById('print-btn')?.removeAttribute('disabled');
+    document.getElementById('save-pdf-btn')?.removeAttribute('disabled');
+    document.getElementById('save-collection-btn')?.removeAttribute('disabled');
+  }
+
+  function createCardHTML(cardData: any, options: any, showFront: boolean = true): string {
+    const theme = getDesignTheme(options.design);
+    const rarity = getRarityStyle(cardData.rarity);
+
+    if (showFront) {
+      return `
+        <div class="printable-card format-${options.format} design-${options.design}">
+          <div class="card-side card-front" style="background: ${theme.background}; color: ${theme.text}">
+            <div class="card-header">
+              <div class="character-emoji">${cardData.emoji}</div>
+              <div class="rarity-badge" style="background: ${rarity.color}">${rarity.label.de}</div>
+            </div>
+            <h3 class="card-title">${cardData.title}</h3>
+            <div class="card-skills">
+              ${cardData.skills.slice(0, 2).map((skill: string) => `
+                <span class="skill-tag" style="background: ${theme.accent}30; color: ${theme.text}">${skill}</span>
+              `).join('')}
+            </div>
+            <div class="key-message">
+              <div class="message-icon">💡</div>
+              <p>${cardData.keyMessage}</p>
+            </div>
+            ${cardData.author ? `<div class="author">von ${cardData.author}</div>` : ''}
+            ${options.includeQRCode && options.qrCodeUrl ? `
+              <div class="qr-code-container">
+                <img src="${options.qrCodeUrl}" alt="QR Code" class="qr-code" />
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    } else {
+      return `
+        <div class="printable-card format-${options.format}">
+          <div class="card-side card-back" style="background: ${theme.background}; color: ${theme.text}">
+            <div class="story-badge" style="background: ${theme.accent}">#${cardData.storyId}</div>
+            ${cardData.funFact ? `
+              <div class="fun-fact">
+                <h4>Wusstest du?</h4>
+                <p>${cardData.funFact}</p>
+              </div>
+            ` : ''}
+            ${cardData.quizQuestion ? `
+              <div class="quiz-section">
+                <h4>Quiz-Frage</h4>
+                <p>${cardData.quizQuestion.text}</p>
+                <div class="quiz-answer" style="background: ${theme.accent}20">
+                  <strong>Antwort:</strong> ${cardData.quizQuestion.answer}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function getDesignTheme(design: CardDesign) {
+    const themes = {
+      colorful: { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', accent: '#FFD93D', text: '#ffffff' },
+      minimal: { background: '#ffffff', accent: '#FF9F40', text: '#333333' },
+      elegant: { background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', accent: '#6BCF7F', text: '#2c3e50' },
+      playful: { background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', accent: '#FF6B9D', text: '#333333' },
+      nature: { background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', accent: '#4CAF50', text: '#2d5016' },
+      gradient: { background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', accent: '#fee140', text: '#ffffff' },
+    };
+    return themes[design as keyof typeof themes] || themes.colorful;
+  }
+
+  function getRarityStyle(rarity: string) {
+    const styles = {
+      common: { color: '#9ca3af', label: { de: 'Gewöhnlich', ar: 'شائع', en: 'Common', tr: 'Yaygın', ur: 'عام' } },
+      rare: { color: '#3b82f6', label: { de: 'Selten', ar: 'نادر', en: 'Rare', tr: 'Nadir', ur: 'نایاب' } },
+      epic: { color: '#a855f7', label: { de: 'Episch', ar: 'ملحمي', en: 'Epic', tr: 'Destansı', ur: 'شاندار' } },
+      legendary: { color: '#f59e0b', label: { de: 'Legendär', ar: 'أسطوري', en: 'Legendary', tr: 'Efsanevi', ur: 'افسانوی' } },
+    };
+    return styles[rarity as keyof typeof styles] || styles.common;
+  }
+
+  function updatePreview() {
+    if (currentCardData) {
+      renderCardPreview();
+    }
+  }
+
+  function zoom(delta: number) {
+    zoomLevel = Math.max(0.5, Math.min(2, zoomLevel + delta));
+    const preview = document.getElementById('card-preview');
+    if (preview) {
+      preview.style.transform = `scale(${zoomLevel})`;
+    }
+  }
+
+  function printCards() {
+    if (!currentCardData) {
+      alert('Bitte generiere zuerst eine Karte!');
+      return;
+    }
+
+    incrementPrintCounter(1);
+    localStorage.setItem('last-print-date', new Date().toISOString());
+
+    // Check for achievements
+    if (checkMasterPrinterAchievement()) {
+      starWallet.addStars(100, 'Master Printer Erfolg!');
+    }
+
+    window.print();
+  }
+
+  function savePDF() {
+    if (!currentCardData) {
+      alert('Bitte generiere zuerst eine Karte!');
+      return;
+    }
+
+    alert('PDF-Export kommt bald! Verwende vorerst die Druckfunktion und wähle "Als PDF speichern".');
+  }
+
+  function saveToCollection() {
+    if (!currentCardData) {
+      alert('Bitte generiere zuerst eine Karte!');
+      return;
+    }
+
+    saveCardToCollection(currentCardData);
+    starWallet.addStars(5, 'Karte gespeichert!');
+
+    // Check for achievements
+    if (checkCardCollectorAchievement()) {
+      starWallet.addStars(50, 'Card Collector Erfolg!');
+    }
+
+    alert('Karte wurde zur Sammlung hinzugefügt!');
+  }
+</script>
