@@ -1,0 +1,358 @@
+---
+import type { VocabularyDefinition } from '../utils/story-interactions';
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  vocabulary: VocabularyDefinition[];
+  locale: Locale;
+}
+
+const { vocabulary, locale } = Astro.props;
+---
+
+{
+  vocabulary.length > 0 && (
+    <div class="vocabulary-container" data-locale={locale}>
+      {vocabulary.map(word => (
+        <span
+          class="vocabulary-word interactive-word"
+          data-word={word.word}
+          data-definition={word.definition}
+          data-translations={JSON.stringify(word.translations || {})}
+          data-pronunciation={word.pronunciation}
+          role="button"
+          tabindex="0"
+          aria-label={`Learn about ${word.word}`}
+        >
+          {word.word}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+<script>
+  import { soundEffects } from '../utils/sound-effects';
+  import { StoryNarrator, getTTSLocale } from '../utils/text-to-speech';
+
+  document.querySelectorAll('.vocabulary-word').forEach(wordEl => {
+    const word = wordEl.getAttribute('data-word') || '';
+    const definition = wordEl.getAttribute('data-definition') || '';
+    const translationsStr = wordEl.getAttribute('data-translations') || '{}';
+    const translations = JSON.parse(translationsStr);
+    const pronunciation = wordEl.getAttribute('data-pronunciation');
+    const locale = wordEl.closest('[data-locale]')?.getAttribute('data-locale') || 'de';
+
+    let tooltipVisible = false;
+    let currentTooltip: HTMLElement | null = null;
+
+    const showTooltip = () => {
+      if (tooltipVisible && currentTooltip) {
+        hideTooltip();
+        return;
+      }
+
+      // Play pop sound
+      soundEffects.playPop();
+
+      // Create tooltip
+      const tooltip = document.createElement('div');
+      tooltip.className = 'vocab-tooltip';
+
+      let content = `<div class="vocab-tooltip-content">`;
+      content += `<strong class="vocab-word">${word}</strong>`;
+
+      if (definition) {
+        content += `<p class="vocab-definition">${definition}</p>`;
+      }
+
+      // Show translations
+      if (Object.keys(translations).length > 0) {
+        content += `<div class="vocab-translations">`;
+        Object.entries(translations).forEach(([lang, trans]) => {
+          const langNames: Record<string, string> = {
+            de: 'Deutsch',
+            ar: 'عربي',
+            en: 'English',
+            tr: 'Türkçe',
+            ur: 'اردو',
+          };
+          content += `<div class="translation"><span class="lang">${langNames[lang] || lang}:</span> ${trans}</div>`;
+        });
+        content += `</div>`;
+      }
+
+      // Pronunciation button
+      content += `<button class="pronounce-btn" aria-label="Pronounce word">
+        <span class="icon">🔊</span>
+        <span class="text">Listen</span>
+      </button>`;
+
+      content += `</div>`;
+      tooltip.innerHTML = content;
+
+      wordEl.appendChild(tooltip);
+      currentTooltip = tooltip;
+      tooltipVisible = true;
+
+      // Position tooltip
+      setTimeout(() => {
+        positionTooltip(tooltip, wordEl as HTMLElement);
+      }, 10);
+
+      // Pronunciation button handler
+      const pronounceBtn = tooltip.querySelector('.pronounce-btn');
+      pronounceBtn?.addEventListener('click', e => {
+        e.stopPropagation();
+        pronounceWord(word, locale);
+      });
+
+      // Close on click outside
+      setTimeout(() => {
+        document.addEventListener('click', outsideClickHandler);
+      }, 100);
+    };
+
+    const hideTooltip = () => {
+      if (currentTooltip) {
+        currentTooltip.classList.add('hiding');
+        setTimeout(() => {
+          currentTooltip?.remove();
+          currentTooltip = null;
+          tooltipVisible = false;
+        }, 200);
+        document.removeEventListener('click', outsideClickHandler);
+      }
+    };
+
+    const outsideClickHandler = (e: Event) => {
+      if (!currentTooltip?.contains(e.target as Node) && e.target !== wordEl) {
+        hideTooltip();
+      }
+    };
+
+    // Click handler
+    wordEl.addEventListener('click', e => {
+      e.stopPropagation();
+      showTooltip();
+    });
+
+    // Keyboard handler
+    wordEl.addEventListener('keydown', e => {
+      if ((e as KeyboardEvent).key === 'Enter' || (e as KeyboardEvent).key === ' ') {
+        e.preventDefault();
+        showTooltip();
+      }
+    });
+  });
+
+  function positionTooltip(tooltip: HTMLElement, anchor: HTMLElement) {
+    const anchorRect = anchor.getBoundingClientRect();
+    const tooltipRect = tooltip.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+
+    // Default: above the word
+    let top = -tooltipRect.height - 10;
+    let left = -(tooltipRect.width / 2) + anchorRect.width / 2;
+
+    // Check if tooltip goes off-screen
+    if (anchorRect.left + left < 0) {
+      left = -anchorRect.left + 10;
+    } else if (anchorRect.left + left + tooltipRect.width > viewportWidth) {
+      left = viewportWidth - anchorRect.left - tooltipRect.width - 10;
+    }
+
+    tooltip.style.top = `${top}px`;
+    tooltip.style.left = `${left}px`;
+  }
+
+  function pronounceWord(word: string, locale: string) {
+    const ttsLocale = getTTSLocale(locale);
+    const narrator = new StoryNarrator(ttsLocale);
+
+    soundEffects.playClick();
+    narrator.speak(word, { rate: 0.8, pitch: 1.0 });
+  }
+</script>
+
+<style>
+  .vocabulary-container {
+    display: contents;
+  }
+
+  .vocabulary-word {
+    position: relative;
+    display: inline;
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0 2px;
+  }
+
+  .vocabulary-word:hover {
+    background: rgba(247, 151, 49, 0.1);
+    text-decoration-style: solid;
+  }
+
+  .vocabulary-word:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .vocab-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 2px solid var(--color-primary);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    padding: 1.25rem;
+    min-width: 250px;
+    max-width: 350px;
+    z-index: 1000;
+    animation: tooltip-appear 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .vocab-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 10px solid transparent;
+    border-top-color: var(--color-primary);
+  }
+
+  .vocab-tooltip.hiding {
+    animation: tooltip-hide 0.2s ease forwards;
+  }
+
+  @keyframes tooltip-appear {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-10px) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+  }
+
+  @keyframes tooltip-hide {
+    to {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-10px) scale(0.9);
+    }
+  }
+
+  .vocab-tooltip-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .vocab-word {
+    font-size: 1.3rem;
+    color: var(--color-primary);
+    margin: 0;
+  }
+
+  .vocab-definition {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--color-text);
+  }
+
+  .vocab-translations {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .translation {
+    font-size: 0.9rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .translation .lang {
+    font-weight: 600;
+    color: var(--color-text-light);
+    min-width: 70px;
+  }
+
+  .pronounce-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+  }
+
+  .pronounce-btn:hover {
+    background: #e88f30;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .pronounce-btn:active {
+    transform: translateY(0);
+  }
+
+  .pronounce-btn .icon {
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 768px) {
+    .vocab-tooltip {
+      min-width: 200px;
+      max-width: 280px;
+      padding: 1rem;
+    }
+
+    .vocab-word {
+      font-size: 1.1rem;
+    }
+
+    .vocab-definition {
+      font-size: 0.9rem;
+    }
+
+    .translation {
+      font-size: 0.85rem;
+    }
+
+    .pronounce-btn {
+      font-size: 0.85rem;
+      padding: 0.5rem 0.8rem;
+    }
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .vocab-tooltip {
+    text-align: right;
+  }
+
+  [dir='rtl'] .translation {
+    flex-direction: row-reverse;
+  }
+</style>

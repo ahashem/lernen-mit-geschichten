@@ -1,0 +1,427 @@
+/**
+ * Story Animations Styles
+ * Global CSS for interactive story animations
+ */
+
+/* ===== BOUNCE ANIMATION ===== */
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* ===== WIGGLE ANIMATION ===== */
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
+/* ===== SHAKE ANIMATION ===== */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+/* ===== SPIN ANIMATION ===== */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== FLOAT ANIMATION ===== */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+/* ===== DRIFT ANIMATION ===== */
+@keyframes drift {
+  0% {
+    transform: translateX(-100vw);
+  }
+  100% {
+    transform: translateX(100vw);
+  }
+}
+
+/* ===== SWAY ANIMATION ===== */
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+/* ===== PULSE ANIMATION ===== */
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+/* ===== GLOW ANIMATION ===== */
+@keyframes glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.9));
+  }
+}
+
+/* ===== SHIMMER ANIMATION ===== */
+@keyframes shimmer {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ===== FADE IN ANIMATION ===== */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===== FADE OUT ANIMATION ===== */
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* ===== SLIDE ANIMATION ===== */
+@keyframes slide {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ===== ZOOM ANIMATION ===== */
+@keyframes zoom {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ===== FLUTTER ANIMATION ===== */
+@keyframes flutter {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(-5deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-10px) rotate(5deg);
+  }
+}
+
+/* ===== PATH ANIMATION ===== */
+@keyframes path {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+/* ===== ANIMATION CLASSES ===== */
+.animate-bounce {
+  animation: bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-wiggle {
+  animation: wiggle 0.5s ease-in-out 2;
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+.animate-spin {
+  animation: spin 0.8s ease-in-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-drift {
+  animation: drift 5s linear infinite;
+}
+
+.animate-sway {
+  animation: sway 2s ease-in-out infinite;
+}
+
+.animate-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-in forwards;
+}
+
+.animate-fade-out {
+  animation: fade-out 0.6s ease-out forwards;
+}
+
+.animate-slide {
+  animation: slide 0.8s ease-out forwards;
+}
+
+.animate-zoom {
+  animation: zoom 0.5s ease-out forwards;
+}
+
+.animate-flutter {
+  animation: flutter 0.8s ease-in-out 3;
+}
+
+.animate-path {
+  animation: path 3s ease-in-out forwards;
+}
+
+/* ===== INTERACTIVE ELEMENT STYLES ===== */
+.interactive-element {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.interactive-element:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+.interactive-element:active {
+  transform: scale(0.95);
+}
+
+.interactive-element.clicked {
+  animation: bounce 0.4s ease;
+}
+
+/* ===== GLOW EFFECT ===== */
+.interactive-glow {
+  position: relative;
+}
+
+.interactive-glow::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: inherit;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.interactive-glow:hover::after {
+  opacity: 1;
+}
+
+/* ===== SHIMMER OVERLAY ===== */
+.shimmer-overlay {
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 50%, transparent 100%);
+  background-size: 200% 100%;
+}
+
+/* ===== CONFETTI ANIMATION ===== */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: var(--confetti-color, #ffd700);
+  animation: confetti-fall 3s linear forwards;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ===== CLICKABLE CHARACTER STYLES ===== */
+.clickable-character {
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.clickable-character:hover {
+  transform: scale(1.1);
+}
+
+.clickable-character:active {
+  transform: scale(0.95);
+}
+
+/* ===== ANIMATED BACKGROUND ELEMENTS ===== */
+.animated-clouds {
+  animation: drift 60s linear infinite;
+}
+
+.animated-trees {
+  animation: sway 3s ease-in-out infinite;
+}
+
+.animated-stars {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animated-butterfly {
+  animation: flutter 2s ease-in-out infinite;
+}
+
+/* ===== REWARD ANIMATIONS ===== */
+@keyframes reward-popup {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 1;
+  }
+}
+
+.reward-popup {
+  animation: reward-popup 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ===== COLLECTIBLE STYLES ===== */
+.collectible {
+  display: inline-block;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.collectible:hover {
+  transform: scale(1.2) rotate(15deg);
+}
+
+.collectible.collected {
+  animation: reward-popup 0.6s ease, glow 2s ease-in-out infinite;
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== MOBILE OPTIMIZATIONS ===== */
+@media (max-width: 768px) {
+  .interactive-element:hover {
+    transform: scale(1.03);
+  }
+
+  .clickable-character:hover {
+    transform: scale(1.08);
+  }
+
+  .collectible {
+    font-size: 1.5rem;
+  }
+}

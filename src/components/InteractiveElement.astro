@@ -1,0 +1,440 @@
+---
+import type { InteractiveElement } from '../utils/story-interactions';
+
+interface Props {
+  element: InteractiveElement;
+  storyId: string;
+}
+
+const { element, storyId } = Astro.props;
+
+const positionStyle = element.position
+  ? `left: ${element.position.x}; top: ${element.position.y};`
+  : '';
+---
+
+<div
+  class="interactive-element"
+  data-element-id={element.id}
+  data-element-type={element.type}
+  data-story-id={storyId}
+  data-state={element.state}
+  data-metadata={JSON.stringify(element.metadata || {})}
+  style={positionStyle}
+  role="button"
+  tabindex="0"
+  aria-label={`Interactive ${element.type}`}
+>
+  <slot />
+</div>
+
+<script>
+  import { soundEffects } from '../utils/sound-effects';
+  import { applyAnimation } from '../animations/story-animations';
+  import { characterReactions } from '../utils/story-interactions';
+  import type { CharacterAction, AnimationType } from '../utils/story-interactions';
+
+  document.querySelectorAll('.interactive-element').forEach(elementDiv => {
+    const elementId = elementDiv.getAttribute('data-element-id');
+    const elementType = elementDiv.getAttribute('data-element-type');
+    const metadataStr = elementDiv.getAttribute('data-metadata');
+    const metadata = metadataStr ? JSON.parse(metadataStr) : {};
+
+    let isAnimating = false;
+
+    const handleInteraction = async () => {
+      if (isAnimating) return;
+      isAnimating = true;
+
+      // Play click sound
+      soundEffects.playClick();
+
+      // Haptic feedback
+      if ('vibrate' in navigator) {
+        navigator.vibrate(10);
+      }
+
+      // Handle different element types
+      switch (elementType) {
+        case 'character':
+          await handleCharacterInteraction(elementDiv as HTMLElement, metadata);
+          break;
+
+        case 'object':
+          await handleObjectInteraction(elementDiv as HTMLElement, metadata);
+          break;
+
+        case 'easter-egg':
+          await handleEasterEggInteraction(elementDiv as HTMLElement, metadata);
+          break;
+
+        case 'vocabulary':
+          handleVocabularyInteraction(elementDiv as HTMLElement, metadata);
+          break;
+
+        case 'sound':
+          handleSoundInteraction(metadata);
+          break;
+
+        default:
+          await applyAnimation(elementDiv as HTMLElement, 'bounce');
+      }
+
+      isAnimating = false;
+    };
+
+    // Click handler
+    elementDiv.addEventListener('click', handleInteraction);
+
+    // Keyboard handler
+    elementDiv.addEventListener('keydown', e => {
+      if ((e as KeyboardEvent).key === 'Enter' || (e as KeyboardEvent).key === ' ') {
+        e.preventDefault();
+        handleInteraction();
+      }
+    });
+  });
+
+  async function handleCharacterInteraction(element: HTMLElement, metadata: any) {
+    const character = metadata.character || 'default';
+    const action = metadata.action as CharacterAction | undefined;
+
+    const reaction = characterReactions.getReaction(character, action);
+
+    // Play character sound
+    if (reaction.sound) {
+      soundEffects.play(reaction.sound);
+    }
+
+    // Show dialogue bubble
+    if (reaction.dialogue) {
+      showDialogueBubble(element, reaction.dialogue, reaction.duration);
+    }
+
+    // Animate character
+    if (reaction.action) {
+      const animationMap: Record<CharacterAction, AnimationType> = {
+        wave: 'wiggle',
+        jump: 'bounce',
+        dance: 'wiggle',
+        speak: 'pulse',
+        hide: 'fade-out',
+        bounce: 'bounce',
+        wiggle: 'wiggle',
+        spin: 'spin',
+      };
+
+      const animation = animationMap[reaction.action] || 'bounce';
+      await applyAnimation(element, animation);
+    }
+
+    // Visual feedback
+    element.classList.add('clicked');
+    setTimeout(() => {
+      element.classList.remove('clicked');
+    }, 500);
+  }
+
+  async function handleObjectInteraction(element: HTMLElement, metadata: any) {
+    // Play bounce sound
+    soundEffects.playBounce();
+
+    // Random animation
+    const animations: AnimationType[] = ['bounce', 'wiggle', 'spin', 'pulse'];
+    const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+
+    await applyAnimation(element, randomAnimation);
+
+    element.classList.add('clicked');
+    setTimeout(() => {
+      element.classList.remove('clicked');
+    }, 500);
+  }
+
+  async function handleEasterEggInteraction(element: HTMLElement, metadata: any) {
+    const eggId = metadata.id || element.getAttribute('data-element-id');
+
+    // Check if already discovered
+    const discovered = element.classList.contains('discovered');
+    if (discovered) return;
+
+    // Mark as discovered
+    element.classList.add('discovered');
+
+    // Play discovery sound
+    soundEffects.playDiscovery();
+
+    // Show reward animation
+    await applyAnimation(element, 'zoom');
+    element.classList.add('glow');
+
+    // Show notification
+    showNotification('Easter egg found!', 'star');
+
+    // Save to localStorage
+    const storyId = element.getAttribute('data-story-id');
+    if (storyId) {
+      const key = `easter-eggs-${storyId}`;
+      const saved = localStorage.getItem(key) || '[]';
+      const eggs = JSON.parse(saved);
+      eggs.push(eggId);
+      localStorage.setItem(key, JSON.stringify(eggs));
+    }
+  }
+
+  function handleVocabularyInteraction(element: HTMLElement, metadata: any) {
+    const word = metadata.word;
+    const definition = metadata.definition;
+
+    // Play pop sound
+    soundEffects.playPop();
+
+    // Show tooltip
+    showTooltip(element, word, definition);
+  }
+
+  function handleSoundInteraction(metadata: any) {
+    const soundName = metadata.sound;
+    if (soundName) {
+      soundEffects.play(soundName);
+    }
+  }
+
+  function showDialogueBubble(element: HTMLElement, text: string, duration: number) {
+    const bubble = document.createElement('div');
+    bubble.className = 'dialogue-bubble';
+    bubble.textContent = text;
+
+    element.style.position = 'relative';
+    element.appendChild(bubble);
+
+    setTimeout(() => {
+      bubble.classList.add('fade-out');
+      setTimeout(() => {
+        bubble.remove();
+      }, 300);
+    }, duration);
+  }
+
+  function showTooltip(element: HTMLElement, word: string, definition: string) {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'vocabulary-tooltip';
+    tooltip.innerHTML = `
+      <strong>${word}</strong>
+      <p>${definition || 'Click to learn more!'}</p>
+    `;
+
+    element.style.position = 'relative';
+    element.appendChild(tooltip);
+
+    // Close on click outside
+    const closeHandler = (e: Event) => {
+      if (!tooltip.contains(e.target as Node)) {
+        tooltip.remove();
+        document.removeEventListener('click', closeHandler);
+      }
+    };
+
+    setTimeout(() => {
+      document.addEventListener('click', closeHandler);
+    }, 100);
+  }
+
+  function showNotification(message: string, icon: string) {
+    const notification = document.createElement('div');
+    notification.className = 'interactive-notification';
+    notification.innerHTML = `
+      <span class="icon">${icon === 'star' ? '⭐' : '🎉'}</span>
+      <span class="message">${message}</span>
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 10);
+
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        notification.remove();
+      }, 300);
+    }, 2000);
+  }
+</script>
+
+<style>
+  .interactive-element {
+    position: absolute;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .interactive-element:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+
+  .interactive-element:active {
+    transform: scale(0.95);
+  }
+
+  .interactive-element:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 4px;
+    border-radius: 8px;
+  }
+
+  .interactive-element.clicked {
+    animation: bounce 0.4s ease;
+  }
+
+  /* Dialogue Bubble */
+  .dialogue-bubble {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: white;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-size: 1.1rem;
+    white-space: nowrap;
+    z-index: 100;
+    animation: bubble-appear 0.3s ease;
+  }
+
+  .dialogue-bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: white;
+  }
+
+  .dialogue-bubble.fade-out {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+    transition: all 0.3s ease;
+  }
+
+  @keyframes bubble-appear {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-20px) scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-10px) scale(1);
+    }
+  }
+
+  /* Vocabulary Tooltip */
+  .vocabulary-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: var(--color-primary);
+    color: white;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    min-width: 200px;
+    max-width: 300px;
+    z-index: 100;
+    animation: bubble-appear 0.3s ease;
+  }
+
+  .vocabulary-tooltip strong {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .vocabulary-tooltip p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  .vocabulary-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: var(--color-primary);
+  }
+
+  /* Notification */
+  .interactive-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 50px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+
+  .interactive-notification.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  .interactive-notification .icon {
+    font-size: 1.5rem;
+  }
+
+  .interactive-notification .message {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  /* Glow effect */
+  .interactive-element.glow {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+    }
+    50% {
+      filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.9));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .dialogue-bubble,
+    .vocabulary-tooltip {
+      font-size: 0.95rem;
+      padding: 0.6rem 0.9rem;
+    }
+
+    .vocabulary-tooltip {
+      min-width: 180px;
+      max-width: 250px;
+    }
+
+    .interactive-notification {
+      font-size: 0.9rem;
+      padding: 0.8rem 1.2rem;
+    }
+  }
+</style>

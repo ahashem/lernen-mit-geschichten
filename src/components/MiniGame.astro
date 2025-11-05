@@ -1,0 +1,566 @@
+---
+import type { MiniGame } from '../utils/story-interactions';
+
+interface Props {
+  game: MiniGame;
+  storyId: string;
+}
+
+const { game, storyId } = Astro.props;
+---
+
+<div
+  class="mini-game"
+  data-game-id={game.id}
+  data-game-type={game.type}
+  data-correct-answer={JSON.stringify(game.correctAnswer)}
+  data-reward={game.reward}
+  data-story-id={storyId}
+>
+  <div class="mini-game-question">
+    <h3>{game.question}</h3>
+  </div>
+
+  <div class="mini-game-content" data-type={game.type}>
+    {
+      game.type === 'count' && (
+        <div class="count-game">
+          <div class="objects-container">
+            <slot name="objects" />
+          </div>
+          <div class="answer-input">
+            <label>Your answer:</label>
+            <input type="number" class="count-input" min="0" max="20" />
+            <button class="submit-btn">Check</button>
+          </div>
+        </div>
+      )
+    }
+
+    {
+      game.type === 'find' && (
+        <div class="find-game">
+          <div class="search-area">
+            <slot name="search-area" />
+          </div>
+          <div class="status">Click on the hidden object!</div>
+        </div>
+      )
+    }
+
+    {
+      game.type === 'drag-sort' && (
+        <div class="drag-sort-game">
+          <div class="draggable-items">
+            <slot name="draggable-items" />
+          </div>
+          <div class="drop-zones">
+            <slot name="drop-zones" />
+          </div>
+        </div>
+      )
+    }
+
+    {
+      game.type === 'color-match' && (
+        <div class="color-match-game">
+          <div class="color-items">
+            <slot name="color-items" />
+          </div>
+        </div>
+      )
+    }
+
+    {
+      game.type === 'pattern' && (
+        <div class="pattern-game">
+          <div class="pattern-sequence">
+            <slot name="pattern-sequence" />
+          </div>
+          <div class="pattern-options">
+            <slot name="pattern-options" />
+          </div>
+        </div>
+      )
+    }
+  </div>
+
+  <div class="mini-game-result" hidden>
+    <div class="result-icon"></div>
+    <div class="result-message"></div>
+  </div>
+</div>
+
+<script>
+  import { soundEffects } from '../utils/sound-effects';
+  import { collectiblesManager } from '../utils/story-interactions';
+  import { createConfetti } from '../animations/story-animations';
+  import type { Collectible } from '../utils/story-interactions';
+
+  document.querySelectorAll('.mini-game').forEach(gameDiv => {
+    const gameId = gameDiv.getAttribute('data-game-id') || '';
+    const gameType = gameDiv.getAttribute('data-game-type') || '';
+    const correctAnswerStr = gameDiv.getAttribute('data-correct-answer') || '';
+    const correctAnswer = JSON.parse(correctAnswerStr);
+    const reward = (gameDiv.getAttribute('data-reward') || 'star') as Collectible['type'];
+    const storyId = gameDiv.getAttribute('data-story-id') || '';
+
+    const resultDiv = gameDiv.querySelector('.mini-game-result') as HTMLElement;
+    const resultIcon = gameDiv.querySelector('.result-icon') as HTMLElement;
+    const resultMessage = gameDiv.querySelector('.result-message') as HTMLElement;
+
+    // Handle different game types
+    switch (gameType) {
+      case 'count':
+        initCountGame(gameDiv, correctAnswer, showResult);
+        break;
+      case 'find':
+        initFindGame(gameDiv, correctAnswer, showResult);
+        break;
+      case 'drag-sort':
+        initDragSortGame(gameDiv, correctAnswer, showResult);
+        break;
+      case 'color-match':
+        initColorMatchGame(gameDiv, correctAnswer, showResult);
+        break;
+      case 'pattern':
+        initPatternGame(gameDiv, correctAnswer, showResult);
+        break;
+    }
+
+    function showResult(isCorrect: boolean) {
+      if (!resultDiv || !resultIcon || !resultMessage) return;
+
+      resultDiv.removeAttribute('hidden');
+
+      if (isCorrect) {
+        resultIcon.textContent = '🎉';
+        resultMessage.textContent = 'Correct! Well done!';
+        resultDiv.classList.add('correct');
+        resultDiv.classList.remove('incorrect');
+
+        soundEffects.playCorrect();
+        createConfetti(gameDiv as HTMLElement, 20);
+
+        // Award collectible
+        const collectible: Collectible = {
+          id: `${gameId}-${Date.now()}`,
+          type: reward,
+          name: `${gameType} game completed`,
+          storyId,
+          timestamp: Date.now(),
+        };
+
+        collectiblesManager.add(collectible);
+      } else {
+        resultIcon.textContent = '💪';
+        resultMessage.textContent = 'Try again! You can do it!';
+        resultDiv.classList.add('incorrect');
+        resultDiv.classList.remove('correct');
+
+        soundEffects.playIncorrect();
+      }
+
+      // Hide result after 3 seconds
+      setTimeout(() => {
+        if (!isCorrect) {
+          resultDiv.setAttribute('hidden', '');
+        }
+      }, 3000);
+    }
+  });
+
+  function initCountGame(
+    gameDiv: Element,
+    correctAnswer: number,
+    showResult: (isCorrect: boolean) => void
+  ) {
+    const input = gameDiv.querySelector('.count-input') as HTMLInputElement;
+    const submitBtn = gameDiv.querySelector('.submit-btn') as HTMLButtonElement;
+
+    submitBtn?.addEventListener('click', () => {
+      const answer = parseInt(input.value, 10);
+      const isCorrect = answer === correctAnswer;
+      showResult(isCorrect);
+    });
+
+    input?.addEventListener('keydown', e => {
+      if ((e as KeyboardEvent).key === 'Enter') {
+        submitBtn?.click();
+      }
+    });
+  }
+
+  function initFindGame(
+    gameDiv: Element,
+    correctAnswer: string,
+    showResult: (isCorrect: boolean) => void
+  ) {
+    const searchArea = gameDiv.querySelector('.search-area');
+    const hiddenObjects = searchArea?.querySelectorAll('[data-hidden-object]');
+
+    hiddenObjects?.forEach(obj => {
+      obj.addEventListener('click', () => {
+        const objectId = obj.getAttribute('data-hidden-object');
+        const isCorrect = objectId === correctAnswer;
+        showResult(isCorrect);
+
+        if (isCorrect) {
+          obj.classList.add('found');
+        }
+      });
+    });
+  }
+
+  function initDragSortGame(
+    gameDiv: Element,
+    correctAnswer: string[],
+    showResult: (isCorrect: boolean) => void
+  ) {
+    const draggableItems = gameDiv.querySelectorAll('.draggable-item');
+    const dropZones = gameDiv.querySelectorAll('.drop-zone');
+
+    let draggedElement: HTMLElement | null = null;
+
+    draggableItems.forEach(item => {
+      item.setAttribute('draggable', 'true');
+
+      item.addEventListener('dragstart', (e: Event) => {
+        draggedElement = e.target as HTMLElement;
+        (e as DragEvent).dataTransfer!.effectAllowed = 'move';
+      });
+    });
+
+    dropZones.forEach(zone => {
+      zone.addEventListener('dragover', (e: Event) => {
+        e.preventDefault();
+        (e as DragEvent).dataTransfer!.dropEffect = 'move';
+        zone.classList.add('drag-over');
+      });
+
+      zone.addEventListener('dragleave', () => {
+        zone.classList.remove('drag-over');
+      });
+
+      zone.addEventListener('drop', (e: Event) => {
+        e.preventDefault();
+        zone.classList.remove('drag-over');
+
+        if (draggedElement) {
+          zone.appendChild(draggedElement);
+          soundEffects.playPop();
+
+          // Check if all items are correctly sorted
+          checkDragSortCompletion();
+        }
+      });
+    });
+
+    function checkDragSortCompletion() {
+      const placements: string[] = [];
+
+      dropZones.forEach(zone => {
+        const item = zone.querySelector('.draggable-item');
+        if (item) {
+          placements.push(item.getAttribute('data-item-id') || '');
+        }
+      });
+
+      if (placements.length === correctAnswer.length) {
+        const isCorrect = placements.every((id, index) => id === correctAnswer[index]);
+        showResult(isCorrect);
+      }
+    }
+  }
+
+  function initColorMatchGame(
+    gameDiv: Element,
+    correctAnswer: string[],
+    showResult: (isCorrect: boolean) => void
+  ) {
+    const colorItems = gameDiv.querySelectorAll('.color-item');
+    const selected: string[] = [];
+
+    colorItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const colorId = item.getAttribute('data-color-id');
+        if (!colorId) return;
+
+        if (selected.includes(colorId)) {
+          selected.splice(selected.indexOf(colorId), 1);
+          item.classList.remove('selected');
+        } else {
+          selected.push(colorId);
+          item.classList.add('selected');
+        }
+
+        soundEffects.playClick();
+
+        // Check if all required colors are selected
+        if (selected.length === correctAnswer.length) {
+          const isCorrect = correctAnswer.every(c => selected.includes(c));
+          showResult(isCorrect);
+        }
+      });
+    });
+  }
+
+  function initPatternGame(
+    gameDiv: Element,
+    correctAnswer: string,
+    showResult: (isCorrect: boolean) => void
+  ) {
+    const patternOptions = gameDiv.querySelectorAll('.pattern-option');
+
+    patternOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const optionId = option.getAttribute('data-option-id');
+        const isCorrect = optionId === correctAnswer;
+        showResult(isCorrect);
+
+        if (isCorrect) {
+          option.classList.add('correct');
+        }
+      });
+    });
+  }
+</script>
+
+<style>
+  .mini-game {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .mini-game-question h3 {
+    text-align: center;
+    color: var(--color-primary);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .mini-game-content {
+    margin: 1.5rem 0;
+  }
+
+  /* Count Game */
+  .count-game {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .objects-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 16px;
+  }
+
+  .answer-input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .count-input {
+    width: 80px;
+    padding: 0.75rem;
+    font-size: 1.2rem;
+    text-align: center;
+    border: 2px solid var(--color-primary);
+    border-radius: 8px;
+  }
+
+  .submit-btn {
+    padding: 0.75rem 2rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .submit-btn:hover {
+    background: #e88f30;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Find Game */
+  .find-game {
+    text-align: center;
+  }
+
+  .search-area {
+    position: relative;
+    min-height: 300px;
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .status {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    color: var(--color-text);
+  }
+
+  /* Drag Sort Game */
+  .drag-sort-game {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .draggable-items,
+  .drop-zones {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .drop-zone {
+    min-height: 80px;
+    background: white;
+    border: 2px dashed var(--color-primary);
+    border-radius: 12px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+  }
+
+  .drop-zone.drag-over {
+    background: rgba(247, 151, 49, 0.1);
+    border-style: solid;
+  }
+
+  /* Color Match Game */
+  .color-match-game {
+    display: flex;
+    justify-content: center;
+  }
+
+  .color-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 1rem;
+  }
+
+  .color-item {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 3px solid transparent;
+  }
+
+  .color-item:hover {
+    transform: scale(1.1);
+  }
+
+  .color-item.selected {
+    border-color: var(--color-primary);
+    transform: scale(1.1);
+  }
+
+  /* Pattern Game */
+  .pattern-game {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .pattern-sequence,
+  .pattern-options {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .pattern-option {
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .pattern-option:hover {
+    transform: scale(1.1);
+  }
+
+  .pattern-option.correct {
+    animation: bounce 0.5s ease;
+  }
+
+  /* Result Display */
+  .mini-game-result {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border-radius: 16px;
+    text-align: center;
+    animation: slide-up 0.3s ease;
+  }
+
+  .mini-game-result.correct {
+    background: linear-gradient(135deg, #6bcf7f 0%, #4caf50 100%);
+    color: white;
+  }
+
+  .mini-game-result.incorrect {
+    background: linear-gradient(135deg, #ffb74d 0%, #ff9f40 100%);
+    color: white;
+  }
+
+  .result-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .result-message {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .mini-game {
+      padding: 1.5rem;
+    }
+
+    .mini-game-question h3 {
+      font-size: 1.2rem;
+    }
+
+    .drag-sort-game {
+      grid-template-columns: 1fr;
+    }
+
+    .color-items {
+      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    }
+
+    .color-item {
+      width: 60px;
+      height: 60px;
+    }
+  }
+</style>
