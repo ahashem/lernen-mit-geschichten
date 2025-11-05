@@ -39,6 +39,17 @@ const storiesCollection = defineCollection({
     pages: z.array(storyPageSchema).optional(),
     // Quiz questions
     questions: z.array(quizQuestionSchema).optional(),
+    // Background music and ambient sounds
+    mood: z
+      .enum(['happy', 'sad', 'adventurous', 'calm', 'mysterious', 'exciting'])
+      .default('calm')
+      .optional(),
+    ambientSound: z
+      .enum(['forest', 'ocean', 'city', 'night', 'rain', 'home', 'none'])
+      .default('none')
+      .optional(),
+    musicIntensity: z.enum(['low', 'medium', 'high']).default('medium').optional(),
+    autoPlayMusic: z.boolean().default(false).optional(),
   }),
 });
 

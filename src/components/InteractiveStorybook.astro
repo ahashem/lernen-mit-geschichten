@@ -255,6 +255,11 @@ const t = {
             currentWordIndex++;
           }
         },
+        onStart: () => {
+          updatePlayPauseButton(true);
+          // Emit TTS start event for music system
+          storybookEl.dispatchEvent(new CustomEvent('tts-start', { bubbles: true }));
+        },
         onEnd: () => {
           // Clear highlights
           wordElements.forEach(el => el.classList.remove('highlight'));
@@ -266,9 +271,8 @@ const t = {
           } else {
             updatePlayPauseButton(false);
           }
-        },
-        onStart: () => {
-          updatePlayPauseButton(true);
+          // Emit TTS end event for music system
+          storybookEl.dispatchEvent(new CustomEvent('tts-end', { bubbles: true }));
         },
       });
     }

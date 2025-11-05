@@ -6,6 +6,7 @@ import InteractiveStorybook from '../../../components/InteractiveStorybook.astro
 import StoryLanguageSelector from '../../../components/StoryLanguageSelector.astro';
 import BilingualView from '../../../components/BilingualView.astro';
 import ReadingControls from '../../../components/ReadingControls.astro';
+import StoryMusic from '../../../components/StoryMusic.astro';
 import type { Locale } from '../../../utils/i18n.ts';
 import { getTranslation } from '../../../utils/i18n';
 import { getSkillsByIds } from '../../../utils/skills-taxonomy';
@@ -141,7 +142,12 @@ if (bilingualMode) {
             secondaryLocale={bilingualWith as Locale}
           />
         ) : story.data.storyFormat === 'interactive' && story.data.pages ? (
-          <InteractiveStorybook pages={story.data.pages} title={story.data.title} locale={locale} />
+          <InteractiveStorybook
+            pages={story.data.pages}
+            title={story.data.title}
+            locale={locale}
+            storyId={story.data.storyId}
+          />
         ) : (
           <>
             <div class="story-content">
@@ -155,6 +161,19 @@ if (bilingualMode) {
               showBilingualToggle={availableLanguages.length >= 2}
             />
           </>
+        )
+      }
+
+      <!-- Background Music Component (for interactive stories) -->
+      {
+        story.data.storyFormat === 'interactive' && (
+          <StoryMusic
+            locale={uiLocale}
+            mood={story.data.mood || 'calm'}
+            ambientSound={story.data.ambientSound || 'none'}
+            musicIntensity={story.data.musicIntensity || 'medium'}
+            autoPlay={story.data.autoPlayMusic || false}
+          />
         )
       }
     </div>
