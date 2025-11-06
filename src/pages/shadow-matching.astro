@@ -281,6 +281,9 @@ const description = getTranslation(locale, 'shadowMatchingDescription');
 
 <script>
   import { loadGameStats } from '../utils/shadow-matching';
+  import { getTranslation } from '../utils/i18n';
+
+  const locale = 'de';
 
   // Load and display best scores
   document.addEventListener('DOMContentLoaded', () => {
@@ -315,22 +318,22 @@ const description = getTranslation(locale, 'shadowMatchingDescription');
       {
         id: 'first-shadow-match',
         icon: '🎯',
-        title: 'First Match',
-        description: 'Complete your first shadow match game',
+        title: getTranslation(locale, 'firstMatch'),
+        description: getTranslation(locale, 'firstMatchDesc'),
         unlocked: stats.achievementsUnlocked.includes('first-shadow-match'),
       },
       {
         id: 'shadow-master',
         icon: '👑',
-        title: 'Shadow Master',
-        description: 'Complete 5 perfect games',
+        title: getTranslation(locale, 'shadowMaster'),
+        description: getTranslation(locale, 'shadowMasterDesc'),
         unlocked: stats.achievementsUnlocked.includes('shadow-master'),
       },
       {
         id: 'difficulty-conqueror',
         icon: '🏆',
-        title: 'Difficulty Conqueror',
-        description: 'Complete all difficulty levels',
+        title: getTranslation(locale, 'difficultyConqueror'),
+        description: getTranslation(locale, 'difficultyConquerorDesc'),
         unlocked: stats.achievementsUnlocked.includes('difficulty-conqueror'),
       },
     ];
