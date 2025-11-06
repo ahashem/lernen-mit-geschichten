@@ -363,6 +363,9 @@ const t = (key: string) => getTranslation(locale as any, key as any);
 <script>
   import { loadCollection, checkDailyBattle } from '../utils/card-collection';
 
+  // Get base path for correct navigation
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
   // Load player stats
   function loadStats() {
     const collection = loadCollection();
@@ -413,7 +416,7 @@ const t = (key: string) => getTranslation(locale as any, key as any);
       const collection = loadCollection();
       if (collection.cards.length === 0) {
         alert('Du hast noch keine Karten! Lies Geschichten, um Karten freizuschalten.');
-        window.location.href = '/de/stories';
+        window.location.href = `${base}/de/stories`;
         return;
       }
 

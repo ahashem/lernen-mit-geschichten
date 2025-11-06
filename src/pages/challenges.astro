@@ -584,13 +584,16 @@ const pageDescription = t('challengesDescription') || 'Täglich neue Herausforde
 </style>
 
 <script>
+  // Get base path for correct navigation
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
   // Handle challenge start
   document.getElementById('start-challenge')?.addEventListener('click', () => {
-    window.location.href = '/stories';
+    window.location.href = `${base}/stories`;
   });
 
   // Handle view stories
   document.getElementById('view-stories')?.addEventListener('click', () => {
-    window.location.href = '/stories';
+    window.location.href = `${base}/stories`;
   });
 </script>

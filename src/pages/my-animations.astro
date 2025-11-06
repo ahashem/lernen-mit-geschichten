@@ -111,6 +111,9 @@ const description = 'Verwalte und teile deine erstellten Animationen';
   import type { AnimationProject } from '@utils/animation-studio';
   import { AnimationEngine } from '@utils/animation-studio';
 
+  // Get base path for correct navigation
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
   const PROJECTS_STORAGE_KEY = 'animation-studio-projects';
   let animations: AnimationProject[] = [];
   let currentPreviewId: string | null = null;
@@ -287,7 +290,7 @@ const description = 'Verwalte und teile deine erstellten Animationen';
     if (!animation) return;
 
     localStorage.setItem('animation-studio-current', JSON.stringify(animation));
-    window.location.href = '/animation-studio';
+    window.location.href = `${base}/animation-studio`;
   }
 
   function shareAnimation(animationId: string): void {

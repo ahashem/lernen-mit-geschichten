@@ -426,6 +426,9 @@ const locale = 'de'; // Can be dynamic
   import { getAvailableCharacters, createPet, loadPets, savePets } from '../utils/virtual-pets';
   import type { Pet } from '../utils/virtual-pets';
 
+  // Get base path for correct navigation
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
   class AdoptionCenter {
     private selectedCharacter: { id: string; type: string; emoji: string; name: string } | null = null;
 
@@ -543,7 +546,7 @@ const locale = 'de'; // Can be dynamic
 
       // Auto-redirect after 3 seconds
       setTimeout(() => {
-        window.location.href = '/virtual-pets';
+        window.location.href = `${base}/virtual-pets`;
       }, 3000);
     }
   }
