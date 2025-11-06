@@ -31,11 +31,12 @@ const categories = [
     id: 'games',
     emoji: '🎮',
     titleKey: 'gamesHub',
-    subtitleKey: 'playAndFun',
+    subtitleKey: 'bonusGames',
     count: totalStories,
     countSuffix: 'Spiele',
     gradient: 'linear-gradient(135deg, #FF6B6B 0%, #FF9F40 100%)',
     href: `${base}/games`,
+    badge: 'Bonus',
   },
   {
     id: 'create',
@@ -105,6 +106,9 @@ const categories = [
     {categories.map((cat) => (
       <a href={cat.href} class="category-tile" data-category={cat.id}>
         <div class="tile-content" style={`background: ${cat.gradient}`}>
+          {cat.badge && (
+            <div class="tile-badge">{cat.badge}</div>
+          )}
           <div class="tile-emoji">{cat.emoji}</div>
           <h3 class="tile-title">{cat.titleKey}</h3>
           <p class="tile-subtitle">{cat.subtitleKey}</p>
@@ -182,6 +186,22 @@ const categories = [
 
   .category-tile:hover .tile-content::before {
     opacity: 1;
+  }
+
+  .tile-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #667eea;
+    padding: 0.3rem 0.7rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
   }
 
   .tile-emoji {

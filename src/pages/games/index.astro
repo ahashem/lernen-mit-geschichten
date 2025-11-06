@@ -4,11 +4,12 @@
  * UX Redesign Phase 1: Feature Discovery
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { getTranslation } from '../../utils/i18n';
 
 const locale = 'de';
 const title = 'Spiele & Aktivitäten';
-const description = 'Entdecke über 25 lustige Lernspiele!';
+const description = 'Zusätzliche Lernspiele zur Ergänzung der Geschichten';
 
 // ALL GAMES - Organized by Category
 const allGames = [
@@ -344,11 +345,18 @@ const difficultyLabels = {
 <BaseLayout title={title} description={description} locale={locale}>
   <div class="games-hub">
     <div class="container">
+      <!-- Breadcrumbs -->
+      <Breadcrumbs locale={locale} items={[]} currentPage={title} />
+
       <!-- Header -->
       <header class="page-header">
+        <div class="bonus-badge">Bonus-Feature</div>
         <h1 class="page-title">🎮 {title}</h1>
         <p class="page-description">{description}</p>
         <p class="game-count">✨ {allGames.length} Spiele verfügbar</p>
+        <p class="supplementary-note">
+          💡 Diese Spiele ergänzen unsere <a href="/stories">interaktiven Geschichten</a>
+        </p>
       </header>
 
       <!-- Category Tabs -->
@@ -414,6 +422,21 @@ const difficultyLabels = {
   .page-header {
     text-align: center;
     margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .bonus-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(118, 75, 162, 0.3);
   }
 
   .page-title {
@@ -432,6 +455,29 @@ const difficultyLabels = {
     font-size: 1.1rem;
     color: #764ba2;
     font-weight: 600;
+  }
+
+  .supplementary-note {
+    font-size: 0.95rem;
+    color: #555;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+    display: inline-block;
+  }
+
+  .supplementary-note a {
+    color: #667eea;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s;
+  }
+
+  .supplementary-note a:hover {
+    border-bottom-color: #667eea;
   }
 
   /* Category Tabs */

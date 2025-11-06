@@ -14,18 +14,14 @@ export interface Props {
 const { puzzleId, locale = 'de' } = Astro.props;
 
 // Import translations
-import deTranslations from '../locales/de.json';
-import arTranslations from '../locales/ar.json';
-import enTranslations from '../locales/en.json';
-import trTranslations from '../locales/tr.json';
-import urTranslations from '../locales/ur.json';
+import { translations as allTranslations } from '../utils/i18n';
 
 const translations: Record<string, any> = {
-  de: deTranslations,
-  ar: arTranslations,
-  en: enTranslations,
-  tr: trTranslations,
-  ur: urTranslations
+  de: allTranslations.de,
+  ar: allTranslations.ar,
+  en: allTranslations.en,
+  tr: allTranslations.tr,
+  ur: allTranslations.ur
 };
 
 const t = translations[locale];
