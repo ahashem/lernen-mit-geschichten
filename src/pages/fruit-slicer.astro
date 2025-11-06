@@ -6,8 +6,10 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FruitSlicer from '../components/FruitSlicer.astro';
 import { getCollection } from 'astro:content';
+import { getTranslation } from '../utils/i18n';
 
 const locale = 'de';
+const t = (key: string) => getTranslation(locale, key as any);
 
 // Get all stories for quiz questions
 const allStories = await getCollection('stories');
