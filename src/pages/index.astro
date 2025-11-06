@@ -3,6 +3,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import StoryCard from '../components/StoryCard.astro';
 import SearchBar from '../components/SearchBar.astro';
 import FilterSidebar from '../components/FilterSidebar.astro';
+import QuickStatsBar from '../components/QuickStatsBar.astro';
+import ReadingStreakHero from '../components/ReadingStreakHero.astro';
+import CategoryDashboard from '../components/CategoryDashboard.astro';
+import ContinueReading from '../components/ContinueReading.astro';
+import StoryRecommendations from '../components/StoryRecommendations.astro';
 import { getCollection } from 'astro:content';
 
 const locale = 'de';
@@ -17,21 +22,29 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
 
 <BaseLayout title="Startseite" locale={locale} description={description}>
   <div class="container">
-    <section class="hero">
-      <h1>Willkommen bei Lernen mit Geschichten</h1>
-      <p class="hero-text">
-        Entdecke spannende Geschichten, die Kindern wichtige Werte und Fähigkeiten vermitteln. Für
-        Eltern, Lehrer und Erzieher.
-      </p>
-    </section>
+    <!-- Quick Stats Bar (Sticky) -->
+    <QuickStatsBar locale={locale} />
 
+    <!-- Hero Section with Reading Streak -->
+    <ReadingStreakHero locale={locale} />
+
+    <!-- Category Dashboard (8 Large Tiles) -->
+    <CategoryDashboard locale={locale} totalStories={stories.length} />
+
+    <!-- Continue Reading Section -->
+    <ContinueReading locale={locale} />
+
+    <!-- Story Recommendations -->
+    <StoryRecommendations locale={locale} />
+
+    <!-- Search Bar -->
     <SearchBar locale={locale} />
 
     <div class="content-wrapper">
       <FilterSidebar locale={locale} currentSkills={urlSkills} currentLanguages={urlLanguages} />
 
-      <section class="stories-section">
-        <h2>Alle Geschichten</h2>
+      <section class="stories-section" id="stories-section">
+        <h2>📚 Alle Geschichten</h2>
 
         {
           stories.length === 0 ? (
@@ -63,6 +76,24 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
     </div>
   </div>
 </BaseLayout>
+
+<!-- Pass stories data to client-side scripts -->
+<script is:inline define:vars={{ stories: stories.map(s => ({
+  id: s.id,
+  slug: s.slug,
+  data: {
+    title: s.data.title,
+    emoji: s.data.emoji,
+    storyId: s.data.storyId,
+    skills: s.data.skills,
+    characterType: s.data.characterType,
+    difficulty: s.data.difficulty || 'beginner',
+    estimatedReadTime: s.data.estimatedReadTime,
+  }
+})) }}>
+  // Store stories data for recommendations engine
+  window.__STORIES_DATA__ = stories;
+</script>
 
 <script>
   // Client-side filtering and search
@@ -114,30 +145,17 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
 </script>
 
 <style>
-  .hero {
-    text-align: center;
-    padding: 3rem 0;
-    max-width: 800px;
+  .container {
+    max-width: 1400px;
     margin: 0 auto;
-  }
-
-  .hero h1 {
-    font-size: 2.5rem;
-    color: var(--color-primary);
-    margin-bottom: 1rem;
-  }
-
-  .hero-text {
-    font-size: 1.25rem;
-    color: var(--color-text-light);
-    line-height: 1.6;
+    padding: 0 1rem;
   }
 
   .content-wrapper {
     display: grid;
     grid-template-columns: 300px 1fr;
     gap: 2rem;
-    margin-top: 2rem;
+    margin-top: 3rem;
   }
 
   .stories-section {
@@ -145,8 +163,11 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
   }
 
   .stories-section h2 {
+    font-size: 2rem;
+    font-weight: 800;
     margin-bottom: 2rem;
     color: var(--color-text);
+    text-align: center;
   }
 
   .stories-grid {
@@ -163,23 +184,49 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
     color: var(--color-text-light);
   }
 
-  @media (max-width: 768px) {
-    .hero h1 {
-      font-size: 2rem;
+  /* Tablet */
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 250px 1fr;
+      gap: 1.5rem;
     }
 
-    .hero-text {
-      font-size: 1.1rem;
+    .stories-section h2 {
+      font-size: 1.75rem;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .container {
+      padding: 0;
     }
 
     .content-wrapper {
       grid-template-columns: 1fr;
       gap: 1.5rem;
+      margin-top: 2rem;
+      padding: 0 1rem;
+    }
+
+    .stories-section h2 {
+      font-size: 1.5rem;
+      text-align: left;
     }
 
     .stories-grid {
       grid-template-columns: 1fr;
       gap: 1.5rem;
     }
+  }
+
+  /* Smooth scroll for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Section spacing */
+  section {
+    scroll-margin-top: 120px;
   }
 </style>
