@@ -1,0 +1,773 @@
+---
+/**
+ * My Shows Page
+ * Gallery of saved puppet shows
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getTranslation } from '@utils/i18n';
+import type { Locale } from '@utils/i18n';
+
+const locale = (Astro.url.searchParams.get('lang') || 'de') as Locale;
+const t = (key: string) => getTranslation(locale, key);
+---
+
+<BaseLayout
+  title={t('myShows')}
+  description={t('puppetTheaterDescription')}
+  locale={locale}
+>
+  <div class="my-shows-page">
+    <!-- Page Header -->
+    <header class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">
+          <span class="title-icon">📚</span>
+          {t('myShows')}
+        </h1>
+        <p class="page-description">{t('savedShowsDescription')}</p>
+      </div>
+      <div class="header-actions">
+        <a href={`/puppet-theater?lang=${locale}`} class="btn btn-primary">
+          <span class="btn-icon">➕</span>
+          <span class="btn-label">{t('createPuppetShow')}</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Shows Stats -->
+    <div class="shows-stats">
+      <div class="stat-card">
+        <div class="stat-icon">🎭</div>
+        <div class="stat-value" id="total-shows">0</div>
+        <div class="stat-label">{t('totalShows')}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⏱️</div>
+        <div class="stat-value" id="total-duration">0:00</div>
+        <div class="stat-label">{t('totalShowTime')}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-value" id="stars-earned">0</div>
+        <div class="stat-label">{t('starsEarned')}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-value" id="achievements-count">0</div>
+        <div class="stat-label">{t('achievements')}</div>
+      </div>
+    </div>
+
+    <!-- Shows Grid -->
+    <div class="shows-container">
+      <!-- Empty State -->
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">🎭</div>
+        <h2>{t('noShowsYet')}</h2>
+        <p>{t('createFirstShow')}</p>
+        <a href={`/puppet-theater?lang=${locale}`} class="btn btn-primary btn-large">
+          <span class="btn-icon">➕</span>
+          <span class="btn-label">{t('createPuppetShow')}</span>
+        </a>
+      </div>
+
+      <!-- Shows Grid -->
+      <div class="shows-grid" id="shows-grid" style="display: none;">
+        <!-- Shows will be loaded dynamically -->
+      </div>
+    </div>
+
+    <!-- Show Actions Modal -->
+    <div class="modal" id="show-actions-modal">
+      <div class="modal-overlay" data-close-modal></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modal-show-title">Show Title</h2>
+          <button class="modal-close" data-close-modal>
+            <span>✕</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-actions-grid">
+            <button class="action-btn" id="watch-show-btn">
+              <span class="action-icon">▶️</span>
+              <span class="action-label">{t('watchShow')}</span>
+            </button>
+            <button class="action-btn" id="edit-show-btn">
+              <span class="action-icon">✏️</span>
+              <span class="action-label">{t('editShow')}</span>
+            </button>
+            <button class="action-btn" id="share-show-btn">
+              <span class="action-icon">🔗</span>
+              <span class="action-label">{t('shareShow')}</span>
+            </button>
+            <button class="action-btn" id="export-show-btn">
+              <span class="action-icon">🎥</span>
+              <span class="action-label">{t('exportVideo')}</span>
+            </button>
+            <button class="action-btn danger" id="delete-show-btn">
+              <span class="action-icon">🗑️</span>
+              <span class="action-label">{t('deleteShow')}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Achievements Section -->
+    <section class="achievements-section">
+      <h2 class="section-title">
+        <span class="icon">🏆</span>
+        {t('theaterAchievements')}
+      </h2>
+      <div class="achievements-grid">
+        <div class="achievement-card" data-achievement="puppeteer">
+          <div class="achievement-icon">🎭</div>
+          <div class="achievement-title">{t('puppeteerBadge')}</div>
+          <div class="achievement-desc">{t('createFirstShow')}</div>
+          <div class="achievement-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" data-progress="puppeteer"></div>
+            </div>
+            <span class="progress-text" data-progress-text="puppeteer">0/1</span>
+          </div>
+        </div>
+
+        <div class="achievement-card" data-achievement="director">
+          <div class="achievement-icon">🎬</div>
+          <div class="achievement-title">{t('directorBadge')}</div>
+          <div class="achievement-desc">{t('create5Shows')}</div>
+          <div class="achievement-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" data-progress="director"></div>
+            </div>
+            <span class="progress-text" data-progress-text="director">0/5</span>
+          </div>
+        </div>
+
+        <div class="achievement-card" data-achievement="showman">
+          <div class="achievement-icon">🌟</div>
+          <div class="achievement-title">{t('showmanBadge')}</div>
+          <div class="achievement-desc">{t('create10Shows')}</div>
+          <div class="achievement-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" data-progress="showman"></div>
+            </div>
+            <span class="progress-text" data-progress-text="showman">0/10</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .my-shows-page {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #f5f7fa 0%, #e8ecf1 100%);
+    padding: 20px;
+  }
+
+  /* Page Header */
+  .page-header {
+    max-width: 1400px;
+    margin: 0 auto 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-content {
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .page-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 36px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+  }
+
+  .title-icon {
+    font-size: 48px;
+  }
+
+  .page-description {
+    font-size: 18px;
+    color: #7f8c8d;
+    margin: 0;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-large {
+    padding: 16px 32px;
+    font-size: 18px;
+  }
+
+  .btn-icon {
+    font-size: 20px;
+  }
+
+  /* Stats */
+  .shows-stats {
+    max-width: 1400px;
+    margin: 0 auto 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .stat-icon {
+    font-size: 48px;
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #667eea;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: #7f8c8d;
+    text-align: center;
+  }
+
+  /* Shows Container */
+  .shows-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+  }
+
+  .empty-icon {
+    font-size: 120px;
+    margin-bottom: 30px;
+    opacity: 0.5;
+  }
+
+  .empty-state h2 {
+    font-size: 28px;
+    color: #2c3e50;
+    margin: 0 0 15px 0;
+  }
+
+  .empty-state p {
+    font-size: 18px;
+    color: #7f8c8d;
+    margin: 0 0 30px 0;
+  }
+
+  /* Shows Grid */
+  .shows-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  :global(.show-card) {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  :global(.show-card:hover) {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  :global(.show-thumbnail) {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+    position: relative;
+  }
+
+  :global(.show-play-overlay) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  :global(.show-card:hover .show-play-overlay) {
+    opacity: 1;
+  }
+
+  :global(.play-icon) {
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+  }
+
+  :global(.show-info) {
+    padding: 20px;
+  }
+
+  :global(.show-title) {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+  }
+
+  :global(.show-meta) {
+    display: flex;
+    gap: 15px;
+    font-size: 14px;
+    color: #7f8c8d;
+  }
+
+  :global(.show-meta-item) {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* Achievements Section */
+  .achievements-section {
+    max-width: 1400px;
+    margin: 60px auto 0;
+    padding-top: 40px;
+    border-top: 2px solid #e0e0e0;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 30px 0;
+  }
+
+  .icon {
+    font-size: 36px;
+  }
+
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .achievement-card {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .achievement-card.unlocked {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .achievement-icon {
+    font-size: 60px;
+    opacity: 0.5;
+  }
+
+  .achievement-card.unlocked .achievement-icon {
+    opacity: 1;
+    animation: achievement-bounce 0.6s ease;
+  }
+
+  @keyframes achievement-bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+
+  .achievement-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .achievement-desc {
+    font-size: 14px;
+    opacity: 0.8;
+  }
+
+  .achievement-progress {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: #4caf50;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  .achievement-card.unlocked .progress-fill {
+    background: white;
+  }
+
+  .progress-text {
+    font-size: 13px;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal.active {
+    display: flex;
+  }
+
+  .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 500px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 30px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+
+  .modal-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+  }
+
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  .modal-body {
+    padding: 30px;
+  }
+
+  .modal-actions-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .action-btn:hover {
+    background: #e3f2fd;
+    border-color: #667eea;
+    transform: translateX(4px);
+  }
+
+  .action-btn.danger:hover {
+    background: #ffebee;
+    border-color: #f44336;
+  }
+
+  .action-icon {
+    font-size: 24px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .page-title {
+      font-size: 28px;
+    }
+
+    .shows-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .shows-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .achievements-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { ShowStorage, type Show } from '@utils/puppet-theater';
+
+  // Initialize storage
+  const showStorage = new ShowStorage();
+  let selectedShowId: string | null = null;
+
+  // Load shows
+  async function loadShows() {
+    await showStorage.init();
+    const shows = await showStorage.getAllShows();
+
+    const emptyState = document.getElementById('empty-state');
+    const showsGrid = document.getElementById('shows-grid');
+
+    if (shows.length === 0) {
+      if (emptyState) emptyState.style.display = 'block';
+      if (showsGrid) showsGrid.style.display = 'none';
+      return;
+    }
+
+    if (emptyState) emptyState.style.display = 'none';
+    if (showsGrid) {
+      showsGrid.style.display = 'grid';
+      showsGrid.innerHTML = '';
+
+      shows.forEach(show => {
+        const card = createShowCard(show);
+        showsGrid.appendChild(card);
+      });
+    }
+
+    // Update stats
+    updateStats(shows);
+    updateAchievements(shows);
+  }
+
+  // Create show card
+  function createShowCard(show: Show): HTMLElement {
+    const card = document.createElement('div');
+    card.className = 'show-card';
+    card.innerHTML = `
+      <div class="show-thumbnail">
+        🎭
+        <div class="show-play-overlay">
+          <div class="play-icon">▶️</div>
+        </div>
+      </div>
+      <div class="show-info">
+        <h3 class="show-title">${show.title}</h3>
+        <div class="show-meta">
+          <span class="show-meta-item">
+            <span>🎬</span>
+            <span>${show.scenes.length} scenes</span>
+          </span>
+          <span class="show-meta-item">
+            <span>⏱️</span>
+            <span>${formatDuration(show.duration)}</span>
+          </span>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener('click', () => openShowActions(show));
+    return card;
+  }
+
+  // Format duration
+  function formatDuration(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  // Open show actions modal
+  function openShowActions(show: Show) {
+    selectedShowId = show.id;
+    const modal = document.getElementById('show-actions-modal');
+    const title = document.getElementById('modal-show-title');
+    if (modal) modal.classList.add('active');
+    if (title) title.textContent = show.title;
+  }
+
+  // Update stats
+  function updateStats(shows: Show[]) {
+    const totalShows = document.getElementById('total-shows');
+    const totalDuration = document.getElementById('total-duration');
+    const starsEarned = document.getElementById('stars-earned');
+
+    if (totalShows) totalShows.textContent = shows.length.toString();
+
+    const duration = shows.reduce((sum, show) => sum + show.duration, 0);
+    if (totalDuration) totalDuration.textContent = formatDuration(duration);
+
+    if (starsEarned) starsEarned.textContent = (shows.length * 25).toString();
+  }
+
+  // Update achievements
+  function updateAchievements(shows: Show[]) {
+    const count = shows.length;
+
+    // Puppeteer (1 show)
+    const puppeteerProgress = document.querySelector('[data-progress="puppeteer"]') as HTMLElement;
+    const puppeteerText = document.querySelector('[data-progress-text="puppeteer"]') as HTMLElement;
+    const puppeteerCard = document.querySelector('[data-achievement="puppeteer"]') as HTMLElement;
+    if (puppeteerProgress) puppeteerProgress.style.width = `${Math.min(count / 1, 1) * 100}%`;
+    if (puppeteerText) puppeteerText.textContent = `${Math.min(count, 1)}/1`;
+    if (puppeteerCard && count >= 1) puppeteerCard.classList.add('unlocked');
+
+    // Director (5 shows)
+    const directorProgress = document.querySelector('[data-progress="director"]') as HTMLElement;
+    const directorText = document.querySelector('[data-progress-text="director"]') as HTMLElement;
+    const directorCard = document.querySelector('[data-achievement="director"]') as HTMLElement;
+    if (directorProgress) directorProgress.style.width = `${Math.min(count / 5, 1) * 100}%`;
+    if (directorText) directorText.textContent = `${Math.min(count, 5)}/5`;
+    if (directorCard && count >= 5) directorCard.classList.add('unlocked');
+
+    // Showman (10 shows)
+    const showmanProgress = document.querySelector('[data-progress="showman"]') as HTMLElement;
+    const showmanText = document.querySelector('[data-progress-text="showman"]') as HTMLElement;
+    const showmanCard = document.querySelector('[data-achievement="showman"]') as HTMLElement;
+    if (showmanProgress) showmanProgress.style.width = `${Math.min(count / 10, 1) * 100}%`;
+    if (showmanText) showmanText.textContent = `${Math.min(count, 10)}/10`;
+    if (showmanCard && count >= 10) showmanCard.classList.add('unlocked');
+
+    const achievementsCount = document.getElementById('achievements-count');
+    const unlockedCount = [count >= 1, count >= 5, count >= 10].filter(Boolean).length;
+    if (achievementsCount) achievementsCount.textContent = unlockedCount.toString();
+  }
+
+  // Close modals
+  document.querySelectorAll('[data-close-modal]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.classList.remove('active');
+      });
+    });
+  });
+
+  // Initialize
+  loadShows();
+</script>

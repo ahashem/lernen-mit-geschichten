@@ -1,0 +1,749 @@
+---
+/**
+ * Adventure Quest System - Main Hub Page
+ * RPG-style progression with XP, levels, skill trees, and quests
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LevelUpAnimation from '../components/LevelUpAnimation.astro';
+import SkillTree from '../components/SkillTree.astro';
+import QuestJournal from '../components/QuestJournal.astro';
+
+const locale = 'de';
+---
+
+<BaseLayout title="Abenteuer-Quests" locale={locale}>
+  <div class="adventure-hub">
+    <div class="hub-header">
+      <div class="header-title">
+        <h1>⚔️ Abenteuer-Quests</h1>
+        <p class="subtitle">Erlebe RPG-Abenteuer mit XP, Leveln und Skill-Bäumen!</p>
+      </div>
+
+      <!-- XP Progress Bar (Always Visible) -->
+      <div class="xp-progress-widget">
+        <div class="xp-progress-header">
+          <span class="player-level">Level <strong id="player-level">1</strong></span>
+          <span class="xp-text"><span id="current-xp">0</span> / <span id="xp-required">200</span> XP</span>
+        </div>
+        <div class="xp-progress-bar">
+          <div class="xp-progress-fill" id="xp-fill" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Player Profile Card -->
+    <section class="profile-section">
+      <div class="profile-card">
+        <div class="profile-avatar" id="profile-avatar">🐻</div>
+        <div class="profile-info">
+          <h2 class="profile-username" id="profile-username">Abenteurer</h2>
+          <div class="profile-title" id="profile-title">Lehrlings-Leser</div>
+          <div class="profile-stats">
+            <div class="stat-item">
+              <span class="stat-icon">📚</span>
+              <span class="stat-value" id="stories-read">0</span>
+              <span class="stat-label">Geschichten</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">🎯</span>
+              <span class="stat-value" id="quizzes-completed">0</span>
+              <span class="stat-label">Quiz</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">⭐</span>
+              <span class="stat-value" id="skill-points">0</span>
+              <span class="stat-label">Punkte</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">⏰</span>
+              <span class="stat-value" id="time-played">0</span>
+              <span class="stat-label">Minuten</span>
+            </div>
+          </div>
+        </div>
+        <button class="edit-profile-btn">✏️ Profil bearbeiten</button>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <div class="hub-tabs">
+      <button class="hub-tab active" data-tab="quests">📜 Quests</button>
+      <button class="hub-tab" data-tab="skills">🌳 Fertigkeitsbaum</button>
+      <button class="hub-tab" data-tab="battle-pass">🎁 Battle Pass</button>
+      <button class="hub-tab" data-tab="milestones">🏆 Meilensteine</button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content active" id="quests-tab">
+      <QuestJournal />
+    </div>
+
+    <div class="tab-content" id="skills-tab">
+      <SkillTree />
+    </div>
+
+    <div class="tab-content" id="battle-pass-tab">
+      <div class="battle-pass-container">
+        <div class="battle-pass-header">
+          <h2>🎁 Saison-Battle-Pass</h2>
+          <p>Schalte exklusive Belohnungen frei!</p>
+          <div class="season-info">
+            <span>Saison 1: Abenteuer-Beginn</span>
+            <span class="season-timer">⏰ 27 Tage verbleibend</span>
+          </div>
+        </div>
+
+        <div class="battle-pass-level">
+          <span>Dein Level:</span>
+          <strong id="bp-level">0</strong> / 30
+        </div>
+
+        <div class="battle-pass-tracks">
+          <div class="track-header">
+            <h3>🆓 Gratis-Track</h3>
+            <p>Für alle Spieler verfügbar</p>
+          </div>
+          <div class="track-rewards" id="free-track">
+            <!-- Generated dynamically -->
+          </div>
+
+          <div class="track-header premium">
+            <h3>⭐ Premium-Track</h3>
+            <p>Exklusive Belohnungen (1000 Sterne)</p>
+            <button class="unlock-premium-btn">Premium freischalten</button>
+          </div>
+          <div class="track-rewards premium" id="premium-track">
+            <!-- Generated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="milestones-tab">
+      <div class="milestones-container">
+        <h2>🏆 Level-Meilensteine</h2>
+        <p class="milestones-desc">Schalte mächtige Features und Belohnungen frei, wenn du aufsteigst!</p>
+
+        <div class="milestones-list" id="milestones-list">
+          <!-- Generated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Level Up Animation Component -->
+  <LevelUpAnimation />
+
+  <!-- XP Floating Numbers -->
+  <div id="xp-floating-container" class="xp-floating-container"></div>
+</BaseLayout>
+
+<style>
+  .adventure-hub {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+
+  .hub-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .header-title h1 {
+    font-size: 3rem;
+    margin: 0 0 0.5rem 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    margin: 0;
+  }
+
+  .xp-progress-widget {
+    max-width: 600px;
+    margin: 2rem auto 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  }
+
+  .xp-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+
+  .player-level strong {
+    font-size: 1.5rem;
+    color: #FFD700;
+  }
+
+  .xp-progress-bar {
+    width: 100%;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .xp-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FFD93D 0%, #FF9F40 100%);
+    border-radius: 10px;
+    transition: width 0.8s ease;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  }
+
+  .profile-section {
+    margin-bottom: 3rem;
+  }
+
+  .profile-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    color: white;
+    position: relative;
+  }
+
+  .profile-avatar {
+    font-size: 5rem;
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 5px solid rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+
+  .profile-info {
+    flex: 1;
+  }
+
+  .profile-username {
+    font-size: 2rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .profile-title {
+    display: inline-block;
+    background: rgba(255, 215, 0, 0.2);
+    color: #FFD700;
+    padding: 0.3rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .profile-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #FFD700;
+  }
+
+  .stat-label {
+    display: block;
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-top: 0.2rem;
+  }
+
+  .edit-profile-btn {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .edit-profile-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .hub-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+    flex-wrap: wrap;
+  }
+
+  .hub-tab {
+    flex: 1;
+    min-width: 150px;
+    padding: 1rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #666;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+
+  .hub-tab:hover {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+  }
+
+  .hub-tab.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+  }
+
+  .tab-content {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .battle-pass-container,
+  .milestones-container {
+    background: linear-gradient(135deg, #2d3561 0%, #1f2544 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    color: white;
+  }
+
+  .battle-pass-header h2,
+  .milestones-container h2 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .season-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+  }
+
+  .battle-pass-level {
+    text-align: center;
+    font-size: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .track-header {
+    margin: 2rem 0 1rem;
+  }
+
+  .track-header h3 {
+    font-size: 1.5rem;
+    margin: 0 0 0.3rem 0;
+  }
+
+  .track-header.premium {
+    border-top: 2px dashed rgba(255, 215, 0, 0.3);
+    padding-top: 2rem;
+  }
+
+  .unlock-premium-btn {
+    background: linear-gradient(135deg, #FFD93D 0%, #FF9F40 100%);
+    color: #333;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: transform 0.2s ease;
+  }
+
+  .unlock-premium-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .track-rewards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .reward-slot {
+    aspect-ratio: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .reward-slot:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 215, 0, 0.5);
+  }
+
+  .reward-icon {
+    font-size: 2.5rem;
+  }
+
+  .reward-level {
+    font-size: 0.85rem;
+    opacity: 0.8;
+  }
+
+  .milestones-desc {
+    opacity: 0.9;
+    margin-bottom: 2rem;
+  }
+
+  .milestones-list {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .milestone-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-left: 5px solid;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .milestone-card.unlocked {
+    border-left-color: #4CAF50;
+  }
+
+  .milestone-card.locked {
+    border-left-color: #999;
+    opacity: 0.6;
+  }
+
+  .milestone-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .milestone-level {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #FFD700;
+  }
+
+  .milestone-unlocks {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .unlock-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+  }
+
+  .unlock-icon {
+    font-size: 1.8rem;
+  }
+
+  .xp-floating-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  .xp-float {
+    position: absolute;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #FFD700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: floatUp 2s ease-out forwards;
+  }
+
+  @keyframes floatUp {
+    from {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(-100px) scale(1.2);
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .adventure-hub {
+      padding: 1rem;
+    }
+
+    .header-title h1 {
+      font-size: 2rem;
+    }
+
+    .profile-card {
+      flex-direction: column;
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .edit-profile-btn {
+      position: static;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .hub-tab {
+      min-width: 120px;
+      padding: 0.8rem 1rem;
+      font-size: 0.95rem;
+    }
+
+    .profile-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<script>
+  import { questManager, LEVEL_MILESTONES } from '../utils/quest-system';
+
+  class AdventureHubManager {
+    constructor() {
+      this.init();
+    }
+
+    private init(): void {
+      this.updateProfile();
+      this.updateXPBar();
+      this.renderMilestones();
+      this.renderBattlePass();
+      this.attachEventListeners();
+
+      // Listen for updates
+      window.addEventListener('profile-update', () => this.updateProfile());
+      window.addEventListener('xp-gain', (event: any) => this.handleXPGain(event));
+    }
+
+    private attachEventListeners(): void {
+      // Tab switching
+      document.querySelectorAll('.hub-tab').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const target = e.currentTarget as HTMLElement;
+          const tabName = target.dataset.tab;
+          if (tabName) {
+            this.switchTab(tabName);
+          }
+        });
+      });
+    }
+
+    private switchTab(tabName: string): void {
+      // Update active tab
+      document.querySelectorAll('.hub-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.getAttribute('data-tab') === tabName) {
+          tab.classList.add('active');
+        }
+      });
+
+      // Show corresponding content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`${tabName}-tab`)?.classList.add('active');
+    }
+
+    private updateProfile(): void {
+      const profile = questManager.getPlayerProfile();
+
+      // Update profile card
+      document.getElementById('profile-avatar')!.textContent = profile.avatar;
+      document.getElementById('profile-username')!.textContent = profile.username;
+      document.getElementById('profile-title')!.textContent = profile.title;
+      document.getElementById('stories-read')!.textContent = profile.stats.storiesRead.toString();
+      document.getElementById('quizzes-completed')!.textContent = profile.stats.quizzesCompleted.toString();
+      document.getElementById('skill-points')!.textContent = profile.skillPoints.toString();
+      document.getElementById('time-played')!.textContent = Math.floor(profile.stats.timePlayed).toString();
+    }
+
+    private updateXPBar(): void {
+      const profile = questManager.getPlayerProfile();
+      const progressPercent = (profile.xp / profile.xpToNextLevel) * 100;
+
+      document.getElementById('player-level')!.textContent = profile.level.toString();
+      document.getElementById('current-xp')!.textContent = profile.xp.toString();
+      document.getElementById('xp-required')!.textContent = profile.xpToNextLevel.toString();
+
+      const fillEl = document.getElementById('xp-fill');
+      if (fillEl) {
+        fillEl.style.width = `${progressPercent}%`;
+      }
+    }
+
+    private handleXPGain(event: any): void {
+      this.updateXPBar();
+      this.showXPFloat(event.detail.amount);
+    }
+
+    private showXPFloat(amount: number): void {
+      const container = document.getElementById('xp-floating-container');
+      if (!container) return;
+
+      const float = document.createElement('div');
+      float.className = 'xp-float';
+      float.textContent = `+${amount} XP`;
+
+      // Random position near center
+      float.style.left = `${50 + (Math.random() - 0.5) * 20}%`;
+      float.style.top = `${30 + (Math.random() - 0.5) * 10}%`;
+
+      container.appendChild(float);
+
+      // Remove after animation
+      setTimeout(() => {
+        container.removeChild(float);
+      }, 2000);
+    }
+
+    private renderMilestones(): void {
+      const profile = questManager.getPlayerProfile();
+      const container = document.getElementById('milestones-list');
+      if (!container) return;
+
+      container.innerHTML = LEVEL_MILESTONES.map(milestone => {
+        const unlocked = profile.level >= milestone.level;
+        return `
+          <div class="milestone-card ${unlocked ? 'unlocked' : 'locked'}">
+            <div class="milestone-header">
+              <span class="milestone-level">Level ${milestone.level}</span>
+              <span>${unlocked ? '✓ Freigeschaltet' : '🔒 Gesperrt'}</span>
+            </div>
+            <div class="milestone-unlocks">
+              ${milestone.unlocks.map(unlock => `
+                <div class="unlock-item">
+                  <span class="unlock-icon">${this.getUnlockIcon(unlock.type)}</span>
+                  <span>${unlock.name.de}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    private getUnlockIcon(type: string): string {
+      const icons: Record<string, string> = {
+        feature: '🔓',
+        character: '🦸',
+        game: '🎮',
+        story: '📖',
+        skill_point: '⭐',
+      };
+      return icons[type] || '🎁';
+    }
+
+    private renderBattlePass(): void {
+      const freeTrack = document.getElementById('free-track');
+      const premiumTrack = document.getElementById('premium-track');
+
+      if (freeTrack) {
+        freeTrack.innerHTML = this.generateTrackHTML('free', 30);
+      }
+
+      if (premiumTrack) {
+        premiumTrack.innerHTML = this.generateTrackHTML('premium', 30);
+      }
+    }
+
+    private generateTrackHTML(type: string, levels: number): string {
+      let html = '';
+      for (let i = 1; i <= levels; i++) {
+        if (type === 'free' && i % 5 !== 0) continue; // Free track: every 5 levels
+
+        const icon = i % 10 === 0 ? '🎁' : i % 5 === 0 ? '⭐' : '✨';
+        html += `
+          <div class="reward-slot">
+            <span class="reward-icon">${icon}</span>
+            <span class="reward-level">Level ${i}</span>
+          </div>
+        `;
+      }
+      return html;
+    }
+  }
+
+  // Initialize on page load
+  if (typeof window !== 'undefined') {
+    new AdventureHubManager();
+  }
+</script>

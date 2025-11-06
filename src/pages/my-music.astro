@@ -1,0 +1,638 @@
+---
+/**
+ * My Music Page
+ * Gallery of saved compositions
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const locale = 'de';
+const title = 'My Music - Lernen mit Geschichten';
+const description = 'View and manage your saved music compositions';
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <main class="my-music-page">
+    <div class="page-header">
+      <h1>🎵 My Music</h1>
+      <p class="subtitle">Your saved compositions</p>
+      <div class="header-actions">
+        <a href="/music-composer" class="btn-primary">
+          + New Composition
+        </a>
+        <button id="sort-btn" class="btn-secondary">
+          Sort: Newest First
+        </button>
+      </div>
+    </div>
+
+    <div class="stats-panel">
+      <div class="stat-card">
+        <div class="stat-value" id="total-compositions">0</div>
+        <div class="stat-label">Compositions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="total-stars">0</div>
+        <div class="stat-label">Stars Earned</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="instruments-unlocked">8/8</div>
+        <div class="stat-label">Instruments Unlocked</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="total-duration">0:00</div>
+        <div class="stat-label">Total Music Created</div>
+      </div>
+    </div>
+
+    <div class="compositions-grid" id="compositions-grid">
+      <!-- Compositions will be loaded here -->
+    </div>
+
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">🎹</div>
+      <h2>No compositions yet</h2>
+      <p>Start creating your first musical masterpiece!</p>
+      <a href="/music-composer" class="btn-primary">
+        Create First Composition
+      </a>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Delete Composition?</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete "<span id="delete-composition-title"></span>"?</p>
+          <p class="warning">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary modal-close">Cancel</button>
+          <button id="confirm-delete-btn" class="btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="share-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Share Composition</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="share-options">
+            <button class="share-btn" data-method="qr">
+              <span class="share-icon">📱</span>
+              <span>QR Code</span>
+            </button>
+            <button class="share-btn" data-method="link">
+              <span class="share-icon">🔗</span>
+              <span>Copy Link</span>
+            </button>
+            <button class="share-btn" data-method="audio">
+              <span class="share-icon">🎵</span>
+              <span>Export Audio</span>
+            </button>
+            <button class="share-btn" data-method="midi">
+              <span class="share-icon">🎹</span>
+              <span>Export MIDI</span>
+            </button>
+          </div>
+          <div id="qr-code-container" class="qr-code-container"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .my-music-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  .subtitle {
+    font-size: 1.3rem;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+
+  .stats-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #FF9F40;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .compositions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .composition-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+
+  .composition-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .composition-header {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .composition-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .composition-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  .composition-body {
+    padding: 1.5rem;
+  }
+
+  .composition-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .instruments-list {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .instrument-badge {
+    padding: 0.25rem 0.75rem;
+    background: #f0f0f0;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .composition-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+  }
+
+  .btn-icon {
+    padding: 0.5rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+  }
+
+  .btn-icon:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+  }
+
+  .empty-state {
+    display: none;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .empty-state.visible {
+    display: block;
+  }
+
+  .empty-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+  }
+
+  .empty-state h2 {
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-state p {
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: #FF9F40;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: #ff8c1a;
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    color: #333;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    background: #f0f0f0;
+    border-color: #ccc;
+  }
+
+  .btn-danger {
+    padding: 0.75rem 1.5rem;
+    background: #E57373;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-danger:hover {
+    background: #d32f2f;
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal.active {
+    display: flex;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 2px solid #eee;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #999;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 2px solid #eee;
+  }
+
+  .warning {
+    color: #E57373;
+    font-weight: bold;
+  }
+
+  .share-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .share-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .share-btn:hover {
+    background: #FFF5E6;
+    border-color: #FF9F40;
+  }
+
+  .share-icon {
+    font-size: 2rem;
+  }
+
+  .qr-code-container {
+    display: none;
+    text-align: center;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+  }
+
+  .qr-code-container.visible {
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .compositions-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stats-panel {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<script>
+  import { MusicComposer } from '../utils/music-composer';
+  import { starWallet } from '../utils/star-wallet';
+  import type { Composition } from '../utils/music-composer';
+
+  let compositions: Composition[] = [];
+  let deleteTargetId: string | null = null;
+  let shareTargetId: string | null = null;
+
+  // Load compositions
+  function loadCompositions(): void {
+    compositions = MusicComposer.getAllCompositions();
+    updateStats();
+    renderCompositions();
+  }
+
+  // Update statistics
+  function updateStats(): void {
+    const totalCompositions = compositions.length;
+    const totalStars = totalCompositions * 25; // 25 stars per composition
+    const totalDuration = compositions.reduce((sum, comp) => {
+      const beatsPerMeasure = parseInt(comp.timeSignature.split('/')[0]);
+      const totalBeats = comp.measures * beatsPerMeasure;
+      const seconds = (totalBeats / 4) * (60 / comp.bpm);
+      return sum + seconds;
+    }, 0);
+
+    document.getElementById('total-compositions')!.textContent = totalCompositions.toString();
+    document.getElementById('total-stars')!.textContent = totalStars.toString();
+
+    const minutes = Math.floor(totalDuration / 60);
+    const seconds = Math.floor(totalDuration % 60);
+    document.getElementById('total-duration')!.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  // Render compositions
+  function renderCompositions(): void {
+    const grid = document.getElementById('compositions-grid');
+    const emptyState = document.getElementById('empty-state');
+
+    if (!grid || !emptyState) return;
+
+    if (compositions.length === 0) {
+      grid.style.display = 'none';
+      emptyState.classList.add('visible');
+      return;
+    }
+
+    grid.style.display = 'grid';
+    emptyState.classList.remove('visible');
+
+    grid.innerHTML = compositions.map(comp => {
+      const date = new Date(comp.updatedAt).toLocaleDateString();
+      const instruments = [...new Set(comp.tracks.map(t => t.instrument))];
+
+      return `
+        <div class="composition-card" data-id="${comp.id}">
+          <div class="composition-header">
+            <div class="composition-title">${comp.title}</div>
+            <div class="composition-meta">
+              <span>${comp.bpm} BPM</span>
+              <span>${comp.timeSignature}</span>
+              <span>${comp.measures} measures</span>
+            </div>
+          </div>
+          <div class="composition-body">
+            <div class="composition-info">
+              <span>${comp.tracks.length} tracks</span>
+              <span>${date}</span>
+            </div>
+            <div class="instruments-list">
+              ${instruments.map(inst => `<span class="instrument-badge">${inst}</span>`).join('')}
+            </div>
+            <div class="composition-actions">
+              <button class="btn-icon play-btn" data-id="${comp.id}">
+                ▶️ Play
+              </button>
+              <button class="btn-icon edit-btn" data-id="${comp.id}">
+                ✏️ Edit
+              </button>
+              <button class="btn-icon share-btn" data-id="${comp.id}">
+                🔗 Share
+              </button>
+              <button class="btn-icon delete-btn" data-id="${comp.id}">
+                🗑️ Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    attachCardEventListeners();
+  }
+
+  // Attach event listeners to composition cards
+  function attachCardEventListeners(): void {
+    // Play buttons
+    document.querySelectorAll('.play-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.currentTarget as HTMLElement).dataset.id;
+        if (id) playComposition(id);
+      });
+    });
+
+    // Edit buttons
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.currentTarget as HTMLElement).dataset.id;
+        if (id) window.location.href = `/music-composer?id=${id}`;
+      });
+    });
+
+    // Share buttons
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.currentTarget as HTMLElement).dataset.id;
+        if (id) openShareModal(id);
+      });
+    });
+
+    // Delete buttons
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.currentTarget as HTMLElement).dataset.id;
+        if (id) openDeleteModal(id);
+      });
+    });
+  }
+
+  // Play composition
+  function playComposition(id: string): void {
+    const composition = MusicComposer.load(id);
+    if (!composition) return;
+
+    const composer = new MusicComposer(composition);
+    composer.play();
+
+    // Stop after composition ends
+    const beatsPerMeasure = parseInt(composition.timeSignature.split('/')[0]);
+    const totalBeats = composition.measures * beatsPerMeasure;
+    const duration = (totalBeats / 4) * (60000 / composition.bpm);
+
+    setTimeout(() => {
+      composer.stop();
+      composer.dispose();
+    }, duration + 1000);
+  }
+
+  // Open delete modal
+  function openDeleteModal(id: string): void {
+    const composition = compositions.find(c => c.id === id);
+    if (!composition) return;
+
+    deleteTargetId = id;
+    document.getElementById('delete-composition-title')!.textContent = composition.title;
+    document.getElementById('delete-modal')!.classList.add('active');
+  }
+
+  // Open share modal
+  function openShareModal(id: string): void {
+    shareTargetId = id;
+    document.getElementById('share-modal')!.classList.add('active');
+  }
+
+  // Confirm delete
+  document.getElementById('confirm-delete-btn')?.addEventListener('click', () => {
+    if (deleteTargetId) {
+      MusicComposer.deleteComposition(deleteTargetId);
+      deleteTargetId = null;
+      document.getElementById('delete-modal')!.classList.remove('active');
+      loadCompositions();
+    }
+  });
+
+  // Close modals
+  document.querySelectorAll('.modal-close').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.classList.remove('active');
+      });
+    });
+  });
+
+  // Load compositions on page load
+  loadCompositions();
+</script>

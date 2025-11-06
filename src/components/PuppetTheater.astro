@@ -1,0 +1,655 @@
+---
+/**
+ * Puppet Theater Component
+ * Main interactive stage for puppet shows
+ */
+import type { Locale } from '@utils/i18n';
+import { getTranslation } from '@utils/i18n';
+
+interface Props {
+  locale: Locale;
+  showId?: string;
+}
+
+const { locale, showId } = Astro.props;
+const t = (key: string) => getTranslation(locale, key);
+---
+
+<div class="puppet-theater" data-locale={locale} data-show-id={showId}>
+  <!-- Theater Curtain -->
+  <div class="theater-curtain">
+    <div class="curtain left-curtain"></div>
+    <div class="curtain right-curtain"></div>
+    <div class="curtain-header">
+      <div class="theater-lights">
+        <div class="light"></div>
+        <div class="light"></div>
+        <div class="light"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Stage -->
+  <div class="theater-stage">
+    <!-- Stage Background -->
+    <div class="stage-background" data-background="forest"></div>
+
+    <!-- Stage Lighting -->
+    <div class="stage-lighting">
+      <div class="spotlight" data-spotlight="main"></div>
+      <div class="ambient-light"></div>
+    </div>
+
+    <!-- Props Layer -->
+    <div class="props-layer" id="props-layer"></div>
+
+    <!-- Puppets Layer -->
+    <div class="puppets-layer" id="puppets-layer"></div>
+
+    <!-- Dialogue Bubbles -->
+    <div class="dialogue-layer" id="dialogue-layer"></div>
+
+    <!-- Particle Effects -->
+    <div class="effects-layer" id="effects-layer"></div>
+
+    <!-- Stage Floor -->
+    <div class="stage-floor"></div>
+  </div>
+
+  <!-- Theater Chrome -->
+  <div class="theater-chrome">
+    <div class="chrome-left"></div>
+    <div class="chrome-right"></div>
+    <div class="chrome-bottom"></div>
+  </div>
+
+  <!-- Applause Animation (shown at end) -->
+  <div class="applause-overlay" id="applause-overlay">
+    <div class="applause-animation">
+      <div class="emoji-rain">
+        <span>👏</span><span>🎉</span><span>⭐</span>
+        <span>👏</span><span>🎉</span><span>⭐</span>
+        <span>👏</span><span>🎉</span><span>⭐</span>
+      </div>
+      <h2>{t('showComplete')}</h2>
+      <div class="stars-earned">
+        <span class="star">⭐</span>
+        <span class="star">⭐</span>
+        <span class="star">⭐</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .puppet-theater {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Theater Curtain */
+  .theater-curtain {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    pointer-events: none;
+  }
+
+  .curtain {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to bottom, #8b0000 0%, #a52a2a 50%, #8b0000 100%);
+    transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+  }
+
+  .left-curtain {
+    left: 0;
+    border-right: 4px solid #5c0000;
+  }
+
+  .right-curtain {
+    right: 0;
+    border-left: 4px solid #5c0000;
+  }
+
+  .puppet-theater.curtain-open .left-curtain {
+    transform: translateX(-100%);
+  }
+
+  .puppet-theater.curtain-open .right-curtain {
+    transform: translateX(100%);
+  }
+
+  .curtain-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(to bottom, #4a1c1c 0%, #3a1010 100%);
+    border-bottom: 4px solid #5c0000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .theater-lights {
+    display: flex;
+    gap: 30px;
+  }
+
+  .light {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffeb3b 0%, #ffd700 50%, #ff9800 100%);
+    box-shadow: 0 0 20px #ffeb3b, 0 0 40px #ffeb3b;
+    animation: light-pulse 2s ease-in-out infinite;
+  }
+
+  .light:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+
+  .light:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+
+  @keyframes light-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(0.9); }
+  }
+
+  /* Main Stage */
+  .theater-stage {
+    position: absolute;
+    top: 60px;
+    left: 5%;
+    width: 90%;
+    height: calc(100% - 120px);
+    background: #e8f5e9;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .stage-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: background-image 0.5s ease-in-out;
+  }
+
+  /* Background Images */
+  .stage-background[data-background="forest"] {
+    background: linear-gradient(to bottom, #87ceeb 0%, #98d8c8 50%, #6b8e23 100%);
+  }
+
+  .stage-background[data-background="castle"] {
+    background: linear-gradient(to bottom, #b0c4de 0%, #778899 50%, #696969 100%);
+  }
+
+  .stage-background[data-background="home"] {
+    background: linear-gradient(to bottom, #ffe4b5 0%, #ffdead 50%, #f4a460 100%);
+  }
+
+  .stage-background[data-background="beach"] {
+    background: linear-gradient(to bottom, #87ceeb 0%, #f0e68c 50%, #daa520 100%);
+  }
+
+  .stage-background[data-background="mountains"] {
+    background: linear-gradient(to bottom, #e0f7fa 0%, #90a4ae 50%, #607d8b 100%);
+  }
+
+  .stage-background[data-background="underwater"] {
+    background: linear-gradient(to bottom, #006994 0%, #0080b3 50%, #004d73 100%);
+  }
+
+  .stage-background[data-background="space"] {
+    background: linear-gradient(to bottom, #000428 0%, #004e92 50%, #000000 100%);
+  }
+
+  .stage-background[data-background="farm"] {
+    background: linear-gradient(to bottom, #87ceeb 0%, #90ee90 50%, #228b22 100%);
+  }
+
+  /* Stage Lighting */
+  .stage-lighting {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  .spotlight {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    pointer-events: none;
+    transition: all 0.5s ease;
+  }
+
+  .ambient-light {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* Props and Puppets Layers */
+  .props-layer,
+  .puppets-layer,
+  .dialogue-layer,
+  .effects-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .puppets-layer {
+    z-index: 20;
+  }
+
+  .props-layer {
+    z-index: 10;
+  }
+
+  .dialogue-layer {
+    z-index: 30;
+  }
+
+  .effects-layer {
+    z-index: 40;
+  }
+
+  /* Puppet Elements */
+  :global(.puppet) {
+    position: absolute;
+    font-size: 80px;
+    cursor: grab;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+    pointer-events: all;
+  }
+
+  :global(.puppet:active) {
+    cursor: grabbing;
+  }
+
+  :global(.puppet.flipped) {
+    transform: scaleX(-1);
+  }
+
+  :global(.puppet.animating) {
+    pointer-events: none;
+  }
+
+  /* Puppet Animations */
+  :global(.puppet.bounce) {
+    animation: puppet-bounce 0.6s ease;
+  }
+
+  :global(.puppet.spin) {
+    animation: puppet-spin 1s ease;
+  }
+
+  :global(.puppet.wave) {
+    animation: puppet-wave 1s ease;
+  }
+
+  :global(.puppet.bow) {
+    animation: puppet-bow 1s ease;
+  }
+
+  :global(.puppet.jump) {
+    animation: puppet-jump 0.8s ease;
+  }
+
+  @keyframes puppet-bounce {
+    0%, 100% { transform: translateY(0); }
+    25% { transform: translateY(-30px); }
+    50% { transform: translateY(0); }
+    75% { transform: translateY(-15px); }
+  }
+
+  @keyframes puppet-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes puppet-wave {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-10deg); }
+    50% { transform: rotate(10deg); }
+    75% { transform: rotate(-10deg); }
+  }
+
+  @keyframes puppet-bow {
+    0%, 100% { transform: rotateX(0deg); }
+    50% { transform: rotateX(30deg) translateY(10px); }
+  }
+
+  @keyframes puppet-jump {
+    0%, 100% { transform: translateY(0) scale(1); }
+    40% { transform: translateY(-50px) scale(1.1); }
+    60% { transform: translateY(-50px) scale(1.1); }
+  }
+
+  /* Prop Elements */
+  :global(.prop) {
+    position: absolute;
+    font-size: 60px;
+    cursor: grab;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
+    pointer-events: all;
+  }
+
+  :global(.prop:active) {
+    cursor: grabbing;
+  }
+
+  /* Dialogue Bubbles */
+  :global(.dialogue-bubble) {
+    position: absolute;
+    max-width: 250px;
+    padding: 12px 18px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-size: 18px;
+    font-family: 'Noto Sans', sans-serif;
+    line-height: 1.4;
+    pointer-events: none;
+    animation: bubble-appear 0.3s ease;
+  }
+
+  :global(.dialogue-bubble.round::after) {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid white;
+  }
+
+  :global(.dialogue-bubble.thought) {
+    border-radius: 50%;
+    padding: 20px;
+  }
+
+  :global(.dialogue-bubble.thought::after) {
+    content: '○';
+    position: absolute;
+    bottom: -20px;
+    left: 20px;
+    font-size: 12px;
+    color: white;
+  }
+
+  :global(.dialogue-bubble.shout) {
+    background: #ff6b6b;
+    color: white;
+    font-weight: bold;
+    transform: scale(1.1);
+  }
+
+  :global(.dialogue-bubble.shout::after) {
+    border-top-color: #ff6b6b;
+  }
+
+  @keyframes bubble-appear {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Stage Floor */
+  .stage-floor {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
+    pointer-events: none;
+  }
+
+  /* Theater Chrome (Frame) */
+  .theater-chrome {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .chrome-left,
+  .chrome-right {
+    position: absolute;
+    top: 60px;
+    width: 5%;
+    height: calc(100% - 120px);
+    background: linear-gradient(to bottom, #3a1010 0%, #2a0808 50%, #1a0404 100%);
+  }
+
+  .chrome-left {
+    left: 0;
+    border-right: 4px solid #5c0000;
+  }
+
+  .chrome-right {
+    right: 0;
+    border-left: 4px solid #5c0000;
+  }
+
+  .chrome-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(to top, #3a1010 0%, #2a0808 100%);
+    border-top: 4px solid #5c0000;
+  }
+
+  /* Applause Overlay */
+  .applause-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    pointer-events: none;
+  }
+
+  .applause-overlay.active {
+    display: flex;
+    animation: fade-in 0.5s ease;
+  }
+
+  .applause-animation {
+    text-align: center;
+    color: white;
+  }
+
+  .applause-animation h2 {
+    font-size: 48px;
+    margin-bottom: 20px;
+    animation: scale-bounce 0.6s ease;
+  }
+
+  .emoji-rain {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 30px;
+    font-size: 60px;
+  }
+
+  .emoji-rain span {
+    animation: rain-fall 2s ease-in-out infinite;
+  }
+
+  .emoji-rain span:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+
+  .emoji-rain span:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+
+  .emoji-rain span:nth-child(4) {
+    animation-delay: 0.9s;
+  }
+
+  .emoji-rain span:nth-child(5) {
+    animation-delay: 1.2s;
+  }
+
+  .emoji-rain span:nth-child(6) {
+    animation-delay: 1.5s;
+  }
+
+  @keyframes rain-fall {
+    0% {
+      transform: translateY(-100px);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100px);
+      opacity: 0;
+    }
+  }
+
+  .stars-earned {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    font-size: 48px;
+  }
+
+  .stars-earned .star {
+    animation: star-pop 0.5s ease;
+  }
+
+  .stars-earned .star:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .stars-earned .star:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes star-pop {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.3);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes scale-bounce {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .puppet-theater {
+      border-radius: 8px;
+    }
+
+    :global(.puppet) {
+      font-size: 50px;
+    }
+
+    :global(.prop) {
+      font-size: 40px;
+    }
+
+    :global(.dialogue-bubble) {
+      max-width: 180px;
+      font-size: 14px;
+      padding: 8px 12px;
+    }
+
+    .applause-animation h2 {
+      font-size: 32px;
+    }
+
+    .emoji-rain {
+      font-size: 40px;
+      gap: 10px;
+    }
+
+    .stars-earned {
+      font-size: 36px;
+      gap: 10px;
+    }
+  }
+</style>
+
+<script>
+  // Stage interaction will be handled by TheaterController
+  // This component only renders the stage structure
+</script>

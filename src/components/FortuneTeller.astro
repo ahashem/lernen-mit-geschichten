@@ -1,0 +1,894 @@
+---
+/**
+ * Fortune Teller Component - Main interface
+ * Magical story recommendation system with multiple fortune-telling methods
+ */
+import { FORTUNE_METHODS, MOODS } from '../utils/fortune-teller';
+
+interface Props {
+  locale?: string;
+}
+
+const { locale = 'de' } = Astro.props;
+---
+
+<div class="fortune-teller-container" data-locale={locale}>
+  <!-- Fortune Teller Character -->
+  <div class="fortune-guide">
+    <div class="guide-character">🦉</div>
+    <div class="guide-dialogue">
+      <p class="mystical-text" data-i18n="fortuneGreeting"></p>
+    </div>
+  </div>
+
+  <!-- Method Selection -->
+  <div class="method-selection" id="methodSelection">
+    <h2 data-i18n="chooseYourPath"></h2>
+    <div class="method-grid">
+      {FORTUNE_METHODS.map((method) => (
+        <button
+          class="method-card"
+          data-method={method.id}
+          data-sound="chime"
+        >
+          <div class="method-icon">{method.icon}</div>
+          <h3>{method.name[locale as keyof typeof method.name]}</h3>
+          <p>{method.description[locale as keyof typeof method.description]}</p>
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Mood Selector -->
+  <div class="mood-selector hidden" id="moodSelector">
+    <button class="back-button" data-action="back">← <span data-i18n="back"></span></button>
+    <h2 data-i18n="howAreYouFeeling"></h2>
+    <div class="mood-grid">
+      {MOODS.map((mood) => (
+        <button
+          class="mood-option"
+          data-mood={mood.id}
+          data-sound="sparkle"
+        >
+          <span class="mood-emoji">{mood.emoji}</span>
+          <span class="mood-name">{mood.name[locale as keyof typeof mood.name]}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Personality Quiz -->
+  <div class="personality-quiz hidden" id="personalityQuiz">
+    <button class="back-button" data-action="back">← <span data-i18n="back"></span></button>
+    <div class="quiz-progress">
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+      <span class="progress-text"><span id="currentQuestion">1</span> / <span id="totalQuestions">5</span></span>
+    </div>
+    <div class="quiz-content">
+      <!-- Questions injected by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Fortune Result -->
+  <div class="fortune-result hidden" id="fortuneResult">
+    <div class="result-container">
+      <div class="mystical-decoration">✨</div>
+      <h2 class="result-title" data-i18n="yourFortuneReveals"></h2>
+      <div class="fortune-message"></div>
+      <div class="story-recommendation">
+        <!-- Story card injected by JavaScript -->
+      </div>
+      <div class="result-actions">
+        <button class="btn-primary" data-action="readStory">
+          <span data-i18n="acceptFate"></span> 📖
+        </button>
+        <button class="btn-secondary" data-action="tryAgain">
+          <span data-i18n="tryAgain"></span> 🔮
+        </button>
+      </div>
+      <div class="stars-earned">
+        <span data-i18n="starsEarned"></span>: +10 ⭐
+      </div>
+    </div>
+  </div>
+
+  <!-- Canvas for particle effects -->
+  <canvas id="fortuneCanvas"></canvas>
+</div>
+
+<style>
+  .fortune-teller-container {
+    position: relative;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    overflow: hidden;
+  }
+
+  /* Canvas for effects */
+  #fortuneCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Fortune Guide */
+  .fortune-guide {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: floatIn 1s ease-out;
+  }
+
+  .guide-character {
+    font-size: 5rem;
+    animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+  }
+
+  .guide-dialogue {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .mystical-text {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin: 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Method Selection */
+  .method-selection {
+    position: relative;
+    z-index: 2;
+  }
+
+  .method-selection h2 {
+    color: white;
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .method-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .method-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .method-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+  }
+
+  .method-card:hover::before {
+    transform: translateX(100%);
+  }
+
+  .method-card:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .method-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: float 2s ease-in-out infinite;
+  }
+
+  .method-card h3 {
+    margin: 0.5rem 0;
+    color: #667eea;
+    font-size: 1.5rem;
+  }
+
+  .method-card p {
+    margin: 0;
+    color: #666;
+    font-size: 0.95rem;
+  }
+
+  /* Mood Selector */
+  .mood-selector {
+    position: relative;
+    z-index: 2;
+  }
+
+  .mood-selector h2 {
+    color: white;
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .mood-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .mood-option {
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 15px;
+    padding: 1.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .mood-option:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .mood-emoji {
+    font-size: 3rem;
+  }
+
+  .mood-name {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 500;
+  }
+
+  /* Personality Quiz */
+  .personality-quiz {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .quiz-progress {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffd700, #ffed4e);
+    border-radius: 5px;
+    transition: width 0.3s ease;
+    width: 0;
+  }
+
+  .progress-text {
+    color: white;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .quiz-content {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+  }
+
+  .quiz-question {
+    margin-bottom: 2rem;
+  }
+
+  .quiz-question h3 {
+    color: #667eea;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .quiz-options {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .quiz-option {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.1rem;
+  }
+
+  .quiz-option:hover {
+    border-color: #667eea;
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+  }
+
+  .quiz-option.selected {
+    border-color: #667eea;
+    background: #f0f4ff;
+  }
+
+  /* Fortune Result */
+  .fortune-result {
+    position: relative;
+    z-index: 2;
+  }
+
+  .result-container {
+    max-width: 700px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 30px;
+    padding: 3rem;
+    text-align: center;
+    animation: zoomIn 0.5s ease-out;
+  }
+
+  .mystical-decoration {
+    font-size: 4rem;
+    animation: sparkle 1s ease-in-out infinite;
+  }
+
+  .result-title {
+    color: #667eea;
+    font-size: 2rem;
+    margin: 1rem 0;
+  }
+
+  .fortune-message {
+    font-size: 1.25rem;
+    color: #333;
+    margin: 1.5rem 0;
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  .story-recommendation {
+    margin: 2rem 0;
+  }
+
+  .result-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-secondary {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+  }
+
+  .btn-secondary:hover {
+    background: #f0f4ff;
+    transform: scale(1.05);
+  }
+
+  .stars-earned {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    border-radius: 15px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  /* Back Button */
+  .back-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+  }
+
+  .back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-5px);
+  }
+
+  /* Utility Classes */
+  .hidden {
+    display: none !important;
+  }
+
+  /* Animations */
+  @keyframes floatIn {
+    from {
+      opacity: 0;
+      transform: translateY(-50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes zoomIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes sparkle {
+    0%, 100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.2) rotate(180deg);
+      opacity: 0.8;
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .fortune-teller-container {
+      padding: 1rem;
+    }
+
+    .method-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .mood-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .result-container {
+      padding: 2rem 1.5rem;
+    }
+
+    .result-actions {
+      flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      width: 100%;
+    }
+  }
+
+  /* RTL Support */
+  [dir="rtl"] .method-card:hover {
+    transform: translateY(-10px) scale(1.05) rotate(-2deg);
+  }
+
+  [dir="rtl"] .quiz-option:hover {
+    transform: translateX(-5px);
+  }
+
+  [dir="rtl"] .back-button:hover {
+    transform: translateX(5px);
+  }
+</style>
+
+<script>
+  import { FortuneTeller, PERSONALITY_QUESTIONS } from '../utils/fortune-teller';
+
+  // State
+  let currentMethod: string | null = null;
+  let quizAnswers: Record<string, string> = {};
+  let currentQuestionIndex = 0;
+
+  // DOM Elements
+  const methodSelection = document.getElementById('methodSelection');
+  const moodSelector = document.getElementById('moodSelector');
+  const personalityQuiz = document.getElementById('personalityQuiz');
+  const fortuneResult = document.getElementById('fortuneResult');
+  const canvas = document.getElementById('fortuneCanvas') as HTMLCanvasElement;
+
+  // Initialize
+  init();
+
+  async function init() {
+    setupCanvas();
+    startParticleAnimation();
+    attachEventListeners();
+  }
+
+  function attachEventListeners() {
+    // Method selection
+    document.querySelectorAll('.method-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        const method = (e.currentTarget as HTMLElement).dataset.method;
+        if (method) selectMethod(method);
+      });
+    });
+
+    // Mood selection
+    document.querySelectorAll('.mood-option').forEach(option => {
+      option.addEventListener('click', (e) => {
+        const mood = (e.currentTarget as HTMLElement).dataset.mood;
+        if (mood) selectMood(mood);
+      });
+    });
+
+    // Back buttons
+    document.querySelectorAll('[data-action="back"]').forEach(btn => {
+      btn.addEventListener('click', goBack);
+    });
+
+    // Result actions
+    document.querySelectorAll('[data-action="readStory"]').forEach(btn => {
+      btn.addEventListener('click', readRecommendedStory);
+    });
+
+    document.querySelectorAll('[data-action="tryAgain"]').forEach(btn => {
+      btn.addEventListener('click', resetFortuneTeller);
+    });
+  }
+
+  function selectMethod(method: string) {
+    currentMethod = method;
+    playSound('chime');
+
+    // Hide method selection
+    methodSelection?.classList.add('hidden');
+
+    // Show appropriate interface based on method
+    switch (method) {
+      case 'crystal-ball':
+        showCrystalBall();
+        break;
+      case 'magic-cards':
+        showMagicCards();
+        break;
+      case 'fortune-wheel':
+        showFortuneWheel();
+        break;
+      case 'tea-leaves':
+        showTeaLeaves();
+        break;
+      case 'lucky-number':
+        showLuckyNumber();
+        break;
+    }
+  }
+
+  function showCrystalBall() {
+    // For crystal ball, show mood selector first
+    moodSelector?.classList.remove('hidden');
+  }
+
+  function showMagicCards() {
+    // For magic cards, show personality quiz
+    startPersonalityQuiz();
+  }
+
+  function showFortuneWheel() {
+    // For fortune wheel, directly show random result
+    showRandomFortune();
+  }
+
+  function showTeaLeaves() {
+    // For tea leaves, show mood selector
+    moodSelector?.classList.remove('hidden');
+  }
+
+  function showLuckyNumber() {
+    // Prompt for lucky number
+    const number = prompt('Enter your lucky number (1-100):');
+    if (number) {
+      const seed = parseInt(number, 10);
+      if (seed >= 1 && seed <= 100) {
+        showRandomFortune(seed);
+      }
+    }
+  }
+
+  async function selectMood(mood: string) {
+    playSound('sparkle');
+    moodSelector?.classList.add('hidden');
+
+    // Get recommendation based on mood
+    const stories = await getStories();
+    const recentIds = FortuneTeller.getRecentStoryIds();
+    const recommendation = FortuneTeller.recommendByMood(mood, stories, recentIds);
+
+    if (recommendation) {
+      showResult(recommendation);
+    }
+  }
+
+  function startPersonalityQuiz() {
+    personalityQuiz?.classList.remove('hidden');
+    currentQuestionIndex = 0;
+    quizAnswers = {};
+    showQuizQuestion();
+  }
+
+  function showQuizQuestion() {
+    const question = PERSONALITY_QUESTIONS[currentQuestionIndex];
+    if (!question) return;
+
+    const quizContent = personalityQuiz?.querySelector('.quiz-content');
+    if (!quizContent) return;
+
+    // Update progress
+    const progressFill = personalityQuiz?.querySelector('.progress-fill') as HTMLElement;
+    const currentQuestionEl = document.getElementById('currentQuestion');
+    const totalQuestionsEl = document.getElementById('totalQuestions');
+
+    if (progressFill) {
+      const progress = ((currentQuestionIndex + 1) / PERSONALITY_QUESTIONS.length) * 100;
+      progressFill.style.width = `${progress}%`;
+    }
+
+    if (currentQuestionEl) currentQuestionEl.textContent = String(currentQuestionIndex + 1);
+    if (totalQuestionsEl) totalQuestionsEl.textContent = String(PERSONALITY_QUESTIONS.length);
+
+    // Render question
+    const locale = document.querySelector('.fortune-teller-container')?.getAttribute('data-locale') || 'de';
+    quizContent.innerHTML = `
+      <div class="quiz-question">
+        <h3>${question.text[locale as keyof typeof question.text]}</h3>
+        <div class="quiz-options">
+          ${question.options.map(option => `
+            <button class="quiz-option" data-option-id="${option.id}">
+              <span style="font-size: 2rem;">${option.emoji}</span>
+              <span>${option.text[locale as keyof typeof option.text]}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    // Attach option listeners
+    quizContent.querySelectorAll('.quiz-option').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const optionId = (e.currentTarget as HTMLElement).dataset.optionId;
+        if (optionId) selectQuizOption(question.id, optionId);
+      });
+    });
+  }
+
+  async function selectQuizOption(questionId: string, optionId: string) {
+    playSound('sparkle');
+    quizAnswers[questionId] = optionId;
+
+    currentQuestionIndex++;
+
+    if (currentQuestionIndex < PERSONALITY_QUESTIONS.length) {
+      // Show next question
+      setTimeout(() => showQuizQuestion(), 300);
+    } else {
+      // Quiz complete, show result
+      const stories = await getStories();
+      const recentIds = FortuneTeller.getRecentStoryIds();
+      const recommendation = FortuneTeller.recommendByPersonality(quizAnswers, stories, recentIds);
+
+      if (recommendation) {
+        personalityQuiz?.classList.add('hidden');
+        showResult(recommendation);
+      }
+    }
+  }
+
+  async function showRandomFortune(seed?: number) {
+    const stories = await getStories();
+    const recentIds = FortuneTeller.getRecentStoryIds();
+    const recommendation = FortuneTeller.recommendRandom(stories, recentIds, seed);
+
+    if (recommendation) {
+      showResult(recommendation);
+    }
+  }
+
+  function showResult(recommendation: any) {
+    fortuneResult?.classList.remove('hidden');
+
+    const messageEl = fortuneResult?.querySelector('.fortune-message');
+    if (messageEl) {
+      messageEl.textContent = recommendation.fortuneMessage;
+    }
+
+    // Track usage
+    if (currentMethod) {
+      FortuneTeller.trackFortuneUsage(currentMethod);
+    }
+
+    // Award stars
+    awardStars(10);
+
+    // Play celebration sound
+    playSound('celebration');
+    triggerConfetti();
+  }
+
+  function goBack() {
+    // Hide all sections
+    moodSelector?.classList.add('hidden');
+    personalityQuiz?.classList.add('hidden');
+    fortuneResult?.classList.add('hidden');
+
+    // Show method selection
+    methodSelection?.classList.remove('hidden');
+
+    currentMethod = null;
+    quizAnswers = {};
+    currentQuestionIndex = 0;
+  }
+
+  function resetFortuneTeller() {
+    goBack();
+  }
+
+  function readRecommendedStory() {
+    // Navigate to story (implementation depends on routing)
+    console.log('Navigate to story');
+  }
+
+  async function getStories() {
+    // Fetch stories from Astro content collection
+    // This is a placeholder - actual implementation would use Astro's getCollection
+    return [];
+  }
+
+  function setupCanvas() {
+    if (!canvas) return;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  }
+
+  function startParticleAnimation() {
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const particles: Array<{
+      x: number;
+      y: number;
+      size: number;
+      speedX: number;
+      speedY: number;
+      opacity: number;
+    }> = [];
+
+    // Create particles
+    for (let i = 0; i < 50; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 3 + 1,
+        speedX: Math.random() * 0.5 - 0.25,
+        speedY: Math.random() * 0.5 - 0.25,
+        opacity: Math.random() * 0.5 + 0.3,
+      });
+    }
+
+    function animate() {
+      if (!ctx || !canvas) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 215, 0, ${p.opacity})`;
+        ctx.fill();
+
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  }
+
+  function playSound(type: string) {
+    // Sound effect placeholder
+    console.log(`Play sound: ${type}`);
+  }
+
+  function triggerConfetti() {
+    // Confetti animation placeholder
+    console.log('Trigger confetti');
+  }
+
+  function awardStars(amount: number) {
+    const currentStars = parseInt(localStorage.getItem('star-balance') || '0', 10);
+    localStorage.setItem('star-balance', String(currentStars + amount));
+  }
+</script>

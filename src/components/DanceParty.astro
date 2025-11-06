@@ -1,0 +1,950 @@
+---
+/**
+ * Dance Party Component
+ * Main dance floor with characters, music, and beat visualization
+ */
+import type { Character } from '../utils/dance-party';
+
+interface Props {
+  lang: string;
+}
+
+const { lang } = Astro.props;
+---
+
+<div class="dance-party" id="dance-party">
+  <!-- Dance Floor -->
+  <div class="dance-floor" id="dance-floor">
+    <canvas id="dance-floor-canvas"></canvas>
+
+    <!-- Characters Container -->
+    <div class="characters-container" id="characters-container"></div>
+
+    <!-- Beat Visualizer -->
+    <div class="beat-visualizer" id="beat-visualizer">
+      <div class="beat-circle"></div>
+      <div class="beat-bars">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+    </div>
+
+    <!-- Disco Ball -->
+    <div class="disco-ball">
+      <div class="disco-ball-inner"></div>
+    </div>
+
+    <!-- Lights -->
+    <div class="stage-lights">
+      <div class="spotlight left"></div>
+      <div class="spotlight center"></div>
+      <div class="spotlight right"></div>
+    </div>
+
+    <!-- Particles -->
+    <canvas id="particles-canvas" class="particles-canvas"></canvas>
+  </div>
+
+  <!-- Controls Panel -->
+  <div class="dance-controls">
+    <!-- Track Selection -->
+    <div class="track-selector">
+      <select id="track-select" class="track-select">
+        <option value="">Select Music Track</option>
+      </select>
+    </div>
+
+    <!-- Music Controls -->
+    <div class="music-controls">
+      <button id="play-btn" class="control-btn play-btn" aria-label="Play">
+        <span class="icon">▶️</span>
+      </button>
+      <button id="pause-btn" class="control-btn pause-btn" aria-label="Pause" style="display: none;">
+        <span class="icon">⏸️</span>
+      </button>
+      <button id="skip-btn" class="control-btn" aria-label="Skip">
+        <span class="icon">⏭️</span>
+      </button>
+
+      <div class="volume-control">
+        <span class="icon">🔊</span>
+        <input type="range" id="volume-slider" min="0" max="100" value="70" />
+      </div>
+
+      <div class="bpm-display">
+        <span id="bpm-value">120</span> BPM
+      </div>
+    </div>
+
+    <!-- Mode Selection -->
+    <div class="mode-selector">
+      <button class="mode-btn active" data-mode="free-dance">
+        💃 Free Dance
+      </button>
+      <button class="mode-btn" data-mode="rhythm-game">
+        🎮 Rhythm Game
+      </button>
+      <button class="mode-btn" data-mode="choreography">
+        📝 Choreography
+      </button>
+    </div>
+
+    <!-- Character Selection -->
+    <div class="character-panel">
+      <h3>Add Characters (Max 8)</h3>
+      <div class="character-grid" id="character-grid">
+        <!-- Populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Background Selection -->
+    <div class="background-selector">
+      <h3>Dance Floor</h3>
+      <div class="background-grid" id="background-grid">
+        <!-- Populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Stats Display -->
+    <div class="stats-panel" id="stats-panel" style="display: none;">
+      <h3>Stats</h3>
+      <div class="stat-item">
+        <span>Score:</span>
+        <span id="stat-score">0</span>
+      </div>
+      <div class="stat-item">
+        <span>Combo:</span>
+        <span id="stat-combo">0x</span>
+      </div>
+      <div class="stat-item">
+        <span>Perfect:</span>
+        <span id="stat-perfect">0</span>
+      </div>
+      <div class="stat-item">
+        <span>Stars:</span>
+        <span id="stat-stars">⭐ 0</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .dance-party {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    position: relative;
+    overflow: hidden;
+    color: white;
+  }
+
+  .dance-floor {
+    width: 100%;
+    height: 70vh;
+    position: relative;
+    background: linear-gradient(to bottom, #2d1b69 0%, #1a0f3d 100%);
+    overflow: hidden;
+    border-bottom: 5px solid #ff6b6b;
+  }
+
+  #dance-floor-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .characters-container {
+    position: absolute;
+    bottom: 20%;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 2rem;
+    padding: 0 2rem;
+  }
+
+  .character {
+    font-size: 4rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    animation: idle 2s ease-in-out infinite;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
+  }
+
+  .character:hover {
+    transform: scale(1.1);
+  }
+
+  .character.dancing {
+    animation: none;
+  }
+
+  /* Dance Animations */
+  @keyframes idle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-40px) scale(1.05); }
+  }
+
+  @keyframes sway {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(-20px) rotate(-5deg); }
+    75% { transform: translateX(20px) rotate(5deg); }
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes wave {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-20deg); }
+    75% { transform: rotate(20deg); }
+  }
+
+  @keyframes robot {
+    0%, 100% { transform: rotate(0deg) translateX(0); }
+    25% { transform: rotate(-90deg) translateX(-10px); }
+    50% { transform: rotate(0deg) translateX(0); }
+    75% { transform: rotate(90deg) translateX(10px); }
+  }
+
+  @keyframes moonwalk {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100px); }
+  }
+
+  @keyframes jumping-jacks {
+    0%, 100% { transform: scale(1, 1); }
+    50% { transform: scale(1.2, 0.8) translateY(-20px); }
+  }
+
+  @keyframes shimmy {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+
+  @keyframes breakdance {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(90deg) scale(0.8); }
+    50% { transform: rotate(180deg) scale(1.2); }
+    75% { transform: rotate(270deg) scale(0.9); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+
+  /* Beat Visualizer */
+  .beat-visualizer {
+    position: absolute;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .beat-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ff6b6b, #ff1744);
+    box-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
+    transition: transform 0.1s ease;
+  }
+
+  .beat-circle.pulse {
+    animation: pulse 0.2s ease;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+  }
+
+  .beat-bars {
+    display: flex;
+    gap: 5px;
+    height: 60px;
+    align-items: flex-end;
+  }
+
+  .bar {
+    width: 8px;
+    height: 20px;
+    background: linear-gradient(to top, #4ecdc4, #44a3db);
+    border-radius: 4px;
+    transition: height 0.1s ease;
+  }
+
+  .bar.active {
+    animation: barPulse 0.3s ease;
+  }
+
+  @keyframes barPulse {
+    0%, 100% { height: 20px; }
+    50% { height: 60px; }
+  }
+
+  /* Disco Ball */
+  .disco-ball {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 80px;
+    z-index: 15;
+    animation: swing 3s ease-in-out infinite;
+  }
+
+  .disco-ball-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background:
+      linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.8) 50%, transparent 60%),
+      radial-gradient(circle, #e0e0e0, #808080);
+    background-size: 20px 20px, 100% 100%;
+    box-shadow:
+      inset 0 0 20px rgba(0, 0, 0, 0.5),
+      0 0 40px rgba(255, 255, 255, 0.5);
+    animation: rotate 4s linear infinite;
+  }
+
+  @keyframes swing {
+    0%, 100% { transform: translateX(-50%) rotate(-3deg); }
+    50% { transform: translateX(-50%) rotate(3deg); }
+  }
+
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Stage Lights */
+  .stage-lights {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .spotlight {
+    position: absolute;
+    top: 0;
+    width: 200px;
+    height: 300px;
+    background: radial-gradient(ellipse at top, rgba(255, 255, 100, 0.3), transparent);
+    animation: spotlightSweep 5s ease-in-out infinite;
+  }
+
+  .spotlight.left {
+    left: 10%;
+    animation-delay: 0s;
+  }
+
+  .spotlight.center {
+    left: 50%;
+    transform: translateX(-50%);
+    animation-delay: 1.5s;
+  }
+
+  .spotlight.right {
+    right: 10%;
+    animation-delay: 3s;
+  }
+
+  @keyframes spotlightSweep {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+  }
+
+  /* Particles Canvas */
+  .particles-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 25;
+    pointer-events: none;
+  }
+
+  /* Controls */
+  .dance-controls {
+    padding: 2rem;
+    background: rgba(26, 26, 46, 0.95);
+    border-top: 3px solid #ff6b6b;
+  }
+
+  .track-selector {
+    margin-bottom: 1.5rem;
+  }
+
+  .track-select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 12px;
+    border: 2px solid #4ecdc4;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .track-select option {
+    background: #1a1a2e;
+    color: white;
+  }
+
+  .music-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  .control-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #ff6b6b, #ff1744);
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+  }
+
+  .control-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+  }
+
+  .control-btn:active {
+    transform: translateY(0);
+  }
+
+  .volume-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+  }
+
+  .volume-control input[type="range"] {
+    width: 100px;
+    cursor: pointer;
+  }
+
+  .bpm-display {
+    padding: 0.75rem 1.5rem;
+    background: rgba(78, 205, 196, 0.2);
+    border: 2px solid #4ecdc4;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+
+  .mode-selector {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .mode-btn {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .mode-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .mode-btn.active {
+    background: linear-gradient(135deg, #4ecdc4, #44a3db);
+    border-color: #4ecdc4;
+    box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);
+  }
+
+  .character-panel,
+  .background-selector {
+    margin-bottom: 1.5rem;
+  }
+
+  .character-panel h3,
+  .background-selector h3 {
+    margin-bottom: 0.75rem;
+    color: #4ecdc4;
+  }
+
+  .character-grid,
+  .background-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .character-option,
+  .background-option {
+    padding: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .character-option:hover,
+  .background-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+  }
+
+  .character-option.active,
+  .background-option.active {
+    border-color: #4ecdc4;
+    background: rgba(78, 205, 196, 0.2);
+  }
+
+  .stats-panel {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid #4ecdc4;
+  }
+
+  .stats-panel h3 {
+    margin-bottom: 1rem;
+    color: #4ecdc4;
+  }
+
+  .stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .stat-item:last-child {
+    border-bottom: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .dance-floor {
+      height: 50vh;
+    }
+
+    .character {
+      font-size: 2.5rem;
+    }
+
+    .music-controls {
+      justify-content: center;
+    }
+
+    .character-grid,
+    .background-grid {
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    }
+  }
+</style>
+
+<script>
+  import {
+    musicTracks,
+    danceMoves,
+    danceFloorBackgrounds,
+    calculateScore,
+    saveDanceStats,
+    type Character,
+    type DanceStats,
+    type MusicTrack,
+  } from '../utils/dance-party';
+
+  // State
+  let currentTrack: MusicTrack | null = null;
+  let isPlaying = false;
+  let characters: Character[] = [];
+  let currentBackground = 'disco-club';
+  let currentMode = 'free-dance';
+  let audioContext: AudioContext | null = null;
+  let audioSource: AudioBufferSourceNode | null = null;
+  let startTime = 0;
+  let currentBeat = 0;
+
+  const stats: DanceStats = {
+    perfectHits: 0,
+    goodHits: 0,
+    okHits: 0,
+    misses: 0,
+    maxCombo: 0,
+    currentCombo: 0,
+    score: 0,
+    stars: 0,
+  };
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeTrackSelector();
+    initializeCharacterGrid();
+    initializeBackgroundGrid();
+    setupEventListeners();
+    initializeAudioContext();
+    startAnimationLoop();
+  });
+
+  function initializeTrackSelector() {
+    const select = document.getElementById('track-select') as HTMLSelectElement;
+    if (!select) return;
+
+    musicTracks.forEach((track) => {
+      const option = document.createElement('option');
+      option.value = track.id;
+      option.textContent = `${track.name} - ${track.genre} (${track.bpm} BPM)`;
+      select.appendChild(option);
+    });
+  }
+
+  function initializeCharacterGrid() {
+    const grid = document.getElementById('character-grid');
+    if (!grid) return;
+
+    const storyCharacters = [
+      { emoji: '🐻', name: 'Bruno', type: 'bear' },
+      { emoji: '🐿️', name: 'Fritz', type: 'squirrel' },
+      { emoji: '🦁', name: 'Leo', type: 'lion' },
+      { emoji: '🐭', name: 'Moritz', type: 'mouse' },
+      { emoji: '👧', name: 'Lina', type: 'girl' },
+      { emoji: '👦', name: 'Tobi', type: 'boy' },
+      { emoji: '🎈', name: 'Mila', type: 'balloon' },
+      { emoji: '🦔', name: 'Hedgehog', type: 'hedgehog' },
+    ];
+
+    storyCharacters.forEach((char) => {
+      const option = document.createElement('div');
+      option.className = 'character-option';
+      option.textContent = char.emoji;
+      option.title = char.name;
+      option.dataset.emoji = char.emoji;
+      option.dataset.name = char.name;
+      option.dataset.type = char.type;
+
+      option.addEventListener('click', () => {
+        if (characters.length < 8) {
+          addCharacter(char.emoji, char.name, char.type);
+          option.classList.add('active');
+        }
+      });
+
+      grid.appendChild(option);
+    });
+  }
+
+  function initializeBackgroundGrid() {
+    const grid = document.getElementById('background-grid');
+    if (!grid) return;
+
+    danceFloorBackgrounds.forEach((bg) => {
+      const option = document.createElement('div');
+      option.className = 'background-option';
+      option.textContent = bg.emoji;
+      option.title = bg.name.en;
+      option.dataset.bgId = bg.id;
+
+      option.addEventListener('click', () => {
+        document.querySelectorAll('.background-option').forEach((el) => {
+          el.classList.remove('active');
+        });
+        option.classList.add('active');
+        changeBackground(bg.id);
+      });
+
+      if (bg.id === currentBackground) {
+        option.classList.add('active');
+      }
+
+      grid.appendChild(option);
+    });
+  }
+
+  function setupEventListeners() {
+    const trackSelect = document.getElementById('track-select') as HTMLSelectElement;
+    const playBtn = document.getElementById('play-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    const skipBtn = document.getElementById('skip-btn');
+    const volumeSlider = document.getElementById('volume-slider') as HTMLInputElement;
+
+    trackSelect?.addEventListener('change', (e) => {
+      const trackId = (e.target as HTMLSelectElement).value;
+      currentTrack = musicTracks.find((t) => t.id === trackId) || null;
+      if (currentTrack) {
+        const bpmDisplay = document.getElementById('bpm-value');
+        if (bpmDisplay) bpmDisplay.textContent = currentTrack.bpm.toString();
+      }
+    });
+
+    playBtn?.addEventListener('click', playMusic);
+    pauseBtn?.addEventListener('click', pauseMusic);
+    skipBtn?.addEventListener('click', skipTrack);
+    volumeSlider?.addEventListener('input', (e) => {
+      const volume = parseInt((e.target as HTMLInputElement).value) / 100;
+      // Adjust volume in audio context
+    });
+
+    // Mode buttons
+    document.querySelectorAll('.mode-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        document.querySelectorAll('.mode-btn').forEach((b) => b.classList.remove('active'));
+        target.classList.add('active');
+        currentMode = target.dataset.mode || 'free-dance';
+        updateModeUI();
+      });
+    });
+  }
+
+  function addCharacter(emoji: string, name: string, type: string) {
+    const container = document.getElementById('characters-container');
+    if (!container) return;
+
+    const characterId = `char-${Date.now()}`;
+    const x = Math.random() * 80 + 10;
+    const y = 0;
+
+    const character: Character = {
+      id: characterId,
+      emoji,
+      name,
+      characterType: type,
+      position: { x, y },
+      currentMove: null,
+    };
+
+    characters.push(character);
+
+    const charEl = document.createElement('div');
+    charEl.className = 'character';
+    charEl.id = characterId;
+    charEl.textContent = emoji;
+    charEl.style.left = `${x}%`;
+
+    charEl.addEventListener('click', () => {
+      if (currentMode === 'free-dance') {
+        performRandomDance(characterId);
+      }
+    });
+
+    container.appendChild(charEl);
+  }
+
+  function performRandomDance(characterId: string) {
+    const charEl = document.getElementById(characterId);
+    if (!charEl) return;
+
+    const randomMove = danceMoves[Math.floor(Math.random() * danceMoves.length)];
+    charEl.classList.add('dancing');
+    charEl.style.animation = `${randomMove.animation} ${randomMove.duration}s ease-in-out`;
+
+    setTimeout(() => {
+      charEl.classList.remove('dancing');
+      charEl.style.animation = 'idle 2s ease-in-out infinite';
+    }, randomMove.duration * 1000);
+  }
+
+  function changeBackground(bgId: string) {
+    currentBackground = bgId;
+    const floor = document.getElementById('dance-floor');
+    if (!floor) return;
+
+    const backgrounds: Record<string, string> = {
+      'disco-club': 'linear-gradient(to bottom, #2d1b69 0%, #1a0f3d 100%)',
+      'beach-party': 'linear-gradient(to bottom, #f7b733 0%, #fc4a1a 100%)',
+      'forest-rave': 'linear-gradient(to bottom, #134e5e 0%, #71b280 100%)',
+      'space-station': 'linear-gradient(to bottom, #000428 0%, #004e92 100%)',
+      'underwater': 'linear-gradient(to bottom, #00d2ff 0%, #3a7bd5 100%)',
+      'city-rooftop': 'linear-gradient(to bottom, #2c3e50 0%, #4ca1af 100%)',
+    };
+
+    floor.style.background = backgrounds[bgId] || backgrounds['disco-club'];
+  }
+
+  function initializeAudioContext() {
+    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+  }
+
+  function playMusic() {
+    if (!currentTrack) {
+      alert('Please select a music track first!');
+      return;
+    }
+
+    isPlaying = true;
+    startTime = Date.now();
+
+    const playBtn = document.getElementById('play-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    if (playBtn) playBtn.style.display = 'none';
+    if (pauseBtn) pauseBtn.style.display = 'block';
+
+    // Start beat detection
+    startBeatDetection();
+
+    // Auto-dance all characters
+    if (currentMode === 'free-dance') {
+      characters.forEach((char) => {
+        setInterval(() => {
+          if (isPlaying) performRandomDance(char.id);
+        }, 2000);
+      });
+    }
+  }
+
+  function pauseMusic() {
+    isPlaying = false;
+
+    const playBtn = document.getElementById('play-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    if (playBtn) playBtn.style.display = 'block';
+    if (pauseBtn) pauseBtn.style.display = 'none';
+  }
+
+  function skipTrack() {
+    // Skip to next track
+    const select = document.getElementById('track-select') as HTMLSelectElement;
+    if (!select) return;
+
+    const currentIndex = musicTracks.findIndex((t) => t.id === currentTrack?.id);
+    const nextIndex = (currentIndex + 1) % musicTracks.length;
+    select.value = musicTracks[nextIndex].id;
+    select.dispatchEvent(new Event('change'));
+  }
+
+  function startBeatDetection() {
+    if (!currentTrack) return;
+
+    const beatsPerSecond = currentTrack.bpm / 60;
+    const beatInterval = 1000 / beatsPerSecond;
+
+    setInterval(() => {
+      if (isPlaying) {
+        currentBeat++;
+        visualizeBeat();
+      }
+    }, beatInterval);
+  }
+
+  function visualizeBeat() {
+    const circle = document.querySelector('.beat-circle');
+    if (circle) {
+      circle.classList.add('pulse');
+      setTimeout(() => circle.classList.remove('pulse'), 200);
+    }
+
+    const bars = document.querySelectorAll('.bar');
+    const randomBar = bars[Math.floor(Math.random() * bars.length)];
+    if (randomBar) {
+      randomBar.classList.add('active');
+      setTimeout(() => randomBar.classList.remove('active'), 300);
+    }
+  }
+
+  function updateModeUI() {
+    const statsPanel = document.getElementById('stats-panel');
+    if (statsPanel) {
+      statsPanel.style.display = currentMode === 'rhythm-game' ? 'block' : 'none';
+    }
+  }
+
+  function startAnimationLoop() {
+    const particlesCanvas = document.getElementById('particles-canvas') as HTMLCanvasElement;
+    if (!particlesCanvas) return;
+
+    const ctx = particlesCanvas.getContext('2d');
+    if (!ctx) return;
+
+    particlesCanvas.width = particlesCanvas.offsetWidth;
+    particlesCanvas.height = particlesCanvas.offsetHeight;
+
+    const particles: any[] = [];
+
+    function createParticle() {
+      particles.push({
+        x: Math.random() * particlesCanvas.width,
+        y: particlesCanvas.height,
+        vx: (Math.random() - 0.5) * 2,
+        vy: -Math.random() * 3 - 1,
+        size: Math.random() * 5 + 2,
+        color: ['#ff6b6b', '#4ecdc4', '#ffd93d', '#ff9f40'][Math.floor(Math.random() * 4)],
+        life: 100,
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+
+      // Create new particles occasionally
+      if (isPlaying && Math.random() < 0.1) {
+        createParticle();
+      }
+
+      // Update and draw particles
+      particles.forEach((p, index) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life--;
+
+        if (p.life <= 0) {
+          particles.splice(index, 1);
+          return;
+        }
+
+        ctx.globalAlpha = p.life / 100;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  }
+</script>

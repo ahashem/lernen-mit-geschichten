@@ -1,0 +1,367 @@
+---
+/**
+ * Animation Timeline Component
+ * Visual timeline with frame markers, scrubbing, and playback controls
+ */
+---
+
+<div class="animation-timeline">
+  <div class="playback-controls">
+    <button
+      id="play-btn"
+      class="control-btn"
+      aria-label="Play"
+      title="Play (Space)"
+    >
+      <span class="play-icon">▶️</span>
+      <span class="pause-icon" style="display: none;">⏸️</span>
+    </button>
+    <button
+      id="stop-btn"
+      class="control-btn"
+      aria-label="Stop"
+      title="Stop"
+    >
+      ⏹️
+    </button>
+    <button
+      id="prev-frame-btn"
+      class="control-btn"
+      aria-label="Previous Frame"
+      title="Previous Frame (←)"
+    >
+      ⏮️
+    </button>
+    <button
+      id="next-frame-btn"
+      class="control-btn"
+      aria-label="Next Frame"
+      title="Next Frame (→)"
+    >
+      ⏭️
+    </button>
+    <label class="loop-toggle">
+      <input type="checkbox" id="loop-toggle" />
+      <span>🔁 Loop</span>
+    </label>
+  </div>
+
+  <div class="timeline-scrubber">
+    <div class="frame-track" id="frame-track">
+      <div class="playhead" id="playhead"></div>
+      <div class="frame-markers" id="frame-markers"></div>
+    </div>
+  </div>
+
+  <div class="frame-info">
+    <span id="current-frame-display">Frame: 1 / 100</span>
+    <span id="time-display">0.0s / 10.0s</span>
+  </div>
+
+  <div class="frame-thumbnails" id="frame-thumbnails">
+    <!-- Frame thumbnails will be generated here -->
+  </div>
+
+  <div class="timeline-actions">
+    <button id="add-frame-btn" class="action-btn">
+      ➕ Add Frame
+    </button>
+    <button id="delete-frame-btn" class="action-btn">
+      ➖ Delete Frame
+    </button>
+    <label>
+      <span>Frame Duration:</span>
+      <input
+        type="number"
+        id="frame-duration"
+        min="1"
+        max="10"
+        value="1"
+        style="width: 60px;"
+      />
+    </label>
+  </div>
+</div>
+
+<style>
+  .animation-timeline {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    color: white;
+  }
+
+  .playback-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .control-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .control-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+  }
+
+  .control-btn:active {
+    transform: scale(0.95);
+  }
+
+  .loop-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .loop-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .loop-toggle input {
+    cursor: pointer;
+  }
+
+  .timeline-scrubber {
+    margin: 1.5rem 0;
+  }
+
+  .frame-track {
+    position: relative;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .playhead {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, #ff6b6b, #ee5a6f);
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.7);
+    pointer-events: none;
+    z-index: 10;
+    transition: left 0.1s linear;
+  }
+
+  .playhead::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -6px;
+    width: 15px;
+    height: 15px;
+    background: #ff6b6b;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .frame-markers {
+    display: flex;
+    height: 100%;
+    align-items: flex-end;
+    padding: 5px;
+  }
+
+  .frame-marker {
+    flex: 1;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0 1px;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+  }
+
+  .frame-marker.has-keyframe {
+    background: linear-gradient(180deg, #ffd93d, #ff9f40);
+    height: 50px;
+    box-shadow: 0 2px 8px rgba(255, 159, 64, 0.5);
+  }
+
+  .frame-marker:hover {
+    background: rgba(255, 255, 255, 0.4);
+    height: 40px;
+  }
+
+  .frame-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  .frame-thumbnails {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 1rem 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  }
+
+  .frame-thumbnails::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .frame-thumbnails::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  .frame-thumbnails::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+  }
+
+  .frame-thumbnail {
+    min-width: 80px;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .frame-thumbnail.active {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 12px rgba(255, 107, 107, 0.6);
+    transform: scale(1.1);
+  }
+
+  .frame-thumbnail:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .frame-thumbnail canvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+  }
+
+  .frame-number {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+
+  .timeline-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .action-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .action-btn:active {
+    transform: translateY(0);
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  input[type='number'] {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  input[type='number']:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .animation-timeline {
+      padding: 1rem;
+    }
+
+    .playback-controls {
+      gap: 0.25rem;
+    }
+
+    .control-btn {
+      padding: 0.5rem 0.75rem;
+      font-size: 1rem;
+    }
+
+    .frame-track {
+      height: 50px;
+    }
+
+    .frame-thumbnail {
+      min-width: 60px;
+      height: 45px;
+    }
+
+    .timeline-actions {
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.9rem;
+    }
+  }
+</style>
+
+<script>
+  // Timeline functionality will be initialized from parent component
+  // This script handles UI interactions and delegates to AnimationEngine
+</script>

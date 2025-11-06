@@ -1,0 +1,860 @@
+---
+/**
+ * My Animations Gallery Page
+ * View, play, edit, and delete saved animations
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+
+const locale = 'de';
+const title = 'Meine Animationen';
+const description = 'Verwalte und teile deine erstellten Animationen';
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <main id="main-content" class="animations-gallery">
+    <header class="gallery-header">
+      <h1>🎬 Meine Animationen</h1>
+      <div class="header-actions">
+        <a href="/animation-studio" class="create-btn">
+          ➕ Neue Animation erstellen
+        </a>
+        <button id="sort-btn" class="sort-btn">
+          🔽 Sortieren
+        </button>
+      </div>
+    </header>
+
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-label">Gesamt</span>
+        <span id="total-count" class="stat-value">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Frames</span>
+        <span id="total-frames" class="stat-value">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Dauer</span>
+        <span id="total-duration" class="stat-value">0s</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Sterne verdient</span>
+        <span id="stars-earned" class="stat-value">0 ⭐</span>
+      </div>
+    </div>
+
+    <div id="animations-grid" class="animations-grid">
+      <!-- Animations will be loaded here -->
+    </div>
+
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <div class="empty-icon">🎬</div>
+      <h2>Noch keine Animationen</h2>
+      <p>Erstelle deine erste Animation im Animations-Studio!</p>
+      <a href="/animation-studio" class="primary-btn">
+        ➕ Animation erstellen
+      </a>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="modal" style="display: none;">
+      <div class="modal-content preview-modal-content">
+        <button id="close-preview" class="close-btn">✕</button>
+        <h2 id="preview-title">Animation Vorschau</h2>
+        <div class="preview-container">
+          <canvas id="preview-canvas" width="800" height="600"></canvas>
+        </div>
+        <div class="preview-controls">
+          <button id="preview-play" class="control-btn">▶️</button>
+          <button id="preview-stop" class="control-btn">⏹️</button>
+          <div id="preview-progress" class="progress-bar">
+            <div id="preview-fill" class="progress-fill"></div>
+          </div>
+          <span id="preview-time">0.0s / 0.0s</span>
+        </div>
+        <div class="preview-actions">
+          <button id="preview-edit" class="action-btn">✏️ Bearbeiten</button>
+          <button id="preview-share" class="action-btn">📤 Teilen</button>
+          <button id="preview-delete" class="action-btn danger-btn">🗑️ Löschen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="share-modal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <button class="close-btn" id="close-share">✕</button>
+        <h2>Animation teilen</h2>
+        <div class="share-options">
+          <button id="share-qr" class="share-btn">
+            📱 QR-Code generieren
+          </button>
+          <button id="share-export-gif" class="share-btn">
+            🎞️ Als GIF exportieren
+          </button>
+          <button id="share-export-video" class="share-btn">
+            🎬 Als Video exportieren
+          </button>
+        </div>
+        <div id="qr-container" style="display: none; text-align: center; margin-top: 2rem;">
+          <div id="qr-code"></div>
+          <button id="download-qr" class="primary-btn" style="margin-top: 1rem;">
+            💾 QR-Code herunterladen
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import type { AnimationProject } from '@utils/animation-studio';
+  import { AnimationEngine } from '@utils/animation-studio';
+
+  const PROJECTS_STORAGE_KEY = 'animation-studio-projects';
+  let animations: AnimationProject[] = [];
+  let currentPreviewId: string | null = null;
+  let previewEngine: AnimationEngine | null = null;
+
+  // Load animations on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    loadAnimations();
+    renderAnimations();
+    updateStats();
+    setupEventListeners();
+  });
+
+  function loadAnimations(): void {
+    try {
+      const stored = localStorage.getItem(PROJECTS_STORAGE_KEY);
+      if (stored) {
+        animations = JSON.parse(stored);
+      }
+    } catch (error) {
+      console.error('Failed to load animations:', error);
+      animations = [];
+    }
+  }
+
+  function renderAnimations(): void {
+    const grid = document.getElementById('animations-grid');
+    const emptyState = document.getElementById('empty-state');
+
+    if (!grid || !emptyState) return;
+
+    if (animations.length === 0) {
+      grid.innerHTML = '';
+      emptyState.style.display = 'flex';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    grid.innerHTML = '';
+
+    animations.forEach((animation, index) => {
+      const card = createAnimationCard(animation, index);
+      grid.appendChild(card);
+    });
+  }
+
+  function createAnimationCard(animation: AnimationProject, index: number): HTMLElement {
+    const card = document.createElement('div');
+    card.className = 'animation-card';
+    card.dataset.animationId = animation.id;
+
+    const thumbnail = document.createElement('canvas');
+    thumbnail.className = 'animation-thumbnail';
+    thumbnail.width = 400;
+    thumbnail.height = 300;
+
+    // Render first frame as thumbnail
+    const tempEngine = new AnimationEngine(thumbnail, animation);
+    tempEngine.render();
+
+    const duration = (animation.totalFrames / animation.fps).toFixed(1);
+    const lastEdited = new Date(animation.updatedAt).toLocaleDateString('de-DE');
+
+    card.innerHTML = `
+      <div class="card-thumbnail"></div>
+      <div class="card-content">
+        <h3 class="card-title">${animation.name}</h3>
+        <div class="card-meta">
+          <span>🎬 ${animation.totalFrames} Frames</span>
+          <span>⏱️ ${duration}s</span>
+        </div>
+        <div class="card-meta">
+          <span>📅 ${lastEdited}</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="card-btn play-btn" data-action="play" title="Abspielen">
+          ▶️
+        </button>
+        <button class="card-btn edit-btn" data-action="edit" title="Bearbeiten">
+          ✏️
+        </button>
+        <button class="card-btn share-btn" data-action="share" title="Teilen">
+          📤
+        </button>
+        <button class="card-btn delete-btn" data-action="delete" title="Löschen">
+          🗑️
+        </button>
+      </div>
+    `;
+
+    // Insert thumbnail
+    card.querySelector('.card-thumbnail')?.appendChild(thumbnail);
+
+    // Add event listeners
+    card.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const action = target.dataset.action || target.closest('[data-action]')?.getAttribute('data-action');
+
+      if (action) {
+        e.stopPropagation();
+        handleCardAction(action, animation.id);
+      } else {
+        // Click on card itself - show preview
+        showPreview(animation.id);
+      }
+    });
+
+    return card;
+  }
+
+  function handleCardAction(action: string, animationId: string): void {
+    switch (action) {
+      case 'play':
+        showPreview(animationId);
+        break;
+      case 'edit':
+        editAnimation(animationId);
+        break;
+      case 'share':
+        shareAnimation(animationId);
+        break;
+      case 'delete':
+        deleteAnimation(animationId);
+        break;
+    }
+  }
+
+  function showPreview(animationId: string): void {
+    const animation = animations.find(a => a.id === animationId);
+    if (!animation) return;
+
+    currentPreviewId = animationId;
+    const modal = document.getElementById('preview-modal');
+    const title = document.getElementById('preview-title');
+    const canvas = document.getElementById('preview-canvas') as HTMLCanvasElement;
+
+    if (!modal || !title || !canvas) return;
+
+    title.textContent = animation.name;
+    modal.style.display = 'flex';
+
+    // Initialize preview engine
+    previewEngine = new AnimationEngine(canvas, animation);
+    previewEngine.render();
+
+    updatePreviewTime();
+  }
+
+  function updatePreviewTime(): void {
+    if (!previewEngine) return;
+    const currentFrame = previewEngine.getCurrentFrame();
+    const totalFrames = previewEngine.getProject().totalFrames;
+    const fps = previewEngine.getProject().fps;
+
+    const timeDisplay = document.getElementById('preview-time');
+    const progressFill = document.getElementById('preview-fill');
+
+    if (timeDisplay) {
+      const currentTime = (currentFrame / fps).toFixed(1);
+      const totalTime = (totalFrames / fps).toFixed(1);
+      timeDisplay.textContent = `${currentTime}s / ${totalTime}s`;
+    }
+
+    if (progressFill) {
+      const percent = (currentFrame / totalFrames) * 100;
+      progressFill.style.width = `${percent}%`;
+    }
+  }
+
+  function editAnimation(animationId: string): void {
+    // Save as current project and navigate to studio
+    const animation = animations.find(a => a.id === animationId);
+    if (!animation) return;
+
+    localStorage.setItem('animation-studio-current', JSON.stringify(animation));
+    window.location.href = '/animation-studio';
+  }
+
+  function shareAnimation(animationId: string): void {
+    currentPreviewId = animationId;
+    const modal = document.getElementById('share-modal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function deleteAnimation(animationId: string): void {
+    const animation = animations.find(a => a.id === animationId);
+    if (!animation) return;
+
+    const confirmDelete = confirm(`Animation "${animation.name}" wirklich löschen?`);
+    if (!confirmDelete) return;
+
+    animations = animations.filter(a => a.id !== animationId);
+    localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(animations));
+
+    renderAnimations();
+    updateStats();
+    showNotification('Animation gelöscht', 'success');
+  }
+
+  function updateStats(): void {
+    const totalCount = document.getElementById('total-count');
+    const totalFrames = document.getElementById('total-frames');
+    const totalDuration = document.getElementById('total-duration');
+    const starsEarned = document.getElementById('stars-earned');
+
+    if (totalCount) totalCount.textContent = animations.length.toString();
+
+    if (totalFrames) {
+      const frames = animations.reduce((sum, a) => sum + a.totalFrames, 0);
+      totalFrames.textContent = frames.toString();
+    }
+
+    if (totalDuration) {
+      const duration = animations.reduce((sum, a) => sum + (a.totalFrames / a.fps), 0);
+      totalDuration.textContent = `${duration.toFixed(1)}s`;
+    }
+
+    if (starsEarned) {
+      const stars = animations.length * 20; // 20 stars per animation
+      starsEarned.textContent = `${stars} ⭐`;
+    }
+  }
+
+  function setupEventListeners(): void {
+    // Sort button
+    document.getElementById('sort-btn')?.addEventListener('click', () => {
+      // Toggle sort order
+      animations.reverse();
+      renderAnimations();
+    });
+
+    // Preview modal controls
+    document.getElementById('close-preview')?.addEventListener('click', () => {
+      document.getElementById('preview-modal')!.style.display = 'none';
+      previewEngine?.pause();
+    });
+
+    document.getElementById('preview-play')?.addEventListener('click', () => {
+      if (previewEngine) {
+        previewEngine.play();
+        // Update time display during playback
+        const interval = setInterval(() => {
+          if (!(previewEngine as any)?.isPlaying) {
+            clearInterval(interval);
+          } else {
+            updatePreviewTime();
+          }
+        }, 100);
+      }
+    });
+
+    document.getElementById('preview-stop')?.addEventListener('click', () => {
+      previewEngine?.stop();
+      updatePreviewTime();
+    });
+
+    document.getElementById('preview-edit')?.addEventListener('click', () => {
+      if (currentPreviewId) {
+        editAnimation(currentPreviewId);
+      }
+    });
+
+    document.getElementById('preview-share')?.addEventListener('click', () => {
+      document.getElementById('preview-modal')!.style.display = 'none';
+      if (currentPreviewId) {
+        shareAnimation(currentPreviewId);
+      }
+    });
+
+    document.getElementById('preview-delete')?.addEventListener('click', () => {
+      if (currentPreviewId) {
+        document.getElementById('preview-modal')!.style.display = 'none';
+        deleteAnimation(currentPreviewId);
+      }
+    });
+
+    // Share modal
+    document.getElementById('close-share')?.addEventListener('click', () => {
+      document.getElementById('share-modal')!.style.display = 'none';
+    });
+
+    document.getElementById('share-qr')?.addEventListener('click', () => {
+      showNotification('QR-Code-Generierung noch nicht implementiert', 'info');
+    });
+
+    document.getElementById('share-export-gif')?.addEventListener('click', () => {
+      showNotification('GIF-Export noch nicht implementiert', 'info');
+    });
+
+    document.getElementById('share-export-video')?.addEventListener('click', () => {
+      showNotification('Video-Export noch nicht implementiert', 'info');
+    });
+  }
+
+  function showNotification(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
+    const toast = document.createElement('div');
+    toast.className = `notification notification-${type}`;
+    toast.textContent = message;
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#E57373' : '#2196F3'};
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      z-index: 10000;
+      font-weight: 600;
+      animation: slideIn 0.3s ease;
+    `;
+
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.style.animation = 'slideOut 0.3s ease';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+</script>
+
+<style>
+  .animations-gallery {
+    min-height: 100vh;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
+
+  .gallery-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .gallery-header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .create-btn,
+  .sort-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .create-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .create-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .sort-btn {
+    background: white;
+    border: 2px solid #e0e0e0;
+    color: #333;
+  }
+
+  .sort-btn:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+  }
+
+  .stats-bar {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-label {
+    display: block;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .animations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .animation-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .animation-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-thumbnail {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .animation-thumbnail {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+  }
+
+  .card-content {
+    padding: 1.5rem;
+  }
+
+  .card-title {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    color: #333;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-actions {
+    padding: 1rem 1.5rem;
+    border-top: 2px solid #f5f5f5;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-around;
+  }
+
+  .card-btn {
+    background: #f5f7fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+  }
+
+  .card-btn:hover {
+    background: #e0e0e0;
+    transform: translateY(-2px);
+  }
+
+  .delete-btn:hover {
+    background: #ffebee;
+    border-color: #e57373;
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    background: white;
+    border-radius: 16px;
+    padding: 3rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .empty-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .empty-state h2 {
+    margin: 0 0 1rem 0;
+    color: #666;
+  }
+
+  .empty-state p {
+    margin: 0 0 2rem 0;
+    color: #999;
+  }
+
+  .primary-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+    position: relative;
+  }
+
+  .preview-modal-content {
+    max-width: 900px;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #f5f5f5;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+  }
+
+  .close-btn:hover {
+    background: #e0e0e0;
+    transform: scale(1.1);
+  }
+
+  .preview-container {
+    margin: 2rem 0;
+    background: #f5f5f5;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #preview-canvas {
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .preview-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .control-btn {
+    background: #f5f7fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .control-btn:hover {
+    background: #e0e0e0;
+    transform: translateY(-2px);
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 30px;
+    background: #e0e0e0;
+    border-radius: 15px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+
+  .preview-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .action-btn {
+    background: #f5f7fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .action-btn:hover {
+    background: #e0e0e0;
+    transform: translateY(-2px);
+  }
+
+  .danger-btn:hover {
+    background: #ffebee;
+    border-color: #e57373;
+  }
+
+  .share-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  .share-btn {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .share-btn:hover {
+    border-color: #667eea;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    .animations-gallery {
+      padding: 1rem;
+    }
+
+    .gallery-header h1 {
+      font-size: 2rem;
+    }
+
+    .animations-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .stats-bar {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-50%) translateY(20px);
+    }
+  }
+</style>

@@ -1,0 +1,792 @@
+---
+/**
+ * Theater Recorder Component
+ * Recording, playback, and export controls for puppet shows
+ */
+import type { Locale } from '@utils/i18n';
+import { getTranslation } from '@utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = (key: string) => getTranslation(locale, key);
+---
+
+<div class="theater-recorder" data-locale={locale}>
+  <!-- Recording Controls -->
+  <div class="recorder-panel">
+    <div class="recorder-header">
+      <h3 class="recorder-title">
+        <span class="icon">🎬</span>
+        {t('showRecorder')}
+      </h3>
+      <div class="recording-status" id="recording-status">
+        <span class="status-dot"></span>
+        <span class="status-text">{t('ready')}</span>
+      </div>
+    </div>
+
+    <!-- Main Controls -->
+    <div class="main-controls">
+      <button class="rec-btn record-btn" id="record-btn" data-action="record">
+        <span class="btn-icon">⏺️</span>
+        <span class="btn-label">{t('record')}</span>
+      </button>
+      <button class="rec-btn stop-btn" id="stop-btn" data-action="stop" disabled>
+        <span class="btn-icon">⏹️</span>
+        <span class="btn-label">{t('stop')}</span>
+      </button>
+      <button class="rec-btn play-btn" id="play-btn" data-action="play" disabled>
+        <span class="btn-icon">▶️</span>
+        <span class="btn-label">{t('play')}</span>
+      </button>
+      <button class="rec-btn pause-btn" id="pause-btn" data-action="pause" disabled>
+        <span class="btn-icon">⏸️</span>
+        <span class="btn-label">{t('pause')}</span>
+      </button>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline-container">
+      <div class="timeline-header">
+        <span class="time-display" id="current-time">00:00</span>
+        <span class="time-separator">/</span>
+        <span class="time-display" id="total-time">00:00</span>
+      </div>
+      <div class="timeline" id="timeline">
+        <div class="timeline-track">
+          <div class="timeline-progress" id="timeline-progress"></div>
+          <div class="timeline-handle" id="timeline-handle"></div>
+          <div class="scene-markers" id="scene-markers"></div>
+        </div>
+      </div>
+      <div class="timeline-controls">
+        <button class="speed-btn" data-speed="0.5">0.5x</button>
+        <button class="speed-btn active" data-speed="1">1x</button>
+        <button class="speed-btn" data-speed="1.5">1.5x</button>
+        <button class="speed-btn" data-speed="2">2x</button>
+        <button class="loop-btn" id="loop-btn" title={t('loopPlayback')}>
+          <span>🔁</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Audio Controls -->
+    <div class="audio-controls">
+      <div class="audio-section">
+        <label>
+          <span class="icon">🎤</span>
+          {t('voiceRecording')}
+        </label>
+        <div class="audio-buttons">
+          <button class="audio-btn" id="start-audio-btn">
+            <span>🎤</span>
+            {t('recordVoice')}
+          </button>
+          <button class="audio-btn" id="stop-audio-btn" disabled>
+            <span>⏹️</span>
+            {t('stopVoice')}
+          </button>
+        </div>
+        <div class="audio-waveform" id="audio-waveform">
+          <div class="waveform-bars"></div>
+        </div>
+      </div>
+
+      <div class="audio-section">
+        <label>
+          <span class="icon">🎵</span>
+          {t('backgroundMusic')}
+        </label>
+        <select id="music-select" class="music-select">
+          <option value="">{t('noMusic')}</option>
+          <option value="cheerful">{t('musicCheerful')}</option>
+          <option value="adventure">{t('musicAdventure')}</option>
+          <option value="mysterious">{t('musicMysterious')}</option>
+          <option value="calm">{t('musicCalm')}</option>
+          <option value="dramatic">{t('musicDramatic')}</option>
+        </select>
+        <div class="volume-control">
+          <span class="icon">🔊</span>
+          <input type="range" id="music-volume" min="0" max="100" value="50">
+          <span id="music-volume-value">50%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene Management -->
+    <div class="scenes-section">
+      <div class="scenes-header">
+        <h4>
+          <span class="icon">🎬</span>
+          {t('scenes')}
+        </h4>
+        <button class="add-scene-btn" id="add-scene-btn">
+          <span>➕</span>
+          {t('addScene')}
+        </button>
+      </div>
+      <div class="scenes-list" id="scenes-list">
+        <div class="scene-item active" data-scene-id="scene-1">
+          <div class="scene-number">1</div>
+          <div class="scene-info">
+            <div class="scene-title">{t('scene')} 1</div>
+            <div class="scene-duration">00:00</div>
+          </div>
+          <button class="scene-delete-btn" title={t('deleteScene')}>
+            <span>🗑️</span>
+          </button>
+        </div>
+      </div>
+      <div class="scene-transitions">
+        <label>{t('sceneTransition')}</label>
+        <select id="transition-select" class="transition-select">
+          <option value="fade">{t('transitionFade')}</option>
+          <option value="curtain">{t('transitionCurtain')}</option>
+          <option value="wipe">{t('transitionWipe')}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Export Options -->
+    <div class="export-section">
+      <h4>
+        <span class="icon">💾</span>
+        {t('saveExport')}
+      </h4>
+      <div class="export-buttons">
+        <button class="export-btn save-btn" id="save-show-btn">
+          <span class="btn-icon">💾</span>
+          <span class="btn-label">{t('saveShow')}</span>
+        </button>
+        <button class="export-btn video-btn" id="export-video-btn" disabled>
+          <span class="btn-icon">🎥</span>
+          <span class="btn-label">{t('exportVideo')}</span>
+        </button>
+        <button class="export-btn share-btn" id="share-show-btn" disabled>
+          <span class="btn-icon">🔗</span>
+          <span class="btn-label">{t('shareShow')}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .theater-recorder {
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .recorder-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Header */
+  .recorder-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+
+  .recorder-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+
+  .icon {
+    font-size: 24px;
+  }
+
+  .recording-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: #f8f9fa;
+    border-radius: 20px;
+  }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #4caf50;
+  }
+
+  .recording-status.recording .status-dot {
+    background: #f44336;
+    animation: pulse 1s ease infinite;
+  }
+
+  .recording-status.playing .status-dot {
+    background: #2196f3;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .status-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+  }
+
+  /* Main Controls */
+  .main-controls {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .rec-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 12px;
+    background: #f8f9fa;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .rec-btn:hover:not(:disabled) {
+    background: #e3f2fd;
+    border-color: #2196f3;
+    transform: translateY(-2px);
+  }
+
+  .rec-btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .rec-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .rec-btn.record-btn:hover:not(:disabled) {
+    background: #ffebee;
+    border-color: #f44336;
+  }
+
+  .rec-btn.play-btn:hover:not(:disabled) {
+    background: #e3f2fd;
+    border-color: #2196f3;
+  }
+
+  .btn-icon {
+    font-size: 32px;
+  }
+
+  .btn-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+  }
+
+  /* Timeline */
+  .timeline-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .timeline-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .timeline {
+    width: 100%;
+    height: 60px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+  }
+
+  .timeline-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #e0e0e0;
+    border-radius: 4px;
+  }
+
+  .timeline-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, #2196f3 0%, #64b5f6 100%);
+    border-radius: 4px;
+    transition: width 0.1s linear;
+  }
+
+  .timeline-handle {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: #2196f3;
+    border: 3px solid white;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    cursor: grab;
+    transition: left 0.1s linear;
+  }
+
+  .timeline-handle:active {
+    cursor: grabbing;
+  }
+
+  .scene-markers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  :global(.scene-marker) {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: #ff9800;
+    opacity: 0.7;
+  }
+
+  .timeline-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .speed-btn,
+  .loop-btn {
+    padding: 6px 12px;
+    background: #f0f0f0;
+    border: 2px solid transparent;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.2s ease;
+  }
+
+  .speed-btn:hover,
+  .loop-btn:hover {
+    background: #e0e0e0;
+  }
+
+  .speed-btn.active {
+    background: #2196f3;
+    color: white;
+    border-color: #2196f3;
+  }
+
+  .loop-btn.active {
+    background: #4caf50;
+    color: white;
+    border-color: #4caf50;
+  }
+
+  /* Audio Controls */
+  .audio-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .audio-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .audio-section label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+  }
+
+  .audio-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .audio-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #f8f9fa;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .audio-btn:hover:not(:disabled) {
+    background: #ffebee;
+    border-color: #f44336;
+  }
+
+  .audio-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .audio-waveform {
+    height: 60px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .waveform-bars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 100%;
+  }
+
+  .music-select,
+  .transition-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .volume-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .volume-control input[type="range"] {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  .volume-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #2196f3;
+    cursor: pointer;
+  }
+
+  .volume-control input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #2196f3;
+    cursor: pointer;
+    border: none;
+  }
+
+  .volume-control span {
+    font-size: 13px;
+    color: #666;
+    min-width: 40px;
+  }
+
+  /* Scenes Section */
+  .scenes-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .scenes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .scenes-header h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+
+  .add-scene-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .add-scene-btn:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+  }
+
+  .scenes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .scene-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #f8f9fa;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .scene-item:hover {
+    background: #e3f2fd;
+  }
+
+  .scene-item.active {
+    background: #e3f2fd;
+    border-color: #2196f3;
+  }
+
+  .scene-number {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2196f3;
+    color: white;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .scene-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .scene-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+  }
+
+  .scene-duration {
+    font-size: 12px;
+    color: #666;
+    font-family: 'Courier New', monospace;
+  }
+
+  .scene-delete-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .scene-delete-btn:hover {
+    background: #ffebee;
+    border-color: #f44336;
+  }
+
+  .scene-transitions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .scene-transitions label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+  }
+
+  /* Export Section */
+  .export-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .export-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+
+  .export-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .export-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .export-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .export-btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .export-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .export-btn.save-btn {
+    background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  }
+
+  .export-btn.video-btn {
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  }
+
+  .export-btn.share-btn {
+    background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .theater-recorder {
+      padding: 15px;
+    }
+
+    .main-controls {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .audio-controls {
+      grid-template-columns: 1fr;
+    }
+
+    .export-buttons {
+      grid-template-columns: 1fr;
+    }
+
+    .btn-label {
+      font-size: 12px;
+    }
+
+    .btn-icon {
+      font-size: 28px;
+    }
+  }
+
+  /* Scrollbar Styling */
+  .scenes-list::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .scenes-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  .scenes-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+
+  .scenes-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+</style>
+
+<script>
+  // Recorder interaction will be handled by main theater script
+</script>

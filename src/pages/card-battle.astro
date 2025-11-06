@@ -1,0 +1,428 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getTranslation } from '../utils/i18n';
+
+const locale = 'de';
+const t = (key: string) => getTranslation(locale as any, key as any);
+---
+
+<BaseLayout title={t('cardBattle')} locale={locale}>
+  <main class="card-battle-hub">
+    <div class="hero-section">
+      <h1>{t('cardBattleTitle')}</h1>
+      <p class="tagline">{t('cardBattleDescription')}</p>
+
+      <div class="stats-overview">
+        <div class="stat-card">
+          <span class="stat-icon">🃏</span>
+          <div class="stat-info">
+            <span class="stat-value" id="total-cards">0</span>
+            <span class="stat-label">{t('cardsCollected')}</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-icon">⭐</span>
+          <div class="stat-info">
+            <span class="stat-value" id="total-stars">0</span>
+            <span class="stat-label">{t('starBalance')}</span>
+          </div>
+        </div>
+
+        <div class="stat-card rank-display">
+          <span class="stat-icon" id="rank-icon">🥉</span>
+          <div class="stat-info">
+            <span class="stat-value" id="current-rank">Bronze</span>
+            <span class="stat-label">{t('currentRank')}</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-icon">🏆</span>
+          <div class="stat-info">
+            <span class="stat-value" id="win-rate">0%</span>
+            <span class="stat-label">{t('winRate')}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mode-selection">
+      <h2>{t('battleMode')}</h2>
+
+      <div class="modes-grid">
+        <button class="mode-card" data-mode="practice">
+          <span class="mode-icon">🎯</span>
+          <h3>{t('practiceMode')}</h3>
+          <p>Schlacht gegen KI-Gegner in verschiedenen Schwierigkeitsstufen</p>
+          <span class="mode-badge">Empfohlen für Anfänger</span>
+        </button>
+
+        <button class="mode-card" data-mode="challenge">
+          <span class="mode-icon">🧩</span>
+          <h3>{t('challengeMode')}</h3>
+          <p>Löse Kampf-Rätsel und gewinne in einem Zug</p>
+          <span class="mode-badge">Tägliche Herausforderungen</span>
+        </button>
+
+        <button class="mode-card" data-mode="tournament">
+          <span class="mode-icon">🏆</span>
+          <h3>{t('tournamentMode')}</h3>
+          <p>Best-of-3 Matches, steige in den Rängen auf</p>
+          <span class="mode-badge">Höchste Belohnungen</span>
+        </button>
+
+        <button class="mode-card" data-mode="quick">
+          <span class="mode-icon">⚡</span>
+          <h3>{t('quickPlay')}</h3>
+          <p>Schnelle Schlachten mit zufälligem Deck</p>
+          <span class="mode-badge">Schnelles Spiel</span>
+        </button>
+
+        <button class="mode-card" data-mode="draft">
+          <span class="mode-icon">🎲</span>
+          <h3>{t('draftMode')}</h3>
+          <p>Beide Spieler wählen Karten aus zufälligem Pool</p>
+          <span class="mode-badge">Hohe Strategie</span>
+        </button>
+
+        <a href="/card-collection" class="mode-card collection-link">
+          <span class="mode-icon">📚</span>
+          <h3>{t('cardCollection')}</h3>
+          <p>Verwalte deine Karten, baue Decks und werte Karten auf</p>
+          <span class="mode-badge">Kartensammlung</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Daily Battle Section -->
+    <div class="daily-battle">
+      <div class="daily-header">
+        <h3>🌟 {t('dailyBattleReward')}</h3>
+        <p>Gewinne deinen ersten Kampf heute für extra Belohnungen!</p>
+      </div>
+      <div class="daily-status" id="daily-status"></div>
+    </div>
+
+    <!-- Battle Modal (hidden initially) -->
+    <div id="battle-modal" class="modal hidden">
+      <div class="modal-content">
+        <button class="close-modal" aria-label="Close">&times;</button>
+        <div id="battle-container"></div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .card-battle-hub {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .hero-section {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    color: white;
+  }
+
+  .hero-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+  }
+
+  .tagline {
+    font-size: 1.2rem;
+    opacity: 0.95;
+    margin-bottom: 2rem;
+  }
+
+  .stats-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .stat-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .stat-icon {
+    font-size: 3rem;
+  }
+
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  .mode-selection h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .modes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .mode-card {
+    background: linear-gradient(to bottom, #ffffff, #f5f5f5);
+    border: 3px solid #e0e0e0;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mode-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .mode-card:hover::before {
+    left: 100%;
+  }
+
+  .mode-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: #667eea;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  }
+
+  .mode-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .mode-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  .mode-card p {
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .mode-badge {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+  }
+
+  .collection-link {
+    text-decoration: none;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border-color: #f5576c;
+  }
+
+  .collection-link h3,
+  .collection-link p {
+    color: white;
+  }
+
+  .daily-battle {
+    background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    border: 3px solid #fab1a0;
+  }
+
+  .daily-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .daily-header h3 {
+    font-size: 1.8rem;
+    color: #2d3436;
+    margin-bottom: 0.5rem;
+  }
+
+  .daily-status {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #2d3436;
+  }
+
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal.hidden {
+    display: none;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 95vw;
+    max-height: 95vh;
+    overflow: auto;
+    position: relative;
+  }
+
+  .close-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  @media (max-width: 768px) {
+    .hero-section h1 {
+      font-size: 1.8rem;
+    }
+
+    .stats-overview {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .modes-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { loadCollection, checkDailyBattle } from '../utils/card-collection';
+
+  // Load player stats
+  function loadStats() {
+    const collection = loadCollection();
+
+    document.getElementById('total-cards')!.textContent = collection.cards.length.toString();
+    document.getElementById('total-stars')!.textContent = collection.stars.toString();
+    document.getElementById('current-rank')!.textContent = collection.rank;
+
+    const wins = collection.battleHistory.filter(b => b.result === 'win').length;
+    const total = collection.battleHistory.length;
+    const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
+    document.getElementById('win-rate')!.textContent = winRate + '%';
+
+    // Update rank icon
+    const rankIcons: Record<string, string> = {
+      Bronze: '🥉',
+      Silver: '🥈',
+      Gold: '🥇',
+      Platinum: '💎',
+      Diamond: '💠',
+      Master: '👑'
+    };
+    document.getElementById('rank-icon')!.textContent = rankIcons[collection.rank] || '🥉';
+
+    // Check daily battle status
+    const canDoBattle = checkDailyBattle(collection);
+    const dailyStatus = document.getElementById('daily-status')!;
+
+    if (canDoBattle) {
+      dailyStatus.innerHTML = `
+        <p style="font-weight: bold; color: #27ae60;">✓ Tägliche Belohnung verfügbar!</p>
+        <p>Gewinne deinen ersten Kampf für +50 Sterne Bonus</p>
+      `;
+    } else {
+      dailyStatus.innerHTML = `
+        <p style="opacity: 0.7;">✓ Tägliche Belohnung bereits abgeholt</p>
+        <p>Komm morgen wieder!</p>
+      `;
+    }
+  }
+
+  // Mode selection handlers
+  document.querySelectorAll('.mode-card[data-mode]').forEach(card => {
+    card.addEventListener('click', (e) => {
+      const mode = (e.currentTarget as HTMLElement).dataset.mode;
+
+      // Check if player has cards
+      const collection = loadCollection();
+      if (collection.cards.length === 0) {
+        alert('Du hast noch keine Karten! Lies Geschichten, um Karten freizuschalten.');
+        window.location.href = '/de/stories';
+        return;
+      }
+
+      // Navigate to battle (would load battle component)
+      alert(`${mode} Modus kommt bald! 🚀\n\nDieser Modus wird implementiert mit:\n- Gegnerwahl\n- Deck-Auswahl\n- Vollständiges Kampfsystem`);
+    });
+  });
+
+  // Initialize on page load
+  loadStats();
+</script>
+</BaseLayout>

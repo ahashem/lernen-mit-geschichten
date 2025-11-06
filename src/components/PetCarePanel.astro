@@ -1,0 +1,581 @@
+---
+/**
+ * Pet Care Panel Component
+ * Provides care activities: feed, play, sleep, clean, exercise
+ */
+
+interface Props {
+  locale: string;
+}
+
+const { locale } = Astro.props;
+---
+
+<div class="pet-care-panel">
+  <h2 data-i18n="careActivities">Care Activities</h2>
+
+  <div class="care-buttons">
+    <!-- Feed Button -->
+    <button class="care-btn feed-btn" id="feedBtn">
+      <span class="btn-icon">🍽️</span>
+      <span class="btn-label" data-i18n="feed">Feed</span>
+    </button>
+
+    <!-- Play Button -->
+    <button class="care-btn play-btn" id="playBtn">
+      <span class="btn-icon">🎮</span>
+      <span class="btn-label" data-i18n="play">Play</span>
+    </button>
+
+    <!-- Sleep Button -->
+    <button class="care-btn sleep-btn" id="sleepBtn">
+      <span class="btn-icon">💤</span>
+      <span class="btn-label" data-i18n="sleep">Sleep</span>
+    </button>
+
+    <!-- Clean Button -->
+    <button class="care-btn clean-btn" id="cleanBtn">
+      <span class="btn-icon">🛁</span>
+      <span class="btn-label" data-i18n="clean">Clean</span>
+    </button>
+
+    <!-- Exercise Button -->
+    <button class="care-btn exercise-btn" id="exerciseBtn">
+      <span class="btn-icon">🏃</span>
+      <span class="btn-label" data-i18n="exercise">Exercise</span>
+    </button>
+  </div>
+
+  <!-- Food Selection Modal -->
+  <div class="modal" id="feedModal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeFeedModal">&times;</button>
+      <h3 data-i18n="selectFood">Select Food</h3>
+      <div class="food-grid" id="foodGrid"></div>
+    </div>
+  </div>
+
+  <!-- Mini-Games Modal -->
+  <div class="modal" id="playModal">
+    <div class="modal-content">
+      <button class="modal-close" id="closePlayModal">&times;</button>
+      <h3 data-i18n="miniGames">Mini-Games</h3>
+      <div class="games-grid" id="gamesGrid"></div>
+    </div>
+  </div>
+
+  <!-- Sleep Modal -->
+  <div class="modal" id="sleepModal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeSleepModal">&times;</button>
+      <h3 data-i18n="sleep">Sleep</h3>
+      <div class="sleep-options">
+        <p data-i18n="putToBed">Put your pet to bed</p>
+        <div class="sleep-duration">
+          <label>
+            <span data-i18n="hoursSlept">Hours</span>:
+            <input type="range" id="sleepHours" min="1" max="8" value="4" />
+            <span id="sleepHoursValue">4</span>
+          </label>
+        </div>
+        <button class="primary-btn" id="confirmSleep" data-i18n="putToBed">Put to Bed</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .pet-care-panel {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+  }
+
+  .pet-care-panel h2 {
+    margin: 0 0 1.5rem 0;
+    color: #333;
+    font-size: 1.75rem;
+  }
+
+  .care-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+
+  .care-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 1.5rem 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .care-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .care-btn:active {
+    transform: translateY(-2px);
+  }
+
+  .btn-icon {
+    font-size: 2.5rem;
+  }
+
+  .btn-label {
+    font-size: 0.95rem;
+  }
+
+  .feed-btn {
+    background: linear-gradient(135deg, #FF9F40 0%, #FF6B6B 100%);
+    box-shadow: 0 4px 12px rgba(255, 159, 64, 0.3);
+  }
+
+  .feed-btn:hover {
+    box-shadow: 0 8px 20px rgba(255, 159, 64, 0.4);
+  }
+
+  .play-btn {
+    background: linear-gradient(135deg, #6BCF7F 0%, #2E7D32 100%);
+    box-shadow: 0 4px 12px rgba(107, 207, 127, 0.3);
+  }
+
+  .play-btn:hover {
+    box-shadow: 0 8px 20px rgba(107, 207, 127, 0.4);
+  }
+
+  .sleep-btn {
+    background: linear-gradient(135deg, #9C27B0 0%, #6A1B9A 100%);
+    box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+  }
+
+  .sleep-btn:hover {
+    box-shadow: 0 8px 20px rgba(156, 39, 176, 0.4);
+  }
+
+  .clean-btn {
+    background: linear-gradient(135deg, #4FC3F7 0%, #0277BD 100%);
+    box-shadow: 0 4px 12px rgba(79, 195, 247, 0.3);
+  }
+
+  .clean-btn:hover {
+    box-shadow: 0 8px 20px rgba(79, 195, 247, 0.4);
+  }
+
+  .exercise-btn {
+    background: linear-gradient(135deg, #FFD93D 0%, #F57C00 100%);
+    box-shadow: 0 4px 12px rgba(255, 217, 61, 0.3);
+  }
+
+  .exercise-btn:hover {
+    box-shadow: 0 8px 20px rgba(255, 217, 61, 0.4);
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+  }
+
+  .modal.active {
+    display: flex;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.2s;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  .modal-close:hover {
+    color: #333;
+    background: #f0f0f0;
+  }
+
+  .modal-content h3 {
+    margin: 0 0 1.5rem 0;
+    color: #333;
+    font-size: 1.75rem;
+  }
+
+  .food-grid,
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+
+  .food-item,
+  .game-item {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    padding: 1.5rem 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    border: 2px solid transparent;
+  }
+
+  .food-item:hover,
+  .game-item:hover {
+    transform: translateY(-4px);
+    border-color: #667eea;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+
+  .food-item.preferred {
+    background: linear-gradient(135deg, #FFD93D 0%, #FFA500 100%);
+    border-color: #FF9F40;
+  }
+
+  .food-emoji,
+  .game-emoji {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .food-name,
+  .game-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+  }
+
+  .food-cost,
+  .game-cost {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .sleep-options {
+    text-align: center;
+  }
+
+  .sleep-duration {
+    margin: 2rem 0;
+  }
+
+  .sleep-duration label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    font-weight: 600;
+    color: #555;
+  }
+
+  .sleep-duration input[type="range"] {
+    width: 200px;
+  }
+
+  #sleepHoursValue {
+    display: inline-block;
+    min-width: 30px;
+    color: #9C27B0;
+    font-size: 1.25rem;
+  }
+
+  .primary-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .pet-care-panel {
+      padding: 1.5rem;
+    }
+
+    .care-buttons {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .modal-content {
+      padding: 1.5rem;
+      width: 95%;
+    }
+
+    .food-grid,
+    .games-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<script>
+  import { loadPets, savePets, feedPet, playGame, sleepPet, cleanPet, exercisePet, PET_FOODS, MINI_GAMES } from '../utils/virtual-pets';
+  import type { Pet } from '../utils/virtual-pets';
+
+  class PetCareManager {
+    private currentPet: Pet | null = null;
+
+    constructor() {
+      this.setupEventListeners();
+      this.loadCurrentPet();
+    }
+
+    private loadCurrentPet(): void {
+      const pets = loadPets();
+      if (pets.length > 0) {
+        this.currentPet = pets[0]; // Use first pet for now
+      }
+    }
+
+    private setupEventListeners(): void {
+      // Feed button
+      const feedBtn = document.getElementById('feedBtn');
+      feedBtn?.addEventListener('click', () => this.openFeedModal());
+
+      // Play button
+      const playBtn = document.getElementById('playBtn');
+      playBtn?.addEventListener('click', () => this.openPlayModal());
+
+      // Sleep button
+      const sleepBtn = document.getElementById('sleepBtn');
+      sleepBtn?.addEventListener('click', () => this.openSleepModal());
+
+      // Clean button
+      const cleanBtn = document.getElementById('cleanBtn');
+      cleanBtn?.addEventListener('click', () => this.handleClean());
+
+      // Exercise button
+      const exerciseBtn = document.getElementById('exerciseBtn');
+      exerciseBtn?.addEventListener('click', () => this.handleExercise());
+
+      // Modal close buttons
+      document.getElementById('closeFeedModal')?.addEventListener('click', () => this.closeModal('feedModal'));
+      document.getElementById('closePlayModal')?.addEventListener('click', () => this.closeModal('playModal'));
+      document.getElementById('closeSleepModal')?.addEventListener('click', () => this.closeModal('sleepModal'));
+
+      // Sleep hours slider
+      const sleepHours = document.getElementById('sleepHours') as HTMLInputElement;
+      sleepHours?.addEventListener('input', () => {
+        const value = document.getElementById('sleepHoursValue');
+        if (value) value.textContent = sleepHours.value;
+      });
+
+      // Confirm sleep
+      document.getElementById('confirmSleep')?.addEventListener('click', () => this.handleSleep());
+    }
+
+    private openFeedModal(): void {
+      const modal = document.getElementById('feedModal');
+      const grid = document.getElementById('foodGrid');
+      if (!modal || !grid) return;
+
+      grid.innerHTML = '';
+
+      PET_FOODS.forEach(food => {
+        const isPreferred = this.currentPet && food.preferredBy.includes(this.currentPet.characterType);
+
+        const item = document.createElement('div');
+        item.className = `food-item ${isPreferred ? 'preferred' : ''}`;
+        item.innerHTML = `
+          <span class="food-emoji">${food.emoji}</span>
+          <div class="food-name">${food.name.de}</div>
+          <div class="food-cost">${food.hungerRestore} hunger</div>
+        `;
+
+        item.addEventListener('click', () => this.handleFeed(food.id));
+
+        grid.appendChild(item);
+      });
+
+      modal.classList.add('active');
+    }
+
+    private openPlayModal(): void {
+      const modal = document.getElementById('playModal');
+      const grid = document.getElementById('gamesGrid');
+      if (!modal || !grid) return;
+
+      grid.innerHTML = '';
+
+      MINI_GAMES.forEach(game => {
+        const item = document.createElement('div');
+        item.className = 'game-item';
+        item.innerHTML = `
+          <span class="game-emoji">${game.emoji}</span>
+          <div class="game-name">${game.name.de}</div>
+          <div class="game-cost">${game.energyCost} energy</div>
+        `;
+
+        item.addEventListener('click', () => this.handlePlay(game.id));
+
+        grid.appendChild(item);
+      });
+
+      modal.classList.add('active');
+    }
+
+    private openSleepModal(): void {
+      const modal = document.getElementById('sleepModal');
+      modal?.classList.add('active');
+    }
+
+    private closeModal(modalId: string): void {
+      const modal = document.getElementById(modalId);
+      modal?.classList.remove('active');
+    }
+
+    private handleFeed(foodId: string): void {
+      if (!this.currentPet) return;
+
+      const food = PET_FOODS.find(f => f.id === foodId);
+      if (!food) return;
+
+      const updatedPet = feedPet(this.currentPet, food);
+      this.updatePet(updatedPet);
+
+      this.closeModal('feedModal');
+      this.showNotification('petFed', 'success');
+
+      if (food.preferredBy.includes(this.currentPet.characterType)) {
+        this.showNotification('petLovesFood', 'success');
+      }
+    }
+
+    private handlePlay(gameId: string): void {
+      if (!this.currentPet) return;
+
+      const game = MINI_GAMES.find(g => g.id === gameId);
+      if (!game) return;
+
+      const updatedPet = playGame(this.currentPet, game);
+      if (!updatedPet) {
+        this.showNotification('notEnoughEnergy', 'error');
+        return;
+      }
+
+      this.updatePet(updatedPet);
+      this.closeModal('playModal');
+      this.showNotification('petHadFun', 'success');
+    }
+
+    private handleSleep(): void {
+      if (!this.currentPet) return;
+
+      const hoursInput = document.getElementById('sleepHours') as HTMLInputElement;
+      const hours = parseInt(hoursInput?.value || '4');
+
+      const updatedPet = sleepPet(this.currentPet, hours);
+      this.updatePet(updatedPet);
+
+      this.closeModal('sleepModal');
+      this.showNotification('petRested', 'success');
+    }
+
+    private handleClean(): void {
+      if (!this.currentPet) return;
+
+      const updatedPet = cleanPet(this.currentPet);
+      this.updatePet(updatedPet);
+      this.showNotification('petCleaned', 'success');
+    }
+
+    private handleExercise(): void {
+      if (!this.currentPet) return;
+
+      const updatedPet = exercisePet(this.currentPet);
+      if (!updatedPet) {
+        this.showNotification('petTooTired', 'error');
+        return;
+      }
+
+      this.updatePet(updatedPet);
+      this.showNotification('petExercised', 'success');
+    }
+
+    private updatePet(pet: Pet): void {
+      this.currentPet = pet;
+
+      // Update in storage
+      const pets = loadPets();
+      const index = pets.findIndex(p => p.id === pet.id);
+      if (index !== -1) {
+        pets[index] = pet;
+        savePets(pets);
+      }
+
+      // Update display
+      if ((window as any).petDisplay) {
+        (window as any).petDisplay.setPet(pet);
+      }
+    }
+
+    private showNotification(messageKey: string, type: 'success' | 'error'): void {
+      // Use same notification system as PetDisplay
+      const event = new CustomEvent('showPetNotification', {
+        detail: { messageKey, type }
+      });
+      window.dispatchEvent(event);
+    }
+  }
+
+  // Initialize
+  if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', () => {
+      new PetCareManager();
+    });
+  }
+</script>

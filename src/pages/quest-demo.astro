@@ -1,0 +1,448 @@
+---
+/**
+ * Quest System Demo/Testing Page
+ * Shows how to integrate the quest system with story/quiz events
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LevelUpAnimation from '../components/LevelUpAnimation.astro';
+
+const locale = 'de';
+---
+
+<BaseLayout title="Quest System Demo" locale={locale}>
+  <div class="demo-container">
+    <h1>Quest System Demo & Integration Guide</h1>
+    <p class="demo-intro">
+      Diese Seite demonstriert, wie das Quest-System in Geschichten und Quiz integriert werden kann.
+    </p>
+
+    <div class="demo-section">
+      <h2>Quick Stats</h2>
+      <div class="stats-display">
+        <div class="stat-box">
+          <div class="stat-label">Level</div>
+          <div class="stat-value" id="demo-level">1</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">XP</div>
+          <div class="stat-value" id="demo-xp">0 / 200</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Skill Points</div>
+          <div class="stat-value" id="demo-sp">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Total XP</div>
+          <div class="stat-value" id="demo-total-xp">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Test XP Gains</h2>
+      <p>Click buttons to award XP and see effects:</p>
+
+      <div class="button-grid">
+        <button class="demo-btn" data-xp="50" data-reason="story-read">
+          📚 Story Read (+50 XP)
+        </button>
+        <button class="demo-btn" data-xp="100" data-reason="perfect-quiz">
+          🎯 Perfect Quiz (+100 XP)
+        </button>
+        <button class="demo-btn" data-xp="200" data-reason="achievement">
+          🏆 Achievement (+200 XP)
+        </button>
+        <button class="demo-btn" data-xp="75" data-reason="daily-challenge">
+          📅 Daily Challenge (+75 XP)
+        </button>
+        <button class="demo-btn" data-xp="150" data-reason="quest-complete">
+          ⚔️ Quest Complete (+150 XP)
+        </button>
+        <button class="demo-btn" data-xp="300" data-reason="hidden-quest">
+          🔍 Hidden Quest (+300 XP)
+        </button>
+        <button class="demo-btn" data-xp="100" data-reason="story-create">
+          ✍️ Create Story (+100 XP)
+        </button>
+        <button class="demo-btn" data-xp="50" data-reason="story-share">
+          📤 Share Story (+50 XP)
+        </button>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Integration Code Examples</h2>
+
+      <div class="code-example">
+        <h3>1. Award XP When Story is Read</h3>
+        <pre><code>{`import { questManager, XP_SOURCES } from '@utils/quest-system';
+import { xpParticles } from '@utils/xp-particles';
+
+// In your story completion handler:
+function onStoryComplete(storyId) {
+  // Award XP
+  const result = questManager.awardXP(
+    XP_SOURCES.STORY_READ,
+    "Story: " + storyId
+  );
+
+  // Show particle effect at button position
+  const btn = event.target;
+  const rect = btn.getBoundingClientRect();
+  if (xpParticles) {
+    xpParticles.showXPGain({
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+      amount: XP_SOURCES.STORY_READ,
+      icon: '📚'
+    });
+  }
+
+  // Level up is handled automatically via events
+  console.log('XP awarded:', result);
+}`}</code></pre>
+      </div>
+
+      <div class="code-example">
+        <h3>2. Award XP for Perfect Quiz</h3>
+        <pre><code>{`function onQuizComplete(score, totalQuestions) {
+  const isPerfect = score === totalQuestions;
+
+  if (isPerfect) {
+    questManager.awardXP(
+      XP_SOURCES.PERFECT_QUIZ,
+      'Perfect Quiz Score'
+    );
+
+    // Show special effect
+    if (xpParticles) {
+      xpParticles.showXPGain({
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+        amount: XP_SOURCES.PERFECT_QUIZ,
+        icon: '🎯',
+        color: '#4CAF50'
+      });
+    }
+  }
+}`}</code></pre>
+      </div>
+
+      <div class="code-example">
+        <h3>3. Update Quest Progress</h3>
+        <pre><code>{`import { questManager } from '@utils/quest-system';
+
+// When story is read
+function trackStoryRead(storyId) {
+  // Update "Read 2 Stories" quest
+  const completed = questManager.updateQuestProgress(
+    'daily-read-stories',
+    1
+  );
+
+  if (completed) {
+    // Quest is complete, show notification
+    showNotification('Daily Quest Complete! 🎉');
+  }
+}`}</code></pre>
+      </div>
+
+      <div class="code-example">
+        <h3>4. Listen for Events</h3>
+        <pre><code>{`// Listen for XP gains
+window.addEventListener('xp-gain', (event) => {
+  console.log('XP gained:', event.detail.amount);
+  console.log('Reason:', event.detail.reason);
+
+  if (event.detail.result.leveledUp) {
+    console.log('LEVEL UP!', event.detail.result);
+    // Level-up animation shows automatically
+  }
+});
+
+// Listen for profile updates
+window.addEventListener('profile-update', (event) => {
+  console.log('Profile updated:', event.detail);
+  updateUI(event.detail);
+});
+
+// Listen for skill unlocks
+window.addEventListener('skill-unlock', (event) => {
+  console.log('Skill unlocked:', event.detail);
+  showSkillUnlockNotification(event.detail);
+});
+
+// Listen for quest completion
+window.addEventListener('quest-complete', (event) => {
+  console.log('Quest completed:', event.detail);
+  showQuestCompleteNotification(event.detail);
+});`}</code></pre>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Reset Progress (Testing Only)</h2>
+      <button class="demo-btn danger" id="reset-btn">
+        🔄 Reset All Progress
+      </button>
+      <p class="warning-text">
+        ⚠️ This will delete all quest progress, levels, and skills. Only use for testing!
+      </p>
+    </div>
+
+    <div class="demo-section">
+      <h2>Quick Links</h2>
+      <div class="quick-links">
+        <a href="/adventure-quests" class="link-btn">⚔️ Go to Adventure Quests</a>
+        <a href="/progress" class="link-btn">📊 View Progress Dashboard</a>
+        <a href="/achievements" class="link-btn">🏆 View Achievements</a>
+      </div>
+    </div>
+  </div>
+
+  <LevelUpAnimation />
+</BaseLayout>
+
+<style>
+  .demo-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: #667eea;
+  }
+
+  .demo-intro {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .demo-section {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .demo-section h2 {
+    font-size: 1.8rem;
+    margin: 0 0 1rem 0;
+    color: #333;
+  }
+
+  .stats-display {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .stat-box {
+    background: white;
+    border: 2px solid #667eea;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #667eea;
+  }
+
+  .button-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .demo-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+  }
+
+  .demo-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.5);
+  }
+
+  .demo-btn:active {
+    transform: translateY(0);
+  }
+
+  .demo-btn.danger {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  }
+
+  .code-example {
+    background: #2d2d2d;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+  }
+
+  .code-example h3 {
+    color: #ffd93d;
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+  }
+
+  .code-example pre {
+    margin: 0;
+    overflow-x: auto;
+  }
+
+  .code-example code {
+    color: #f8f8f2;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .warning-text {
+    color: #e74c3c;
+    font-weight: bold;
+    margin-top: 0.5rem;
+  }
+
+  .quick-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .link-btn {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: transform 0.2s ease;
+  }
+
+  .link-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .demo-container {
+      padding: 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    .button-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .code-example code {
+      font-size: 0.75rem;
+    }
+  }
+</style>
+
+<script>
+  import { questManager, XP_SOURCES } from '../utils/quest-system';
+  import { xpParticles } from '../utils/xp-particles';
+
+  function initQuestDemo() {
+    function updateStats() {
+      const profile = questManager.getPlayerProfile();
+
+      const levelEl = document.getElementById('demo-level');
+      const xpEl = document.getElementById('demo-xp');
+      const spEl = document.getElementById('demo-sp');
+      const totalXpEl = document.getElementById('demo-total-xp');
+
+      if (levelEl) levelEl.textContent = profile.level.toString();
+      if (xpEl) xpEl.textContent = `${profile.xp} / ${profile.xpToNextLevel}`;
+      if (spEl) spEl.textContent = profile.skillPoints.toString();
+      if (totalXpEl) totalXpEl.textContent = profile.totalXp.toString();
+    }
+
+    function attachEventListeners() {
+      // XP award buttons
+      document.querySelectorAll('.demo-btn[data-xp]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const target = e.currentTarget;
+          const xp = parseInt(target.dataset.xp || '0');
+          const reason = target.dataset.reason || 'demo';
+
+          // Award XP
+          const result = questManager.awardXP(xp, reason);
+
+          // Show particle effect
+          const rect = target.getBoundingClientRect();
+          if (xpParticles) {
+            xpParticles.showXPGain({
+              x: rect.left + rect.width / 2,
+              y: rect.top + rect.height / 2,
+              amount: xp,
+              icon: target.textContent?.split(' ')[0] || '✨'
+            });
+          }
+
+          console.log('XP Award Result:', result);
+        });
+      });
+
+      // Reset button
+      const resetBtn = document.getElementById('reset-btn');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          if (confirm('Are you sure you want to reset ALL progress? This cannot be undone!')) {
+            // Clear all localStorage
+            localStorage.removeItem('player-profile');
+            localStorage.removeItem('adventure-quests');
+            localStorage.removeItem('seasonal-track');
+            localStorage.removeItem('achievement-progress');
+
+            alert('Progress reset! Refresh the page.');
+            window.location.reload();
+          }
+        });
+      }
+    }
+
+    updateStats();
+    attachEventListeners();
+
+    // Listen for updates
+    window.addEventListener('profile-update', () => updateStats());
+    window.addEventListener('xp-gain', (event) => {
+      console.log('XP Gain Event:', event.detail);
+      updateStats();
+    });
+  }
+
+  // Initialize on page load
+  if (typeof window !== 'undefined') {
+    initQuestDemo();
+  }
+</script>

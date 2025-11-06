@@ -1,0 +1,585 @@
+---
+/**
+ * Puppet Controller Component
+ * Controls for selecting and manipulating puppets on stage
+ */
+import type { Locale } from '@utils/i18n';
+import { getTranslation } from '@utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = (key: string) => getTranslation(locale, key);
+---
+
+<div class="puppet-controller" data-locale={locale}>
+  <!-- Puppet Selection Panel -->
+  <div class="controller-section">
+    <h3 class="section-title">
+      <span class="icon">🎭</span>
+      {t('selectPuppets')}
+    </h3>
+    <div class="puppets-grid" id="puppets-selector">
+      <!-- Puppets will be loaded dynamically -->
+    </div>
+  </div>
+
+  <!-- Background Selection -->
+  <div class="controller-section">
+    <h3 class="section-title">
+      <span class="icon">🎨</span>
+      {t('stageBackground')}
+    </h3>
+    <div class="backgrounds-grid" id="backgrounds-selector">
+      <!-- Backgrounds will be loaded dynamically -->
+    </div>
+  </div>
+
+  <!-- Props Selection -->
+  <div class="controller-section collapsible">
+    <button class="section-header" data-toggle="props">
+      <h3 class="section-title">
+        <span class="icon">🪑</span>
+        {t('stageProps')}
+      </h3>
+      <span class="toggle-icon">▼</span>
+    </button>
+    <div class="section-content" id="props-content">
+      <div class="props-tabs">
+        <button class="tab-btn active" data-category="all">{t('allProps')}</button>
+        <button class="tab-btn" data-category="furniture">{t('furniture')}</button>
+        <button class="tab-btn" data-category="nature">{t('nature')}</button>
+        <button class="tab-btn" data-category="building">{t('buildings')}</button>
+        <button class="tab-btn" data-category="treasure">{t('objects')}</button>
+      </div>
+      <div class="props-grid" id="props-selector">
+        <!-- Props will be loaded dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Puppet Controls -->
+  <div class="controller-section active-controls" id="active-controls">
+    <h3 class="section-title">
+      <span class="icon">🎮</span>
+      {t('puppetControls')}
+    </h3>
+    <div class="no-selection" id="no-selection-msg">
+      {t('selectPuppetToControl')}
+    </div>
+    <div class="puppet-controls" id="puppet-controls" style="display: none;">
+      <div class="control-group">
+        <label>{t('size')}</label>
+        <input type="range" id="scale-control" min="50" max="200" value="100" step="10">
+        <span id="scale-value">100%</span>
+      </div>
+
+      <div class="control-group">
+        <label>{t('rotation')}</label>
+        <input type="range" id="rotation-control" min="0" max="360" value="0" step="15">
+        <span id="rotation-value">0°</span>
+      </div>
+
+      <div class="control-buttons">
+        <button class="control-btn" data-action="flip" title={t('flipDirection')}>
+          <span>↔️</span>
+        </button>
+        <button class="control-btn" data-action="forward" title={t('bringForward')}>
+          <span>⬆️</span>
+        </button>
+        <button class="control-btn" data-action="backward" title={t('sendBackward')}>
+          <span>⬇️</span>
+        </button>
+        <button class="control-btn" data-action="delete" title={t('removePuppet')}>
+          <span>🗑️</span>
+        </button>
+      </div>
+
+      <div class="animation-controls">
+        <label>{t('animations')}</label>
+        <div class="animation-buttons">
+          <button class="anim-btn" data-anim="bounce">{t('animBounce')}</button>
+          <button class="anim-btn" data-anim="spin">{t('animSpin')}</button>
+          <button class="anim-btn" data-anim="wave">{t('animWave')}</button>
+          <button class="anim-btn" data-anim="bow">{t('animBow')}</button>
+          <button class="anim-btn" data-anim="jump">{t('animJump')}</button>
+        </div>
+      </div>
+
+      <div class="dialogue-controls">
+        <label>{t('addDialogue')}</label>
+        <div class="dialogue-input-group">
+          <input
+            type="text"
+            id="dialogue-text"
+            placeholder={t('typeDialogue')}
+            maxlength="100"
+          >
+          <select id="dialogue-style">
+            <option value="round">{t('bubbleRound')}</option>
+            <option value="thought">{t('bubbleThought')}</option>
+            <option value="shout">{t('bubbleShout')}</option>
+          </select>
+          <button class="add-btn" id="add-dialogue-btn">
+            {t('addBubble')}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lighting Controls -->
+  <div class="controller-section collapsible">
+    <button class="section-header" data-toggle="lighting">
+      <h3 class="section-title">
+        <span class="icon">💡</span>
+        {t('stageLighting')}
+      </h3>
+      <span class="toggle-icon">▼</span>
+    </button>
+    <div class="section-content" id="lighting-content">
+      <div class="control-group">
+        <label>{t('lightIntensity')}</label>
+        <input type="range" id="light-intensity" min="0" max="100" value="50" step="10">
+      </div>
+      <div class="control-group">
+        <label>{t('lightColor')}</label>
+        <div class="color-presets">
+          <button class="color-btn" data-color="#ffffff" style="background: #ffffff;"></button>
+          <button class="color-btn" data-color="#ffeb3b" style="background: #ffeb3b;"></button>
+          <button class="color-btn" data-color="#ff6b6b" style="background: #ff6b6b;"></button>
+          <button class="color-btn" data-color="#4ecdc4" style="background: #4ecdc4;"></button>
+          <button class="color-btn" data-color="#9b59b6" style="background: #9b59b6;"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sound Effects -->
+  <div class="controller-section collapsible">
+    <button class="section-header" data-toggle="sounds">
+      <h3 class="section-title">
+        <span class="icon">🔊</span>
+        {t('soundEffects')}
+      </h3>
+      <span class="toggle-icon">▼</span>
+    </button>
+    <div class="section-content" id="sounds-content">
+      <div class="sounds-grid" id="sounds-selector">
+        <!-- Sound effects will be loaded dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .puppet-controller {
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .controller-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+
+  .controller-section:last-child {
+    border-bottom: none;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 15px 0;
+  }
+
+  .icon {
+    font-size: 24px;
+  }
+
+  /* Collapsible Sections */
+  .collapsible .section-header {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+  }
+
+  .toggle-icon {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  .collapsible.expanded .toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  .section-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .collapsible.expanded .section-content {
+    max-height: 1000px;
+  }
+
+  /* Grids */
+  .puppets-grid,
+  .backgrounds-grid,
+  .props-grid,
+  .sounds-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 10px;
+  }
+
+  .puppet-item,
+  .background-item,
+  .prop-item,
+  .sound-item {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: #f8f9fa;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 8px;
+  }
+
+  .puppet-item:hover,
+  .background-item:hover,
+  .prop-item:hover,
+  .sound-item:hover {
+    background: #e3f2fd;
+    border-color: #2196f3;
+    transform: translateY(-2px);
+  }
+
+  .puppet-item.selected,
+  .background-item.selected {
+    background: #e3f2fd;
+    border-color: #2196f3;
+  }
+
+  .item-emoji {
+    font-size: 36px;
+  }
+
+  .item-name {
+    font-size: 11px;
+    text-align: center;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+
+  /* Props Tabs */
+  .props-tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    padding: 8px 16px;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+
+  .tab-btn:hover {
+    background: #e0e0e0;
+  }
+
+  .tab-btn.active {
+    background: #2196f3;
+    color: white;
+  }
+
+  /* Active Puppet Controls */
+  .active-controls {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .no-selection {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+    font-size: 16px;
+  }
+
+  .puppet-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .control-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+  }
+
+  .control-group input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  .control-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #2196f3;
+    cursor: pointer;
+  }
+
+  .control-group input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #2196f3;
+    cursor: pointer;
+    border: none;
+  }
+
+  .control-group span {
+    font-size: 14px;
+    color: #666;
+  }
+
+  /* Control Buttons */
+  .control-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .control-btn {
+    aspect-ratio: 1;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .control-btn:hover {
+    background: #e3f2fd;
+    border-color: #2196f3;
+    transform: scale(1.05);
+  }
+
+  .control-btn:active {
+    transform: scale(0.95);
+  }
+
+  /* Animation Controls */
+  .animation-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .anim-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .anim-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .anim-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Dialogue Controls */
+  .dialogue-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dialogue-input-group input {
+    padding: 10px 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+
+  .dialogue-input-group input:focus {
+    outline: none;
+    border-color: #2196f3;
+  }
+
+  .dialogue-input-group select {
+    padding: 10px 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .add-btn {
+    padding: 10px 20px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .add-btn:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+  }
+
+  .add-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Color Presets */
+  .color-presets {
+    display: flex;
+    gap: 10px;
+  }
+
+  .color-btn {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #ddd;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .color-btn:hover {
+    transform: scale(1.1);
+    border-color: #2196f3;
+  }
+
+  .color-btn.active {
+    border-color: #2196f3;
+    border-width: 4px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .puppet-controller {
+      padding: 15px;
+    }
+
+    .puppets-grid,
+    .backgrounds-grid,
+    .props-grid,
+    .sounds-grid {
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      gap: 8px;
+    }
+
+    .item-emoji {
+      font-size: 28px;
+    }
+
+    .item-name {
+      font-size: 10px;
+    }
+
+    .control-buttons {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .animation-buttons {
+      flex-direction: column;
+    }
+
+    .anim-btn {
+      width: 100%;
+    }
+  }
+
+  /* Scrollbar Styling */
+  .puppet-controller::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .puppet-controller::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  .puppet-controller::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+
+  .puppet-controller::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+</style>
+
+<script>
+  // Controller interaction will be handled by main theater script
+</script>

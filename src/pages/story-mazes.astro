@@ -1,0 +1,902 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { getTranslation } from '@utils/i18n';
+
+const locale = 'de';
+const title = getTranslation(locale, 'storyMazes');
+const description = getTranslation(locale, 'storyMazesDescription');
+
+// Get all stories
+const allStories = await getCollection('stories', ({ data }) => {
+  return data.languages.includes('de');
+});
+
+// Group by difficulty
+const storiesByDifficulty = {
+  beginner: allStories.filter((s) => s.data.difficulty === 'beginner'),
+  intermediate: allStories.filter((s) => s.data.difficulty === 'intermediate'),
+};
+
+// Get user progress from localStorage (will be handled client-side)
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="story-mazes-page">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1 class="page-title">
+          <span class="title-icon">🗺️</span>
+          <span data-i18n="storyMazes">Geschichten-Labyrinthe</span>
+        </h1>
+        <p class="page-subtitle" data-i18n="storyMazesDescription">
+          Erkunde Labyrinthe basierend auf deinen Lieblingsgeschichten!
+        </p>
+      </div>
+
+      <!-- Stats Overview -->
+      <div class="stats-overview" id="maze-stats">
+        <div class="stat-card">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-content">
+            <div class="stat-value" id="completed-mazes">0</div>
+            <div class="stat-label" data-i18n="completedMazes"
+              >Abgeschlossene Labyrinthe</div
+            >
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-content">
+            <div class="stat-value" id="total-stars">0</div>
+            <div class="stat-label" data-i18n="starsEarned">Verdiente Sterne</div
+            >
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏱️</div>
+          <div class="stat-content">
+            <div class="stat-value" id="best-time">--:--</div>
+            <div class="stat-label" data-i18n="bestTime">Beste Zeit</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-content">
+            <div class="stat-value" id="completion-rate">0%</div>
+            <div class="stat-label" data-i18n="completionRate"
+              >Abschlussrate</div
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Daily Challenge -->
+      <div class="daily-challenge">
+        <div class="challenge-header">
+          <h2>
+            <span>⚡</span>
+            <span data-i18n="dailyMazeChallenge">Tägliche Labyrinth-Herausforderung</span>
+          </h2>
+          <div class="challenge-timer" id="daily-timer">23:45:12</div>
+        </div>
+        <div class="challenge-card" id="daily-challenge">
+          <div class="challenge-details">
+            <h3 class="challenge-title" id="daily-story-title">Wird geladen...</h3>
+            <p class="challenge-description">
+              Schließe das heutige Labyrinth ab und verdiene Bonus-Sterne!
+            </p>
+            <div class="challenge-rewards">
+              <span class="reward-badge">+50 ⭐</span>
+              <span class="reward-badge" data-i18n="bonusReward">Bonus-Belohnung</span>
+            </div>
+          </div>
+          <button class="btn-challenge" id="start-daily-btn">
+            <span data-i18n="startChallenge">Herausforderung starten</span>
+            <span>▶</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Maze Categories -->
+      <div class="maze-categories">
+        <!-- Beginner Mazes -->
+        <section class="maze-section">
+          <div class="section-header">
+            <h2>
+              <span class="difficulty-badge easy">🟢</span>
+              <span data-i18n="easyMazes">Einfache Labyrinthe</span>
+            </h2>
+            <p data-i18n="easyMazesDescription">
+              Perfekt für Einsteiger • 10x10 • Keine Zeitlimits
+            </p>
+          </div>
+          <div class="maze-grid">
+            {
+              storiesByDifficulty.beginner.slice(0, 6).map((story) => (
+                <div
+                  class="maze-card"
+                  data-story-id={story.data.storyId}
+                  data-difficulty="easy"
+                >
+                  <div class="maze-card-header">
+                    <span class="story-emoji">{story.data.emoji}</span>
+                    <div class="maze-status">
+                      <span class="status-icon unlocked">🔓</span>
+                    </div>
+                  </div>
+                  <div class="maze-card-body">
+                    <h3 class="story-title">{story.data.title}</h3>
+                    <div class="maze-info">
+                      <span class="info-item">
+                        <span>📏</span>
+                        <span>10x10</span>
+                      </span>
+                      <span class="info-item">
+                        <span>⏱️</span>
+                        <span>~5 Min</span>
+                      </span>
+                    </div>
+                    <div class="maze-progress">
+                      <div class="progress-bar">
+                        <div class="progress-fill" data-progress="0" />
+                      </div>
+                      <span class="progress-text">0% abgeschlossen</span>
+                    </div>
+                  </div>
+                  <div class="maze-card-footer">
+                    <a
+                      href={`/maze-game?story=${story.data.storyId}&difficulty=easy`}
+                      class="btn-play"
+                    >
+                      <span data-i18n="playMaze">Spielen</span>
+                      <span>▶</span>
+                    </a>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+
+        <!-- Medium Mazes -->
+        <section class="maze-section">
+          <div class="section-header">
+            <h2>
+              <span class="difficulty-badge medium">🟡</span>
+              <span data-i18n="mediumMazes">Mittlere Labyrinthe</span>
+            </h2>
+            <p data-i18n="mediumMazesDescription">
+              Für Abenteurer • 20x20 • Sammelobjekte & Checkpoints
+            </p>
+          </div>
+          <div class="maze-grid">
+            {
+              allStories.slice(0, 6).map((story) => (
+                <div
+                  class="maze-card"
+                  data-story-id={story.data.storyId}
+                  data-difficulty="medium"
+                >
+                  <div class="maze-card-header">
+                    <span class="story-emoji">{story.data.emoji}</span>
+                    <div class="maze-status">
+                      <span class="status-icon unlocked">🔓</span>
+                    </div>
+                  </div>
+                  <div class="maze-card-body">
+                    <h3 class="story-title">{story.data.title}</h3>
+                    <div class="maze-info">
+                      <span class="info-item">
+                        <span>📏</span>
+                        <span>20x20</span>
+                      </span>
+                      <span class="info-item">
+                        <span>⏱️</span>
+                        <span>~10 Min</span>
+                      </span>
+                    </div>
+                    <div class="maze-progress">
+                      <div class="progress-bar">
+                        <div class="progress-fill" data-progress="0" />
+                      </div>
+                      <span class="progress-text">0% abgeschlossen</span>
+                    </div>
+                  </div>
+                  <div class="maze-card-footer">
+                    <a
+                      href={`/maze-game?story=${story.data.storyId}&difficulty=medium`}
+                      class="btn-play"
+                    >
+                      <span data-i18n="playMaze">Spielen</span>
+                      <span>▶</span>
+                    </a>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+
+        <!-- Hard Mazes -->
+        <section class="maze-section">
+          <div class="section-header">
+            <h2>
+              <span class="difficulty-badge hard">🔴</span>
+              <span data-i18n="hardMazes">Schwere Labyrinthe</span>
+            </h2>
+            <p data-i18n="hardMazesDescription">
+              Für Experten • 30x30 • Nebel des Krieges & Gegner
+            </p>
+          </div>
+          <div class="maze-grid">
+            {
+              allStories.slice(0, 4).map((story) => (
+                <div
+                  class="maze-card locked"
+                  data-story-id={story.data.storyId}
+                  data-difficulty="hard"
+                >
+                  <div class="maze-card-header">
+                    <span class="story-emoji">{story.data.emoji}</span>
+                    <div class="maze-status">
+                      <span class="status-icon locked">🔒</span>
+                    </div>
+                  </div>
+                  <div class="maze-card-body">
+                    <h3 class="story-title">{story.data.title}</h3>
+                    <div class="maze-info">
+                      <span class="info-item">
+                        <span>📏</span>
+                        <span>30x30</span>
+                      </span>
+                      <span class="info-item">
+                        <span>⏱️</span>
+                        <span>~20 Min</span>
+                      </span>
+                    </div>
+                    <div class="unlock-requirement">
+                      <span>🔓</span>
+                      <span data-i18n="unlockRequirement"
+                        >Schließe 5 mittlere Labyrinthe ab</span
+                      >
+                    </div>
+                  </div>
+                  <div class="maze-card-footer">
+                    <button class="btn-play disabled" disabled>
+                      <span data-i18n="locked">Gesperrt</span>
+                      <span>🔒</span>
+                    </button>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+      </div>
+
+      <!-- Achievements Section -->
+      <div class="maze-achievements">
+        <h2 data-i18n="mazeAchievements">Labyrinth-Erfolge</h2>
+        <div class="achievements-grid">
+          <div class="achievement-card">
+            <div class="achievement-icon">🗺️</div>
+            <h3 data-i18n="mazeExplorer">Labyrinth-Entdecker</h3>
+            <p>Schließe dein erstes Labyrinth ab</p>
+            <div class="achievement-progress">0 / 1</div>
+          </div>
+          <div class="achievement-card">
+            <div class="achievement-icon">⚡</div>
+            <h3 data-i18n="speedRunner">Speed-Runner</h3>
+            <p>Schließe ein Labyrinth in unter 5 Minuten ab</p>
+            <div class="achievement-progress">Gesperrt</div>
+          </div>
+          <div class="achievement-card">
+            <div class="achievement-icon">💎</div>
+            <h3 data-i18n="treasureCollector">Schatz-Sammler</h3>
+            <p>Sammle alle Sammelobjekte in einem Labyrinth</p>
+            <div class="achievement-progress">Gesperrt</div>
+          </div>
+          <div class="achievement-card">
+            <div class="achievement-icon">🏆</div>
+            <h3 data-i18n="mazeMaster">Labyrinth-Meister</h3>
+            <p>Schließe 10 Labyrinthe mit 5 Sternen ab</p>
+            <div class="achievement-progress">0 / 10</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back Link -->
+      <div class="back-link">
+        <a href="/" class="btn-back">
+          <span>←</span>
+          <span data-i18n="backToStories">Zurück zu Geschichten</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .story-mazes-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  /* Page Header */
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: white;
+  }
+
+  .page-title {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .title-icon {
+    font-size: 3.5rem;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .page-subtitle {
+    font-size: 1.3rem;
+    opacity: 0.9;
+  }
+
+  /* Stats Overview */
+  .stats-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .stat-icon {
+    font-size: 3rem;
+  }
+
+  .stat-content {
+    flex: 1;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #667eea;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  /* Daily Challenge */
+  .daily-challenge {
+    background: linear-gradient(135deg, #ffd93d 0%, #ff9f40 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .challenge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .challenge-header h2 {
+    font-size: 1.8rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .challenge-timer {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+  }
+
+  .challenge-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .challenge-details {
+    flex: 1;
+  }
+
+  .challenge-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  .challenge-description {
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .challenge-rewards {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .reward-badge {
+    background: #667eea;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+  }
+
+  .btn-challenge {
+    background: #667eea;
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-challenge:hover {
+    background: #5568d3;
+    transform: scale(1.05);
+  }
+
+  /* Maze Sections */
+  .maze-section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    margin-bottom: 2rem;
+    color: white;
+  }
+
+  .section-header h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .difficulty-badge {
+    font-size: 2rem;
+  }
+
+  .section-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+  }
+
+  /* Maze Grid */
+  .maze-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .maze-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .maze-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  }
+
+  .maze-card.locked {
+    opacity: 0.7;
+  }
+
+  .maze-card-header {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .story-emoji {
+    font-size: 3rem;
+  }
+
+  .maze-status {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .status-icon {
+    font-size: 1.5rem;
+  }
+
+  .maze-card-body {
+    padding: 1.5rem;
+  }
+
+  .story-title {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .maze-info {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .maze-progress {
+    margin-top: 1rem;
+  }
+
+  .progress-bar {
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+  }
+
+  .progress-text {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .unlock-requirement {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #fff3cd;
+    padding: 0.8rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: #856404;
+  }
+
+  .maze-card-footer {
+    padding: 0 1.5rem 1.5rem;
+  }
+
+  .btn-play {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 1rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-play:hover {
+    background: #5568d3;
+  }
+
+  .btn-play.disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+
+  /* Achievements */
+  .maze-achievements {
+    margin-bottom: 3rem;
+    color: white;
+  }
+
+  .maze-achievements h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .achievement-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .achievement-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .achievement-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  .achievement-card p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .achievement-progress {
+    background: #f0f0f0;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #667eea;
+  }
+
+  /* Back Link */
+  .back-link {
+    text-align: center;
+    margin-top: 3rem;
+  }
+
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: white;
+    color: #667eea;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+
+  .btn-back:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .challenge-card {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .maze-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Load maze progress from localStorage
+  function loadMazeProgress() {
+    const progress = JSON.parse(
+      localStorage.getItem('maze-progress') || '{}'
+    );
+
+    // Update stats
+    const completed = Object.keys(progress).filter(
+      (key) => progress[key].completed
+    ).length;
+    document.getElementById('completed-mazes')!.textContent =
+      completed.toString();
+
+    const totalStars = Object.values(progress).reduce(
+      (sum: number, p: any) => sum + (p.starsEarned || 0),
+      0
+    );
+    document.getElementById('total-stars')!.textContent =
+      totalStars.toString();
+
+    // Update best time
+    const times = Object.values(progress)
+      .map((p: any) => p.completionTime)
+      .filter(Boolean);
+    if (times.length > 0) {
+      const bestTime = Math.min(...times);
+      const minutes = Math.floor(bestTime / 60);
+      const seconds = bestTime % 60;
+      document.getElementById(
+        'best-time'
+      )!.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    // Update completion rate
+    const totalMazes = document.querySelectorAll('.maze-card').length;
+    const completionRate = totalMazes > 0 ? (completed / totalMazes) * 100 : 0;
+    document.getElementById('completion-rate')!.textContent = `${Math.round(
+      completionRate
+    )}%`;
+
+    // Update individual maze cards
+    document.querySelectorAll('.maze-card').forEach((card) => {
+      const storyId = card.getAttribute('data-story-id');
+      if (storyId && progress[storyId]) {
+        const p = progress[storyId];
+        const progressFill = card.querySelector(
+          '.progress-fill'
+        ) as HTMLElement;
+        const progressText = card.querySelector(
+          '.progress-text'
+        ) as HTMLElement;
+
+        if (progressFill && progressText) {
+          const percent = p.completed ? 100 : 0;
+          progressFill.style.width = `${percent}%`;
+          progressText.textContent = `${percent}% abgeschlossen`;
+        }
+      }
+    });
+
+    // Check hard maze unlocks
+    const mediumCompleted = Object.entries(progress).filter(
+      ([_, p]: [string, any]) => p.completed && p.difficulty === 'medium'
+    ).length;
+
+    document.querySelectorAll('.maze-card[data-difficulty="hard"]').forEach((card) => {
+      if (mediumCompleted >= 5) {
+        card.classList.remove('locked');
+        const btn = card.querySelector('.btn-play') as HTMLButtonElement;
+        if (btn) {
+          btn.disabled = false;
+          btn.classList.remove('disabled');
+        }
+      }
+    });
+  }
+
+  // Setup daily challenge
+  function setupDailyChallenge() {
+    // Get today's date as seed for consistent daily challenge
+    const today = new Date();
+    const dayOfYear = Math.floor(
+      (today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) /
+        86400000
+    );
+
+    // Select a random story for today
+    const allStoryCards = Array.from(
+      document.querySelectorAll('.maze-card[data-story-id]')
+    );
+    const storyIndex = dayOfYear % allStoryCards.length;
+    const dailyStory = allStoryCards[storyIndex] as HTMLElement;
+    const storyId = dailyStory.getAttribute('data-story-id');
+    const storyTitle = dailyStory.querySelector('.story-title')?.textContent;
+
+    // Update daily challenge UI
+    document.getElementById('daily-story-title')!.textContent =
+      storyTitle || 'Tägliche Herausforderung';
+
+    // Setup button
+    document.getElementById('start-daily-btn')!.onclick = () => {
+      window.location.href = `/maze-game?story=${storyId}&difficulty=medium&daily=true`;
+    };
+
+    // Update countdown timer
+    function updateTimer() {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+
+      const diff = tomorrow.getTime() - now.getTime();
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById(
+        'daily-timer'
+      )!.textContent = `${hours}:${minutes
+        .toString()
+        .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  }
+
+  // Initialize on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      loadMazeProgress();
+      setupDailyChallenge();
+    });
+  } else {
+    loadMazeProgress();
+    setupDailyChallenge();
+  }
+</script>

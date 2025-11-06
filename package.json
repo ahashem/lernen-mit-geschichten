@@ -60,7 +60,8 @@
     "jspdf": "^4.2.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "swiper": "^14.2.0"
+    "swiper": "^14.2.0",
+    "tone": "^15.1.22"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.62.5",

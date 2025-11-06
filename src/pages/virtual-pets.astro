@@ -1,0 +1,507 @@
+---
+/**
+ * Virtual Pets Management Page
+ * Shows all adopted pets and allows switching between them
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import VirtualPet from '../components/VirtualPet.astro';
+import PetCarePanel from '../components/PetCarePanel.astro';
+
+const locale = 'de'; // Can be dynamic based on URL params
+---
+
+<BaseLayout
+  title="Virtual Pets"
+  description="Take care of your virtual pet characters from the stories!"
+>
+  <main class="virtual-pets-page">
+    <div class="page-header">
+      <h1 data-i18n="virtualPets">Virtual Pets</h1>
+      <p data-i18n="virtualPetsDescription">Adopt story characters as virtual pets!</p>
+    </div>
+
+    <!-- Pet Selection -->
+    <div class="pet-selection" id="petSelection">
+      <h2 data-i18n="myPets">My Pets</h2>
+      <div class="pets-carousel" id="petsCarousel">
+        <div class="no-pets" id="noPets" data-i18n="adoptPet">
+          No pets yet! Visit the Adoption Center to adopt your first pet.
+        </div>
+      </div>
+      <a href="/pet-adoption" class="adopt-link" data-i18n="adoptionCenter">
+        + Adoption Center
+      </a>
+    </div>
+
+    <!-- Active Pet Display -->
+    <div id="activePetSection" style="display: none;">
+      <VirtualPet locale={locale} />
+      <PetCarePanel locale={locale} />
+
+      <!-- Accessories & Environments -->
+      <div class="customization-section">
+        <div class="accessories-panel">
+          <h3 data-i18n="petAccessories">Pet Accessories</h3>
+          <div class="accessories-grid" id="accessoriesGrid"></div>
+        </div>
+
+        <div class="environments-panel">
+          <h3 data-i18n="petEnvironments">Environments</h3>
+          <div class="environments-grid" id="environmentsGrid"></div>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="achievements-section">
+        <h3 data-i18n="petAchievements">Pet Achievements</h3>
+        <div class="achievements-grid" id="achievementsGrid"></div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .virtual-pets-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-header h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header p {
+    font-size: 1.25rem;
+    color: #666;
+  }
+
+  .pet-selection {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+  }
+
+  .pet-selection h2 {
+    margin: 0 0 1.5rem 0;
+    color: #333;
+  }
+
+  .pets-carousel {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 1rem 0;
+    margin-bottom: 1rem;
+  }
+
+  .no-pets {
+    text-align: center;
+    color: #999;
+    padding: 3rem;
+    width: 100%;
+  }
+
+  .pet-card {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    min-width: 200px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+    text-align: center;
+  }
+
+  .pet-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+
+  .pet-card.active {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .pet-card-emoji {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .pet-card-name {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .pet-card-level {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  .adopt-link {
+    display: inline-block;
+    background: linear-gradient(135deg, #FF9F40 0%, #FF6B6B 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 159, 64, 0.3);
+  }
+
+  .adopt-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 159, 64, 0.4);
+  }
+
+  .customization-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .accessories-panel,
+  .environments-panel {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  .accessories-panel h3,
+  .environments-panel h3 {
+    margin: 0 0 1.5rem 0;
+    color: #333;
+  }
+
+  .accessories-grid,
+  .environments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+  }
+
+  .accessory-item,
+  .environment-item {
+    background: #f5f5f5;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  .accessory-item:hover,
+  .environment-item:hover {
+    transform: translateY(-2px);
+    border-color: #667eea;
+  }
+
+  .accessory-item.equipped,
+  .environment-item.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .accessory-item.locked,
+  .environment-item.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .item-emoji {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .item-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .achievements-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  .achievements-section h3 {
+    margin: 0 0 1.5rem 0;
+    color: #333;
+  }
+
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .achievement-item {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    border: 2px solid transparent;
+  }
+
+  .achievement-item.unlocked {
+    background: linear-gradient(135deg, #FFD93D 0%, #FFA500 100%);
+    border-color: #FF9F40;
+  }
+
+  .achievement-emoji {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .achievement-name {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: #333;
+  }
+
+  .achievement-description {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .virtual-pets-page {
+      padding: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .customization-section {
+      grid-template-columns: 1fr;
+    }
+
+    .pets-carousel {
+      flex-wrap: wrap;
+    }
+
+    .pet-card {
+      min-width: 150px;
+    }
+  }
+</style>
+
+<script>
+  import { loadPets, savePets, PET_ACCESSORIES, PET_ENVIRONMENTS, PET_ACHIEVEMENTS } from '../utils/virtual-pets';
+  import type { Pet } from '../utils/virtual-pets';
+
+  class VirtualPetsPage {
+    private pets: Pet[] = [];
+    private activePet: Pet | null = null;
+
+    constructor() {
+      this.loadPets();
+      this.render();
+      this.setupEventListeners();
+    }
+
+    private loadPets(): void {
+      this.pets = loadPets();
+
+      if (this.pets.length > 0) {
+        this.activePet = this.pets[0];
+      }
+    }
+
+    private render(): void {
+      this.renderPetsCarousel();
+
+      if (this.activePet) {
+        document.getElementById('activePetSection')!.style.display = 'block';
+        document.getElementById('noPets')!.style.display = 'none';
+
+        this.renderAccessories();
+        this.renderEnvironments();
+        this.renderAchievements();
+
+        // Update pet display
+        if ((window as any).petDisplay) {
+          (window as any).petDisplay.setPet(this.activePet);
+        }
+      } else {
+        document.getElementById('activePetSection')!.style.display = 'none';
+        document.getElementById('noPets')!.style.display = 'block';
+      }
+    }
+
+    private renderPetsCarousel(): void {
+      const carousel = document.getElementById('petsCarousel');
+      if (!carousel) return;
+
+      // Clear except "no pets" message
+      const noPets = document.getElementById('noPets');
+      carousel.innerHTML = '';
+      if (noPets) carousel.appendChild(noPets);
+
+      if (this.pets.length === 0) return;
+
+      this.pets.forEach(pet => {
+        const card = document.createElement('div');
+        card.className = `pet-card ${pet === this.activePet ? 'active' : ''}`;
+        card.innerHTML = `
+          <div class="pet-card-emoji">${pet.emoji}</div>
+          <div class="pet-card-name">${pet.name}</div>
+          <div class="pet-card-level">Level ${pet.level}</div>
+        `;
+
+        card.addEventListener('click', () => {
+          this.activePet = pet;
+          this.render();
+        });
+
+        carousel.appendChild(card);
+      });
+    }
+
+    private renderAccessories(): void {
+      const grid = document.getElementById('accessoriesGrid');
+      if (!grid) return;
+
+      grid.innerHTML = '';
+
+      PET_ACCESSORIES.forEach(accessory => {
+        const isEquipped = this.activePet?.accessories.includes(accessory.id) || false;
+        const isLocked = this.activePet && this.activePet.level < accessory.unlockLevel;
+
+        const item = document.createElement('div');
+        item.className = `accessory-item ${isEquipped ? 'equipped' : ''} ${isLocked ? 'locked' : ''}`;
+        item.innerHTML = `
+          <span class="item-emoji">${accessory.emoji}</span>
+          <div class="item-name">${accessory.name.de}</div>
+        `;
+
+        if (!isLocked) {
+          item.addEventListener('click', () => this.toggleAccessory(accessory.id));
+        }
+
+        grid.appendChild(item);
+      });
+    }
+
+    private renderEnvironments(): void {
+      const grid = document.getElementById('environmentsGrid');
+      if (!grid) return;
+
+      grid.innerHTML = '';
+
+      PET_ENVIRONMENTS.forEach(env => {
+        const isActive = this.activePet?.currentEnvironment === env.id;
+        const isLocked = this.activePet && this.activePet.level < env.unlockLevel;
+
+        const item = document.createElement('div');
+        item.className = `environment-item ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''}`;
+        item.innerHTML = `
+          <span class="item-emoji">${env.emoji}</span>
+          <div class="item-name">${env.name.de}</div>
+        `;
+
+        if (!isLocked) {
+          item.addEventListener('click', () => this.changeEnvironment(env.id));
+        }
+
+        grid.appendChild(item);
+      });
+    }
+
+    private renderAchievements(): void {
+      const grid = document.getElementById('achievementsGrid');
+      if (!grid) return;
+
+      grid.innerHTML = '';
+
+      PET_ACHIEVEMENTS.forEach(achievement => {
+        const isUnlocked = this.activePet?.achievements.includes(achievement.id) || false;
+
+        const item = document.createElement('div');
+        item.className = `achievement-item ${isUnlocked ? 'unlocked' : ''}`;
+        item.innerHTML = `
+          <span class="achievement-emoji">${achievement.emoji}</span>
+          <div class="achievement-name">${achievement.name.de}</div>
+          <div class="achievement-description">${achievement.description.de}</div>
+        `;
+
+        grid.appendChild(item);
+      });
+    }
+
+    private toggleAccessory(accessoryId: string): void {
+      if (!this.activePet) return;
+
+      const index = this.activePet.accessories.indexOf(accessoryId);
+      if (index > -1) {
+        this.activePet.accessories.splice(index, 1);
+      } else {
+        this.activePet.accessories.push(accessoryId);
+      }
+
+      this.savePets();
+      this.render();
+    }
+
+    private changeEnvironment(envId: string): void {
+      if (!this.activePet) return;
+
+      this.activePet.currentEnvironment = envId;
+
+      // Apply environment bonuses
+      const env = PET_ENVIRONMENTS.find(e => e.id === envId);
+      if (env?.effect) {
+        if (env.effect.happiness) {
+          this.activePet.stats.happiness = Math.min(100, this.activePet.stats.happiness + env.effect.happiness);
+        }
+        if (env.effect.energy) {
+          this.activePet.stats.energy = Math.min(100, this.activePet.stats.energy + env.effect.energy);
+        }
+      }
+
+      this.savePets();
+      this.render();
+    }
+
+    private savePets(): void {
+      savePets(this.pets);
+    }
+
+    private setupEventListeners(): void {
+      // Auto-save periodically
+      setInterval(() => {
+        this.savePets();
+      }, 60000); // Save every minute
+    }
+  }
+
+  // Initialize
+  if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', () => {
+      new VirtualPetsPage();
+    });
+  }
+</script>

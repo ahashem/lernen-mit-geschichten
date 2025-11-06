@@ -1,0 +1,634 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getTranslation } from '../utils/i18n';
+
+const locale = 'de';
+const t = (key: string) => getTranslation(locale as any, key as any);
+---
+
+<BaseLayout title="Kampfkarten-Sammlung" locale={locale}>
+  <main class="battle-cards-page">
+    <header class="collection-header">
+      <div class="header-content">
+        <h1>🃏 Kampfkarten-Sammlung</h1>
+        <p>Samm le, werte auf und baue dein ultimatives Kampfdeck!</p>
+
+        <div class="collection-stats">
+          <div class="stat">
+            <span class="stat-icon">📚</span>
+            <div class="stat-info">
+              <strong id="collection-count">0</strong> / <span id="total-count">30</span>
+              <span class="stat-label">Gesammelt</span>
+            </div>
+          </div>
+
+          <div class="stat">
+            <span class="stat-icon">⭐</span>
+            <div class="stat-info">
+              <strong id="star-balance">0</strong>
+              <span class="stat-label">Sterne</span>
+            </div>
+          </div>
+
+          <div class="stat">
+            <span class="stat-icon">📦</span>
+            <div class="stat-info">
+              <button id="open-pack-btn" class="pack-btn">Paket öffnen (100⭐)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="controls-panel">
+      <div class="filters">
+        <select id="filter-rarity">
+          <option value="all">Alle Seltenheiten</option>
+          <option value="Common">Häufig</option>
+          <option value="Rare">Selten</option>
+          <option value="Epic">Episch</option>
+          <option value="Legendary">Legendär</option>
+          <option value="Mythic">Mystisch</option>
+        </select>
+
+        <select id="filter-element">
+          <option value="all">Alle Elemente</option>
+          <option value="Fire">🔥 Feuer</option>
+          <option value="Water">💧 Wasser</option>
+          <option value="Earth">🌍 Erde</option>
+          <option value="Air">💨 Luft</option>
+          <option value="Light">✨ Licht</option>
+          <option value="Dark">🌑 Dunkel</option>
+          <option value="Nature">🌿 Natur</option>
+        </select>
+
+        <select id="filter-owned">
+          <option value="all">Alle</option>
+          <option value="owned">Besitz</option>
+          <option value="missing">Fehlend</option>
+        </select>
+
+        <select id="sort-by">
+          <option value="name">Name</option>
+          <option value="attack">Angriff</option>
+          <option value="rarity">Seltenheit</option>
+          <option value="level">Stufe</option>
+        </select>
+      </div>
+
+      <div class="actions">
+        <a href="/card-battle" class="action-btn">⚔️ Schlacht</a>
+      </div>
+    </div>
+
+    <div id="cards-grid" class="cards-grid"></div>
+
+    <!-- Modals -->
+    <div id="card-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <button class="close-btn">&times;</button>
+        <div id="card-detail"></div>
+      </div>
+    </div>
+
+    <div id="pack-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content pack-content">
+        <div id="pack-animation" class="pack-animation">
+          <div class="pack-box">📦</div>
+          <p>Paket wird geöffnet...</p>
+        </div>
+        <div id="pack-results" class="pack-results hidden"></div>
+        <button id="close-pack-btn" class="action-btn hidden">Schließen</button>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .battle-cards-page {
+    min-height: 100vh;
+    padding: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  .collection-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    color: white;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .header-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .header-content p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+  }
+
+  .collection-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 1rem 2rem;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+  }
+
+  .stat-icon {
+    font-size: 2.5rem;
+  }
+
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stat-info strong {
+    font-size: 1.8rem;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  .pack-btn {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .pack-btn:hover {
+    transform: scale(1.05);
+  }
+
+  .controls-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 15px;
+    flex-wrap: wrap;
+  }
+
+  .filters {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  select {
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+  }
+
+  .actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .action-btn {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: transform 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .card-item {
+    perspective: 1000px;
+    cursor: pointer;
+  }
+
+  .card-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2.5 / 3.5;
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease;
+  }
+
+  .card-item:hover .card-wrapper {
+    transform: rotateY(5deg) rotateX(3deg) scale(1.03);
+  }
+
+  .battle-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .card-border {
+    position: absolute;
+    inset: 0;
+    padding: 10px;
+    border-radius: 15px;
+  }
+
+  .card-border.Common { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
+  .card-border.Rare { background: linear-gradient(135deg, #3498db, #2980b9); }
+  .card-border.Epic { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+  .card-border.Legendary { background: linear-gradient(135deg, #f39c12, #e67e22); }
+  .card-border.Mythic {
+    background: linear-gradient(135deg, #e74c3c 0%, #f39c12 50%, #e74c3c 100%);
+    animation: shimmer 2s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .card-body {
+    height: 100%;
+    background: linear-gradient(to bottom, #ffffff, #f5f5f5);
+    border-radius: 10px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #333;
+  }
+
+  .card-element {
+    font-size: 1.3rem;
+  }
+
+  .card-emoji {
+    font-size: 6rem;
+    text-align: center;
+    margin: 1.5rem 0;
+  }
+
+  .card-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-top: auto;
+  }
+
+  .stat-box {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    padding: 0.5rem;
+    text-align: center;
+  }
+
+  .stat-box-label {
+    font-size: 0.7rem;
+    color: #666;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-box-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .card-locked {
+    filter: grayscale(1) brightness(0.6);
+    position: relative;
+  }
+
+  .card-locked::after {
+    content: '🔒';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+  }
+
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal.hidden {
+    display: none;
+  }
+
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  .modal-content {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow: auto;
+    z-index: 10;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .pack-animation {
+    text-align: center;
+    padding: 3rem;
+  }
+
+  .pack-box {
+    font-size: 10rem;
+    animation: bounce 1s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .pack-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+  }
+
+  .result-card {
+    text-align: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+  }
+
+  .result-card-emoji {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .controls-panel {
+      flex-direction: column;
+    }
+
+    .filters {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .filters select {
+      width: 100%;
+    }
+
+    .cards-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+  }
+</style>
+
+<script>
+  import { loadCollection, openCardPack, CARD_DATABASE, saveCollection } from '../utils/card-collection';
+
+  let collection = loadCollection();
+
+  const elementIcons: Record<string, string> = {
+    Fire: '🔥', Water: '💧', Earth: '🌍', Air: '💨',
+    Light: '✨', Dark: '🌑', Nature: '🌿'
+  };
+
+  function renderCards() {
+    const grid = document.getElementById('cards-grid')!;
+    grid.innerHTML = '';
+
+    const rarityFilter = (document.getElementById('filter-rarity') as HTMLSelectElement).value;
+    const elementFilter = (document.getElementById('filter-element') as HTMLSelectElement).value;
+    const ownedFilter = (document.getElementById('filter-owned') as HTMLSelectElement).value;
+    const sortBy = (document.getElementById('sort-by') as HTMLSelectElement).value;
+
+    let cards = CARD_DATABASE.map(c => ({
+      ...c,
+      owned: collection.cards.some(cc => cc.cardId === c.id),
+      collectedData: collection.cards.find(cc => cc.cardId === c.id)
+    }));
+
+    if (rarityFilter !== 'all') cards = cards.filter(c => c.rarity === rarityFilter);
+    if (elementFilter !== 'all') cards = cards.filter(c => c.element === elementFilter);
+    if (ownedFilter === 'owned') cards = cards.filter(c => c.owned);
+    if (ownedFilter === 'missing') cards = cards.filter(c => !c.owned);
+
+    cards.sort((a, b) => {
+      if (sortBy === 'name') return a.name.localeCompare(b.name);
+      if (sortBy === 'attack') return b.baseAttack - a.baseAttack;
+      if (sortBy === 'rarity') {
+        const order = { Common: 1, Rare: 2, Epic: 3, Legendary: 4, Mythic: 5 };
+        return order[b.rarity] - order[a.rarity];
+      }
+      if (sortBy === 'level') return (b.collectedData?.level || 0) - (a.collectedData?.level || 0);
+      return 0;
+    });
+
+    cards.forEach(card => {
+      const div = document.createElement('div');
+      div.className = 'card-item';
+
+      const level = card.collectedData?.level || 1;
+      const attack = card.baseAttack + (level - 1);
+      const defense = card.baseDefense + (level - 1);
+      const hp = card.baseHealth + (level - 1) * 5;
+
+      div.innerHTML = `
+        <div class="card-wrapper ${!card.owned ? 'card-locked' : ''}">
+          <div class="battle-card">
+            <div class="card-border ${card.rarity}">
+              <div class="card-body">
+                <div class="card-top">
+                  <span class="card-name">${card.name}</span>
+                  <span class="card-element">${elementIcons[card.element]}</span>
+                </div>
+                <div class="card-emoji">${card.emoji}</div>
+                <div class="card-stats-grid">
+                  <div class="stat-box">
+                    <span class="stat-box-label">ATK</span>
+                    <span class="stat-box-value">${attack}</span>
+                  </div>
+                  <div class="stat-box">
+                    <span class="stat-box-label">DEF</span>
+                    <span class="stat-box-value">${defense}</span>
+                  </div>
+                  <div class="stat-box">
+                    <span class="stat-box-label">HP</span>
+                    <span class="stat-box-value">${hp}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      if (card.owned) {
+        div.addEventListener('click', () => showCardDetail(card.id));
+      }
+
+      grid.appendChild(div);
+    });
+
+    // Update stats
+    document.getElementById('collection-count')!.textContent = collection.cards.length.toString();
+    document.getElementById('total-count')!.textContent = CARD_DATABASE.length.toString();
+    document.getElementById('star-balance')!.textContent = collection.stars.toString();
+  }
+
+  function showCardDetail(cardId: string) {
+    const card = CARD_DATABASE.find(c => c.id === cardId);
+    const collected = collection.cards.find(c => c.cardId === cardId);
+    if (!card || !collected) return;
+
+    const modal = document.getElementById('card-modal')!;
+    const detail = document.getElementById('card-detail')!;
+
+    detail.innerHTML = `
+      <h2>${card.emoji} ${card.name}</h2>
+      <p><strong>Element:</strong> ${elementIcons[card.element]} ${card.element}</p>
+      <p><strong>Seltenheit:</strong> ${card.rarity}</p>
+      <p><strong>Stufe:</strong> ${collected.level} / 10</p>
+      <p><strong>Fähigkeit:</strong> ${card.ability.name} - ${card.ability.description}</p>
+    `;
+
+    modal.classList.remove('hidden');
+  }
+
+  function openPack() {
+    if (collection.stars < 100) {
+      alert('Nicht genug Sterne! Brauchst 100⭐');
+      return;
+    }
+
+    const modal = document.getElementById('pack-modal')!;
+    const animation = document.getElementById('pack-animation')!;
+    const results = document.getElementById('pack-results')!;
+    const closeBtn = document.getElementById('close-pack-btn')!;
+
+    modal.classList.remove('hidden');
+    animation.style.display = 'block';
+    results.classList.add('hidden');
+    closeBtn.classList.add('hidden');
+
+    setTimeout(() => {
+      const newCards = openCardPack(collection, 5);
+      collection = loadCollection();
+
+      animation.style.display = 'none';
+      results.innerHTML = newCards.map(c => `
+        <div class="result-card">
+          <div class="result-card-emoji">${c.emoji}</div>
+          <div>${c.name}</div>
+          <small>${c.rarity}</small>
+        </div>
+      `).join('');
+      results.classList.remove('hidden');
+      closeBtn.classList.remove('hidden');
+
+      renderCards();
+    }, 3000);
+  }
+
+  // Event listeners
+  document.getElementById('open-pack-btn')!.addEventListener('click', openPack);
+  document.getElementById('close-pack-btn')!.addEventListener('click', () => {
+    document.getElementById('pack-modal')!.classList.add('hidden');
+  });
+  document.querySelectorAll('.close-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+    });
+  });
+  document.querySelectorAll('.modal-backdrop').forEach(bd => {
+    bd.addEventListener('click', () => {
+      document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+    });
+  });
+
+  ['filter-rarity', 'filter-element', 'filter-owned', 'sort-by'].forEach(id => {
+    document.getElementById(id)!.addEventListener('change', renderCards);
+  });
+
+  renderCards();
+</script>
+</BaseLayout>

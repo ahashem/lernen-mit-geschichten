@@ -1,0 +1,741 @@
+---
+/**
+ * Animation Studio Component
+ * Main animation creation interface with character library, scene setup, and export
+ */
+import type { Locale } from '@utils/i18n';
+import { getTranslation } from '@utils/i18n';
+import AnimationCanvas from './AnimationCanvas.astro';
+import AnimationTimeline from './AnimationTimeline.astro';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'de' } = Astro.props;
+---
+
+<div class="animation-studio">
+  <div class="studio-header">
+    <h1>{getTranslation(locale, 'animationStudio')}</h1>
+    <div class="project-info">
+      <input
+        type="text"
+        id="project-name"
+        placeholder={getTranslation(locale, 'projectName')}
+        value="Untitled Animation"
+        class="project-name-input"
+      />
+      <button id="save-project" class="header-btn">
+        💾 {getTranslation(locale, 'save')}
+      </button>
+      <button id="export-project" class="header-btn">
+        📤 {getTranslation(locale, 'export')}
+      </button>
+    </div>
+  </div>
+
+  <div class="studio-layout">
+    <!-- Character Library Sidebar -->
+    <aside class="character-library">
+      <h2>{getTranslation(locale, 'characterLibrary')}</h2>
+
+      <div class="library-section">
+        <h3>{getTranslation(locale, 'storyCharacters')}</h3>
+        <div id="character-list" class="character-grid">
+          <!-- Characters will be loaded here -->
+        </div>
+      </div>
+
+      <div class="library-section">
+        <h3>{getTranslation(locale, 'sceneElements')}</h3>
+        <div id="element-list" class="element-grid">
+          <!-- Scene elements will be loaded here -->
+        </div>
+      </div>
+
+      <div class="library-section">
+        <h3>{getTranslation(locale, 'backgrounds')}</h3>
+        <div id="background-list" class="background-grid">
+          <!-- Backgrounds will be loaded here -->
+        </div>
+      </div>
+
+      <div class="library-section">
+        <h3>{getTranslation(locale, 'soundEffects')}</h3>
+        <div id="sound-list" class="sound-grid">
+          <!-- Sounds will be loaded here -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Canvas Area -->
+    <main class="canvas-area">
+      <AnimationCanvas />
+    </main>
+
+    <!-- Properties/Layers Sidebar -->
+    <aside class="layers-panel">
+      <h2>{getTranslation(locale, 'layers')}</h2>
+      <div id="layers-list" class="layers-list">
+        <p class="empty-state">{getTranslation(locale, 'noCharactersYet')}</p>
+      </div>
+
+      <div class="keyframe-panel">
+        <h3>{getTranslation(locale, 'keyframes')}</h3>
+        <div class="keyframe-actions">
+          <button id="add-keyframe" class="action-btn">
+            ➕ {getTranslation(locale, 'addKeyframe')}
+          </button>
+          <button id="delete-keyframe" class="action-btn">
+            ➖ {getTranslation(locale, 'deleteKeyframe')}
+          </button>
+          <button id="copy-keyframe" class="action-btn">
+            📋 {getTranslation(locale, 'copy')}
+          </button>
+          <button id="paste-keyframe" class="action-btn">
+            📌 {getTranslation(locale, 'paste')}
+          </button>
+        </div>
+        <div id="keyframe-list" class="keyframe-list">
+          <!-- Keyframes will be displayed here -->
+        </div>
+      </div>
+
+      <div class="templates-panel">
+        <h3>{getTranslation(locale, 'animationTemplates')}</h3>
+        <div id="template-list" class="template-grid">
+          <!-- Templates will be loaded here -->
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Timeline at bottom -->
+  <div class="timeline-container">
+    <AnimationTimeline />
+  </div>
+
+  <!-- Export Modal -->
+  <div id="export-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h2>{getTranslation(locale, 'exportAnimation')}</h2>
+      <div class="export-options">
+        <button id="export-gif" class="export-btn">
+          🎞️ {getTranslation(locale, 'exportGIF')}
+        </button>
+        <button id="export-video" class="export-btn">
+          🎬 {getTranslation(locale, 'exportVideo')}
+        </button>
+        <button id="export-png-sequence" class="export-btn">
+          🖼️ {getTranslation(locale, 'exportPNGSequence')}
+        </button>
+        <button id="export-json" class="export-btn">
+          📄 {getTranslation(locale, 'exportJSON')}
+        </button>
+        <button id="generate-qr" class="export-btn">
+          📱 {getTranslation(locale, 'shareViaQR')}
+        </button>
+      </div>
+
+      <div class="watermark-option">
+        <label>
+          <input type="checkbox" id="watermark-toggle" checked />
+          <span>{getTranslation(locale, 'addWatermark')}</span>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button id="close-export-modal" class="secondary-btn">
+          {getTranslation(locale, 'cancel')}
+        </button>
+      </div>
+
+      <div id="export-progress" class="export-progress" style="display: none;">
+        <div class="progress-bar">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        <p id="progress-text">Exporting...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Text Bubble Modal -->
+  <div id="text-bubble-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h2>{getTranslation(locale, 'addTextBubble')}</h2>
+      <div class="form-group">
+        <label for="bubble-text">{getTranslation(locale, 'text')}</label>
+        <textarea id="bubble-text" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="bubble-font-size">{getTranslation(locale, 'fontSize')}</label>
+        <input type="range" id="bubble-font-size" min="12" max="48" value="24" />
+        <span id="font-size-value">24px</span>
+      </div>
+      <div class="form-group">
+        <label for="bubble-color">{getTranslation(locale, 'color')}</label>
+        <input type="color" id="bubble-color" value="#333333" />
+      </div>
+      <div class="form-group">
+        <label for="bubble-start-frame">{getTranslation(locale, 'startFrame')}</label>
+        <input type="number" id="bubble-start-frame" min="0" value="0" />
+      </div>
+      <div class="form-group">
+        <label for="bubble-end-frame">{getTranslation(locale, 'endFrame')}</label>
+        <input type="number" id="bubble-end-frame" min="0" value="10" />
+      </div>
+      <div class="modal-actions">
+        <button id="add-text-bubble" class="primary-btn">
+          {getTranslation(locale, 'add')}
+        </button>
+        <button id="close-text-bubble-modal" class="secondary-btn">
+          {getTranslation(locale, 'cancel')}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keyboard Shortcuts Help -->
+  <button id="shortcuts-toggle" class="shortcuts-toggle" title="Keyboard Shortcuts">
+    ⌨️
+  </button>
+  <div id="shortcuts-panel" class="shortcuts-panel" style="display: none;">
+    <h3>{getTranslation(locale, 'keyboardShortcuts')}</h3>
+    <ul>
+      <li><kbd>Space</kbd> - {getTranslation(locale, 'playPause')}</li>
+      <li><kbd>←</kbd> / <kbd>→</kbd> - {getTranslation(locale, 'prevNextFrame')}</li>
+      <li><kbd>Delete</kbd> - {getTranslation(locale, 'deleteSelected')}</li>
+      <li><kbd>Ctrl</kbd> + <kbd>Z</kbd> - {getTranslation(locale, 'undo')}</li>
+      <li><kbd>Ctrl</kbd> + <kbd>Y</kbd> - {getTranslation(locale, 'redo')}</li>
+      <li><kbd>Ctrl</kbd> + <kbd>C</kbd> - {getTranslation(locale, 'copy')}</li>
+      <li><kbd>Ctrl</kbd> + <kbd>V</kbd> - {getTranslation(locale, 'paste')}</li>
+      <li><kbd>V</kbd> - {getTranslation(locale, 'selectTool')}</li>
+      <li><kbd>M</kbd> - {getTranslation(locale, 'moveTool')}</li>
+      <li><kbd>R</kbd> - {getTranslation(locale, 'rotateTool')}</li>
+      <li><kbd>S</kbd> - {getTranslation(locale, 'scaleTool')}</li>
+      <li><kbd>+</kbd> / <kbd>-</kbd> - {getTranslation(locale, 'zoomInOut')}</li>
+      <li><kbd>0</kbd> - {getTranslation(locale, 'resetZoom')}</li>
+    </ul>
+  </div>
+</div>
+
+<style>
+  .animation-studio {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 2rem;
+  }
+
+  .studio-header {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .studio-header h1 {
+    margin: 0;
+    font-size: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .project-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .project-name-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    min-width: 200px;
+    transition: all 0.3s ease;
+  }
+
+  .project-name-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  .header-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .header-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .header-btn:active {
+    transform: translateY(0);
+  }
+
+  .studio-layout {
+    display: grid;
+    grid-template-columns: 250px 1fr 250px;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .character-library,
+  .layers-panel {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    max-height: 800px;
+    overflow-y: auto;
+  }
+
+  .character-library h2,
+  .layers-panel h2 {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    color: #333;
+  }
+
+  .library-section {
+    margin-bottom: 2rem;
+  }
+
+  .library-section h3 {
+    font-size: 1rem;
+    color: #666;
+    margin: 0 0 0.75rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .character-grid,
+  .element-grid,
+  .background-grid,
+  .sound-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .character-item,
+  .element-item,
+  .background-item,
+  .sound-item {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+    cursor: grab;
+    transition: all 0.3s ease;
+    font-size: 2rem;
+  }
+
+  .character-item:hover,
+  .element-item:hover,
+  .background-item:hover,
+  .sound-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border-color: #667eea;
+  }
+
+  .character-item:active,
+  .element-item:active,
+  .background-item:active,
+  .sound-item:active {
+    cursor: grabbing;
+    transform: scale(0.95);
+  }
+
+  .canvas-area {
+    min-height: 600px;
+  }
+
+  .layers-list {
+    background: #f5f7fa;
+    border-radius: 12px;
+    padding: 1rem;
+    min-height: 150px;
+    margin-bottom: 1.5rem;
+  }
+
+  .layer-item {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .layer-item:hover {
+    border-color: #667eea;
+    transform: translateX(4px);
+  }
+
+  .layer-item.active {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+  }
+
+  .keyframe-panel,
+  .templates-panel {
+    margin-top: 2rem;
+  }
+
+  .keyframe-panel h3,
+  .templates-panel h3 {
+    font-size: 1rem;
+    color: #666;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .keyframe-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .action-btn {
+    background: #f5f7fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+  }
+
+  .action-btn:hover {
+    background: #e0e0e0;
+    transform: translateY(-2px);
+  }
+
+  .template-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .template-item {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+
+  .template-item:hover {
+    border-color: #667eea;
+    transform: scale(1.05);
+  }
+
+  .timeline-container {
+    margin-top: 1.5rem;
+  }
+
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-content h2 {
+    margin: 0 0 1.5rem 0;
+    color: #333;
+  }
+
+  .export-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .export-btn {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.5rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+
+  .export-btn:hover {
+    border-color: #667eea;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .watermark-option {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: #f5f7fa;
+    border-radius: 8px;
+  }
+
+  .watermark-option label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .primary-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+  }
+
+  .secondary-btn {
+    background: white;
+    border: 2px solid #e0e0e0;
+    color: #333;
+  }
+
+  .primary-btn:hover,
+  .secondary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  .export-progress {
+    margin-top: 2rem;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 30px;
+    background: #e0e0e0;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  #progress-text {
+    text-align: center;
+    color: #666;
+    font-weight: 600;
+  }
+
+  .shortcuts-toggle {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 1.5rem;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    z-index: 100;
+  }
+
+  .shortcuts-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+  }
+
+  .shortcuts-panel {
+    position: fixed;
+    bottom: 5rem;
+    right: 2rem;
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    z-index: 100;
+  }
+
+  .shortcuts-panel h3 {
+    margin: 0 0 1rem 0;
+    color: #333;
+  }
+
+  .shortcuts-panel ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .shortcuts-panel li {
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  kbd {
+    background: #f5f5f5;
+    border: 2px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    font-family: monospace;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 2rem 0;
+  }
+
+  @media (max-width: 1024px) {
+    .studio-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .character-library,
+    .layers-panel {
+      max-height: 400px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .animation-studio {
+      padding: 1rem;
+    }
+
+    .studio-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .project-info {
+      flex-direction: column;
+    }
+
+    .project-name-input {
+      width: 100%;
+    }
+
+    .shortcuts-toggle {
+      bottom: 1rem;
+      right: 1rem;
+      width: 50px;
+      height: 50px;
+    }
+
+    .shortcuts-panel {
+      bottom: 4rem;
+      right: 1rem;
+      max-width: calc(100% - 2rem);
+    }
+  }
+</style>
+
+<script>
+  // Animation Studio initialization will be handled in page component
+  // This component provides the UI structure
+</script>

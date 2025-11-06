@@ -1,0 +1,521 @@
+---
+/**
+ * Dance Party Hub Page
+ * Main entry point for dance party features
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DanceParty from '../components/DanceParty.astro';
+import RhythmGame from '../components/RhythmGame.astro';
+import ChoreographyEditor from '../components/ChoreographyEditor.astro';
+
+const locale = 'de'; // Default to German
+
+const title = 'Dance Party 🎉';
+const description = 'Tanze mit deinen Lieblingscharakteren, erstelle Choreografien und spiele Rhythmusspiele!';
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="dance-party-page">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">🎉 Dance Party!</h1>
+        <p class="hero-subtitle">
+          Tanze mit Bruno, Fritz, Leo und allen deinen Lieblingscharakteren!
+        </p>
+
+        <div class="mode-selector-large">
+          <button class="mode-card active" data-mode="dance-floor">
+            <span class="mode-icon">💃</span>
+            <h3>Dance Floor</h3>
+            <p>Freies Tanzen mit Musik und Effekten</p>
+          </button>
+
+          <button class="mode-card" data-mode="rhythm-game">
+            <span class="mode-icon">🎮</span>
+            <h3>Rhythm Game</h3>
+            <p>Triff die Pfeile im Takt der Musik</p>
+          </button>
+
+          <button class="mode-card" data-mode="choreography">
+            <span class="mode-icon">🎭</span>
+            <h3>Choreography</h3>
+            <p>Erstelle deine eigenen Tanzchoreografien</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Floating Characters -->
+      <div class="floating-characters">
+        <span class="float-char" style="--delay: 0s; --x: 10%; --y: 20%;">🐻</span>
+        <span class="float-char" style="--delay: 0.5s; --x: 80%; --y: 30%;">🐿️</span>
+        <span class="float-char" style="--delay: 1s; --x: 20%; --y: 60%;">🦁</span>
+        <span class="float-char" style="--delay: 1.5s; --x: 70%; --y: 70%;">🐭</span>
+        <span class="float-char" style="--delay: 2s; --x: 50%; --y: 40%;">👧</span>
+        <span class="float-char" style="--delay: 2.5s; --x: 90%; --y: 50%;">👦</span>
+      </div>
+    </section>
+
+    <!-- Dance Floor Mode -->
+    <section class="mode-section" id="dance-floor-section">
+      <DanceParty lang={locale} />
+    </section>
+
+    <!-- Rhythm Game Mode -->
+    <section class="mode-section" id="rhythm-game-section" style="display: none;">
+      <RhythmGame lang={locale} />
+    </section>
+
+    <!-- Choreography Mode -->
+    <section class="mode-section" id="choreography-section" style="display: none;">
+      <ChoreographyEditor lang={locale} />
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+      <div class="container">
+        <h2>Features</h2>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <span class="feature-icon">🎵</span>
+            <h3>15 Music Tracks</h3>
+            <p>Pop, Electronic, Jazz, Reggae, Hip-Hop und mehr!</p>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-icon">💃</span>
+            <h3>20+ Dance Moves</h3>
+            <p>Von einfachen Hüpfern bis zu fortgeschrittenen Breakdance-Moves</p>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-icon">🌟</span>
+            <h3>Achievements</h3>
+            <p>Schalte Tanzoutfits, Effekte und Herausforderungen frei</p>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-icon">👥</span>
+            <h3>Multiplayer</h3>
+            <p>Tanze allein oder im Versus-Modus gegen Freunde</p>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-icon">🎨</span>
+            <h3>Anpassbar</h3>
+            <p>6 Tanzflächen-Hintergründe und spezielle Effekte</p>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-icon">📱</span>
+            <h3>Teilen</h3>
+            <p>Exportiere deine Choreografien als Video oder GIF</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Challenges Section -->
+    <section class="challenges-preview">
+      <div class="container">
+        <h2>🏆 Dance Challenges</h2>
+        <p class="section-subtitle">Vervollständige Herausforderungen und verdiene Sterne!</p>
+
+        <div class="challenges-grid" id="challenges-grid">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .dance-party-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  }
+
+  /* Hero Section */
+  .hero-section {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+    background: radial-gradient(circle at center, rgba(78, 205, 196, 0.1), transparent);
+  }
+
+  .hero-content {
+    max-width: 1200px;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+    position: relative;
+  }
+
+  .hero-title {
+    font-size: 4rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #ff6b6b, #ffd93d, #4ecdc4, #44a3db);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbowShift 3s ease-in-out infinite;
+  }
+
+  @keyframes rainbowShift {
+    0%, 100% { filter: hue-rotate(0deg); }
+    50% { filter: hue-rotate(30deg); }
+  }
+
+  .hero-subtitle {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 3rem;
+  }
+
+  .mode-selector-large {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .mode-card {
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+
+  .mode-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #4ecdc4;
+    box-shadow: 0 20px 60px rgba(78, 205, 196, 0.4);
+  }
+
+  .mode-card.active {
+    background: linear-gradient(135deg, rgba(78, 205, 196, 0.2), rgba(68, 163, 219, 0.2));
+    border-color: #4ecdc4;
+    box-shadow: 0 10px 40px rgba(78, 205, 196, 0.3);
+  }
+
+  .mode-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+
+  .mode-card h3 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: white;
+  }
+
+  .mode-card p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+  }
+
+  /* Floating Characters */
+  .floating-characters {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .float-char {
+    position: absolute;
+    font-size: 3rem;
+    left: var(--x);
+    top: var(--y);
+    animation: float 4s ease-in-out infinite;
+    animation-delay: var(--delay);
+    opacity: 0.6;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    33% {
+      transform: translateY(-30px) rotate(10deg);
+    }
+    66% {
+      transform: translateY(-15px) rotate(-10deg);
+    }
+  }
+
+  /* Mode Sections */
+  .mode-section {
+    min-height: 100vh;
+  }
+
+  /* Features Section */
+  .features-section {
+    padding: 6rem 2rem;
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .features-section h2 {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: white;
+    background: linear-gradient(135deg, #4ecdc4, #44a3db);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .feature-card {
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .feature-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-5px);
+    border-color: #4ecdc4;
+  }
+
+  .feature-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: white;
+  }
+
+  .feature-card p {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+  }
+
+  /* Challenges Section */
+  .challenges-preview {
+    padding: 6rem 2rem;
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 215, 61, 0.1));
+  }
+
+  .challenges-preview h2 {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    color: white;
+  }
+
+  .section-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 3rem;
+  }
+
+  .challenges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .challenge-card {
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .challenge-card:hover {
+    transform: translateY(-5px);
+    border-color: #ffd93d;
+    box-shadow: 0 10px 30px rgba(255, 215, 61, 0.3);
+  }
+
+  .challenge-card.completed {
+    border-color: #4ecdc4;
+    background: rgba(78, 205, 196, 0.1);
+  }
+
+  .challenge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 1rem;
+  }
+
+  .challenge-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: white;
+  }
+
+  .challenge-stars {
+    font-size: 1.2rem;
+    color: #ffd93d;
+  }
+
+  .challenge-description {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .challenge-progress {
+    margin-top: 1rem;
+  }
+
+  .progress-bar-challenge {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-fill-challenge {
+    height: 100%;
+    background: linear-gradient(90deg, #4ecdc4, #44a3db);
+    transition: width 0.3s ease;
+  }
+
+  .progress-text {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+    }
+
+    .mode-selector-large {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .features-section h2,
+    .challenges-preview h2 {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+<script>
+  import { danceChallenges, getDanceChallenges } from '../utils/dance-party';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setupModeSelector();
+    loadChallenges();
+  });
+
+  function setupModeSelector() {
+    const modeCards = document.querySelectorAll('.mode-card');
+    const sections = {
+      'dance-floor': document.getElementById('dance-floor-section'),
+      'rhythm-game': document.getElementById('rhythm-game-section'),
+      choreography: document.getElementById('choreography-section'),
+    };
+
+    modeCards.forEach((card) => {
+      card.addEventListener('click', () => {
+        const mode = (card as HTMLElement).dataset.mode || 'dance-floor';
+
+        // Update active card
+        modeCards.forEach((c) => c.classList.remove('active'));
+        card.classList.add('active');
+
+        // Show selected section
+        Object.entries(sections).forEach(([key, section]) => {
+          if (section) {
+            section.style.display = key === mode ? 'block' : 'none';
+          }
+        });
+
+        // Scroll to section
+        setTimeout(() => {
+          const targetSection = sections[mode as keyof typeof sections];
+          if (targetSection) {
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      });
+    });
+  }
+
+  function loadChallenges() {
+    const grid = document.getElementById('challenges-grid');
+    if (!grid) return;
+
+    const challenges = getDanceChallenges().slice(0, 6); // Show first 6
+
+    challenges.forEach((challenge) => {
+      const card = document.createElement('div');
+      card.className = `challenge-card ${challenge.completed ? 'completed' : ''}`;
+
+      const progressPercentage = Math.min((challenge.progress / challenge.goal) * 100, 100);
+
+      card.innerHTML = `
+        <div class="challenge-header">
+          <div class="challenge-name">${challenge.name.de}</div>
+          <div class="challenge-stars">${'⭐'.repeat(challenge.stars / 5)}</div>
+        </div>
+        <div class="challenge-description">${challenge.description.de}</div>
+        <div class="challenge-progress">
+          <div class="progress-bar-challenge">
+            <div class="progress-fill-challenge" style="width: ${progressPercentage}%"></div>
+          </div>
+          <div class="progress-text">${challenge.progress} / ${challenge.goal}</div>
+        </div>
+      `;
+
+      grid.appendChild(card);
+    });
+  }
+</script>

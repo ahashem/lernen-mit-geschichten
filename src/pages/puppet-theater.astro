@@ -1,0 +1,789 @@
+---
+/**
+ * Puppet Theater Page
+ * Interactive puppet show creation and performance page
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PuppetTheater from '@components/PuppetTheater.astro';
+import PuppetController from '@components/PuppetController.astro';
+import TheaterRecorder from '@components/TheaterRecorder.astro';
+import { getTranslation } from '@utils/i18n';
+import type { Locale } from '@utils/i18n';
+
+const locale = (Astro.url.searchParams.get('lang') || 'de') as Locale;
+const t = (key: string) => getTranslation(locale, key);
+
+const showId = Astro.url.searchParams.get('show');
+---
+
+<BaseLayout
+  title={t('puppetTheater')}
+  description={t('puppetTheaterDescription')}
+  locale={locale}
+>
+  <div class="puppet-theater-page">
+    <!-- Page Header -->
+    <header class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">
+          <span class="title-icon">🎭</span>
+          {t('puppetTheater')}
+        </h1>
+        <p class="page-description">{t('puppetTheaterDescription')}</p>
+      </div>
+      <div class="header-actions">
+        <a href={`/my-shows?lang=${locale}`} class="btn btn-secondary">
+          <span class="btn-icon">📚</span>
+          <span class="btn-label">{t('myShows')}</span>
+        </a>
+        <button class="btn btn-primary" id="template-btn">
+          <span class="btn-icon">📋</span>
+          <span class="btn-label">{t('showTemplates')}</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Theater Interface -->
+    <div class="theater-container">
+      <!-- Left Sidebar: Puppet Controller -->
+      <aside class="theater-sidebar left-sidebar">
+        <PuppetController locale={locale} />
+      </aside>
+
+      <!-- Center: Stage -->
+      <main class="theater-main">
+        <PuppetTheater locale={locale} showId={showId} />
+
+        <!-- Quick Actions Floating Bar -->
+        <div class="quick-actions-bar">
+          <button class="quick-btn" id="curtain-toggle" title={t('openCurtain')}>
+            <span>🎭</span>
+          </button>
+          <button class="quick-btn" id="clear-stage" title={t('clearStage')}>
+            <span>🧹</span>
+          </button>
+          <button class="quick-btn" id="save-snapshot" title={t('saveSnapshot')}>
+            <span>📸</span>
+          </button>
+        </div>
+      </main>
+
+      <!-- Right Sidebar: Recorder -->
+      <aside class="theater-sidebar right-sidebar">
+        <TheaterRecorder locale={locale} />
+      </aside>
+    </div>
+
+    <!-- Templates Modal -->
+    <div class="modal" id="templates-modal">
+      <div class="modal-overlay" data-close-modal></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <span class="icon">📋</span>
+            {t('showTemplates')}
+          </h2>
+          <button class="modal-close" data-close-modal>
+            <span>✕</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="templates-grid" id="templates-grid">
+            <!-- Templates will be loaded dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Show Title Modal -->
+    <div class="modal" id="title-modal">
+      <div class="modal-overlay" data-close-modal></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <span class="icon">💾</span>
+            {t('saveShow')}
+          </h2>
+          <button class="modal-close" data-close-modal>
+            <span>✕</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="show-title-input">{t('showTitle')}</label>
+            <input
+              type="text"
+              id="show-title-input"
+              placeholder={t('enterShowTitle')}
+              maxlength="50"
+            >
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" data-close-modal>
+              {t('cancel')}
+            </button>
+            <button class="btn btn-primary" id="confirm-save-btn">
+              {t('saveShow')}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tutorial Overlay (First Visit) -->
+    <div class="tutorial-overlay" id="tutorial-overlay">
+      <div class="tutorial-card">
+        <div class="tutorial-header">
+          <h3>{t('welcome')}</h3>
+          <button class="tutorial-close" id="skip-tutorial">
+            <span>✕</span>
+          </button>
+        </div>
+        <div class="tutorial-content">
+          <div class="tutorial-step active" data-step="1">
+            <div class="tutorial-icon">🎭</div>
+            <h4>{t('tutorialStep1Title')}</h4>
+            <p>{t('tutorialStep1Text')}</p>
+          </div>
+          <div class="tutorial-step" data-step="2">
+            <div class="tutorial-icon">🎨</div>
+            <h4>{t('tutorialStep2Title')}</h4>
+            <p>{t('tutorialStep2Text')}</p>
+          </div>
+          <div class="tutorial-step" data-step="3">
+            <div class="tutorial-icon">⏺️</div>
+            <h4>{t('tutorialStep3Title')}</h4>
+            <p>{t('tutorialStep3Text')}</p>
+          </div>
+        </div>
+        <div class="tutorial-nav">
+          <button class="btn btn-secondary" id="tutorial-prev" disabled>
+            {t('previous')}
+          </button>
+          <div class="tutorial-dots">
+            <span class="dot active" data-dot="1"></span>
+            <span class="dot" data-dot="2"></span>
+            <span class="dot" data-dot="3"></span>
+          </div>
+          <button class="btn btn-primary" id="tutorial-next">
+            {t('next')}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .puppet-theater-page {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #f5f7fa 0%, #e8ecf1 100%);
+    padding: 20px;
+  }
+
+  /* Page Header */
+  .page-header {
+    max-width: 1400px;
+    margin: 0 auto 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-content {
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .page-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 36px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+  }
+
+  .title-icon {
+    font-size: 48px;
+  }
+
+  .page-description {
+    font-size: 18px;
+    color: #7f8c8d;
+    margin: 0;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-secondary {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+  }
+
+  .btn-secondary:hover {
+    background: #f8f9ff;
+    transform: translateY(-2px);
+  }
+
+  .btn-icon {
+    font-size: 20px;
+  }
+
+  /* Theater Container */
+  .theater-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 320px 1fr 320px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .theater-sidebar {
+    position: sticky;
+    top: 20px;
+  }
+
+  .theater-main {
+    position: relative;
+  }
+
+  /* Quick Actions Bar */
+  .quick-actions-bar {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .quick-btn {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .quick-btn:hover {
+    background: #f0f0f0;
+    border-color: #667eea;
+    transform: scale(1.1);
+  }
+
+  /* Modals */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal.active {
+    display: flex;
+  }
+
+  .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: modal-appear 0.3s ease;
+  }
+
+  @keyframes modal-appear {
+    from {
+      opacity: 0;
+      transform: scale(0.9) translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 30px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+
+  .modal-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+  }
+
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .modal-close:hover {
+    background: #e0e0e0;
+    transform: rotate(90deg);
+  }
+
+  .modal-body {
+    padding: 30px;
+    overflow-y: auto;
+    max-height: calc(90vh - 160px);
+  }
+
+  .templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+  }
+
+  .form-group input {
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: inherit;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  /* Tutorial */
+  .tutorial-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 20000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tutorial-overlay.active {
+    display: flex;
+  }
+
+  .tutorial-card {
+    width: 90%;
+    max-width: 500px;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  .tutorial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .tutorial-header h3 {
+    font-size: 24px;
+    margin: 0;
+  }
+
+  .tutorial-close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tutorial-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .tutorial-content {
+    padding: 40px 30px;
+    min-height: 300px;
+    position: relative;
+  }
+
+  .tutorial-step {
+    display: none;
+    text-align: center;
+    animation: slide-in 0.3s ease;
+  }
+
+  .tutorial-step.active {
+    display: block;
+  }
+
+  @keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .tutorial-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+  }
+
+  .tutorial-step h4 {
+    font-size: 22px;
+    color: #2c3e50;
+    margin: 0 0 15px 0;
+  }
+
+  .tutorial-step p {
+    font-size: 16px;
+    color: #7f8c8d;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .tutorial-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-top: 2px solid #f0f0f0;
+  }
+
+  .tutorial-dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ddd;
+    transition: all 0.2s ease;
+  }
+
+  .dot.active {
+    background: #667eea;
+    transform: scale(1.2);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1200px) {
+    .theater-container {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    .theater-sidebar {
+      position: static;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .page-title {
+      font-size: 28px;
+    }
+
+    .title-icon {
+      font-size: 36px;
+    }
+
+    .header-actions {
+      width: 100%;
+      justify-content: stretch;
+    }
+
+    .btn {
+      flex: 1;
+      justify-content: center;
+    }
+
+    .quick-actions-bar {
+      bottom: 10px;
+    }
+
+    .modal-content {
+      width: 95%;
+    }
+
+    .templates-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import {
+    PUPPETS,
+    BACKGROUNDS,
+    PROPS,
+    SOUND_EFFECTS,
+    MUSIC_TRACKS,
+    SHOW_TEMPLATES,
+    ShowStorage,
+    ShowRecorder,
+    generateShowId,
+    type PuppetState,
+    type PropState,
+    type Scene,
+    type Show
+  } from '@utils/puppet-theater';
+
+  // Initialize theater
+  const showStorage = new ShowStorage();
+  const showRecorder = new ShowRecorder();
+  let currentShow: Show | null = null;
+  let currentScene: Scene | null = null;
+  let selectedPuppet: string | null = null;
+
+  // DOM elements
+  const stage = document.querySelector('.puppets-layer') as HTMLElement;
+  const propsLayer = document.querySelector('.props-layer') as HTMLElement;
+  const dialogueLayer = document.querySelector('.dialogue-layer') as HTMLElement;
+
+  // Load puppets into selector
+  const puppetsSelector = document.getElementById('puppets-selector');
+  if (puppetsSelector) {
+    PUPPETS.forEach(puppet => {
+      const item = document.createElement('div');
+      item.className = 'puppet-item';
+      item.dataset.puppetId = puppet.id;
+      item.innerHTML = `
+        <div class="item-emoji">${puppet.emoji}</div>
+        <div class="item-name">${puppet.name}</div>
+      `;
+      item.addEventListener('click', () => addPuppetToStage(puppet.id));
+      puppetsSelector.appendChild(item);
+    });
+  }
+
+  // Load backgrounds into selector
+  const backgroundsSelector = document.getElementById('backgrounds-selector');
+  if (backgroundsSelector) {
+    BACKGROUNDS.forEach(bg => {
+      const item = document.createElement('div');
+      item.className = 'background-item';
+      item.dataset.bgId = bg.id;
+      item.innerHTML = `
+        <div class="item-emoji">${bg.emoji}</div>
+        <div class="item-name">${bg.nameKey}</div>
+      `;
+      item.addEventListener('click', () => setStageBackground(bg.id));
+      backgroundsSelector.appendChild(item);
+    });
+  }
+
+  // Add puppet to stage
+  function addPuppetToStage(puppetId: string) {
+    const puppet = PUPPETS.find(p => p.id === puppetId);
+    if (!puppet || !stage) return;
+
+    const puppetElement = document.createElement('div');
+    puppetElement.className = 'puppet';
+    puppetElement.dataset.puppetId = puppetId;
+    puppetElement.textContent = puppet.emoji;
+    puppetElement.style.left = '50%';
+    puppetElement.style.top = '50%';
+    puppetElement.style.transform = 'translate(-50%, -50%)';
+
+    // Make draggable
+    makeDraggable(puppetElement);
+
+    // Select on click
+    puppetElement.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectPuppet(puppetElement);
+    });
+
+    stage.appendChild(puppetElement);
+  }
+
+  // Make element draggable
+  function makeDraggable(element: HTMLElement) {
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    element.addEventListener('mousedown', (e: MouseEvent) => {
+      isDragging = true;
+      const rect = element.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      element.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', (e: MouseEvent) => {
+      if (!isDragging) return;
+      const stageRect = stage!.getBoundingClientRect();
+      const x = e.clientX - stageRect.left - offsetX;
+      const y = e.clientY - stageRect.top - offsetY;
+      element.style.left = `${x}px`;
+      element.style.top = `${y}px`;
+      element.style.transform = 'none';
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+      element.style.cursor = 'grab';
+    });
+  }
+
+  // Select puppet for controls
+  function selectPuppet(element: HTMLElement) {
+    document.querySelectorAll('.puppet').forEach(p => p.classList.remove('selected'));
+    element.classList.add('selected');
+    selectedPuppet = element.dataset.puppetId || null;
+
+    // Show controls
+    const noSelection = document.getElementById('no-selection-msg');
+    const controls = document.getElementById('puppet-controls');
+    if (noSelection) noSelection.style.display = 'none';
+    if (controls) controls.style.display = 'flex';
+  }
+
+  // Set stage background
+  function setStageBackground(bgId: string) {
+    const stageBackground = document.querySelector('.stage-background') as HTMLElement;
+    if (stageBackground) {
+      stageBackground.dataset.background = bgId;
+    }
+  }
+
+  // Open curtain
+  const curtainToggle = document.getElementById('curtain-toggle');
+  const theater = document.querySelector('.puppet-theater') as HTMLElement;
+  if (curtainToggle && theater) {
+    curtainToggle.addEventListener('click', () => {
+      theater.classList.toggle('curtain-open');
+      const isOpen = theater.classList.contains('curtain-open');
+      curtainToggle.title = isOpen ? 'Close Curtain' : 'Open Curtain';
+    });
+  }
+
+  // Auto-open curtain after 1 second
+  setTimeout(() => {
+    if (theater) {
+      theater.classList.add('curtain-open');
+    }
+  }, 1000);
+
+  // Initialize
+  console.log('Puppet Theater initialized');
+</script>

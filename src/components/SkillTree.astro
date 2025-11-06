@@ -1,0 +1,721 @@
+---
+/**
+ * Interactive Skill Tree Component
+ * Visual tree with nodes, connections, and unlock mechanics
+ */
+---
+
+<div class="skill-tree-container">
+  <div class="skill-tree-header">
+    <h2>Fertigkeitsbaum</h2>
+    <div class="skill-points-display">
+      <span class="sp-icon">⭐</span>
+      <span class="sp-count">0</span>
+      <span class="sp-label">Punkte</span>
+    </div>
+    <button class="reset-tree-btn" data-cost="500">
+      🔄 Zurücksetzen (500 Sterne)
+    </button>
+  </div>
+
+  <div class="skill-tree-tabs">
+    <button class="tab-btn active" data-category="emotional">💝 Emotional</button>
+    <button class="tab-btn" data-category="social">🤝 Sozial</button>
+    <button class="tab-btn" data-category="cognitive">🧠 Kognitiv</button>
+    <button class="tab-btn" data-category="behavioral">📅 Verhalten</button>
+  </div>
+
+  <div class="skill-tree-canvas-container">
+    <canvas id="skill-tree-canvas" class="skill-tree-canvas"></canvas>
+    <div id="skill-nodes-container" class="skill-nodes"></div>
+  </div>
+
+  <div class="skill-tree-legend">
+    <div class="legend-item">
+      <span class="legend-dot unlocked"></span>
+      <span>Freigeschaltet</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot available"></span>
+      <span>Verfügbar</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot locked"></span>
+      <span>Gesperrt</span>
+    </div>
+  </div>
+</div>
+
+<!-- Skill Detail Modal -->
+<div id="skill-detail-modal" class="skill-modal hidden">
+  <div class="skill-modal-backdrop"></div>
+  <div class="skill-modal-content">
+    <button class="skill-modal-close" aria-label="Schließen">✕</button>
+    <div class="skill-modal-body">
+      <div class="skill-icon-large"></div>
+      <h3 class="skill-name"></h3>
+      <p class="skill-description"></p>
+      <div class="skill-bonus-display">
+        <strong>Bonus:</strong>
+        <span class="skill-bonus-text"></span>
+      </div>
+      <div class="skill-cost-display">
+        <span class="cost-label">Kosten:</span>
+        <span class="cost-value"></span>
+        <span class="cost-icon">⭐</span>
+      </div>
+      <div class="skill-prerequisites"></div>
+      <button class="unlock-skill-btn">Freischalten</button>
+      <div class="skill-status-message"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .skill-tree-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .skill-tree-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .skill-tree-header h2 {
+    color: white;
+    margin: 0;
+    font-size: 2rem;
+  }
+
+  .skill-points-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.2rem;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+  }
+
+  .sp-icon {
+    font-size: 1.5rem;
+    animation: spGlow 2s ease infinite;
+  }
+
+  @keyframes spGlow {
+    0%, 100% { filter: drop-shadow(0 0 5px #ffd700); }
+    50% { filter: drop-shadow(0 0 15px #ffd700); }
+  }
+
+  .sp-count {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #ffd700;
+  }
+
+  .reset-tree-btn {
+    background: rgba(255, 69, 58, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 69, 58, 0.5);
+    padding: 0.8rem 1.2rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .reset-tree-btn:hover {
+    background: rgba(255, 69, 58, 0.4);
+    border-color: rgba(255, 69, 58, 0.8);
+    transform: translateY(-2px);
+  }
+
+  .skill-tree-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    flex: 1;
+    min-width: 150px;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .tab-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .tab-btn.active {
+    background: rgba(102, 126, 234, 0.3);
+    border-color: #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  }
+
+  .skill-tree-canvas-container {
+    position: relative;
+    width: 100%;
+    height: 800px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    overflow: auto;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .skill-tree-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .skill-nodes {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-width: 650px;
+    min-height: 800px;
+  }
+
+  .skill-node {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 4px solid transparent;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .skill-node.locked {
+    background: rgba(100, 100, 100, 0.3);
+    border-color: rgba(150, 150, 150, 0.5);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .skill-node.available {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #ffd700;
+    animation: availablePulse 2s ease infinite;
+  }
+
+  @keyframes availablePulse {
+    0%, 100% {
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      transform: scale(1);
+    }
+    50% {
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+      transform: scale(1.05);
+    }
+  }
+
+  .skill-node.unlocked {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    border-color: #90EE90;
+  }
+
+  .skill-node:not(.locked):hover {
+    transform: scale(1.1);
+    z-index: 10;
+  }
+
+  .skill-tree-legend {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    font-size: 0.9rem;
+  }
+
+  .legend-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+
+  .legend-dot.unlocked {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  }
+
+  .legend-dot.available {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 0 10px #ffd700;
+  }
+
+  .legend-dot.locked {
+    background: rgba(100, 100, 100, 0.5);
+  }
+
+  /* Modal Styles */
+  .skill-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .skill-modal:not(.hidden) {
+    opacity: 1;
+  }
+
+  .skill-modal.hidden {
+    pointer-events: none;
+  }
+
+  .skill-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+  }
+
+  .skill-modal-content {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(135deg, #2d3561 0%, #1f2544 100%);
+    border-radius: 20px;
+    max-width: 500px;
+    width: 90%;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: modalSlideIn 0.4s ease;
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      transform: translateY(-30px) scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  .skill-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .skill-modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+  }
+
+  .skill-modal-body {
+    color: white;
+    text-align: center;
+  }
+
+  .skill-icon-large {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+  }
+
+  .skill-name {
+    font-size: 1.8rem;
+    margin: 0.5rem 0;
+  }
+
+  .skill-description {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin: 1rem 0;
+  }
+
+  .skill-bonus-display {
+    background: rgba(255, 215, 0, 0.1);
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1.5rem 0;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+  }
+
+  .skill-cost-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1.3rem;
+    margin: 1rem 0;
+  }
+
+  .cost-value {
+    font-weight: bold;
+    color: #ffd700;
+  }
+
+  .unlock-skill-btn {
+    background: linear-gradient(135deg, #ffd93d 0%, #ff9f40 100%);
+    color: #333;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 1.5rem;
+    transition: transform 0.2s ease;
+  }
+
+  .unlock-skill-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 159, 64, 0.4);
+  }
+
+  .unlock-skill-btn:disabled {
+    background: rgba(150, 150, 150, 0.5);
+    cursor: not-allowed;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .skill-status-message {
+    margin-top: 1rem;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+
+  .skill-status-message.error {
+    background: rgba(255, 69, 58, 0.2);
+    border: 1px solid rgba(255, 69, 58, 0.5);
+  }
+
+  .skill-status-message.success {
+    background: rgba(76, 175, 80, 0.2);
+    border: 1px solid rgba(76, 175, 80, 0.5);
+  }
+
+  @media (max-width: 768px) {
+    .skill-tree-container {
+      padding: 1rem;
+    }
+
+    .skill-tree-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .skill-tree-canvas-container {
+      height: 600px;
+    }
+
+    .tab-btn {
+      min-width: 120px;
+      padding: 0.8rem;
+      font-size: 0.9rem;
+    }
+
+    .skill-node {
+      width: 60px;
+      height: 60px;
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
+<script>
+  import { questManager, SKILL_TREE_NODES } from '../utils/quest-system';
+  import type { SkillTreeNode } from '../utils/quest-system';
+
+  class SkillTreeManager {
+    private container: HTMLElement | null = null;
+    private canvas: HTMLCanvasElement | null = null;
+    private ctx: CanvasRenderingContext2D | null = null;
+    private nodesContainer: HTMLElement | null = null;
+    private currentCategory: string = 'emotional';
+    private modal: HTMLElement | null = null;
+    private selectedSkill: SkillTreeNode | null = null;
+
+    constructor() {
+      this.container = document.querySelector('.skill-tree-container');
+      this.canvas = document.getElementById('skill-tree-canvas') as HTMLCanvasElement;
+      this.nodesContainer = document.getElementById('skill-nodes-container');
+      this.modal = document.getElementById('skill-detail-modal');
+
+      if (this.canvas) {
+        this.ctx = this.canvas.getContext('2d');
+        this.resizeCanvas();
+        window.addEventListener('resize', () => this.resizeCanvas());
+      }
+
+      this.init();
+    }
+
+    private init(): void {
+      this.updateSkillPoints();
+      this.renderSkillTree();
+      this.attachEventListeners();
+
+      // Listen for skill unlock events
+      window.addEventListener('skill-unlock', () => {
+        this.updateSkillPoints();
+        this.renderSkillTree();
+      });
+    }
+
+    private attachEventListeners(): void {
+      // Tab switching
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const target = e.currentTarget as HTMLElement;
+          const category = target.dataset.category;
+          if (category) {
+            this.switchCategory(category);
+          }
+        });
+      });
+
+      // Reset button
+      const resetBtn = document.querySelector('.reset-tree-btn');
+      resetBtn?.addEventListener('click', () => this.resetSkillTree());
+
+      // Modal close
+      const closeBtn = this.modal?.querySelector('.skill-modal-close');
+      closeBtn?.addEventListener('click', () => this.closeModal());
+
+      const backdrop = this.modal?.querySelector('.skill-modal-backdrop');
+      backdrop?.addEventListener('click', () => this.closeModal());
+    }
+
+    private resizeCanvas(): void {
+      if (!this.canvas || !this.nodesContainer) return;
+      this.canvas.width = this.nodesContainer.offsetWidth;
+      this.canvas.height = this.nodesContainer.offsetHeight;
+      this.drawConnections();
+    }
+
+    private switchCategory(category: string): void {
+      this.currentCategory = category;
+
+      // Update active tab
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-category') === category) {
+          btn.classList.add('active');
+        }
+      });
+
+      this.renderSkillTree();
+    }
+
+    private updateSkillPoints(): void {
+      const profile = questManager.getPlayerProfile();
+      const spCount = document.querySelector('.sp-count');
+      if (spCount) {
+        spCount.textContent = profile.skillPoints.toString();
+      }
+    }
+
+    private renderSkillTree(): void {
+      if (!this.nodesContainer) return;
+
+      const profile = questManager.getPlayerProfile();
+      const skillTree = questManager.getSkillTree();
+      const categoryNodes = skillTree.filter(node => node.category === this.currentCategory);
+
+      // Clear previous nodes
+      this.nodesContainer.innerHTML = '';
+
+      // Create nodes
+      categoryNodes.forEach(node => {
+        const nodeEl = document.createElement('div');
+        nodeEl.className = 'skill-node';
+        nodeEl.style.left = `${node.position.x}px`;
+        nodeEl.style.top = `${node.position.y}px`;
+        nodeEl.textContent = node.icon;
+
+        // Determine state
+        if (node.unlocked) {
+          nodeEl.classList.add('unlocked');
+        } else {
+          const prerequisitesMet = node.connections.length === 0 ||
+            node.connections.some(connId => profile.unlockedSkills.includes(connId));
+
+          if (prerequisitesMet && profile.skillPoints >= node.cost) {
+            nodeEl.classList.add('available');
+          } else {
+            nodeEl.classList.add('locked');
+          }
+        }
+
+        // Click handler
+        nodeEl.addEventListener('click', () => this.showSkillDetail(node));
+
+        this.nodesContainer!.appendChild(nodeEl);
+      });
+
+      // Draw connections
+      this.drawConnections();
+    }
+
+    private drawConnections(): void {
+      if (!this.ctx || !this.canvas) return;
+
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      const skillTree = questManager.getSkillTree();
+      const categoryNodes = skillTree.filter(node => node.category === this.currentCategory);
+
+      categoryNodes.forEach(node => {
+        node.connections.forEach(connId => {
+          const connectedNode = categoryNodes.find(n => n.id === connId);
+          if (!connectedNode) return;
+
+          const startX = node.position.x + 40;
+          const startY = node.position.y + 40;
+          const endX = connectedNode.position.x + 40;
+          const endY = connectedNode.position.y + 40;
+
+          this.ctx!.beginPath();
+          this.ctx!.moveTo(startX, startY);
+          this.ctx!.lineTo(endX, endY);
+          this.ctx!.strokeStyle = node.unlocked && connectedNode.unlocked
+            ? 'rgba(144, 238, 144, 0.6)'
+            : 'rgba(255, 255, 255, 0.2)';
+          this.ctx!.lineWidth = 3;
+          this.ctx!.stroke();
+        });
+      });
+    }
+
+    private showSkillDetail(skill: SkillTreeNode): void {
+      if (!this.modal) return;
+
+      this.selectedSkill = skill;
+
+      // Update modal content
+      const iconEl = this.modal.querySelector('.skill-icon-large');
+      const nameEl = this.modal.querySelector('.skill-name');
+      const descEl = this.modal.querySelector('.skill-description');
+      const bonusEl = this.modal.querySelector('.skill-bonus-text');
+      const costEl = this.modal.querySelector('.cost-value');
+      const unlockBtn = this.modal.querySelector('.unlock-skill-btn') as HTMLButtonElement;
+
+      if (iconEl) iconEl.textContent = skill.icon;
+      if (nameEl) nameEl.textContent = skill.name.de;
+      if (descEl) descEl.textContent = skill.description.de;
+      if (bonusEl) bonusEl.textContent = `${skill.bonus.type}: +${skill.bonus.value}`;
+      if (costEl) costEl.textContent = skill.cost.toString();
+
+      // Update button state
+      if (unlockBtn) {
+        if (skill.unlocked) {
+          unlockBtn.textContent = '✓ Freigeschaltet';
+          unlockBtn.disabled = true;
+        } else {
+          unlockBtn.textContent = 'Freischalten';
+          unlockBtn.disabled = false;
+          unlockBtn.onclick = () => this.unlockSkill(skill.id);
+        }
+      }
+
+      this.modal.classList.remove('hidden');
+    }
+
+    private closeModal(): void {
+      if (this.modal) {
+        this.modal.classList.add('hidden');
+      }
+    }
+
+    private unlockSkill(skillId: string): void {
+      const result = questManager.unlockSkill(skillId);
+      const messageEl = this.modal?.querySelector('.skill-status-message');
+
+      if (messageEl) {
+        messageEl.textContent = result.message;
+        messageEl.className = `skill-status-message ${result.success ? 'success' : 'error'}`;
+      }
+
+      if (result.success) {
+        setTimeout(() => {
+          this.closeModal();
+          this.updateSkillPoints();
+          this.renderSkillTree();
+        }, 1500);
+      }
+    }
+
+    private resetSkillTree(): void {
+      if (!confirm('Fertigkeitsbaum für 500 Sterne zurücksetzen? Du erhältst alle Punkte zurück.')) {
+        return;
+      }
+
+      const result = questManager.resetSkillTree();
+      alert(result.message);
+
+      if (result.success) {
+        this.updateSkillPoints();
+        this.renderSkillTree();
+      }
+    }
+  }
+
+  // Initialize on page load
+  if (typeof window !== 'undefined') {
+    new SkillTreeManager();
+  }
+</script>

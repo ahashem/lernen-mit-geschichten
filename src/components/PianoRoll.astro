@@ -1,0 +1,363 @@
+---
+/**
+ * Piano Roll Component
+ * Grid-based note placement interface
+ */
+---
+
+<canvas id="piano-roll-canvas" class="piano-roll-canvas"></canvas>
+
+<style>
+  .piano-roll-canvas {
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+  }
+</style>
+
+<script>
+  import type { Note, InstrumentTrack } from '../utils/music-composer';
+  import * as Tone from 'tone';
+
+  class PianoRollRenderer {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private tracks: InstrumentTrack[] = [];
+    private selectedTrackId: string | null = null;
+    private noteHeight: number = 20;
+    private beatWidth: number = 40;
+    private octaveStart: number = 3;
+    private octaveEnd: number = 7;
+    private measures: number = 16;
+    private timeSignature: string = '4/4';
+    private highlightedScale: string[] = [];
+    private draggedNote: { trackId: string; noteId: string } | null = null;
+    private dragStartX: number = 0;
+    private dragStartY: number = 0;
+    private currentTool: 'select' | 'pencil' | 'erase' = 'select';
+    private selectedNotes: Set<string> = new Set();
+
+    constructor(canvas: HTMLCanvasElement) {
+      this.canvas = canvas;
+      const context = canvas.getContext('2d');
+      if (!context) {
+        throw new Error('Could not get 2D context');
+      }
+      this.ctx = context;
+
+      this.setupCanvas();
+      this.attachEventListeners();
+    }
+
+    private setupCanvas(): void {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = this.canvas.getBoundingClientRect();
+
+      this.canvas.width = rect.width * dpr;
+      this.canvas.height = rect.height * dpr;
+
+      this.ctx.scale(dpr, dpr);
+      this.canvas.style.width = `${rect.width}px`;
+      this.canvas.style.height = `${rect.height}px`;
+    }
+
+    private attachEventListeners(): void {
+      this.canvas.addEventListener('mousedown', this.handleMouseDown.bind(this));
+      this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
+      this.canvas.addEventListener('mouseup', this.handleMouseUp.bind(this));
+      window.addEventListener('resize', this.handleResize.bind(this));
+    }
+
+    private handleResize(): void {
+      this.setupCanvas();
+      this.render();
+    }
+
+    private handleMouseDown(e: MouseEvent): void {
+      const rect = this.canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      this.dragStartX = x;
+      this.dragStartY = y;
+
+      if (this.currentTool === 'pencil') {
+        this.addNoteAtPosition(x, y);
+      } else if (this.currentTool === 'erase') {
+        this.deleteNoteAtPosition(x, y);
+      } else if (this.currentTool === 'select') {
+        const note = this.getNoteAtPosition(x, y);
+        if (note) {
+          this.draggedNote = note;
+        }
+      }
+    }
+
+    private handleMouseMove(e: MouseEvent): void {
+      if (!this.draggedNote || this.currentTool !== 'select') return;
+
+      const rect = this.canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const deltaX = x - this.dragStartX;
+      const deltaY = y - this.dragStartY;
+
+      // Update note position
+      const track = this.tracks.find(t => t.id === this.draggedNote!.trackId);
+      if (track) {
+        const note = track.notes.find(n => n.id === this.draggedNote!.noteId);
+        if (note) {
+          note.start = Math.max(0, note.start + deltaX / this.beatWidth);
+          // Update pitch based on deltaY
+          const pitchChange = Math.round(deltaY / this.noteHeight);
+          const currentMidi = Tone.Frequency(note.pitch).toMidi();
+          const newMidi = Math.max(0, Math.min(127, currentMidi - pitchChange));
+          note.pitch = Tone.Frequency(newMidi, 'midi').toNote();
+
+          this.dragStartX = x;
+          this.dragStartY = y;
+          this.render();
+        }
+      }
+    }
+
+    private handleMouseUp(): void {
+      this.draggedNote = null;
+    }
+
+    private addNoteAtPosition(x: number, y: number): void {
+      if (!this.selectedTrackId) return;
+
+      const track = this.tracks.find(t => t.id === this.selectedTrackId);
+      if (!track) return;
+
+      const beat = Math.floor(x / this.beatWidth);
+      const noteIndex = Math.floor(y / this.noteHeight);
+      const pitch = this.getPitchFromIndex(noteIndex);
+
+      // Dispatch event to add note
+      window.dispatchEvent(new CustomEvent('piano-roll-add-note', {
+        detail: {
+          trackId: this.selectedTrackId,
+          pitch,
+          start: beat,
+          length: this.getNoteLength(),
+        },
+      }));
+
+      this.render();
+    }
+
+    private deleteNoteAtPosition(x: number, y: number): void {
+      const note = this.getNoteAtPosition(x, y);
+      if (note) {
+        window.dispatchEvent(new CustomEvent('piano-roll-delete-note', {
+          detail: {
+            trackId: note.trackId,
+            noteId: note.noteId,
+          },
+        }));
+
+        this.render();
+      }
+    }
+
+    private getNoteAtPosition(x: number, y: number): { trackId: string; noteId: string } | null {
+      for (const track of this.tracks) {
+        if (!this.selectedTrackId || track.id === this.selectedTrackId) {
+          for (const note of track.notes) {
+            const noteX = note.start * this.beatWidth;
+            const noteWidth = note.length * this.beatWidth;
+            const noteY = this.getNoteY(note.pitch);
+
+            if (x >= noteX && x <= noteX + noteWidth &&
+                y >= noteY && y <= noteY + this.noteHeight) {
+              return { trackId: track.id, noteId: note.id };
+            }
+          }
+        }
+      }
+      return null;
+    }
+
+    private getPitchFromIndex(index: number): string {
+      const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+      const totalNotes = (this.octaveEnd - this.octaveStart + 1) * 12;
+      const noteIndex = totalNotes - 1 - index;
+      const octave = this.octaveStart + Math.floor(noteIndex / 12);
+      const noteName = notes[noteIndex % 12];
+      return `${noteName}${octave}`;
+    }
+
+    private getNoteY(pitch: string): number {
+      const midi = Tone.Frequency(pitch).toMidi();
+      const startMidi = Tone.Frequency(`C${this.octaveStart}`).toMidi();
+      const endMidi = Tone.Frequency(`B${this.octaveEnd}`).toMidi();
+      const range = endMidi - startMidi + 1;
+      const index = range - (midi - startMidi) - 1;
+      return index * this.noteHeight;
+    }
+
+    private getNoteLength(): number {
+      // This should be set from the parent component
+      return 1; // Default to quarter note
+    }
+
+    public setTracks(tracks: InstrumentTrack[]): void {
+      this.tracks = tracks;
+      this.render();
+    }
+
+    public setSelectedTrack(trackId: string | null): void {
+      this.selectedTrackId = trackId;
+      this.render();
+    }
+
+    public setMeasures(measures: number): void {
+      this.measures = measures;
+      this.render();
+    }
+
+    public setTimeSignature(timeSignature: string): void {
+      this.timeSignature = timeSignature;
+      this.render();
+    }
+
+    public setTool(tool: 'select' | 'pencil' | 'erase'): void {
+      this.currentTool = tool;
+      this.canvas.style.cursor = tool === 'erase' ? 'not-allowed' :
+                                  tool === 'pencil' ? 'crosshair' : 'pointer';
+    }
+
+    public highlightScale(notes: string[]): void {
+      this.highlightedScale = notes;
+      this.render();
+    }
+
+    public render(): void {
+      const width = this.canvas.width / (window.devicePixelRatio || 1);
+      const height = this.canvas.height / (window.devicePixelRatio || 1);
+
+      // Clear canvas
+      this.ctx.clearRect(0, 0, width, height);
+
+      // Draw piano keys
+      this.drawPianoKeys(height);
+
+      // Draw grid
+      this.drawGrid(width, height);
+
+      // Draw notes
+      this.drawNotes();
+
+      // Draw playhead
+      this.drawPlayhead(height);
+    }
+
+    private drawPianoKeys(height: number): void {
+      const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+      const keyWidth = 60;
+
+      for (let octave = this.octaveStart; octave <= this.octaveEnd; octave++) {
+        for (let i = 0; i < notes.length; i++) {
+          const note = `${notes[i]}${octave}`;
+          const y = this.getNoteY(note);
+
+          // Background
+          const isBlackKey = notes[i].includes('#');
+          const isHighlighted = this.highlightedScale.includes(note);
+
+          this.ctx.fillStyle = isHighlighted ? '#FFE6CC' :
+                               isBlackKey ? '#333' : '#fff';
+          this.ctx.fillRect(0, y, keyWidth, this.noteHeight);
+
+          // Border
+          this.ctx.strokeStyle = '#ddd';
+          this.ctx.strokeRect(0, y, keyWidth, this.noteHeight);
+
+          // Label
+          this.ctx.fillStyle = isBlackKey ? '#fff' : '#333';
+          this.ctx.font = '11px sans-serif';
+          this.ctx.fillText(note, 5, y + this.noteHeight / 2 + 4);
+        }
+      }
+    }
+
+    private drawGrid(width: number, height: number): void {
+      const beatsPerMeasure = parseInt(this.timeSignature.split('/')[0]);
+      const totalBeats = this.measures * beatsPerMeasure;
+
+      // Vertical lines (beats)
+      for (let beat = 0; beat <= totalBeats; beat++) {
+        const x = 60 + beat * this.beatWidth;
+        this.ctx.strokeStyle = beat % beatsPerMeasure === 0 ? '#999' : '#ddd';
+        this.ctx.lineWidth = beat % beatsPerMeasure === 0 ? 2 : 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x, 0);
+        this.ctx.lineTo(x, height);
+        this.ctx.stroke();
+
+        // Beat numbers
+        if (beat % beatsPerMeasure === 0) {
+          this.ctx.fillStyle = '#666';
+          this.ctx.font = '12px sans-serif';
+          this.ctx.fillText(`${beat / beatsPerMeasure + 1}`, x + 5, 15);
+        }
+      }
+
+      // Horizontal lines (notes)
+      const totalNotes = (this.octaveEnd - this.octaveStart + 1) * 12;
+      for (let i = 0; i <= totalNotes; i++) {
+        const y = i * this.noteHeight;
+        this.ctx.strokeStyle = '#eee';
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(60, y);
+        this.ctx.lineTo(width, y);
+        this.ctx.stroke();
+      }
+    }
+
+    private drawNotes(): void {
+      for (const track of this.tracks) {
+        if (!this.selectedTrackId || track.id === this.selectedTrackId) {
+          for (const note of track.notes) {
+            const x = 60 + note.start * this.beatWidth;
+            const width = note.length * this.beatWidth;
+            const y = this.getNoteY(note.pitch);
+
+            // Note background
+            this.ctx.fillStyle = `rgba(255, 159, 64, ${note.velocity})`;
+            this.ctx.fillRect(x, y, width, this.noteHeight - 1);
+
+            // Note border
+            this.ctx.strokeStyle = '#FF9F40';
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeRect(x, y, width, this.noteHeight - 1);
+          }
+        }
+      }
+    }
+
+    private drawPlayhead(height: number): void {
+      // This would be updated during playback
+      const playheadX = 60;
+      this.ctx.strokeStyle = '#E57373';
+      this.ctx.lineWidth = 3;
+      this.ctx.beginPath();
+      this.ctx.moveTo(playheadX, 0);
+      this.ctx.lineTo(playheadX, height);
+      this.ctx.stroke();
+    }
+  }
+
+  // Initialize piano roll
+  const canvas = document.getElementById('piano-roll-canvas') as HTMLCanvasElement;
+  if (canvas) {
+    const pianoRoll = new PianoRollRenderer(canvas);
+
+    // Make pianoRoll accessible globally
+    (window as any).pianoRoll = pianoRoll;
+  }
+</script>

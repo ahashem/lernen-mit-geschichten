@@ -1,0 +1,477 @@
+---
+/**
+ * Daily Surprise Page
+ * Central hub for all daily surprise features
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DailySurprise from '../components/DailySurprise.astro';
+import SpinTheWheel from '../components/SpinTheWheel.astro';
+import MysteryBox from '../components/MysteryBox.astro';
+import StreakTracker from '../components/StreakTracker.astro';
+
+const locale = 'de';
+const title = 'Tägliche Überraschung';
+const description = 'Komm jeden Tag zurück für neue Belohnungen, Spiele und Überraschungen!';
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="daily-surprise-page">
+    <div class="page-header">
+      <h1>
+        <span class="header-icon">🎁</span>
+        <span data-i18n="dailySurprise">Tägliche Überraschung</span>
+      </h1>
+      <p class="page-subtitle" data-i18n="dailySurprisePageDescription">
+        Besuche uns jeden Tag für neue Belohnungen, Spiele und Überraschungen!
+      </p>
+    </div>
+
+    <div class="content-grid">
+      <!-- Main Daily Surprise -->
+      <section class="surprise-section main-surprise">
+        <DailySurprise locale={locale} />
+      </section>
+
+      <!-- Streak Tracker -->
+      <section class="surprise-section streak-section">
+        <StreakTracker locale={locale} />
+      </section>
+
+      <!-- Wednesday Wheel -->
+      <section class="surprise-section wheel-section" id="wheel-section">
+        <div class="section-banner wednesday-banner">
+          <span class="banner-icon">🎡</span>
+          <div class="banner-content">
+            <h2 data-i18n="wednesdayWheel">Mittwoch Glücksrad</h2>
+            <p data-i18n="wednesdayWheelDescription">
+              Jeden Mittwoch darfst du das Glücksrad drehen!
+            </p>
+          </div>
+        </div>
+        <SpinTheWheel locale={locale} />
+      </section>
+
+      <!-- Daily Mystery Box -->
+      <section class="surprise-section box-section">
+        <div class="section-banner">
+          <span class="banner-icon">📦</span>
+          <div class="banner-content">
+            <h2 data-i18n="dailyMysteryBox">Tägliche Geheimnisbox</h2>
+            <p data-i18n="dailyMysteryBoxDescription">
+              Öffne jeden Tag eine Box voller Überraschungen!
+            </p>
+          </div>
+        </div>
+        <MysteryBox locale={locale} />
+      </section>
+
+      <!-- How it Works -->
+      <section class="surprise-section info-section">
+        <h2 data-i18n="howItWorks">Wie es funktioniert</h2>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">📅</div>
+            <h3 data-i18n="everydayDifferent">Jeden Tag anders</h3>
+            <p data-i18n="everydayDifferentDescription">
+              Jeder Wochentag bringt eine neue Art von Überraschung!
+            </p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">🔥</div>
+            <h3 data-i18n="buildStreak">Serie aufbauen</h3>
+            <p data-i18n="buildStreakDescription">
+              Komm jeden Tag zurück, um deine Serie zu verlängern und Meilenstein-Belohnungen zu verdienen!
+            </p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">🎁</div>
+            <h3 data-i18n="collectRewards">Belohnungen sammeln</h3>
+            <p data-i18n="collectRewardsDescription">
+              Verdiene Sterne, Karten, Accessoires und mehr durch tägliche Aktivitäten!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Weekly Schedule -->
+      <section class="surprise-section schedule-section">
+        <h2 data-i18n="weeklySchedule">Wochenplan</h2>
+        <div class="schedule-grid">
+          <div class="schedule-day monday">
+            <div class="day-header">
+              <span class="day-emoji">⭐</span>
+              <span class="day-name" data-i18n="monday">Montag</span>
+            </div>
+            <p class="day-surprise" data-i18n="mondaySurprise">Geschichte des Tages</p>
+            <p class="day-description" data-i18n="mondayDescription">2x Sterne für die vorgestellte Geschichte</p>
+          </div>
+          <div class="schedule-day tuesday">
+            <div class="day-header">
+              <span class="day-emoji">🎯</span>
+              <span class="day-name" data-i18n="tuesday">Dienstag</span>
+            </div>
+            <p class="day-surprise" data-i18n="tuesdaySurprise">Geheime Mission</p>
+            <p class="day-description" data-i18n="tuesdayDescription">Erfülle spezielle Quests für Bonussterne</p>
+          </div>
+          <div class="schedule-day wednesday">
+            <div class="day-header">
+              <span class="day-emoji">🎡</span>
+              <span class="day-name" data-i18n="wednesday">Mittwoch</span>
+            </div>
+            <p class="day-surprise" data-i18n="wednesdaySurprise">Glücksrad</p>
+            <p class="day-description" data-i18n="wednesdayDescription">Drehe das Rad für zufällige Belohnungen</p>
+          </div>
+          <div class="schedule-day thursday">
+            <div class="day-header">
+              <span class="day-emoji">🌟</span>
+              <span class="day-name" data-i18n="thursday">Donnerstag</span>
+            </div>
+            <p class="day-surprise" data-i18n="thursdaySurprise">Charakter im Rampenlicht</p>
+            <p class="day-description" data-i18n="thursdayDescription">Entdecke exklusive Inhalte</p>
+          </div>
+          <div class="schedule-day friday">
+            <div class="day-header">
+              <span class="day-emoji">🧠</span>
+              <span class="day-name" data-i18n="friday">Freitag</span>
+            </div>
+            <p class="day-surprise" data-i18n="fridaySurprise">Mega-Quiz</p>
+            <p class="day-description" data-i18n="fridayDescription">10 Fragen für große Belohnungen</p>
+          </div>
+          <div class="schedule-day saturday">
+            <div class="day-header">
+              <span class="day-emoji">🗺️</span>
+              <span class="day-name" data-i18n="saturday">Samstag</span>
+            </div>
+            <p class="day-surprise" data-i18n="saturdaySurprise">Schatzsuche</p>
+            <p class="day-description" data-i18n="saturdayDescription">Finde versteckte Gegenstände</p>
+          </div>
+          <div class="schedule-day sunday">
+            <div class="day-header">
+              <span class="day-emoji">🎁</span>
+              <span class="day-name" data-i18n="sunday">Sonntag</span>
+            </div>
+            <p class="day-surprise" data-i18n="sundaySurprise">Bonus-Bonanza</p>
+            <p class="day-description" data-i18n="sundayDescription">50% mehr Sterne bei allen Aktivitäten</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .daily-surprise-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-header h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    font-size: 3rem;
+    margin: 0 0 1rem;
+    color: #333;
+  }
+
+  .header-icon {
+    font-size: 4rem;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .page-subtitle {
+    font-size: 1.25rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .content-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .surprise-section {
+    background: white;
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .main-surprise {
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .streak-section {
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .section-banner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #F9F9F9 0%, #EFEFEF 100%);
+    border-radius: 16px;
+  }
+
+  .wednesday-banner {
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+  }
+
+  .banner-icon {
+    font-size: 3rem;
+    flex-shrink: 0;
+  }
+
+  .banner-content h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.75rem;
+    color: #333;
+  }
+
+  .banner-content p {
+    margin: 0;
+    color: #666;
+    font-size: 1rem;
+  }
+
+  .info-section h2,
+  .schedule-section h2 {
+    font-size: 2rem;
+    margin: 0 0 2rem;
+    color: #333;
+    text-align: center;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .info-card {
+    text-align: center;
+    padding: 2rem;
+    background: #F9F9F9;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .info-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .info-card h3 {
+    font-size: 1.25rem;
+    margin: 0 0 0.75rem;
+    color: #333;
+  }
+
+  .info-card p {
+    color: #666;
+    line-height: 1.6;
+  }
+
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .schedule-day {
+    background: #F9F9F9;
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+  }
+
+  .schedule-day:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .schedule-day.monday { border-color: #FFD93D; }
+  .schedule-day.tuesday { border-color: #FF9F40; }
+  .schedule-day.wednesday { border-color: #FF6B35; }
+  .schedule-day.thursday { border-color: #9B59B6; }
+  .schedule-day.friday { border-color: #3498DB; }
+  .schedule-day.saturday { border-color: #1ABC9C; }
+  .schedule-day.sunday { border-color: #E74C3C; }
+
+  .day-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .day-emoji {
+    font-size: 2.5rem;
+  }
+
+  .day-name {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: #333;
+  }
+
+  .day-surprise {
+    font-weight: 700;
+    color: #666;
+    margin: 0 0 0.5rem;
+    text-align: center;
+  }
+
+  .day-description {
+    font-size: 0.875rem;
+    color: #999;
+    text-align: center;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 1024px) {
+    .schedule-grid {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .daily-surprise-page {
+      padding: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .header-icon {
+      font-size: 3rem;
+    }
+
+    .page-subtitle {
+      font-size: 1rem;
+    }
+
+    .content-grid {
+      gap: 2rem;
+    }
+
+    .surprise-section {
+      padding: 1.5rem;
+    }
+
+    .section-banner {
+      flex-direction: column;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .banner-content h2 {
+      font-size: 1.5rem;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .schedule-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* RTL support */
+  [dir="rtl"] .page-header h1 {
+    flex-direction: row-reverse;
+  }
+
+  [dir="rtl"] .section-banner {
+    flex-direction: row-reverse;
+  }
+
+  [dir="rtl"] .day-header {
+    text-align: right;
+  }
+</style>
+
+<script>
+  import { dailySurpriseManager } from '../utils/daily-surprise';
+
+  // Show/hide wheel section based on day
+  function checkWheelAvailability() {
+    const wheelSection = document.getElementById('wheel-section');
+    if (!wheelSection) return;
+
+    const today = new Date().getDay();
+    const isWednesday = today === 3;
+
+    if (!isWednesday) {
+      wheelSection.style.opacity = '0.6';
+      wheelSection.style.pointerEvents = 'none';
+
+      const banner = wheelSection.querySelector('.section-banner');
+      if (banner) {
+        const p = banner.querySelector('p');
+        if (p) {
+          p.textContent = 'Komm am Mittwoch zurück, um das Rad zu drehen!';
+        }
+      }
+    }
+  }
+
+  // Highlight current day in schedule
+  function highlightCurrentDay() {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const today = new Date().getDay();
+    const currentDayClass = days[today];
+
+    const scheduleDay = document.querySelector(`.schedule-day.${currentDayClass}`);
+    if (scheduleDay) {
+      scheduleDay.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.15)';
+      scheduleDay.style.transform = 'scale(1.05)';
+    }
+  }
+
+  // Initialize
+  if (typeof window !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        checkWheelAvailability();
+        highlightCurrentDay();
+      });
+    } else {
+      checkWheelAvailability();
+      highlightCurrentDay();
+    }
+  }
+</script>

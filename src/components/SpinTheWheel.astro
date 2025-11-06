@@ -1,0 +1,491 @@
+---
+/**
+ * Spin The Wheel Component
+ * Lucky wheel with 12 segments for Wednesday surprises
+ */
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'de' } = Astro.props;
+---
+
+<div class="wheel-container" data-locale={locale}>
+  <div class="wheel-header">
+    <h2 data-i18n="spinWheel">Glücksrad drehen</h2>
+    <p data-i18n="spinWheelDescription">Drehe das Rad und gewinne tolle Preise!</p>
+  </div>
+
+  <div class="wheel-wrapper">
+    <div class="wheel-pointer">▼</div>
+    <canvas id="wheel-canvas" width="500" height="500"></canvas>
+    <button class="wheel-spin-btn" id="spin-btn">
+      <span data-i18n="spin">DREHEN</span>
+    </button>
+  </div>
+
+  <div class="wheel-result" id="wheel-result" style="display: none;">
+    <div class="result-content">
+      <div class="result-icon">🎉</div>
+      <h3 data-i18n="congratulations">Glückwunsch!</h3>
+      <p class="prize-name" id="prize-name"></p>
+      <div class="prize-value" id="prize-value"></div>
+      <button class="btn-collect" id="collect-btn">
+        <span data-i18n="collectPrize">Preis einsammeln</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="wheel-info">
+    <div class="info-item">
+      <span class="info-icon">⭐</span>
+      <span data-i18n="dailySpinAvailable">Einmal pro Tag verfügbar</span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">🍀</span>
+      <span data-i18n="luckyChance">5% Chance für "Nochmal drehen"</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .wheel-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .wheel-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .wheel-header h2 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem;
+    color: #333;
+  }
+
+  .wheel-header p {
+    color: #666;
+    font-size: 1.125rem;
+  }
+
+  .wheel-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    aspect-ratio: 1;
+  }
+
+  .wheel-pointer {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 3rem;
+    color: #E74C3C;
+    z-index: 10;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    animation: pointer-bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes pointer-bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(5px); }
+  }
+
+  #wheel-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .wheel-spin-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFD93D 0%, #FF9F40 100%);
+    border: 6px solid white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #333;
+    text-transform: uppercase;
+    z-index: 5;
+    transition: all 0.3s ease;
+  }
+
+  .wheel-spin-btn:hover:not(:disabled) {
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  .wheel-spin-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(50%);
+  }
+
+  .wheel-spin-btn.spinning {
+    pointer-events: none;
+  }
+
+  .wheel-result {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .result-content {
+    background: white;
+    border-radius: 24px;
+    padding: 3rem 2rem;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: scaleIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes scaleIn {
+    from {
+      transform: scale(0);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .result-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: rotate-bounce 1s ease-in-out;
+  }
+
+  @keyframes rotate-bounce {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(-10deg) scale(1.1); }
+    75% { transform: rotate(10deg) scale(1.1); }
+  }
+
+  .result-content h3 {
+    font-size: 2rem;
+    margin: 0 0 1rem;
+    color: #333;
+  }
+
+  .prize-name {
+    font-size: 1.25rem;
+    color: #666;
+    margin: 0 0 1rem;
+  }
+
+  .prize-value {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #FFD93D;
+    margin: 1rem 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-collect {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  }
+
+  .btn-collect:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+  }
+
+  .wheel-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #F9F9F9;
+    border-radius: 12px;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1rem;
+    color: #666;
+  }
+
+  .info-icon {
+    font-size: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .wheel-container {
+      padding: 1rem;
+    }
+
+    .wheel-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .wheel-pointer {
+      font-size: 2rem;
+    }
+
+    .wheel-spin-btn {
+      width: 80px;
+      height: 80px;
+      font-size: 0.875rem;
+    }
+
+    .result-content {
+      padding: 2rem 1.5rem;
+    }
+
+    .result-icon {
+      font-size: 3.5rem;
+    }
+
+    .result-content h3 {
+      font-size: 1.5rem;
+    }
+
+    .prize-value {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+<script>
+  import { dailySurpriseManager, type WheelPrize, WHEEL_PRIZES } from '../utils/daily-surprise';
+  import { confetti } from '../utils/confetti';
+  import { soundEffects } from '../utils/sound-effects';
+
+  let isSpinning = false;
+  let currentRotation = 0;
+
+  function initWheel() {
+    const canvas = document.getElementById('wheel-canvas') as HTMLCanvasElement;
+    const spinBtn = document.getElementById('spin-btn') as HTMLButtonElement;
+
+    if (!canvas || !spinBtn) return;
+
+    // Check if can spin today
+    const canSpin = dailySurpriseManager.canSpinWheel();
+    if (!canSpin) {
+      spinBtn.disabled = true;
+      spinBtn.innerHTML = '<span>Bereits gedreht</span>';
+    }
+
+    // Draw wheel
+    drawWheel(canvas);
+
+    // Setup spin button
+    spinBtn.addEventListener('click', handleSpin);
+  }
+
+  function drawWheel(canvas: HTMLCanvasElement) {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = Math.min(centerX, centerY) - 20;
+    const segments = 12;
+    const anglePerSegment = (2 * Math.PI) / segments;
+
+    // Colors for segments
+    const colors = [
+      '#FFD93D', '#FF9F40', '#FF6B35', '#9B59B6',
+      '#3498DB', '#1ABC9C', '#E74C3C', '#F39C12',
+      '#FFD93D', '#FF9F40', '#9B59B6', '#3498DB'
+    ];
+
+    // Draw segments
+    for (let i = 0; i < segments; i++) {
+      const startAngle = i * anglePerSegment - Math.PI / 2;
+      const endAngle = (i + 1) * anglePerSegment - Math.PI / 2;
+
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = colors[i];
+      ctx.fill();
+
+      // Border
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Add text (simplified)
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(startAngle + anglePerSegment / 2);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 16px Arial';
+      ctx.fillText('⭐', radius * 0.7, 0);
+      ctx.restore();
+    }
+
+    // Center circle
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 60, 0, 2 * Math.PI);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+
+  async function handleSpin() {
+    if (isSpinning) return;
+
+    const spinBtn = document.getElementById('spin-btn') as HTMLButtonElement;
+    const canvas = document.getElementById('wheel-canvas') as HTMLCanvasElement;
+
+    if (!spinBtn || !canvas) return;
+
+    isSpinning = true;
+    spinBtn.classList.add('spinning');
+    spinBtn.disabled = true;
+
+    // Play spin sound
+    soundEffects.play('whoosh');
+
+    // Spin the wheel
+    const prize = await spinWheel(canvas);
+
+    // Show result
+    if (prize) {
+      setTimeout(() => {
+        showResult(prize);
+      }, 500);
+    }
+  }
+
+  async function spinWheel(canvas: HTMLCanvasElement): Promise<WheelPrize | null> {
+    const prize = dailySurpriseManager.spinWheel();
+    if (!prize) return null;
+
+    // Calculate target rotation
+    const segments = 12;
+    const anglePerSegment = 360 / segments;
+    const prizeIndex = Math.floor(Math.random() * segments);
+    const targetAngle = prizeIndex * anglePerSegment;
+
+    // Spin animation (5 full rotations + target)
+    const totalRotation = 1800 + targetAngle;
+    const duration = 3000; // 3 seconds
+    const startTime = Date.now();
+    const startRotation = currentRotation;
+
+    return new Promise((resolve) => {
+      function animate() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Easing function (ease-out cubic)
+        const eased = 1 - Math.pow(1 - progress, 3);
+
+        currentRotation = startRotation + totalRotation * eased;
+        canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          resolve(prize);
+        }
+      }
+
+      animate();
+    });
+  }
+
+  function showResult(prize: WheelPrize) {
+    const resultDiv = document.getElementById('wheel-result');
+    const prizeNameEl = document.getElementById('prize-name');
+    const prizeValueEl = document.getElementById('prize-value');
+    const collectBtn = document.getElementById('collect-btn');
+
+    if (!resultDiv || !prizeNameEl || !prizeValueEl || !collectBtn) return;
+
+    // Set prize details
+    prizeNameEl.textContent = prize.itemName.de;
+
+    if (prize.type === 'stars' && prize.amount) {
+      prizeValueEl.innerHTML = `⭐ ${prize.amount}`;
+    } else {
+      prizeValueEl.innerHTML = `🎁 ${prize.itemName.de}`;
+    }
+
+    // Show result modal
+    resultDiv.style.display = 'flex';
+
+    // Confetti
+    confetti();
+
+    // Play success sound
+    soundEffects.play('success');
+
+    // Collect button
+    collectBtn.onclick = () => {
+      resultDiv.style.display = 'none';
+      isSpinning = false;
+
+      // Check for spin-again
+      if (prize.type === 'spin-again') {
+        const spinBtn = document.getElementById('spin-btn') as HTMLButtonElement;
+        if (spinBtn) {
+          spinBtn.disabled = false;
+          spinBtn.classList.remove('spinning');
+          spinBtn.innerHTML = '<span>NOCHMAL!</span>';
+        }
+      }
+    };
+  }
+
+  // Initialize on page load
+  if (typeof window !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initWheel);
+    } else {
+      initWheel();
+    }
+  }
+</script>

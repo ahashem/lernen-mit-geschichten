@@ -1,0 +1,220 @@
+---
+/**
+ * Music Composer Page
+ * Main page for the music composition tool
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MusicComposer from '../components/MusicComposer.astro';
+import PianoRoll from '../components/PianoRoll.astro';
+import VirtualKeyboard from '../components/VirtualKeyboard.astro';
+
+const locale = 'de';
+const title = 'Music Composer - Lernen mit Geschichten';
+const description = 'Create your own music compositions with our interactive music composer';
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <main class="music-composer-page">
+    <div class="page-header">
+      <h1>🎵 Music Composer</h1>
+      <p class="subtitle">Create amazing music for your stories!</p>
+    </div>
+
+    <MusicComposer locale={locale} />
+
+    <div class="help-section">
+      <h2>How to Use the Music Composer</h2>
+      <div class="help-grid">
+        <div class="help-card">
+          <div class="help-icon">🎹</div>
+          <h3>Add Instruments</h3>
+          <p>Choose from 8 different instruments: Piano, Guitar, Flute, Drums, Xylophone, Trumpet, Violin, and Bells.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-icon">✏️</div>
+          <h3>Place Notes</h3>
+          <p>Use the pencil tool to click and add notes to the piano roll grid. Drag to move them around.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-icon">🎼</div>
+          <h3>Use Templates</h3>
+          <p>Start with pre-made templates for different moods: Happy, Calm, Exciting, and more!</p>
+        </div>
+        <div class="help-card">
+          <div class="help-icon">⏺️</div>
+          <h3>Record Live</h3>
+          <p>Play notes on the virtual keyboard and record your performance in real-time.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-icon">🎨</div>
+          <h3>Add Effects</h3>
+          <p>Adjust volume, panning, and reverb for each instrument to create the perfect mix.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-icon">💾</div>
+          <h3>Save & Export</h3>
+          <p>Save your compositions and export them as audio files or MIDI for use in your stories!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="keyboard-shortcuts">
+      <h3>Keyboard Shortcuts</h3>
+      <div class="shortcuts-grid">
+        <div class="shortcut">
+          <kbd>Space</kbd>
+          <span>Play/Pause</span>
+        </div>
+        <div class="shortcut">
+          <kbd>A-L</kbd>
+          <span>Play piano keys (QWERTY)</span>
+        </div>
+        <div class="shortcut">
+          <kbd>Delete</kbd>
+          <span>Delete selected notes</span>
+        </div>
+        <div class="shortcut">
+          <kbd>Ctrl+C</kbd>
+          <span>Copy notes</span>
+        </div>
+        <div class="shortcut">
+          <kbd>Ctrl+V</kbd>
+          <span>Paste notes</span>
+        </div>
+        <div class="shortcut">
+          <kbd>Ctrl+Z</kbd>
+          <span>Undo</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .music-composer-page {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  .subtitle {
+    font-size: 1.3rem;
+    color: #666;
+  }
+
+  .help-section {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .help-section h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+  }
+
+  .help-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .help-card {
+    padding: 1.5rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+
+  .help-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .help-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .help-card h3 {
+    margin-bottom: 0.5rem;
+    color: #FF9F40;
+  }
+
+  .help-card p {
+    color: #666;
+    line-height: 1.6;
+  }
+
+  .keyboard-shortcuts {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: #f5f5f5;
+    border-radius: 12px;
+  }
+
+  .keyboard-shortcuts h3 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+
+  .shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .shortcut {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 6px;
+  }
+
+  kbd {
+    padding: 0.25rem 0.75rem;
+    background: #333;
+    color: white;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .shortcut span {
+    color: #666;
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+    }
+
+    .help-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

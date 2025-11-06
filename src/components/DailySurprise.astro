@@ -1,0 +1,511 @@
+---
+/**
+ * Daily Surprise Component
+ * Main interface showing today's surprise with claim button
+ */
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'de' } = Astro.props;
+---
+
+<div class="daily-surprise-container" data-locale={locale}>
+  <div class="surprise-header">
+    <div class="surprise-icon-pulse">
+      <span class="surprise-icon">🎁</span>
+    </div>
+    <h2 class="surprise-title" data-i18n="dailySurprise">Tägliche Überraschung</h2>
+    <p class="surprise-subtitle" data-i18n="dailySurpriseSubtitle">
+      Komm jeden Tag zurück für neue Belohnungen!
+    </p>
+  </div>
+
+  <div class="surprise-content" id="surprise-content">
+    <div class="surprise-loading">
+      <div class="spinner"></div>
+      <p data-i18n="loading">Lädt...</p>
+    </div>
+  </div>
+
+  <div class="surprise-timer" id="surprise-timer">
+    <span data-i18n="nextSurpriseIn">Nächste Überraschung in:</span>
+    <div class="timer-display">
+      <span class="timer-hours">00</span>:<span class="timer-minutes">00</span>:<span class="timer-seconds">00</span>
+    </div>
+  </div>
+
+  <div class="surprise-actions" id="surprise-actions">
+    <button class="btn-claim" id="btn-claim" disabled>
+      <span data-i18n="claimSurprise">Überraschung holen</span>
+    </button>
+  </div>
+
+  <div class="already-claimed" id="already-claimed" style="display: none;">
+    <div class="claimed-message">
+      <span class="check-icon">✓</span>
+      <p data-i18n="surpriseAlreadyClaimed">Überraschung bereits abgeholt!</p>
+      <p class="comeback-message" data-i18n="comeBackTomorrow">
+        Komm morgen wieder für eine neue Überraschung!
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .daily-surprise-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .daily-surprise-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: rotate-bg 20s linear infinite;
+  }
+
+  @keyframes rotate-bg {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .surprise-header {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 2rem;
+  }
+
+  .surprise-icon-pulse {
+    display: inline-block;
+    animation: pulse-bounce 2s ease-in-out infinite;
+  }
+
+  .surprise-icon {
+    font-size: 4rem;
+    display: block;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  }
+
+  @keyframes pulse-bounce {
+    0%, 100% {
+      transform: scale(1) translateY(0);
+    }
+    50% {
+      transform: scale(1.1) translateY(-10px);
+    }
+  }
+
+  .surprise-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 1rem 0 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .surprise-subtitle {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  .surprise-content {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 2rem;
+    min-height: 250px;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 1.5rem;
+  }
+
+  .surprise-loading {
+    text-align: center;
+    padding: 3rem 0;
+  }
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .surprise-card {
+    text-align: center;
+  }
+
+  .surprise-emoji {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    display: block;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+
+  .surprise-card h3 {
+    font-size: 1.75rem;
+    margin: 0 0 1rem;
+    font-weight: 700;
+  }
+
+  .surprise-card p {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    opacity: 0.95;
+  }
+
+  .surprise-reward {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+  }
+
+  .reward-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .surprise-timer {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 1.5rem;
+  }
+
+  .timer-display {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    margin-top: 0.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .surprise-actions {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn-claim {
+    background: linear-gradient(135deg, #FFD93D 0%, #FF9F40 100%);
+    color: #333;
+    border: none;
+    padding: 1.25rem 3rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 159, 64, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-claim:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 159, 64, 0.6);
+  }
+
+  .btn-claim:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .btn-claim:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .already-claimed {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .claimed-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .check-icon {
+    font-size: 4rem;
+    background: rgba(76, 175, 80, 0.3);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid rgba(76, 175, 80, 0.6);
+  }
+
+  .claimed-message p {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+
+  .comeback-message {
+    opacity: 0.8;
+    font-size: 1rem !important;
+  }
+
+  .new-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #E74C3C;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    animation: badge-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes badge-pulse {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .daily-surprise-container {
+      padding: 1.5rem;
+    }
+
+    .surprise-icon {
+      font-size: 3rem;
+    }
+
+    .surprise-title {
+      font-size: 1.5rem;
+    }
+
+    .surprise-content {
+      padding: 1.5rem;
+      min-height: 200px;
+    }
+
+    .surprise-emoji {
+      font-size: 3.5rem;
+    }
+
+    .surprise-card h3 {
+      font-size: 1.25rem;
+    }
+
+    .surprise-card p {
+      font-size: 1rem;
+    }
+
+    .btn-claim {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    .timer-display {
+      font-size: 1.5rem;
+    }
+  }
+
+  /* RTL support */
+  [dir="rtl"] .timer-display {
+    direction: ltr;
+  }
+</style>
+
+<script>
+  import { dailySurpriseManager } from '../utils/daily-surprise';
+  import { confetti } from '../utils/confetti';
+  import { soundEffects } from '../utils/sound-effects';
+
+  function initDailySurprise() {
+    const container = document.getElementById('surprise-content');
+    const actionsContainer = document.getElementById('surprise-actions');
+    const alreadyClaimed = document.getElementById('already-claimed');
+    const claimBtn = document.getElementById('btn-claim') as HTMLButtonElement;
+    const timerContainer = document.getElementById('surprise-timer');
+
+    if (!container || !claimBtn) return;
+
+    // Generate today's surprise
+    const surprise = dailySurpriseManager.generateDailySurprise();
+    const canClaim = dailySurpriseManager.canClaimToday();
+
+    // Render surprise card
+    renderSurpriseCard(surprise);
+
+    // Setup UI based on claim status
+    if (!canClaim) {
+      actionsContainer?.style.setProperty('display', 'none');
+      alreadyClaimed?.style.removeProperty('display');
+      startCountdown();
+    } else {
+      claimBtn.disabled = false;
+      claimBtn.addEventListener('click', handleClaim);
+      timerContainer?.style.setProperty('display', 'none');
+    }
+
+    // Update streak display
+    updateStreakDisplay();
+  }
+
+  function renderSurpriseCard(surprise: any) {
+    const container = document.getElementById('surprise-content');
+    if (!container) return;
+
+    const rewardHTML = surprise.reward?.stars
+      ? `<div class="surprise-reward">
+           <div class="reward-item">
+             <span>⭐</span>
+             <span>${surprise.reward.stars}</span>
+           </div>
+         </div>`
+      : '';
+
+    container.innerHTML = `
+      <div class="surprise-card">
+        <span class="surprise-emoji">${getSurpriseEmoji(surprise.type)}</span>
+        <h3>${surprise.title.de}</h3>
+        <p>${surprise.description.de}</p>
+        ${rewardHTML}
+      </div>
+    `;
+
+    if (!surprise.claimed) {
+      const badge = document.createElement('div');
+      badge.className = 'new-badge';
+      badge.setAttribute('data-i18n', 'new');
+      badge.textContent = 'NEU';
+      container.appendChild(badge);
+    }
+  }
+
+  function getSurpriseEmoji(type: string): string {
+    const emojiMap: Record<string, string> = {
+      'featured-story': '⭐',
+      'mystery-challenge': '🎯',
+      'spin-wheel': '🎡',
+      'character-spotlight': '🌟',
+      'trivia-quiz': '🧠',
+      'treasure-hunt': '🗺️',
+      'bonus-bonanza': '🎁',
+    };
+    return emojiMap[type] || '🎁';
+  }
+
+  function handleClaim() {
+    const success = dailySurpriseManager.claimSurprise();
+
+    if (success) {
+      // Play sound
+      soundEffects.play('success');
+
+      // Show confetti
+      confetti();
+
+      // Update UI
+      const actionsContainer = document.getElementById('surprise-actions');
+      const alreadyClaimed = document.getElementById('already-claimed');
+
+      actionsContainer?.style.setProperty('display', 'none');
+      alreadyClaimed?.style.removeProperty('display');
+
+      // Start countdown
+      startCountdown();
+
+      // Dispatch event for other components
+      window.dispatchEvent(new CustomEvent('surprise-claimed'));
+    }
+  }
+
+  function startCountdown() {
+    const timerContainer = document.getElementById('surprise-timer');
+    if (!timerContainer) return;
+
+    timerContainer.style.removeProperty('display');
+
+    const hoursEl = timerContainer.querySelector('.timer-hours');
+    const minutesEl = timerContainer.querySelector('.timer-minutes');
+    const secondsEl = timerContainer.querySelector('.timer-seconds');
+
+    function updateTimer() {
+      const timeUntilNext = dailySurpriseManager.getTimeUntilNext();
+      const hours = Math.floor(timeUntilNext / (1000 * 60 * 60));
+      const minutes = Math.floor((timeUntilNext % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeUntilNext % (1000 * 60)) / 1000);
+
+      if (hoursEl) hoursEl.textContent = hours.toString().padStart(2, '0');
+      if (minutesEl) minutesEl.textContent = minutes.toString().padStart(2, '0');
+      if (secondsEl) secondsEl.textContent = seconds.toString().padStart(2, '0');
+
+      if (timeUntilNext <= 0) {
+        // Reload page at midnight to show new surprise
+        window.location.reload();
+      }
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  }
+
+  function updateStreakDisplay() {
+    const streak = dailySurpriseManager.getStreak();
+    // Update streak counter if present on page
+    window.dispatchEvent(new CustomEvent('streak-updated', { detail: streak }));
+  }
+
+  // Initialize on page load
+  if (typeof window !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initDailySurprise);
+    } else {
+      initDailySurprise();
+    }
+  }
+</script>

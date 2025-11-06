@@ -1,0 +1,75 @@
+---
+/**
+ * Fortune Teller Page - Magical story recommendation experience
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FortuneTeller from '../components/FortuneTeller.astro';
+import { getCollection } from 'astro:content';
+
+const locale = 'de'; // Default to German, can be dynamic
+const allStories = await getCollection('stories');
+
+// Filter stories for the locale
+const stories = allStories.filter(story =>
+  story.data.languages.includes(locale as any)
+);
+
+const pageTitle = {
+  de: 'Geschichten-Wahrsager',
+  ar: 'عراف القصص',
+  en: 'Story Fortune Teller',
+  tr: 'Hikaye Falcısı',
+  ur: 'کہانی کے فال گیر',
+};
+
+const pageDescription = {
+  de: 'Lass die Magie entscheiden! Entdecke die perfekte Geschichte durch mystische Wahrsagerei.',
+  ar: 'دع السحر يقرر! اكتشف القصة المثالية من خلال العرافة الصوفية.',
+  en: 'Let magic decide! Discover the perfect story through mystical fortune telling.',
+  tr: 'Sihrin karar vermesine izin ver! Mistik falcılık yoluyla mükemmel hikayeyi keşfet.',
+  ur: 'جادو کو فیصلہ کرنے دیں! صوفیانہ قسمت بتانے کے ذریعے کامل کہانی دریافت کریں۔',
+};
+---
+
+<BaseLayout
+  title={pageTitle[locale as keyof typeof pageTitle]}
+  description={pageDescription[locale as keyof typeof pageDescription]}
+>
+  <FortuneTeller locale={locale} />
+
+  <!-- Hidden story data for JavaScript -->
+  <script id="storiesData" type="application/json" set:html={JSON.stringify(
+    stories.map(story => ({
+      id: story.id,
+      storyId: story.data.storyId,
+      title: story.data.title,
+      emoji: story.data.emoji,
+      skills: story.data.skills,
+      characterType: story.data.characterType,
+      difficulty: story.data.difficulty,
+      mood: story.data.mood,
+      languages: story.data.languages,
+    }))
+  )} />
+</BaseLayout>
+
+<style is:global>
+  /* Global styles for fortune teller page */
+  body {
+    overflow-x: hidden;
+  }
+
+  .fortune-teller-page {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+  }
+</style>
+
+<script>
+  // Load stories data and make available to fortune teller
+  const storiesDataEl = document.getElementById('storiesData');
+  if (storiesDataEl) {
+    const storiesData = JSON.parse(storiesDataEl.textContent || '[]');
+    (window as any).fortuneTellerStories = storiesData;
+  }
+</script>

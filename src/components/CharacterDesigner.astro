@@ -923,6 +923,24 @@ const { locale } = Astro.props;
 
     document.getElementById('use-in-story-btn')?.addEventListener('click', () => {
       // TODO: Integration with story builder
+    // Listen for load-character event from gallery
+    window.addEventListener('load-character', (e: CustomEvent) => {
+      const char = e.detail;
+      designer = new CharacterDesigner(char);
+      renderCharacter();
+      updateUndoRedoButtons();
+      renderActiveAccessories();
+      
+      // Update UI with loaded character data
+      const nameInput = document.getElementById('character-name') as HTMLInputElement;
+      if (nameInput) nameInput.value = char.name;
+      
+      // Update gender selection
+      document.querySelectorAll('.gender-btn').forEach(btn => btn.classList.remove('active'));
+      const genderBtn = document.querySelector(`[data-gender="${char.gender}"]`);
+      genderBtn?.classList.add('active');
+    });
+
       alert('Story builder integration coming soon!');
     });
   });

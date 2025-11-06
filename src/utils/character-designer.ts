@@ -5,6 +5,15 @@
 
 import type { Locale } from './i18n';
 
+// Helper function for generating unique IDs (SSR-safe)
+function generateUUID(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return generateUUID();
+  }
+  // Fallback for SSR or older browsers
+  return 'char-' + Date.now() + '-' + Math.random().toString(36).substring(2, 11);
+}
+
 export type Gender = 'boy' | 'girl' | 'neutral';
 export type BodyType = 'bear' | 'fox' | 'lion' | 'mouse' | 'rabbit' | 'owl' | 'tiger' | 'human-boy' | 'human-girl';
 export type HairStyle = 'none' | 'short' | 'long' | 'curly' | 'straight' | 'pigtails' | 'ponytail' | 'mohawk' | 'bald' | 'afro' | 'braids' | 'bun' | 'wavy' | 'spiky' | 'buzz' | 'bob' | 'shaggy' | 'bangs' | 'topknot' | 'dreadlocks';
@@ -256,7 +265,7 @@ export const BACKGROUND_TEMPLATES: Record<BackgroundShape, string> = {
 
 // Default character
 export const DEFAULT_CHARACTER: CustomCharacter = {
-  id: crypto.randomUUID(),
+  id: generateUUID(),
   name: 'Mein Charakter',
   gender: 'neutral',
   bodyType: 'bear',

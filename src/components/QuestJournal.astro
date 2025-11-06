@@ -1,0 +1,617 @@
+---
+/**
+ * Quest Journal Component
+ * Shows active, completed, and available quests
+ */
+---
+
+<div class="quest-journal">
+  <div class="journal-header">
+    <h2>Quest-Tagebuch</h2>
+    <div class="quest-filters">
+      <button class="filter-btn active" data-filter="active">Aktiv</button>
+      <button class="filter-btn" data-filter="available">Verfügbar</button>
+      <button class="filter-btn" data-filter="completed">Abgeschlossen</button>
+    </div>
+  </div>
+
+  <div class="quest-list" id="quest-list">
+    <div class="quest-loading">
+      <div class="loading-spinner"></div>
+      <p>Lade Quests...</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .quest-journal {
+    background: linear-gradient(135deg, #2d3561 0%, #1f2544 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    min-height: 500px;
+  }
+
+  .journal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .journal-header h2 {
+    color: white;
+    margin: 0;
+    font-size: 2rem;
+  }
+
+  .quest-filters {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .filter-btn {
+    padding: 0.6rem 1.2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+  }
+
+  .filter-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .filter-btn.active {
+    background: rgba(102, 126, 234, 0.3);
+    border-color: #667eea;
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.4);
+  }
+
+  .quest-list {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .quest-loading {
+    text-align: center;
+    color: white;
+    padding: 3rem;
+  }
+
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .quest-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .quest-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: var(--quest-color);
+  }
+
+  .quest-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .quest-card.common { --quest-color: #4CAF50; }
+  .quest-card.rare { --quest-color: #2196F3; }
+  .quest-card.epic { --quest-color: #9C27B0; }
+  .quest-card.legendary { --quest-color: #FF9800; }
+
+  .quest-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+  }
+
+  .quest-title-area {
+    flex: 1;
+  }
+
+  .quest-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .quest-title {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin: 0 0 0.3rem 0;
+  }
+
+  .quest-type {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: white;
+    margin-top: 0.3rem;
+  }
+
+  .quest-rarity {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .quest-rarity.common { background: rgba(76, 175, 80, 0.2); color: #90EE90; }
+  .quest-rarity.rare { background: rgba(33, 150, 243, 0.2); color: #64B5F6; }
+  .quest-rarity.epic { background: rgba(156, 39, 176, 0.2); color: #CE93D8; }
+  .quest-rarity.legendary { background: rgba(255, 152, 0, 0.2); color: #FFB74D; }
+
+  .quest-description {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    margin: 1rem 0;
+    line-height: 1.6;
+  }
+
+  .quest-progress {
+    margin: 1rem 0;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      transparent 100%
+    );
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .progress-text {
+    color: white;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    text-align: center;
+  }
+
+  .quest-rewards {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+  }
+
+  .reward-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255, 215, 0, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: #FFD700;
+    font-size: 0.9rem;
+    font-weight: bold;
+  }
+
+  .quest-status {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-top: 1rem;
+  }
+
+  .quest-status.active {
+    background: rgba(102, 126, 234, 0.2);
+    color: #667eea;
+  }
+
+  .quest-status.completed {
+    background: rgba(76, 175, 80, 0.2);
+    color: #90EE90;
+  }
+
+  .quest-status.locked {
+    background: rgba(150, 150, 150, 0.2);
+    color: #999;
+  }
+
+  .quest-expires {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+
+  .quest-empty {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 3rem;
+    font-size: 1.1rem;
+  }
+
+  .quest-empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .quest-journal {
+      padding: 1.5rem;
+    }
+
+    .journal-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .journal-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .quest-filters {
+      width: 100%;
+    }
+
+    .filter-btn {
+      flex: 1;
+      padding: 0.5rem 0.8rem;
+      font-size: 0.85rem;
+    }
+
+    .quest-card {
+      padding: 1rem;
+    }
+
+    .quest-title {
+      font-size: 1.1rem;
+    }
+  }
+</style>
+
+<script>
+  import type { Quest } from '../utils/quest-system';
+
+  class QuestJournalManager {
+    private container: HTMLElement | null = null;
+    private questList: HTMLElement | null = null;
+    private currentFilter: string = 'active';
+
+    // Sample quests for demonstration
+    private sampleQuests: Quest[] = [
+      {
+        id: 'daily-read-stories',
+        type: 'daily',
+        rarity: 'common',
+        status: 'active',
+        title: {
+          de: 'Täglicher Leser',
+          ar: 'القارئ اليومي',
+          en: 'Daily Reader',
+          tr: 'Günlük Okuyucu',
+          ur: 'روزانہ قاری',
+        },
+        description: {
+          de: 'Lies heute 2 Geschichten',
+          ar: 'اقرأ قصتين اليوم',
+          en: 'Read 2 stories today',
+          tr: 'Bugün 2 hikaye oku',
+          ur: 'آج 2 کہانیاں پڑھیں',
+        },
+        icon: '📚',
+        xpReward: 75,
+        starReward: 10,
+        progress: {
+          current: 1,
+          required: 2,
+        },
+        expiresAt: Date.now() + 12 * 60 * 60 * 1000, // 12 hours
+      },
+      {
+        id: 'perfect-quiz-master',
+        type: 'weekly',
+        rarity: 'rare',
+        status: 'active',
+        title: {
+          de: 'Quiz-Meister',
+          ar: 'سيد الاختبار',
+          en: 'Quiz Master',
+          tr: 'Test Ustası',
+          ur: 'کوئز ماسٹر',
+        },
+        description: {
+          de: 'Schließe 5 Quizze mit 100% ab',
+          ar: 'أكمل 5 اختبارات بنسبة 100%',
+          en: 'Complete 5 quizzes with 100%',
+          tr: '5 testi %100 ile tamamla',
+          ur: '5 کوئز 100% کے ساتھ مکمل کریں',
+        },
+        icon: '🎯',
+        xpReward: 250,
+        starReward: 25,
+        progress: {
+          current: 2,
+          required: 5,
+        },
+        expiresAt: Date.now() + 5 * 24 * 60 * 60 * 1000, // 5 days
+      },
+      {
+        id: 'hidden-treasure',
+        type: 'hidden',
+        rarity: 'legendary',
+        status: 'available',
+        title: {
+          de: 'Versteckter Schatz',
+          ar: 'الكنز المخفي',
+          en: 'Hidden Treasure',
+          tr: 'Gizli Hazine',
+          ur: 'چھپا خزانہ',
+        },
+        description: {
+          de: 'Finde alle versteckten Ostereier in den Geschichten',
+          ar: 'ابحث عن جميع البيض المخفي في القصص',
+          en: 'Find all hidden easter eggs in stories',
+          tr: 'Hikayelerdeki tüm gizli yumurtaları bul',
+          ur: 'کہانیوں میں تمام چھپے ہوئے انڈے تلاش کریں',
+        },
+        icon: '🏆',
+        xpReward: 500,
+        starReward: 100,
+        itemRewards: ['legendary-book', 'golden-charm'],
+        progress: {
+          current: 3,
+          required: 10,
+        },
+        discoveredAt: Date.now() - 2 * 24 * 60 * 60 * 1000,
+      },
+      {
+        id: 'story-chain-1',
+        type: 'chain',
+        rarity: 'epic',
+        status: 'locked',
+        title: {
+          de: 'Brunos Reise - Teil 1',
+          ar: 'رحلة برونو - الجزء 1',
+          en: "Bruno's Journey - Part 1",
+          tr: 'Bruno\'nun Yolculuğu - Bölüm 1',
+          ur: 'برونو کا سفر - حصہ 1',
+        },
+        description: {
+          de: 'Schließe die Hauptgeschichte von Bruno ab',
+          ar: 'أكمل قصة برونو الرئيسية',
+          en: "Complete Bruno's main story",
+          tr: 'Bruno\'nun ana hikayesini tamamla',
+          ur: 'برونو کی مرکزی کہانی مکمل کریں',
+        },
+        icon: '🐻',
+        xpReward: 300,
+        starReward: 50,
+        progress: {
+          current: 0,
+          required: 1,
+        },
+        requirements: {
+          level: 5,
+        },
+      },
+    ];
+
+    constructor() {
+      this.container = document.querySelector('.quest-journal');
+      this.questList = document.getElementById('quest-list');
+      this.init();
+    }
+
+    private init(): void {
+      this.attachEventListeners();
+      this.renderQuests();
+    }
+
+    private attachEventListeners(): void {
+      // Filter buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const target = e.currentTarget as HTMLElement;
+          const filter = target.dataset.filter;
+          if (filter) {
+            this.switchFilter(filter);
+          }
+        });
+      });
+
+      // Listen for quest updates
+      window.addEventListener('quest-complete', () => {
+        this.renderQuests();
+      });
+    }
+
+    private switchFilter(filter: string): void {
+      this.currentFilter = filter;
+
+      // Update active button
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-filter') === filter) {
+          btn.classList.add('active');
+        }
+      });
+
+      this.renderQuests();
+    }
+
+    private renderQuests(): void {
+      if (!this.questList) return;
+
+      const filteredQuests = this.sampleQuests.filter(quest => {
+        if (this.currentFilter === 'active') {
+          return quest.status === 'active';
+        } else if (this.currentFilter === 'available') {
+          return quest.status === 'available' || quest.status === 'locked';
+        } else if (this.currentFilter === 'completed') {
+          return quest.status === 'completed';
+        }
+        return true;
+      });
+
+      if (filteredQuests.length === 0) {
+        this.questList.innerHTML = `
+          <div class="quest-empty">
+            <div class="quest-empty-icon">📜</div>
+            <p>Keine Quests in dieser Kategorie</p>
+          </div>
+        `;
+        return;
+      }
+
+      this.questList.innerHTML = filteredQuests.map(quest => this.renderQuestCard(quest)).join('');
+    }
+
+    private renderQuestCard(quest: Quest): string {
+      const progressPercent = (quest.progress.current / quest.progress.required) * 100;
+      const expiresText = quest.expiresAt ? this.formatTimeRemaining(quest.expiresAt) : '';
+
+      return `
+        <div class="quest-card ${quest.rarity}" data-quest-id="${quest.id}">
+          <div class="quest-header-row">
+            <div class="quest-title-area">
+              <div class="quest-icon">${quest.icon}</div>
+              <h3 class="quest-title">${quest.title.de}</h3>
+              <span class="quest-type">${this.getQuestTypeLabel(quest.type)}</span>
+            </div>
+            <span class="quest-rarity ${quest.rarity}">${this.getRarityLabel(quest.rarity)}</span>
+          </div>
+
+          <p class="quest-description">${quest.description.de}</p>
+
+          <div class="quest-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${progressPercent}%"></div>
+            </div>
+            <div class="progress-text">
+              ${quest.progress.current} / ${quest.progress.required}
+            </div>
+          </div>
+
+          <div class="quest-rewards">
+            <span class="reward-badge">✨ ${quest.xpReward} XP</span>
+            <span class="reward-badge">⭐ ${quest.starReward} Sterne</span>
+            ${quest.itemRewards ? `<span class="reward-badge">🎁 ${quest.itemRewards.length} Items</span>` : ''}
+          </div>
+
+          <div class="quest-status ${quest.status}">${this.getStatusLabel(quest.status)}</div>
+
+          ${expiresText ? `<div class="quest-expires">⏰ ${expiresText}</div>` : ''}
+        </div>
+      `;
+    }
+
+    private getQuestTypeLabel(type: string): string {
+      const labels: Record<string, string> = {
+        daily: 'Täglich',
+        weekly: 'Wöchentlich',
+        story: 'Geschichte',
+        hidden: 'Versteckt',
+        chain: 'Quest-Kette',
+      };
+      return labels[type] || type;
+    }
+
+    private getRarityLabel(rarity: string): string {
+      const labels: Record<string, string> = {
+        common: 'Häufig',
+        rare: 'Selten',
+        epic: 'Episch',
+        legendary: 'Legendär',
+      };
+      return labels[rarity] || rarity;
+    }
+
+    private getStatusLabel(status: string): string {
+      const labels: Record<string, string> = {
+        active: 'Aktiv',
+        available: 'Verfügbar',
+        completed: 'Abgeschlossen',
+        locked: 'Gesperrt',
+      };
+      return labels[status] || status;
+    }
+
+    private formatTimeRemaining(timestamp: number): string {
+      const remaining = timestamp - Date.now();
+      const hours = Math.floor(remaining / (1000 * 60 * 60));
+      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+
+      if (hours > 24) {
+        const days = Math.floor(hours / 24);
+        return `Läuft ab in ${days} Tag${days > 1 ? 'en' : ''}`;
+      }
+      return `Läuft ab in ${hours}h ${minutes}m`;
+    }
+  }
+
+  // Initialize on page load
+  if (typeof window !== 'undefined') {
+    new QuestJournalManager();
+  }
+</script>

@@ -1,0 +1,971 @@
+---
+/**
+ * Rhythm Game Component
+ * Arrow-based dance battle game with scoring
+ */
+
+interface Props {
+  lang: string;
+}
+
+const { lang } = Astro.props;
+---
+
+<div class="rhythm-game" id="rhythm-game">
+  <!-- Game Screen -->
+  <div class="game-screen">
+    <!-- Arrow Lanes -->
+    <div class="arrow-lanes">
+      <div class="lane" data-direction="left">
+        <div class="target-zone">⬅️</div>
+        <div class="notes-container" data-direction="left"></div>
+      </div>
+      <div class="lane" data-direction="down">
+        <div class="target-zone">⬇️</div>
+        <div class="notes-container" data-direction="down"></div>
+      </div>
+      <div class="lane" data-direction="up">
+        <div class="target-zone">⬆️</div>
+        <div class="notes-container" data-direction="up"></div>
+      </div>
+      <div class="lane" data-direction="right">
+        <div class="target-zone">➡️</div>
+        <div class="notes-container" data-direction="right"></div>
+      </div>
+    </div>
+
+    <!-- Score Display -->
+    <div class="game-hud">
+      <div class="score-display">
+        <div class="score-label">Score</div>
+        <div class="score-value" id="game-score">0</div>
+      </div>
+
+      <div class="combo-display" id="combo-display">
+        <div class="combo-value">0x</div>
+        <div class="combo-label">COMBO</div>
+      </div>
+
+      <div class="accuracy-feedback" id="accuracy-feedback"></div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+
+      <div class="stars-display">
+        <span class="star" data-stars="1">⭐</span>
+        <span class="star" data-stars="2">⭐</span>
+        <span class="star" data-stars="3">⭐</span>
+        <span class="star" data-stars="4">⭐</span>
+        <span class="star" data-stars="5">⭐</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Setup -->
+  <div class="game-setup" id="game-setup">
+    <h2>Rhythm Game Setup</h2>
+
+    <div class="setup-option">
+      <label>Difficulty</label>
+      <div class="button-group">
+        <button class="setup-btn active" data-difficulty="easy">
+          Easy<br><small>4 arrows/min</small>
+        </button>
+        <button class="setup-btn" data-difficulty="medium">
+          Medium<br><small>8 arrows/min</small>
+        </button>
+        <button class="setup-btn" data-difficulty="hard">
+          Hard<br><small>16 arrows/min</small>
+        </button>
+      </div>
+    </div>
+
+    <div class="setup-option">
+      <label>Game Mode</label>
+      <div class="button-group">
+        <button class="setup-btn active" data-mode="single">
+          Single Player
+        </button>
+        <button class="setup-btn" data-mode="versus">
+          Versus Mode
+        </button>
+      </div>
+    </div>
+
+    <div class="setup-option" id="player-names" style="display: none;">
+      <label>Player Names</label>
+      <input type="text" id="player1-name" placeholder="Player 1" value="Player 1" />
+      <input type="text" id="player2-name" placeholder="Player 2" value="Player 2" />
+    </div>
+
+    <button class="start-game-btn" id="start-game-btn">
+      🎮 Start Game
+    </button>
+  </div>
+
+  <!-- Game Results -->
+  <div class="game-results" id="game-results" style="display: none;">
+    <div class="results-container">
+      <h2>🎉 Game Complete!</h2>
+
+      <div class="final-stars" id="final-stars">
+        <span class="star">⭐</span>
+        <span class="star">⭐</span>
+        <span class="star">⭐</span>
+      </div>
+
+      <div class="results-stats">
+        <div class="result-item">
+          <span class="result-label">Final Score</span>
+          <span class="result-value" id="result-score">0</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Max Combo</span>
+          <span class="result-value" id="result-combo">0x</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Perfect Hits</span>
+          <span class="result-value" id="result-perfect">0</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Good Hits</span>
+          <span class="result-value" id="result-good">0</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">OK Hits</span>
+          <span class="result-value" id="result-ok">0</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Misses</span>
+          <span class="result-value" id="result-miss">0</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Accuracy</span>
+          <span class="result-value" id="result-accuracy">0%</span>
+        </div>
+        <div class="result-item highlight">
+          <span class="result-label">Stars Earned</span>
+          <span class="result-value" id="result-stars">⭐ 0</span>
+        </div>
+      </div>
+
+      <div class="results-actions">
+        <button class="action-btn" id="play-again-btn">
+          🔄 Play Again
+        </button>
+        <button class="action-btn" id="change-settings-btn">
+          ⚙️ Change Settings
+        </button>
+        <button class="action-btn" id="back-to-party-btn">
+          🎉 Back to Dance Party
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .rhythm-game {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Game Screen */
+  .game-screen {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    display: none;
+  }
+
+  .game-screen.active {
+    display: block;
+  }
+
+  .arrow-lanes {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+  }
+
+  .lane {
+    width: 100px;
+    height: 600px;
+    position: relative;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+  }
+
+  .target-zone {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    background: radial-gradient(circle, rgba(255, 107, 107, 0.3), transparent);
+    border: 3px solid #ff6b6b;
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+  }
+
+  .target-zone.hit {
+    animation: targetHit 0.3s ease;
+  }
+
+  @keyframes targetHit {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.2); border-color: #4ecdc4; }
+  }
+
+  .notes-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .note {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 70px;
+    font-size: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle, rgba(78, 205, 196, 0.8), rgba(68, 163, 219, 0.6));
+    border: 3px solid #4ecdc4;
+    border-radius: 50%;
+    box-shadow: 0 4px 20px rgba(78, 205, 196, 0.5);
+    animation: notefall 3s linear;
+  }
+
+  @keyframes notefall {
+    from { top: -100px; }
+    to { top: 600px; }
+  }
+
+  .note.hit-perfect {
+    animation: hitPerfect 0.3s ease;
+  }
+
+  .note.hit-good {
+    animation: hitGood 0.3s ease;
+  }
+
+  .note.hit-ok {
+    animation: hitOk 0.3s ease;
+  }
+
+  @keyframes hitPerfect {
+    0% { transform: translateX(-50%) scale(1); opacity: 1; }
+    100% { transform: translateX(-50%) scale(2); opacity: 0; }
+  }
+
+  @keyframes hitGood {
+    0% { transform: translateX(-50%) scale(1); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1.5); opacity: 0; }
+  }
+
+  @keyframes hitOk {
+    0% { transform: translateX(-50%) scale(1); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1.2); opacity: 0; }
+  }
+
+  /* HUD */
+  .game-hud {
+    position: absolute;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+  }
+
+  .score-display {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .score-label {
+    font-size: 1rem;
+    opacity: 0.8;
+    margin-bottom: 0.25rem;
+  }
+
+  .score-value {
+    font-size: 3rem;
+    font-weight: bold;
+    background: linear-gradient(135deg, #4ecdc4, #44a3db);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(78, 205, 196, 0.5);
+  }
+
+  .combo-display {
+    text-align: center;
+    margin-bottom: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .combo-display.active {
+    opacity: 1;
+    animation: comboPulse 0.5s ease;
+  }
+
+  @keyframes comboPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+
+  .combo-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ffd93d;
+  }
+
+  .combo-label {
+    font-size: 1rem;
+    opacity: 0.8;
+  }
+
+  .accuracy-feedback {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .accuracy-feedback.perfect {
+    color: #4ecdc4;
+    animation: feedbackPop 0.5s ease;
+  }
+
+  .accuracy-feedback.good {
+    color: #44a3db;
+    animation: feedbackPop 0.5s ease;
+  }
+
+  .accuracy-feedback.ok {
+    color: #ffd93d;
+    animation: feedbackPop 0.5s ease;
+  }
+
+  .accuracy-feedback.miss {
+    color: #ff6b6b;
+    animation: feedbackShake 0.5s ease;
+  }
+
+  @keyframes feedbackPop {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(1); opacity: 0; }
+  }
+
+  @keyframes feedbackShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4ecdc4, #44a3db);
+    transition: width 0.3s ease;
+  }
+
+  .stars-display {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 2rem;
+  }
+
+  .star {
+    opacity: 0.3;
+    transition: all 0.3s ease;
+  }
+
+  .star.earned {
+    opacity: 1;
+    animation: starEarned 0.5s ease;
+  }
+
+  @keyframes starEarned {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.5) rotate(180deg); }
+  }
+
+  /* Game Setup */
+  .game-setup {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  .game-setup h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #4ecdc4, #44a3db);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .setup-option {
+    margin-bottom: 2rem;
+  }
+
+  .setup-option label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+    color: #4ecdc4;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .setup-btn {
+    flex: 1;
+    padding: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+  }
+
+  .setup-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .setup-btn.active {
+    background: linear-gradient(135deg, #4ecdc4, #44a3db);
+    border-color: #4ecdc4;
+    box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);
+  }
+
+  .setup-option input[type="text"] {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+  }
+
+  .start-game-btn {
+    width: 100%;
+    padding: 1.5rem;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff6b6b, #ff1744);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 30px rgba(255, 107, 107, 0.4);
+  }
+
+  .start-game-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(255, 107, 107, 0.6);
+  }
+
+  /* Game Results */
+  .game-results {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .results-container {
+    max-width: 600px;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(68, 163, 219, 0.1));
+    border: 2px solid #4ecdc4;
+    border-radius: 24px;
+    text-align: center;
+  }
+
+  .results-container h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .final-stars {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+  }
+
+  .results-stats {
+    margin-bottom: 2rem;
+  }
+
+  .result-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .result-item.highlight {
+    background: rgba(255, 215, 0, 0.1);
+    border: 2px solid #ffd93d;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+
+  .result-label {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .result-value {
+    font-weight: bold;
+    color: #4ecdc4;
+  }
+
+  .results-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .action-btn {
+    padding: 1rem;
+    border: 2px solid #4ecdc4;
+    border-radius: 12px;
+    background: rgba(78, 205, 196, 0.1);
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .action-btn:hover {
+    background: rgba(78, 205, 196, 0.2);
+    transform: translateY(-2px);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .arrow-lanes {
+      gap: 0.5rem;
+      padding: 1rem;
+    }
+
+    .lane {
+      width: 70px;
+      height: 400px;
+    }
+
+    .target-zone {
+      width: 60px;
+      height: 60px;
+      font-size: 2rem;
+    }
+
+    .note {
+      width: 50px;
+      height: 50px;
+      font-size: 1.8rem;
+    }
+
+    .score-value {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+<script>
+  import {
+    generateRhythmNotes,
+    calculateScore,
+    determineAccuracy,
+    saveDanceStats,
+    type RhythmNote,
+    type DanceStats,
+  } from '../utils/dance-party';
+
+  let difficulty: 'easy' | 'medium' | 'hard' = 'easy';
+  let gameMode: 'single' | 'versus' = 'single';
+  let isPlaying = false;
+  let notes: RhythmNote[] = [];
+  let currentNoteIndex = 0;
+  let startTime = 0;
+
+  const stats: DanceStats = {
+    perfectHits: 0,
+    goodHits: 0,
+    okHits: 0,
+    misses: 0,
+    maxCombo: 0,
+    currentCombo: 0,
+    score: 0,
+    stars: 0,
+  };
+
+  // Mock track for demo
+  const mockTrack = {
+    id: 'demo',
+    name: 'Demo Track',
+    genre: 'Pop',
+    bpm: 120,
+    duration: 60,
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setupEventListeners();
+  });
+
+  function setupEventListeners() {
+    // Difficulty buttons
+    document.querySelectorAll('[data-difficulty]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        document.querySelectorAll('[data-difficulty]').forEach((b) => b.classList.remove('active'));
+        target.classList.add('active');
+        difficulty = target.dataset.difficulty as 'easy' | 'medium' | 'hard';
+      });
+    });
+
+    // Mode buttons
+    document.querySelectorAll('[data-mode]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        document.querySelectorAll('[data-mode]').forEach((b) => b.classList.remove('active'));
+        target.classList.add('active');
+        gameMode = target.dataset.mode as 'single' | 'versus';
+
+        const playerNames = document.getElementById('player-names');
+        if (playerNames) {
+          playerNames.style.display = gameMode === 'versus' ? 'block' : 'none';
+        }
+      });
+    });
+
+    // Start game
+    document.getElementById('start-game-btn')?.addEventListener('click', startGame);
+
+    // Results actions
+    document.getElementById('play-again-btn')?.addEventListener('click', playAgain);
+    document.getElementById('change-settings-btn')?.addEventListener('click', changeSettings);
+    document.getElementById('back-to-party-btn')?.addEventListener('click', () => {
+      window.location.href = '/dance-party';
+    });
+
+    // Keyboard controls
+    document.addEventListener('keydown', handleKeyPress);
+  }
+
+  function startGame() {
+    // Hide setup, show game screen
+    const setup = document.getElementById('game-setup');
+    const screen = document.querySelector('.game-screen');
+    if (setup) setup.style.display = 'none';
+    if (screen) screen.classList.add('active');
+
+    // Generate notes
+    notes = generateRhythmNotes(mockTrack, difficulty);
+    currentNoteIndex = 0;
+    isPlaying = true;
+    startTime = Date.now();
+
+    // Reset stats
+    Object.keys(stats).forEach((key) => {
+      stats[key as keyof DanceStats] = 0;
+    });
+
+    updateHUD();
+    spawnNotes();
+  }
+
+  function spawnNotes() {
+    if (!isPlaying || currentNoteIndex >= notes.length) {
+      endGame();
+      return;
+    }
+
+    const note = notes[currentNoteIndex];
+    const container = document.querySelector(
+      `.notes-container[data-direction="${note.direction}"]`
+    );
+
+    if (container) {
+      const noteEl = document.createElement('div');
+      noteEl.className = 'note';
+      noteEl.dataset.index = currentNoteIndex.toString();
+      noteEl.dataset.direction = note.direction;
+
+      const arrows = {
+        left: '⬅️',
+        down: '⬇️',
+        up: '⬆️',
+        right: '➡️',
+      };
+
+      noteEl.textContent = arrows[note.direction];
+      container.appendChild(noteEl);
+
+      // Remove note after animation
+      setTimeout(() => {
+        if (noteEl.parentElement && note.hit === null) {
+          noteEl.remove();
+          handleMiss();
+        }
+      }, 3000);
+    }
+
+    currentNoteIndex++;
+
+    // Spawn next note
+    setTimeout(() => spawnNotes(), 1000);
+  }
+
+  function handleKeyPress(e: KeyboardEvent) {
+    if (!isPlaying) return;
+
+    const keyMap: Record<string, 'left' | 'down' | 'up' | 'right'> = {
+      ArrowLeft: 'left',
+      ArrowDown: 'down',
+      ArrowUp: 'up',
+      ArrowRight: 'right',
+    };
+
+    const direction = keyMap[e.key];
+    if (!direction) return;
+
+    // Find active note in this lane
+    const container = document.querySelector(
+      `.notes-container[data-direction="${direction}"]`
+    );
+    if (!container) return;
+
+    const activeNotes = container.querySelectorAll('.note');
+    if (activeNotes.length === 0) return;
+
+    const note = activeNotes[0] as HTMLElement;
+    const noteIndex = parseInt(note.dataset.index || '0');
+    const noteData = notes[noteIndex];
+
+    // Calculate timing
+    const noteTop = note.getBoundingClientRect().top;
+    const targetTop = document.querySelector('.target-zone')?.getBoundingClientRect().top || 0;
+    const offset = Math.abs(noteTop - targetTop);
+
+    // Determine accuracy
+    const accuracy = determineAccuracy(offset);
+    noteData.hit = true;
+    noteData.accuracy = accuracy;
+
+    // Update stats
+    if (accuracy === 'perfect') {
+      stats.perfectHits++;
+      stats.currentCombo++;
+    } else if (accuracy === 'good') {
+      stats.goodHits++;
+      stats.currentCombo++;
+    } else if (accuracy === 'ok') {
+      stats.okHits++;
+      stats.currentCombo++;
+    } else {
+      stats.misses++;
+      stats.currentCombo = 0;
+    }
+
+    stats.maxCombo = Math.max(stats.maxCombo, stats.currentCombo);
+    stats.score += calculateScore(accuracy, stats.currentCombo);
+
+    // Visual feedback
+    showAccuracyFeedback(accuracy);
+    note.classList.add(`hit-${accuracy}`);
+    setTimeout(() => note.remove(), 300);
+
+    const targetZone = document.querySelector(
+      `.lane[data-direction="${direction}"] .target-zone`
+    );
+    targetZone?.classList.add('hit');
+    setTimeout(() => targetZone?.classList.remove('hit'), 300);
+
+    updateHUD();
+  }
+
+  function handleMiss() {
+    stats.misses++;
+    stats.currentCombo = 0;
+    showAccuracyFeedback('miss');
+    updateHUD();
+  }
+
+  function showAccuracyFeedback(accuracy: string) {
+    const feedback = document.getElementById('accuracy-feedback');
+    if (!feedback) return;
+
+    const messages = {
+      perfect: 'PERFECT!',
+      good: 'GOOD!',
+      ok: 'OK',
+      miss: 'MISS',
+    };
+
+    feedback.textContent = messages[accuracy as keyof typeof messages];
+    feedback.className = `accuracy-feedback ${accuracy}`;
+
+    setTimeout(() => {
+      feedback.textContent = '';
+      feedback.className = 'accuracy-feedback';
+    }, 500);
+  }
+
+  function updateHUD() {
+    const scoreEl = document.getElementById('game-score');
+    const comboEl = document.querySelector('.combo-display');
+    const comboValue = comboEl?.querySelector('.combo-value');
+
+    if (scoreEl) scoreEl.textContent = stats.score.toString();
+    if (comboValue) comboValue.textContent = `${stats.currentCombo}x`;
+
+    if (comboEl) {
+      if (stats.currentCombo > 0) {
+        comboEl.classList.add('active');
+      } else {
+        comboEl.classList.remove('active');
+      }
+    }
+
+    // Update progress
+    const progress = (currentNoteIndex / notes.length) * 100;
+    const progressFill = document.getElementById('progress-fill');
+    if (progressFill) progressFill.style.width = `${progress}%`;
+
+    // Update stars
+    const starsEarned = calculateStars();
+    stats.stars = starsEarned;
+    updateStarsDisplay(starsEarned);
+  }
+
+  function calculateStars(): number {
+    const accuracy = stats.perfectHits + stats.goodHits + stats.okHits;
+    const total = accuracy + stats.misses;
+    const percentage = (accuracy / total) * 100;
+
+    if (percentage >= 98) return 5;
+    if (percentage >= 90) return 4;
+    if (percentage >= 80) return 3;
+    if (percentage >= 70) return 2;
+    if (percentage >= 50) return 1;
+    return 0;
+  }
+
+  function updateStarsDisplay(count: number) {
+    document.querySelectorAll('.star').forEach((star, index) => {
+      if (index < count) {
+        star.classList.add('earned');
+      } else {
+        star.classList.remove('earned');
+      }
+    });
+  }
+
+  function endGame() {
+    isPlaying = false;
+
+    // Save stats
+    saveDanceStats(stats);
+
+    // Show results
+    const results = document.getElementById('game-results');
+    if (results) results.style.display = 'flex';
+
+    // Populate results
+    document.getElementById('result-score')!.textContent = stats.score.toString();
+    document.getElementById('result-combo')!.textContent = `${stats.maxCombo}x`;
+    document.getElementById('result-perfect')!.textContent = stats.perfectHits.toString();
+    document.getElementById('result-good')!.textContent = stats.goodHits.toString();
+    document.getElementById('result-ok')!.textContent = stats.okHits.toString();
+    document.getElementById('result-miss')!.textContent = stats.misses.toString();
+
+    const total = stats.perfectHits + stats.goodHits + stats.okHits + stats.misses;
+    const accuracy = ((stats.perfectHits + stats.goodHits + stats.okHits) / total) * 100;
+    document.getElementById('result-accuracy')!.textContent = `${accuracy.toFixed(1)}%`;
+    document.getElementById('result-stars')!.textContent = `⭐ ${stats.stars}`;
+
+    // Show final stars
+    const finalStars = document.getElementById('final-stars');
+    if (finalStars) {
+      finalStars.innerHTML = '⭐'.repeat(stats.stars);
+    }
+  }
+
+  function playAgain() {
+    // Reset and restart
+    const results = document.getElementById('game-results');
+    if (results) results.style.display = 'none';
+
+    startGame();
+  }
+
+  function changeSettings() {
+    // Hide results and game, show setup
+    const results = document.getElementById('game-results');
+    const screen = document.querySelector('.game-screen');
+    const setup = document.getElementById('game-setup');
+
+    if (results) results.style.display = 'none';
+    if (screen) screen.classList.remove('active');
+    if (setup) setup.style.display = 'block';
+  }
+</script>

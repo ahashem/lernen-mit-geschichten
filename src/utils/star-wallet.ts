@@ -31,6 +31,7 @@ export type EarnReason =
   | 'streak-milestone'
   | 'first-story'
   | 'language-explorer'
+  | 'music-composition'
   | 'refund';
 
 export const EARN_AMOUNTS: Record<EarnReason, number> = {
@@ -45,6 +46,7 @@ export const EARN_AMOUNTS: Record<EarnReason, number> = {
   'streak-milestone': 25,
   'first-story': 10,
   'language-explorer': 5,
+  'music-composition': 25,
   refund: 0, // Variable amount
 };
 

@@ -1,0 +1,689 @@
+---
+/**
+ * Virtual Pet Display Component
+ * Shows the pet with animations, stats, and interactions
+ */
+
+interface Props {
+  locale: string;
+}
+
+const { locale } = Astro.props;
+---
+
+<div class="virtual-pet-container" id="virtualPetContainer">
+  <div class="pet-environment" id="petEnvironment">
+    <canvas id="petCanvas" width="600" height="600"></canvas>
+
+    <!-- Pet Info Overlay -->
+    <div class="pet-info-overlay" id="petInfoOverlay">
+      <div class="pet-name" id="petName">-</div>
+      <div class="pet-level">
+        <span class="level-label" data-i18n="petLevel">Level</span>
+        <span id="petLevelValue">1</span>
+      </div>
+    </div>
+
+    <!-- Weather Effects -->
+    <div class="weather-effects" id="weatherEffects"></div>
+
+    <!-- Pet Mood Indicator -->
+    <div class="mood-indicator" id="moodIndicator">
+      <span class="mood-emoji" id="moodEmoji">😊</span>
+      <span class="mood-text" id="moodText" data-i18n="moodHappy">Happy</span>
+    </div>
+  </div>
+
+  <!-- Stats Panel -->
+  <div class="stats-panel">
+    <h3 data-i18n="petStats">Pet Stats</h3>
+
+    <div class="stat-bar">
+      <div class="stat-label">
+        <span data-i18n="happiness">Happiness</span>
+        <span class="stat-value" id="happinessValue">80</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill happiness-fill" id="happinessFill" style="width: 80%"></div>
+      </div>
+    </div>
+
+    <div class="stat-bar">
+      <div class="stat-label">
+        <span data-i18n="hunger">Hunger</span>
+        <span class="stat-value" id="hungerValue">30</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill hunger-fill" id="hungerFill" style="width: 30%"></div>
+      </div>
+    </div>
+
+    <div class="stat-bar">
+      <div class="stat-label">
+        <span data-i18n="energy">Energy</span>
+        <span class="stat-value" id="energyValue">70</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill energy-fill" id="energyFill" style="width: 70%"></div>
+      </div>
+    </div>
+
+    <div class="stat-bar">
+      <div class="stat-label">
+        <span data-i18n="health">Health</span>
+        <span class="stat-value" id="healthValue">100</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill health-fill" id="healthFill" style="width: 100%"></div>
+      </div>
+    </div>
+
+    <!-- Growth Stage -->
+    <div class="growth-stage">
+      <span data-i18n="petGrowthStage">Growth Stage</span>:
+      <span class="stage-badge" id="growthStage" data-i18n="stageEgg">Egg</span>
+    </div>
+
+    <!-- Experience Bar -->
+    <div class="experience-bar">
+      <div class="exp-label">
+        <span data-i18n="petExperience">Experience</span>
+        <span class="exp-value"><span id="currentExp">0</span> / <span id="nextLevelExp">100</span></span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill exp-fill" id="expFill" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Warning Notifications -->
+  <div class="warning-notifications" id="warningNotifications"></div>
+</div>
+
+<style>
+  .virtual-pet-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .pet-environment {
+    position: relative;
+    background: linear-gradient(to bottom, #87CEEB 0%, #98D8C8 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+
+  #petCanvas {
+    display: block;
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    margin: 0 auto;
+    cursor: pointer;
+  }
+
+  .pet-info-overlay {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+  }
+
+  .pet-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.25rem;
+  }
+
+  .pet-level {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .level-label {
+    margin-right: 0.5rem;
+  }
+
+  #petLevelValue {
+    font-weight: bold;
+    color: #FF9F40;
+  }
+
+  .weather-effects {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .mood-indicator {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .mood-emoji {
+    font-size: 2rem;
+  }
+
+  .mood-text {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .stats-panel {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  .stats-panel h3 {
+    margin: 0 0 1.5rem 0;
+    color: #333;
+    font-size: 1.5rem;
+  }
+
+  .stat-bar {
+    margin-bottom: 1.25rem;
+  }
+
+  .stat-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #555;
+  }
+
+  .stat-value {
+    color: #FF9F40;
+  }
+
+  .progress-bar {
+    height: 24px;
+    background: #f0f0f0;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 0.5s ease, background-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .happiness-fill {
+    background: linear-gradient(90deg, #FFD93D, #FFA500);
+  }
+
+  .hunger-fill {
+    background: linear-gradient(90deg, #FF6B6B, #C92A2A);
+  }
+
+  .energy-fill {
+    background: linear-gradient(90deg, #6BCF7F, #2E7D32);
+  }
+
+  .health-fill {
+    background: linear-gradient(90deg, #4FC3F7, #0277BD);
+  }
+
+  .exp-fill {
+    background: linear-gradient(90deg, #9C27B0, #6A1B9A);
+  }
+
+  .growth-stage {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #f0f0f0;
+    font-weight: 600;
+    color: #555;
+  }
+
+  .stage-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.35rem 1rem;
+    border-radius: 20px;
+    margin-left: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .experience-bar {
+    margin-top: 1rem;
+  }
+
+  .exp-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .exp-value {
+    font-weight: bold;
+    color: #9C27B0;
+  }
+
+  .warning-notifications {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .warning-notification {
+    background: linear-gradient(135deg, #FF6B6B, #C92A2A);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    animation: slideIn 0.3s ease;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .warning-notification.success {
+    background: linear-gradient(135deg, #6BCF7F, #2E7D32);
+  }
+
+  .warning-notification.info {
+    background: linear-gradient(135deg, #4FC3F7, #0277BD);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .virtual-pet-container {
+      padding: 1rem;
+    }
+
+    .pet-info-overlay {
+      padding: 0.5rem 1rem;
+    }
+
+    .pet-name {
+      font-size: 1.25rem;
+    }
+
+    .mood-indicator {
+      padding: 0.5rem 0.75rem;
+    }
+
+    .mood-emoji {
+      font-size: 1.5rem;
+    }
+
+    .stats-panel {
+      padding: 1.5rem;
+    }
+
+    .warning-notifications {
+      bottom: 1rem;
+      right: 1rem;
+      left: 1rem;
+    }
+  }
+</style>
+
+<script>
+  import type { Pet, PetMood } from '../utils/virtual-pets';
+  import { calculateMood, updatePetStats } from '../utils/virtual-pets';
+
+  class PetDisplay {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private pet: Pet | null = null;
+    private animationFrame: number = 0;
+    private mouseX: number = 0;
+    private mouseY: number = 0;
+    private petX: number = 300;
+    private petY: number = 300;
+    private targetX: number = 300;
+    private targetY: number = 300;
+    private time: number = 0;
+
+    constructor() {
+      const canvas = document.getElementById('petCanvas') as HTMLCanvasElement;
+      if (!canvas) return;
+
+      this.canvas = canvas;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      this.ctx = ctx;
+
+      this.setupEventListeners();
+      this.animate();
+    }
+
+    setPet(pet: Pet): void {
+      this.pet = updatePetStats(pet);
+      this.updateUI();
+    }
+
+    private setupEventListeners(): void {
+      this.canvas.addEventListener('mousemove', (e) => {
+        const rect = this.canvas.getBoundingClientRect();
+        this.mouseX = (e.clientX - rect.left) * (this.canvas.width / rect.width);
+        this.mouseY = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+
+        if (this.pet && this.pet.stats.happiness > 60) {
+          this.targetX = this.mouseX;
+          this.targetY = this.mouseY;
+        }
+      });
+
+      this.canvas.addEventListener('click', () => {
+        if (this.pet) {
+          this.showReaction();
+        }
+      });
+    }
+
+    private showReaction(): void {
+      const reactions = ['petPurrs', 'petJumps', 'petSpins', 'petWags'];
+      const reaction = reactions[Math.floor(Math.random() * reactions.length)];
+      this.showNotification(reaction, 'info');
+
+      // Trigger animation
+      this.animationFrame = 0;
+    }
+
+    private updateUI(): void {
+      if (!this.pet) return;
+
+      const mood = calculateMood(this.pet.stats);
+
+      // Update pet name and level
+      const petNameEl = document.getElementById('petName');
+      if (petNameEl) petNameEl.textContent = this.pet.name;
+
+      const levelEl = document.getElementById('petLevelValue');
+      if (levelEl) levelEl.textContent = this.pet.level.toString();
+
+      // Update mood
+      this.updateMoodIndicator(mood);
+
+      // Update stats
+      this.updateStat('happiness', this.pet.stats.happiness);
+      this.updateStat('hunger', this.pet.stats.hunger);
+      this.updateStat('energy', this.pet.stats.energy);
+      this.updateStat('health', this.pet.stats.health);
+
+      // Update growth stage
+      const stageEl = document.getElementById('growthStage');
+      if (stageEl) {
+        stageEl.textContent = this.pet.growthStage;
+        stageEl.setAttribute('data-i18n', `stage${this.pet.growthStage.charAt(0).toUpperCase() + this.pet.growthStage.slice(1)}`);
+      }
+
+      // Update experience
+      const currentExpEl = document.getElementById('currentExp');
+      const nextLevelExpEl = document.getElementById('nextLevelExp');
+      const expFillEl = document.getElementById('expFill');
+
+      if (currentExpEl) currentExpEl.textContent = this.pet.experience.toString();
+      const nextLevel = this.pet.level * 100;
+      if (nextLevelExpEl) nextLevelExpEl.textContent = nextLevel.toString();
+      if (expFillEl) {
+        const percentage = (this.pet.experience / nextLevel) * 100;
+        expFillEl.style.width = `${percentage}%`;
+      }
+
+      // Check for warnings
+      this.checkWarnings();
+    }
+
+    private updateMoodIndicator(mood: PetMood): void {
+      const moodEmojis: Record<PetMood, string> = {
+        happy: '😊',
+        sad: '😢',
+        hungry: '😋',
+        sleepy: '😴',
+        sick: '🤒',
+        energetic: '🤩',
+        bored: '😐'
+      };
+
+      const emojiEl = document.getElementById('moodEmoji');
+      const textEl = document.getElementById('moodText');
+
+      if (emojiEl) emojiEl.textContent = moodEmojis[mood];
+      if (textEl) {
+        textEl.textContent = mood;
+        textEl.setAttribute('data-i18n', `mood${mood.charAt(0).toUpperCase() + mood.slice(1)}`);
+      }
+    }
+
+    private updateStat(stat: string, value: number): void {
+      const valueEl = document.getElementById(`${stat}Value`);
+      const fillEl = document.getElementById(`${stat}Fill`);
+
+      if (valueEl) valueEl.textContent = Math.round(value).toString();
+      if (fillEl) {
+        fillEl.style.width = `${value}%`;
+
+        // Change color based on value
+        if (stat === 'health' && value < 30) {
+          fillEl.style.background = 'linear-gradient(90deg, #FF6B6B, #C92A2A)';
+        } else if (stat === 'hunger' && value > 80) {
+          fillEl.style.background = 'linear-gradient(90deg, #FF6B6B, #C92A2A)';
+        }
+      }
+    }
+
+    private checkWarnings(): void {
+      if (!this.pet) return;
+
+      const warnings: string[] = [];
+
+      if (this.pet.stats.health < 30) warnings.push('petCriticalHealth');
+      if (this.pet.stats.hunger > 80) warnings.push('petVeryHungry');
+      if (this.pet.stats.energy < 20) warnings.push('petVeryTired');
+      if (this.pet.stats.happiness < 30) warnings.push('petVerySad');
+
+      warnings.forEach(warning => {
+        this.showNotification(warning, 'error');
+      });
+    }
+
+    private showNotification(messageKey: string, type: 'error' | 'success' | 'info'): void {
+      const container = document.getElementById('warningNotifications');
+      if (!container) return;
+
+      const notification = document.createElement('div');
+      notification.className = `warning-notification ${type}`;
+      notification.setAttribute('data-i18n', messageKey);
+      notification.textContent = messageKey;
+
+      notification.addEventListener('click', () => {
+        notification.remove();
+      });
+
+      container.appendChild(notification);
+
+      setTimeout(() => {
+        notification.remove();
+      }, 5000);
+    }
+
+    private animate = (): void => {
+      this.time += 0.016; // ~60fps
+      this.animationFrame++;
+
+      // Clear canvas
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      if (this.pet) {
+        // Follow cursor smoothly
+        this.petX += (this.targetX - this.petX) * 0.05;
+        this.petY += (this.targetY - this.petY) * 0.05;
+
+        // Draw pet
+        this.drawPet();
+      }
+
+      requestAnimationFrame(this.animate);
+    };
+
+    private drawPet(): void {
+      if (!this.pet) return;
+
+      const ctx = this.ctx;
+      const emoji = this.pet.emoji;
+      const scale = this.getScale();
+
+      // Bouncing animation
+      const bounce = Math.sin(this.time * 2) * 5;
+
+      // Draw shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+      ctx.beginPath();
+      ctx.ellipse(this.petX, this.petY + 50, 30, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Draw pet emoji
+      ctx.save();
+      ctx.font = `${80 * scale}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(emoji, this.petX, this.petY + bounce);
+      ctx.restore();
+
+      // Draw accessories
+      this.pet.accessories.forEach(accessoryId => {
+        this.drawAccessory(accessoryId, this.petX, this.petY + bounce, scale);
+      });
+
+      // Draw hearts if happy
+      if (this.pet.stats.happiness > 80) {
+        this.drawHearts(this.petX, this.petY - 60 + bounce);
+      }
+
+      // Draw zzz if sleepy
+      if (this.pet.stats.energy < 30) {
+        this.drawZzz(this.petX + 40, this.petY - 60 + bounce);
+      }
+    }
+
+    private getScale(): number {
+      if (!this.pet) return 1;
+
+      const stageScales: Record<string, number> = {
+        egg: 0.6,
+        baby: 0.8,
+        child: 1.0,
+        teen: 1.15,
+        adult: 1.3
+      };
+
+      return stageScales[this.pet.growthStage] || 1;
+    }
+
+    private drawAccessory(accessoryId: string, x: number, y: number, scale: number): void {
+      const ctx = this.ctx;
+      // Simple accessory rendering (can be enhanced with actual assets)
+      const accessoryEmojis: Record<string, string> = {
+        'red-hat': '🎩',
+        'sunglasses': '🕶️',
+        'pink-bow': '🎀',
+        'gold-crown': '👑',
+        'superhero-cape': '🦸',
+        'star-collar': '⭐'
+      };
+
+      const emoji = accessoryEmojis[accessoryId];
+      if (emoji) {
+        ctx.save();
+        ctx.font = `${40 * scale}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.fillText(emoji, x, y - 50);
+        ctx.restore();
+      }
+    }
+
+    private drawHearts(x: number, y: number): void {
+      const ctx = this.ctx;
+      const offset = Math.sin(this.time * 3) * 5;
+
+      ctx.save();
+      ctx.font = '24px Arial';
+      ctx.fillText('❤️', x + offset, y);
+      ctx.restore();
+    }
+
+    private drawZzz(x: number, y: number): void {
+      const ctx = this.ctx;
+      const offset = Math.sin(this.time * 2) * 3;
+
+      ctx.save();
+      ctx.font = '20px Arial';
+      ctx.fillStyle = '#999';
+      ctx.fillText('z', x, y + offset);
+      ctx.fillText('Z', x + 15, y + offset - 10);
+      ctx.fillText('z', x + 25, y + offset - 5);
+      ctx.restore();
+    }
+  }
+
+  // Initialize pet display
+  if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', () => {
+      const petDisplay = new PetDisplay();
+
+      // Make it globally accessible
+      (window as any).petDisplay = petDisplay;
+    });
+  }
+</script>

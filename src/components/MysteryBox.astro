@@ -1,0 +1,521 @@
+---
+/**
+ * Mystery Box Component
+ * Daily mystery box that shakes and opens with animation
+ */
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'de' } = Astro.props;
+---
+
+<div class="mystery-box-container" data-locale={locale}>
+  <div class="box-header">
+    <h2 data-i18n="mysteryBox">Geheimnisbox</h2>
+    <p data-i18n="mysteryBoxDescription">
+      Öffne eine Geheimnisbox jeden Tag für zufällige Belohnungen!
+    </p>
+  </div>
+
+  <div class="box-scene" id="box-scene">
+    <div class="box closed" id="mystery-box">
+      <div class="box-top"></div>
+      <div class="box-body"></div>
+      <div class="box-ribbon-v"></div>
+      <div class="box-ribbon-h"></div>
+      <div class="box-shine"></div>
+    </div>
+
+    <button class="btn-open-box" id="open-btn">
+      <span data-i18n="openBox">Box öffnen</span>
+    </button>
+  </div>
+
+  <div class="box-contents" id="box-contents" style="display: none;">
+    <div class="contents-reveal">
+      <div class="sparkles">✨</div>
+      <div class="reward-display" id="reward-display"></div>
+      <p class="reward-text" id="reward-text"></p>
+      <button class="btn-claim-reward" id="claim-btn">
+        <span data-i18n="claim">Einsammeln</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="box-info">
+    <div class="info-row">
+      <span class="info-label" data-i18n="dailyBox">Tägliche Box:</span>
+      <span class="info-value">1 pro Tag</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label" data-i18n="goldenChance">Goldene Box Chance:</span>
+      <span class="info-value">1%</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .mystery-box-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .box-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .box-header h2 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem;
+    color: #333;
+  }
+
+  .box-header p {
+    color: #666;
+    font-size: 1.125rem;
+  }
+
+  .box-scene {
+    position: relative;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    perspective: 1000px;
+  }
+
+  .box {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    transform-style: preserve-3d;
+    transition: all 0.6s ease;
+  }
+
+  .box.shaking {
+    animation: shake 0.5s ease infinite;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(-5px) rotate(-2deg); }
+    75% { transform: translateX(5px) rotate(2deg); }
+  }
+
+  .box.opening {
+    animation: open-box 1s ease forwards;
+  }
+
+  @keyframes open-box {
+    0% {
+      transform: scale(1) rotateY(0deg);
+    }
+    50% {
+      transform: scale(1.2) rotateY(180deg);
+    }
+    100% {
+      transform: scale(0) rotateY(360deg);
+      opacity: 0;
+    }
+  }
+
+  .box-top {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 40px;
+    background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%);
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .box.opening .box-top {
+    animation: lid-open 0.8s ease forwards;
+  }
+
+  @keyframes lid-open {
+    to {
+      transform: translateX(-50%) translateY(-50px) rotateX(-90deg);
+      opacity: 0;
+    }
+  }
+
+  .box-body {
+    position: absolute;
+    top: 40px;
+    width: 200px;
+    height: 160px;
+    background: linear-gradient(135deg, #A569BD 0%, #9B59B6 100%);
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .box-ribbon-v,
+  .box-ribbon-h {
+    position: absolute;
+    background: linear-gradient(135deg, #FFD93D 0%, #FF9F40 100%);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .box-ribbon-v {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 100%;
+  }
+
+  .box-ribbon-h {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 30px;
+  }
+
+  .box-shine {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: shine-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes shine-pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+  }
+
+  .box.golden .box-top,
+  .box.golden .box-body {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  }
+
+  .box.golden .box-shine {
+    animation: golden-shine 1s ease-in-out infinite;
+  }
+
+  @keyframes golden-shine {
+    0%, 100% {
+      opacity: 0.6;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+  }
+
+  .btn-open-box {
+    background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+    color: white;
+    border: none;
+    padding: 1.25rem 2.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-open-box:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.5);
+  }
+
+  .btn-open-box:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(50%);
+  }
+
+  .box-contents {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .contents-reveal {
+    background: white;
+    border-radius: 24px;
+    padding: 3rem 2rem;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: burst-in 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes burst-in {
+    0% {
+      transform: scale(0) rotate(-180deg);
+      opacity: 0;
+    }
+    70% {
+      transform: scale(1.1) rotate(10deg);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+
+  .sparkles {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: sparkle-rotate 2s linear infinite;
+  }
+
+  @keyframes sparkle-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .reward-display {
+    font-size: 5rem;
+    margin: 1rem 0;
+    animation: prize-bounce 1s ease-in-out infinite;
+  }
+
+  @keyframes prize-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .reward-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin: 1rem 0;
+  }
+
+  .btn-claim-reward {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  }
+
+  .btn-claim-reward:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+  }
+
+  .box-info {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #F9F9F9;
+    border-radius: 12px;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+  }
+
+  .info-row:not(:last-child) {
+    border-bottom: 1px solid #E0E0E0;
+  }
+
+  .info-label {
+    font-weight: 600;
+    color: #666;
+  }
+
+  .info-value {
+    font-weight: 700;
+    color: #333;
+  }
+
+  @media (max-width: 768px) {
+    .mystery-box-container {
+      padding: 1rem;
+    }
+
+    .box-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .box-scene {
+      height: 350px;
+    }
+
+    .box {
+      width: 150px;
+      height: 150px;
+    }
+
+    .box-top {
+      width: 150px;
+      height: 30px;
+    }
+
+    .box-body {
+      top: 30px;
+      width: 150px;
+      height: 120px;
+    }
+
+    .btn-open-box {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+    }
+
+    .contents-reveal {
+      padding: 2rem 1.5rem;
+    }
+
+    .reward-display {
+      font-size: 3.5rem;
+    }
+
+    .reward-text {
+      font-size: 1.25rem;
+    }
+  }
+</style>
+
+<script>
+  import { dailySurpriseManager, type MysteryBox } from '../utils/daily-surprise';
+  import { confetti } from '../utils/confetti';
+  import { soundEffects } from '../utils/sound-effects';
+
+  function initMysteryBox() {
+    const openBtn = document.getElementById('open-btn') as HTMLButtonElement;
+    const box = document.getElementById('mystery-box');
+
+    if (!openBtn || !box) return;
+
+    // Check if can open today
+    const canOpen = dailySurpriseManager.canOpenBox();
+    if (!canOpen) {
+      openBtn.disabled = true;
+      openBtn.innerHTML = '<span>Heute geöffnet</span>';
+    }
+
+    // Setup open button
+    openBtn.addEventListener('click', handleOpen);
+  }
+
+  async function handleOpen() {
+    const openBtn = document.getElementById('open-btn') as HTMLButtonElement;
+    const box = document.getElementById('mystery-box');
+
+    if (!openBtn || !box) return;
+
+    openBtn.disabled = true;
+
+    // Shake animation
+    box.classList.add('shaking');
+    soundEffects.play('whoosh');
+
+    await delay(2000);
+
+    // Open box
+    box.classList.remove('shaking');
+    box.classList.add('opening');
+
+    // Get box contents
+    const mysteryBox = dailySurpriseManager.openMysteryBox();
+
+    if (mysteryBox) {
+      // Check if golden
+      if (mysteryBox.type === 'golden') {
+        box.classList.add('golden');
+      }
+
+      await delay(1000);
+
+      // Show contents
+      showContents(mysteryBox);
+    }
+  }
+
+  function showContents(box: MysteryBox) {
+    const contentsDiv = document.getElementById('box-contents');
+    const rewardDisplay = document.getElementById('reward-display');
+    const rewardText = document.getElementById('reward-text');
+    const claimBtn = document.getElementById('claim-btn');
+
+    if (!contentsDiv || !rewardDisplay || !rewardText || !claimBtn) return;
+
+    // Set reward display
+    const emoji = getRewardEmoji(box.contents.type);
+    rewardDisplay.textContent = emoji;
+
+    // Set reward text
+    rewardText.textContent = box.contents.itemName.de;
+
+    // Show contents
+    contentsDiv.style.display = 'flex';
+
+    // Confetti
+    confetti();
+
+    // Play success sound
+    soundEffects.play('success');
+
+    // Claim button
+    claimBtn.onclick = () => {
+      contentsDiv.style.display = 'none';
+    };
+  }
+
+  function getRewardEmoji(type: string): string {
+    const emojiMap: Record<string, string> = {
+      'stars': '⭐',
+      'card': '🃏',
+      'pet-accessory': '🎀',
+      'story-unlock': '📖',
+      'avatar-item': '👤',
+      'emoji': '😊',
+      'golden-reward': '🏆',
+    };
+    return emojiMap[type] || '🎁';
+  }
+
+  function delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Initialize on page load
+  if (typeof window !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMysteryBox);
+    } else {
+      initMysteryBox();
+    }
+  }
+</script>

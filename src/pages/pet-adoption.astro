@@ -1,0 +1,557 @@
+---
+/**
+ * Pet Adoption Center Page
+ * Where children can adopt story characters as pets
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const locale = 'de'; // Can be dynamic
+---
+
+<BaseLayout
+  title="Pet Adoption Center"
+  description="Adopt your favorite story character as a virtual pet!"
+>
+  <main class="adoption-center">
+    <div class="page-header">
+      <h1 data-i18n="adoptionCenter">Adoption Center</h1>
+      <p data-i18n="availableForAdoption">Choose a character to adopt as your virtual pet!</p>
+    </div>
+
+    <div class="adoption-info">
+      <div class="info-card">
+        <span class="info-icon">🏠</span>
+        <h3>Maximum 3 Pets</h3>
+        <p>You can have up to 3 active pets at once</p>
+      </div>
+      <div class="info-card">
+        <span class="info-icon">⭐</span>
+        <h3>Free to Adopt</h3>
+        <p>All characters are free to adopt!</p>
+      </div>
+      <div class="info-card">
+        <span class="info-icon">💕</span>
+        <h3>Daily Care</h3>
+        <p>Feed, play, and care for your pets every day</p>
+      </div>
+    </div>
+
+    <div class="characters-grid" id="charactersGrid"></div>
+
+    <!-- Adoption Modal -->
+    <div class="modal" id="adoptionModal">
+      <div class="modal-content">
+        <button class="modal-close" id="closeModal">&times;</button>
+
+        <div class="adoption-preview" id="adoptionPreview">
+          <div class="preview-character" id="previewCharacter"></div>
+          <div class="preview-info">
+            <h2 id="characterName">Bruno</h2>
+            <p id="characterType">Bear</p>
+
+            <div class="personality-badge">
+              <strong data-i18n="petPersonality">Personality</strong>:
+              <span id="personalityType">Playful</span>
+            </div>
+
+            <div class="name-input">
+              <label for="petNameInput">
+                <strong data-i18n="petName">Pet Name</strong>
+              </label>
+              <input
+                type="text"
+                id="petNameInput"
+                placeholder="Give your pet a name"
+                data-i18n-placeholder="enterPetName"
+                maxlength="20"
+              />
+            </div>
+
+            <button class="adopt-btn" id="confirmAdoptBtn" data-i18n="adoptNow">
+              Adopt Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+      <div class="modal-content success-content">
+        <div class="success-animation">🎉</div>
+        <h2 data-i18n="petAdopted">Pet Adopted!</h2>
+        <p>Congratulations on your new pet!</p>
+        <a href="/virtual-pets" class="success-btn" data-i18n="myPets">Go to My Pets</a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .adoption-center {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-header h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #FF9F40 0%, #FF6B6B 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header p {
+    font-size: 1.25rem;
+    color: #666;
+  }
+
+  .adoption-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .info-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  .info-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .info-card h3 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+  }
+
+  .info-card p {
+    margin: 0;
+    color: #666;
+  }
+
+  .characters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .character-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 3px solid transparent;
+  }
+
+  .character-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    border-color: #667eea;
+  }
+
+  .character-emoji {
+    font-size: 6rem;
+    display: block;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .character-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .character-type {
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .adopt-character-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .adopt-character-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+  }
+
+  .modal.active {
+    display: flex;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    max-width: 600px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.2s;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  .modal-close:hover {
+    color: #333;
+    background: #f0f0f0;
+  }
+
+  .adoption-preview {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .preview-character {
+    font-size: 10rem;
+    flex-shrink: 0;
+  }
+
+  .preview-info {
+    flex: 1;
+  }
+
+  .preview-info h2 {
+    margin: 0 0 0.25rem 0;
+    color: #333;
+    font-size: 2rem;
+  }
+
+  .preview-info p {
+    margin: 0 0 1.5rem 0;
+    color: #666;
+  }
+
+  .personality-badge {
+    background: linear-gradient(135deg, #FFD93D 0%, #FFA500 100%);
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-weight: 600;
+  }
+
+  .personality-badge strong {
+    margin-right: 0.5rem;
+  }
+
+  .name-input {
+    margin-bottom: 1.5rem;
+  }
+
+  .name-input label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #555;
+    font-weight: 600;
+  }
+
+  .name-input input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+  }
+
+  .name-input input:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+
+  .adopt-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #FF9F40 0%, #FF6B6B 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 159, 64, 0.3);
+  }
+
+  .adopt-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 159, 64, 0.4);
+  }
+
+  .success-content {
+    text-align: center;
+  }
+
+  .success-animation {
+    font-size: 8rem;
+    animation: celebrate 0.8s ease-in-out;
+  }
+
+  @keyframes celebrate {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.2) rotate(-10deg); }
+    50% { transform: scale(1.3) rotate(10deg); }
+    75% { transform: scale(1.2) rotate(-10deg); }
+  }
+
+  .success-content h2 {
+    margin: 1rem 0;
+    color: #333;
+    font-size: 2.5rem;
+  }
+
+  .success-content p {
+    margin: 0 0 2rem 0;
+    color: #666;
+    font-size: 1.1rem;
+  }
+
+  .success-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 3rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .success-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .adoption-center {
+      padding: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .characters-grid {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .character-emoji {
+      font-size: 4rem;
+    }
+
+    .adoption-preview {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .preview-character {
+      font-size: 6rem;
+    }
+
+    .preview-info {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import { getAvailableCharacters, createPet, loadPets, savePets } from '../utils/virtual-pets';
+  import type { Pet } from '../utils/virtual-pets';
+
+  class AdoptionCenter {
+    private selectedCharacter: { id: string; type: string; emoji: string; name: string } | null = null;
+
+    constructor() {
+      this.renderCharacters();
+      this.setupEventListeners();
+    }
+
+    private renderCharacters(): void {
+      const grid = document.getElementById('charactersGrid');
+      if (!grid) return;
+
+      const characters = getAvailableCharacters();
+
+      characters.forEach(character => {
+        const card = document.createElement('div');
+        card.className = 'character-card';
+        card.innerHTML = `
+          <span class="character-emoji">${character.emoji}</span>
+          <div class="character-name">${character.name}</div>
+          <div class="character-type">${character.type}</div>
+          <button class="adopt-character-btn" data-i18n="adoptNow">Adopt</button>
+        `;
+
+        card.querySelector('.adopt-character-btn')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.openAdoptionModal(character);
+        });
+
+        grid.appendChild(card);
+      });
+    }
+
+    private setupEventListeners(): void {
+      const closeBtn = document.getElementById('closeModal');
+      closeBtn?.addEventListener('click', () => this.closeModal('adoptionModal'));
+
+      const confirmBtn = document.getElementById('confirmAdoptBtn');
+      confirmBtn?.addEventListener('click', () => this.confirmAdoption());
+
+      const nameInput = document.getElementById('petNameInput') as HTMLInputElement;
+      nameInput?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          this.confirmAdoption();
+        }
+      });
+    }
+
+    private openAdoptionModal(character: { id: string; type: string; emoji: string; name: string }): void {
+      // Check if max pets reached
+      const pets = loadPets();
+      if (pets.length >= 3) {
+        alert('Maximum 3 pets reached!');
+        return;
+      }
+
+      this.selectedCharacter = character;
+
+      const modal = document.getElementById('adoptionModal');
+      const previewCharacter = document.getElementById('previewCharacter');
+      const characterName = document.getElementById('characterName');
+      const characterType = document.getElementById('characterType');
+      const personalityType = document.getElementById('personalityType');
+      const nameInput = document.getElementById('petNameInput') as HTMLInputElement;
+
+      if (previewCharacter) previewCharacter.textContent = character.emoji;
+      if (characterName) characterName.textContent = character.name;
+      if (characterType) characterType.textContent = character.type;
+
+      // Random personality
+      const personalities = ['Playful', 'Calm', 'Energetic', 'Shy', 'Brave', 'Curious'];
+      const randomPersonality = personalities[Math.floor(Math.random() * personalities.length)];
+      if (personalityType) personalityType.textContent = randomPersonality;
+
+      // Set default name
+      if (nameInput) {
+        nameInput.value = character.name;
+        nameInput.focus();
+        nameInput.select();
+      }
+
+      modal?.classList.add('active');
+    }
+
+    private closeModal(modalId: string): void {
+      const modal = document.getElementById(modalId);
+      modal?.classList.remove('active');
+    }
+
+    private confirmAdoption(): void {
+      if (!this.selectedCharacter) return;
+
+      const nameInput = document.getElementById('petNameInput') as HTMLInputElement;
+      const petName = nameInput?.value.trim() || this.selectedCharacter.name;
+
+      // Create new pet
+      const newPet = createPet(
+        this.selectedCharacter.id,
+        this.selectedCharacter.type,
+        this.selectedCharacter.emoji,
+        petName
+      );
+
+      // Save to localStorage
+      const pets = loadPets();
+      pets.push(newPet);
+      savePets(pets);
+
+      // Close adoption modal
+      this.closeModal('adoptionModal');
+
+      // Show success modal
+      const successModal = document.getElementById('successModal');
+      successModal?.classList.add('active');
+
+      // Auto-redirect after 3 seconds
+      setTimeout(() => {
+        window.location.href = '/virtual-pets';
+      }, 3000);
+    }
+  }
+
+  // Initialize
+  if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', () => {
+      new AdoptionCenter();
+    });
+  }
+</script>

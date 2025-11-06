@@ -1,0 +1,494 @@
+---
+/**
+ * Level-Up Celebration Animation
+ * Shows when player reaches a new level with confetti and rewards
+ */
+---
+
+<div id="level-up-modal" class="level-up-modal hidden" role="dialog" aria-labelledby="level-up-title" aria-modal="true">
+  <div class="level-up-backdrop"></div>
+  <div class="level-up-content">
+    <canvas id="level-up-confetti" class="level-up-confetti"></canvas>
+
+    <div class="level-up-card">
+      <div class="level-up-icon">🎉</div>
+      <h2 id="level-up-title" class="level-up-title">Level Up!</h2>
+      <div class="level-up-number">
+        <span class="level-old"></span>
+        <span class="level-arrow">→</span>
+        <span class="level-new"></span>
+      </div>
+
+      <div class="level-up-rewards">
+        <h3>Belohnungen</h3>
+        <div class="rewards-list"></div>
+      </div>
+
+      <div class="level-up-milestones"></div>
+
+      <button class="level-up-continue" aria-label="Fortfahren">
+        Weiter zum Abenteuer!
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .level-up-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .level-up-modal:not(.hidden) {
+    opacity: 1;
+  }
+
+  .level-up-modal.hidden {
+    pointer-events: none;
+  }
+
+  .level-up-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+  }
+
+  .level-up-confetti {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .level-up-content {
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+    width: 90%;
+    animation: levelUpSlideIn 0.5s ease-out;
+  }
+
+  @keyframes levelUpSlideIn {
+    from {
+      transform: translateY(-50px) scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  .level-up-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 24px;
+    padding: 3rem 2rem;
+    text-align: center;
+    color: white;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+
+  .level-up-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: iconBounce 0.6s ease infinite alternate;
+  }
+
+  @keyframes iconBounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-15px); }
+  }
+
+  .level-up-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0 0 1rem 0;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .level-up-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 1.5rem 0;
+  }
+
+  .level-old {
+    opacity: 0.6;
+  }
+
+  .level-arrow {
+    font-size: 2rem;
+    animation: arrowPulse 1s ease infinite;
+  }
+
+  @keyframes arrowPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+
+  .level-new {
+    background: linear-gradient(45deg, #ffd93d, #ff9f40);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: levelGlow 1.5s ease infinite alternate;
+  }
+
+  @keyframes levelGlow {
+    from { filter: drop-shadow(0 0 10px #ffd93d); }
+    to { filter: drop-shadow(0 0 20px #ff9f40); }
+  }
+
+  .level-up-rewards {
+    margin: 2rem 0;
+  }
+
+  .level-up-rewards h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+  }
+
+  .rewards-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    justify-content: center;
+  }
+
+  .reward-item {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 0.8rem 1.2rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    animation: rewardPopIn 0.4s ease backwards;
+  }
+
+  .reward-item:nth-child(1) { animation-delay: 0.1s; }
+  .reward-item:nth-child(2) { animation-delay: 0.2s; }
+  .reward-item:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes rewardPopIn {
+    from {
+      transform: scale(0);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .level-up-milestones {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+  }
+
+  .milestone-unlock {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem;
+    margin: 0.5rem 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    animation: milestoneSlide 0.5s ease backwards;
+  }
+
+  .milestone-unlock:nth-child(1) { animation-delay: 0.4s; }
+  .milestone-unlock:nth-child(2) { animation-delay: 0.5s; }
+  .milestone-unlock:nth-child(3) { animation-delay: 0.6s; }
+
+  @keyframes milestoneSlide {
+    from {
+      transform: translateX(-30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .milestone-icon {
+    font-size: 2rem;
+  }
+
+  .milestone-text {
+    flex: 1;
+    text-align: left;
+    font-size: 1rem;
+  }
+
+  .level-up-continue {
+    background: linear-gradient(135deg, #ffd93d 0%, #ff9f40 100%);
+    color: #333;
+    border: none;
+    padding: 1.2rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 15px rgba(255, 159, 64, 0.4);
+  }
+
+  .level-up-continue:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 159, 64, 0.6);
+  }
+
+  .level-up-continue:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    .level-up-card {
+      padding: 2rem 1.5rem;
+    }
+
+    .level-up-title {
+      font-size: 2rem;
+    }
+
+    .level-up-number {
+      font-size: 2.5rem;
+    }
+
+    .reward-item {
+      font-size: 0.9rem;
+      padding: 0.6rem 1rem;
+    }
+  }
+</style>
+
+<script>
+  class LevelUpAnimation {
+    private modal: HTMLElement | null = null;
+    private confettiCanvas: HTMLCanvasElement | null = null;
+    private ctx: CanvasRenderingContext2D | null = null;
+    private confettiParticles: any[] = [];
+    private animationId: number | null = null;
+
+    constructor() {
+      this.modal = document.getElementById('level-up-modal');
+      this.confettiCanvas = document.getElementById('level-up-confetti') as HTMLCanvasElement;
+
+      if (this.confettiCanvas) {
+        this.ctx = this.confettiCanvas.getContext('2d');
+        this.resizeCanvas();
+        window.addEventListener('resize', () => this.resizeCanvas());
+      }
+
+      // Listen for level-up events
+      window.addEventListener('xp-gain', ((event: CustomEvent) => {
+        if (event.detail.result.leveledUp) {
+          this.show(event.detail.result);
+        }
+      }) as EventListener);
+
+      // Close button
+      const continueBtn = this.modal?.querySelector('.level-up-continue');
+      continueBtn?.addEventListener('click', () => this.hide());
+    }
+
+    private resizeCanvas(): void {
+      if (!this.confettiCanvas) return;
+      this.confettiCanvas.width = window.innerWidth;
+      this.confettiCanvas.height = window.innerHeight;
+    }
+
+    show(levelData: any): void {
+      if (!this.modal) return;
+
+      // Update content
+      const oldLevel = levelData.newLevel - 1;
+      this.modal.querySelector('.level-old')!.textContent = oldLevel.toString();
+      this.modal.querySelector('.level-new')!.textContent = levelData.newLevel.toString();
+
+      // Show rewards
+      const rewardsList = this.modal.querySelector('.rewards-list');
+      if (rewardsList) {
+        rewardsList.innerHTML = '';
+
+        if (levelData.skillPointsAwarded) {
+          const reward = document.createElement('div');
+          reward.className = 'reward-item';
+          reward.innerHTML = `<span>⭐</span> +${levelData.skillPointsAwarded} Fertigkeitspunkt(e)`;
+          rewardsList.appendChild(reward);
+        }
+
+        // XP bonus
+        const xpReward = document.createElement('div');
+        xpReward.className = 'reward-item';
+        xpReward.innerHTML = `<span>✨</span> +${levelData.newLevel * 50} XP Bonus`;
+        rewardsList.appendChild(xpReward);
+
+        // Stars
+        const starReward = document.createElement('div');
+        starReward.className = 'reward-item';
+        starReward.innerHTML = `<span>⭐</span> +${levelData.newLevel * 10} Sterne`;
+        rewardsList.appendChild(starReward);
+      }
+
+      // Show milestones
+      const milestonesContainer = this.modal.querySelector('.level-up-milestones');
+      if (milestonesContainer && levelData.unlockedFeatures) {
+        milestonesContainer.innerHTML = '<h3>🎊 Neue Freischaltungen!</h3>';
+
+        levelData.unlockedFeatures.unlocks.forEach((unlock: any) => {
+          const milestone = document.createElement('div');
+          milestone.className = 'milestone-unlock';
+          const icon = unlock.type === 'feature' ? '🔓' :
+                      unlock.type === 'character' ? '🦸' :
+                      unlock.type === 'game' ? '🎮' :
+                      unlock.type === 'story' ? '📖' : '⭐';
+          milestone.innerHTML = `
+            <span class="milestone-icon">${icon}</span>
+            <span class="milestone-text">${unlock.name.de}</span>
+          `;
+          milestonesContainer.appendChild(milestone);
+        });
+      } else if (milestonesContainer) {
+        milestonesContainer.innerHTML = '';
+      }
+
+      // Show modal
+      this.modal.classList.remove('hidden');
+
+      // Start confetti
+      this.startConfetti();
+
+      // Play sound (if available)
+      this.playLevelUpSound();
+    }
+
+    hide(): void {
+      if (!this.modal) return;
+      this.modal.classList.add('hidden');
+      this.stopConfetti();
+    }
+
+    private startConfetti(): void {
+      this.confettiParticles = [];
+
+      // Create particles
+      for (let i = 0; i < 150; i++) {
+        this.confettiParticles.push({
+          x: Math.random() * window.innerWidth,
+          y: -10,
+          size: Math.random() * 8 + 4,
+          speedY: Math.random() * 3 + 2,
+          speedX: Math.random() * 4 - 2,
+          color: this.getRandomColor(),
+          rotation: Math.random() * 360,
+          rotationSpeed: Math.random() * 10 - 5,
+        });
+      }
+
+      this.animateConfetti();
+    }
+
+    private animateConfetti(): void {
+      if (!this.ctx || !this.confettiCanvas) return;
+
+      this.ctx.clearRect(0, 0, this.confettiCanvas.width, this.confettiCanvas.height);
+
+      this.confettiParticles.forEach((particle, index) => {
+        // Update position
+        particle.y += particle.speedY;
+        particle.x += particle.speedX;
+        particle.rotation += particle.rotationSpeed;
+
+        // Remove if off screen
+        if (particle.y > this.confettiCanvas!.height) {
+          this.confettiParticles.splice(index, 1);
+          return;
+        }
+
+        // Draw particle
+        this.ctx!.save();
+        this.ctx!.translate(particle.x, particle.y);
+        this.ctx!.rotate((particle.rotation * Math.PI) / 180);
+        this.ctx!.fillStyle = particle.color;
+        this.ctx!.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size);
+        this.ctx!.restore();
+      });
+
+      // Continue animation if particles exist
+      if (this.confettiParticles.length > 0) {
+        this.animationId = requestAnimationFrame(() => this.animateConfetti());
+      }
+    }
+
+    private stopConfetti(): void {
+      if (this.animationId) {
+        cancelAnimationFrame(this.animationId);
+        this.animationId = null;
+      }
+      this.confettiParticles = [];
+    }
+
+    private getRandomColor(): string {
+      const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    private playLevelUpSound(): void {
+      // Play sound if audio context available
+      try {
+        const audioCtx = new AudioContext();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+        oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+
+        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + 0.5);
+      } catch (error) {
+        console.log('Audio not available');
+      }
+    }
+  }
+
+  // Initialize on page load
+  if (typeof window !== 'undefined') {
+    new LevelUpAnimation();
+  }
+</script>

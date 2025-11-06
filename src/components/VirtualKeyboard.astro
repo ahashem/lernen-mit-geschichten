@@ -1,0 +1,309 @@
+---
+/**
+ * Virtual Keyboard Component
+ * Playable piano keyboard for recording melodies
+ */
+---
+
+<div class="virtual-keyboard">
+  <div id="keyboard-container" class="keyboard-container"></div>
+</div>
+
+<style>
+  .virtual-keyboard {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .keyboard-container {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    position: relative;
+    height: 200px;
+  }
+
+  .key {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.1s;
+    border-radius: 0 0 8px 8px;
+  }
+
+  .key.white {
+    width: 50px;
+    height: 200px;
+    background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
+    border: 2px solid #333;
+    z-index: 1;
+  }
+
+  .key.black {
+    width: 35px;
+    height: 120px;
+    background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
+    border: 2px solid #000;
+    position: absolute;
+    z-index: 2;
+    margin-left: -17.5px;
+  }
+
+  .key.white:hover {
+    background: linear-gradient(180deg, #f5f5f5 0%, #e0e0e0 100%);
+    transform: translateY(2px);
+  }
+
+  .key.black:hover {
+    background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+    transform: translateY(2px);
+  }
+
+  .key.active {
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .key.white.active {
+    background: linear-gradient(180deg, #FFD93D 0%, #FF9F40 100%);
+  }
+
+  .key.black.active {
+    background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 100%);
+  }
+
+  .key-label {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .key.white .key-label {
+    color: #333;
+  }
+
+  .key.black .key-label {
+    color: #fff;
+    bottom: 5px;
+  }
+</style>
+
+<script>
+  import * as Tone from 'tone';
+
+  class VirtualKeyboard {
+    private container: HTMLElement;
+    private synth: Tone.PolySynth;
+    private activeNotes: Set<string> = new Set();
+    private octaveStart: number = 3;
+    private octaveEnd: number = 5;
+    private recording: boolean = false;
+    private recordedNotes: Array<{ pitch: string; time: number; duration: number }> = [];
+    private recordingStartTime: number = 0;
+
+    constructor(container: HTMLElement) {
+      this.container = container;
+
+      // Create synth
+      this.synth = new Tone.PolySynth(Tone.Synth, {
+        oscillator: { type: 'sine' },
+        envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.8 },
+      }).toDestination();
+
+      this.render();
+      this.attachEventListeners();
+      this.attachKeyboardShortcuts();
+    }
+
+    private render(): void {
+      const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+      const whiteKeys = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+      const blackKeys = ['C#', 'D#', 'F#', 'G#', 'A#'];
+
+      let html = '';
+      let whiteKeyIndex = 0;
+
+      for (let octave = this.octaveStart; octave <= this.octaveEnd; octave++) {
+        for (const note of whiteKeys) {
+          const noteName = `${note}${octave}`;
+          const isBlackKeyAfter = !['E', 'B'].includes(note);
+
+          html += `
+            <div class="key white" data-note="${noteName}">
+              <div class="key-label">${note}</div>
+            </div>
+          `;
+
+          if (isBlackKeyAfter) {
+            const blackNote = note + '#';
+            const blackNoteName = `${blackNote}${octave}`;
+            const position = (whiteKeyIndex * 52) + 52;
+
+            html += `
+              <div class="key black" data-note="${blackNoteName}" style="left: ${position}px;">
+                <div class="key-label">${blackNote}</div>
+              </div>
+            `;
+          }
+
+          whiteKeyIndex++;
+        }
+      }
+
+      this.container.innerHTML = html;
+    }
+
+    private attachEventListeners(): void {
+      const keys = this.container.querySelectorAll('.key');
+
+      keys.forEach(key => {
+        const note = key.getAttribute('data-note');
+        if (!note) return;
+
+        // Mouse events
+        key.addEventListener('mousedown', () => this.playNote(note));
+        key.addEventListener('mouseup', () => this.stopNote(note));
+        key.addEventListener('mouseleave', () => this.stopNote(note));
+
+        // Touch events
+        key.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          this.playNote(note);
+        });
+        key.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          this.stopNote(note);
+        });
+      });
+    }
+
+    private attachKeyboardShortcuts(): void {
+      // QWERTY keyboard mapping to piano keys
+      const keyMap: Record<string, string> = {
+        'a': 'C4', 'w': 'C#4', 's': 'D4', 'e': 'D#4', 'd': 'E4',
+        'f': 'F4', 't': 'F#4', 'g': 'G4', 'y': 'G#4', 'h': 'A4',
+        'u': 'A#4', 'j': 'B4', 'k': 'C5', 'o': 'C#5', 'l': 'D5',
+        'p': 'D#5', ';': 'E5',
+      };
+
+      document.addEventListener('keydown', (e) => {
+        const note = keyMap[e.key.toLowerCase()];
+        if (note && !this.activeNotes.has(note)) {
+          this.playNote(note);
+        }
+      });
+
+      document.addEventListener('keyup', (e) => {
+        const note = keyMap[e.key.toLowerCase()];
+        if (note) {
+          this.stopNote(note);
+        }
+      });
+    }
+
+    private playNote(note: string): void {
+      if (this.activeNotes.has(note)) return;
+
+      // Start Tone.js if not started
+      Tone.start();
+
+      this.activeNotes.add(note);
+      this.synth.triggerAttack(note);
+
+      // Visual feedback
+      const keyElement = this.container.querySelector(`[data-note="${note}"]`);
+      keyElement?.classList.add('active');
+
+      // Record note if recording
+      if (this.recording) {
+        const time = Date.now() - this.recordingStartTime;
+        this.recordedNotes.push({ pitch: note, time, duration: 0 });
+      }
+
+      // Dispatch event
+      window.dispatchEvent(new CustomEvent('keyboard-note-play', {
+        detail: { note },
+      }));
+    }
+
+    private stopNote(note: string): void {
+      if (!this.activeNotes.has(note)) return;
+
+      this.activeNotes.delete(note);
+      this.synth.triggerRelease(note);
+
+      // Visual feedback
+      const keyElement = this.container.querySelector(`[data-note="${note}"]`);
+      keyElement?.classList.remove('active');
+
+      // Update recorded note duration
+      if (this.recording && this.recordedNotes.length > 0) {
+        const lastNote = this.recordedNotes[this.recordedNotes.length - 1];
+        if (lastNote.pitch === note && lastNote.duration === 0) {
+          const time = Date.now() - this.recordingStartTime;
+          lastNote.duration = time - lastNote.time;
+        }
+      }
+
+      // Dispatch event
+      window.dispatchEvent(new CustomEvent('keyboard-note-stop', {
+        detail: { note },
+      }));
+    }
+
+    public startRecording(): void {
+      this.recording = true;
+      this.recordedNotes = [];
+      this.recordingStartTime = Date.now();
+
+      window.dispatchEvent(new CustomEvent('keyboard-recording-start'));
+    }
+
+    public stopRecording(): Array<{ pitch: string; time: number; duration: number }> {
+      this.recording = false;
+
+      // Stop all active notes
+      this.activeNotes.forEach(note => this.stopNote(note));
+
+      window.dispatchEvent(new CustomEvent('keyboard-recording-stop', {
+        detail: { notes: this.recordedNotes },
+      }));
+
+      return this.recordedNotes;
+    }
+
+    public isRecording(): boolean {
+      return this.recording;
+    }
+
+    public setOctaveRange(start: number, end: number): void {
+      this.octaveStart = start;
+      this.octaveEnd = end;
+      this.render();
+      this.attachEventListeners();
+    }
+
+    public dispose(): void {
+      this.synth.dispose();
+    }
+  }
+
+  // Initialize virtual keyboard
+  const container = document.getElementById('keyboard-container');
+  if (container) {
+    const keyboard = new VirtualKeyboard(container);
+
+    // Make keyboard accessible globally
+    (window as any).virtualKeyboard = keyboard;
+
+    // Clean up on page unload
+    window.addEventListener('beforeunload', () => {
+      keyboard.dispose();
+    });
+  }
+</script>

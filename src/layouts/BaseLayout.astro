@@ -129,6 +129,10 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
             <a href={locale === 'de' ? `${base}/challenges` : `${base}/${locale}/challenges`}
               >🔥 {getTranslation(locale, 'challenges')}</a
             >
+            <a href={locale === 'de' ? `${base}/adventure-quests` : `${base}/${locale}/adventure-quests`}
+              class="nav-quest-link"
+              >⚔️ {getTranslation(locale, 'adventureQuests')}</a
+            >
             <button
               class="nav-accessibility-btn"
               aria-label={getTranslation(locale, 'accessibility')}

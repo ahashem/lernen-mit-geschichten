@@ -1,0 +1,649 @@
+---
+/**
+ * Animation Studio Page
+ * Frame-by-frame animation creation with story characters
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import AnimationStudio from '@components/AnimationStudio.astro';
+
+const locale = 'de'; // Default locale, can be made dynamic
+const title = 'Animations-Studio';
+const description = 'Erstelle Frame-by-Frame-Animationen mit Geschichten-Charakteren und exportiere sie als GIF oder Video!';
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <main id="main-content">
+    <AnimationStudio locale={locale} />
+  </main>
+</BaseLayout>
+
+<script>
+  import { AnimationEngine, CHARACTER_LIBRARY, BACKGROUND_OPTIONS, SOUND_EFFECTS, MUSIC_TRACKS, ANIMATION_TEMPLATES, type AnimationProject } from '@utils/animation-studio';
+  import { starWallet } from '@utils/star-wallet';
+  import { achievementTracker } from '@utils/achievements';
+
+  // Initialize Animation Engine
+  let engine: AnimationEngine | null = null;
+  let selectedCharacterId: string | null = null;
+  let selectedTool: string = 'select';
+  let currentProject: AnimationProject | null = null;
+
+  // Storage key for projects
+  const PROJECTS_STORAGE_KEY = 'animation-studio-projects';
+  const CURRENT_PROJECT_KEY = 'animation-studio-current';
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('animation-canvas') as HTMLCanvasElement;
+    if (!canvas) {
+      console.error('Canvas not found');
+      return;
+    }
+
+    // Load or create project
+    loadCurrentProject();
+
+    if (currentProject) {
+      engine = new AnimationEngine(canvas, currentProject);
+    } else {
+      engine = new AnimationEngine(canvas);
+      currentProject = engine.getProject();
+      saveCurrentProject();
+    }
+
+    // Render initial frame
+    engine.render();
+
+    // Setup UI
+    initializeCharacterLibrary();
+    initializeBackgroundsLibrary();
+    initializeSoundLibrary();
+    initializeTemplates();
+    initializeToolbar();
+    initializeTimeline();
+    initializeKeyboardShortcuts();
+    initializeExportModal();
+
+    // Track page view for achievements
+    console.log('Animation Studio loaded');
+  });
+
+  // Project Management
+  function loadCurrentProject(): void {
+    try {
+      const stored = localStorage.getItem(CURRENT_PROJECT_KEY);
+      if (stored) {
+        currentProject = JSON.parse(stored);
+      }
+    } catch (error) {
+      console.error('Failed to load project:', error);
+    }
+  }
+
+  function saveCurrentProject(): void {
+    if (!currentProject) return;
+    try {
+      localStorage.setItem(CURRENT_PROJECT_KEY, JSON.stringify(currentProject));
+    } catch (error) {
+      console.error('Failed to save project:', error);
+    }
+  }
+
+  function saveToProjectsList(): void {
+    if (!currentProject) return;
+    try {
+      const projects = JSON.parse(localStorage.getItem(PROJECTS_STORAGE_KEY) || '[]');
+      const existing = projects.findIndex((p: AnimationProject) => p.id === currentProject!.id);
+      if (existing !== -1) {
+        projects[existing] = currentProject;
+      } else {
+        projects.push(currentProject);
+      }
+      localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projects));
+
+      // Show save notification
+      showNotification('Animation gespeichert!', 'success');
+
+      // Award stars for creating animation
+      starWallet.earnStars('animation-create', 20);
+
+      // Track achievement progress
+      console.log('Animation saved, checking achievements...');
+    } catch (error) {
+      console.error('Failed to save to projects list:', error);
+      showNotification('Fehler beim Speichern', 'error');
+    }
+  }
+
+  // Character Library
+  function initializeCharacterLibrary(): void {
+    const container = document.getElementById('character-list');
+    if (!container) return;
+
+    CHARACTER_LIBRARY.forEach(character => {
+      const item = document.createElement('div');
+      item.className = 'character-item';
+      item.draggable = true;
+      item.dataset.characterId = character.id;
+      item.innerHTML = character.emoji;
+      item.title = character.name;
+
+      item.addEventListener('dragstart', (e) => {
+        if (e.dataTransfer) {
+          e.dataTransfer.setData('character', JSON.stringify(character));
+        }
+      });
+
+      item.addEventListener('click', () => {
+        if (engine) {
+          const charId = engine.addCharacter(character.id, character.name, character.emoji);
+          selectedCharacterId = charId;
+          updateLayersList();
+          saveCurrentProject();
+        }
+      });
+
+      container.appendChild(item);
+    });
+  }
+
+  // Backgrounds Library
+  function initializeBackgroundsLibrary(): void {
+    const container = document.getElementById('background-list');
+    if (!container) return;
+
+    BACKGROUND_OPTIONS.forEach(bg => {
+      const item = document.createElement('div');
+      item.className = 'background-item';
+      item.innerHTML = bg.emoji;
+      item.title = bg.name.de;
+
+      item.addEventListener('click', () => {
+        if (engine) {
+          engine.updateProjectProperty('scene', {
+            ...engine.getProject().scene,
+            background: bg.id,
+          });
+          saveCurrentProject();
+        }
+      });
+
+      container.appendChild(item);
+    });
+  }
+
+  // Sound Library
+  function initializeSoundLibrary(): void {
+    const container = document.getElementById('sound-list');
+    if (!container) return;
+
+    SOUND_EFFECTS.forEach(sound => {
+      const item = document.createElement('div');
+      item.className = 'sound-item';
+      item.innerHTML = sound.emoji;
+      item.title = sound.name.de;
+
+      item.addEventListener('click', () => {
+        if (engine) {
+          // Add sound at current frame
+          const currentFrame = engine.getCurrentFrame();
+          const project = engine.getProject();
+          project.sounds.push({
+            id: `sound-${Date.now()}`,
+            name: sound.id,
+            url: `/sounds/${sound.id}.mp3`, // Placeholder URL
+            frame: currentFrame,
+          });
+          engine.setProject(project);
+          showNotification(`Sound "${sound.name.de}" hinzugefügt`, 'success');
+          saveCurrentProject();
+        }
+      });
+
+      container.appendChild(item);
+    });
+  }
+
+  // Templates
+  function initializeTemplates(): void {
+    const container = document.getElementById('template-list');
+    if (!container) return;
+
+    ANIMATION_TEMPLATES.forEach(template => {
+      const item = document.createElement('div');
+      item.className = 'template-item';
+      item.innerHTML = `${template.thumbnail} ${template.name.de}`;
+
+      item.addEventListener('click', () => {
+        const confirmLoad = confirm(`Vorlage "${template.name.de}" laden? Aktuelle Änderungen gehen verloren.`);
+        if (confirmLoad && engine) {
+          // Apply template to current project
+          const project = engine.getProject();
+          Object.assign(project, template.project);
+          engine.setProject(project);
+          showNotification('Vorlage geladen', 'success');
+          saveCurrentProject();
+        }
+      });
+
+      container.appendChild(item);
+    });
+  }
+
+  // Toolbar
+  function initializeToolbar(): void {
+    const toolButtons = document.querySelectorAll('.tool-btn');
+    toolButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tool = (btn as HTMLElement).dataset.tool || 'select';
+        selectTool(tool);
+      });
+    });
+
+    // View controls
+    document.getElementById('zoom-in')?.addEventListener('click', () => {
+      // Implement zoom in
+      showNotification('Zoom in', 'info');
+    });
+
+    document.getElementById('zoom-out')?.addEventListener('click', () => {
+      // Implement zoom out
+      showNotification('Zoom out', 'info');
+    });
+
+    document.getElementById('zoom-reset')?.addEventListener('click', () => {
+      // Reset zoom
+      showNotification('Zoom zurückgesetzt', 'info');
+    });
+
+    // Layer controls
+    document.getElementById('bring-forward')?.addEventListener('click', () => {
+      if (engine && selectedCharacterId) {
+        const character = engine.getCharacter(selectedCharacterId);
+        if (character) {
+          character.zIndex++;
+          engine.render();
+          saveCurrentProject();
+        }
+      }
+    });
+
+    document.getElementById('send-backward')?.addEventListener('click', () => {
+      if (engine && selectedCharacterId) {
+        const character = engine.getCharacter(selectedCharacterId);
+        if (character) {
+          character.zIndex = Math.max(0, character.zIndex - 1);
+          engine.render();
+          saveCurrentProject();
+        }
+      }
+    });
+
+    // Toggles
+    document.getElementById('grid-toggle')?.addEventListener('change', (e) => {
+      if (engine) {
+        engine.updateProjectProperty('gridEnabled', (e.target as HTMLInputElement).checked);
+      }
+    });
+
+    document.getElementById('snap-toggle')?.addEventListener('change', (e) => {
+      if (engine) {
+        engine.updateProjectProperty('snapToGrid', (e.target as HTMLInputElement).checked);
+      }
+    });
+
+    document.getElementById('onion-skin-toggle')?.addEventListener('change', (e) => {
+      if (engine) {
+        engine.updateProjectProperty('onionSkinEnabled', (e.target as HTMLInputElement).checked);
+      }
+    });
+  }
+
+  function selectTool(tool: string): void {
+    selectedTool = tool;
+    document.querySelectorAll('.tool-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    document.querySelector(`[data-tool="${tool}"]`)?.classList.add('active');
+
+    // Update canvas cursor
+    const canvas = document.getElementById('animation-canvas');
+    if (canvas) {
+      canvas.className = `tool-${tool}`;
+    }
+  }
+
+  // Timeline
+  function initializeTimeline(): void {
+    // Play button
+    document.getElementById('play-btn')?.addEventListener('click', () => {
+      if (engine) {
+        const isPlaying = (engine as any).isPlaying;
+        if (isPlaying) {
+          engine.pause();
+          updatePlayButton(false);
+        } else {
+          engine.play();
+          updatePlayButton(true);
+        }
+      }
+    });
+
+    // Stop button
+    document.getElementById('stop-btn')?.addEventListener('click', () => {
+      if (engine) {
+        engine.stop();
+        updatePlayButton(false);
+      }
+    });
+
+    // Frame navigation
+    document.getElementById('prev-frame-btn')?.addEventListener('click', () => {
+      if (engine) {
+        engine.previousFrame();
+        updateFrameDisplay();
+      }
+    });
+
+    document.getElementById('next-frame-btn')?.addEventListener('click', () => {
+      if (engine) {
+        engine.nextFrame();
+        updateFrameDisplay();
+      }
+    });
+
+    // Loop toggle
+    document.getElementById('loop-toggle')?.addEventListener('change', (e) => {
+      if (engine) {
+        engine.updateProjectProperty('loop', (e.target as HTMLInputElement).checked);
+      }
+    });
+
+    // Frame track scrubbing
+    const frameTrack = document.getElementById('frame-track');
+    if (frameTrack) {
+      frameTrack.addEventListener('click', (e) => {
+        if (engine) {
+          const rect = frameTrack.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const percent = x / rect.width;
+          const frame = Math.floor(percent * engine.getProject().totalFrames);
+          engine.setCurrentFrame(frame);
+          updateFrameDisplay();
+        }
+      });
+    }
+
+    updateFrameDisplay();
+  }
+
+  function updatePlayButton(isPlaying: boolean): void {
+    const playIcon = document.querySelector('.play-icon') as HTMLElement;
+    const pauseIcon = document.querySelector('.pause-icon') as HTMLElement;
+    if (playIcon && pauseIcon) {
+      playIcon.style.display = isPlaying ? 'none' : 'inline';
+      pauseIcon.style.display = isPlaying ? 'inline' : 'none';
+    }
+  }
+
+  function updateFrameDisplay(): void {
+    if (!engine) return;
+    const currentFrame = engine.getCurrentFrame();
+    const totalFrames = engine.getProject().totalFrames;
+    const fps = engine.getProject().fps;
+
+    const frameDisplay = document.getElementById('current-frame-display');
+    const timeDisplay = document.getElementById('time-display');
+    const playhead = document.getElementById('playhead');
+
+    if (frameDisplay) {
+      frameDisplay.textContent = `Frame: ${currentFrame + 1} / ${totalFrames}`;
+    }
+
+    if (timeDisplay) {
+      const currentTime = (currentFrame / fps).toFixed(1);
+      const totalTime = (totalFrames / fps).toFixed(1);
+      timeDisplay.textContent = `${currentTime}s / ${totalTime}s`;
+    }
+
+    if (playhead) {
+      const percent = (currentFrame / totalFrames) * 100;
+      playhead.style.left = `${percent}%`;
+    }
+  }
+
+  // Layers Panel
+  function updateLayersList(): void {
+    const container = document.getElementById('layers-list');
+    if (!container || !engine) return;
+
+    const characters = engine.getProject().characters;
+    container.innerHTML = '';
+
+    if (characters.length === 0) {
+      container.innerHTML = '<p class="empty-state">Noch keine Charaktere hinzugefügt</p>';
+      return;
+    }
+
+    characters.forEach(character => {
+      const item = document.createElement('div');
+      item.className = 'layer-item';
+      if (character.id === selectedCharacterId) {
+        item.classList.add('active');
+      }
+
+      item.innerHTML = `
+        <span>${character.name}</span>
+        <button class="delete-btn" data-character-id="${character.id}">🗑️</button>
+      `;
+
+      item.addEventListener('click', (e) => {
+        if (!(e.target as HTMLElement).classList.contains('delete-btn')) {
+          selectedCharacterId = character.id;
+          updateLayersList();
+        }
+      });
+
+      item.querySelector('.delete-btn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (engine) {
+          engine.removeCharacter(character.id);
+          if (selectedCharacterId === character.id) {
+            selectedCharacterId = null;
+          }
+          updateLayersList();
+          saveCurrentProject();
+        }
+      });
+
+      container.appendChild(item);
+    });
+  }
+
+  // Keyboard Shortcuts
+  function initializeKeyboardShortcuts(): void {
+    document.addEventListener('keydown', (e) => {
+      // Don't trigger shortcuts if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      switch (e.key) {
+        case ' ':
+          e.preventDefault();
+          document.getElementById('play-btn')?.click();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          document.getElementById('prev-frame-btn')?.click();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          document.getElementById('next-frame-btn')?.click();
+          break;
+        case 'Delete':
+          if (engine && selectedCharacterId) {
+            engine.removeCharacter(selectedCharacterId);
+            selectedCharacterId = null;
+            updateLayersList();
+            saveCurrentProject();
+          }
+          break;
+        case 'z':
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            engine?.undo();
+          }
+          break;
+        case 'y':
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            engine?.redo();
+          }
+          break;
+        case 'v':
+          selectTool('select');
+          break;
+        case 'm':
+          selectTool('move');
+          break;
+        case 'r':
+          selectTool('rotate');
+          break;
+        case 's':
+          selectTool('scale');
+          break;
+        case '+':
+          document.getElementById('zoom-in')?.click();
+          break;
+        case '-':
+          document.getElementById('zoom-out')?.click();
+          break;
+        case '0':
+          document.getElementById('zoom-reset')?.click();
+          break;
+      }
+    });
+
+    // Shortcuts panel toggle
+    document.getElementById('shortcuts-toggle')?.addEventListener('click', () => {
+      const panel = document.getElementById('shortcuts-panel');
+      if (panel) {
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+  }
+
+  // Export Modal
+  function initializeExportModal(): void {
+    const modal = document.getElementById('export-modal');
+    const openBtn = document.getElementById('export-project');
+    const closeBtn = document.getElementById('close-export-modal');
+
+    openBtn?.addEventListener('click', () => {
+      if (modal) modal.style.display = 'flex';
+    });
+
+    closeBtn?.addEventListener('click', () => {
+      if (modal) modal.style.display = 'none';
+    });
+
+    // Export buttons
+    document.getElementById('export-gif')?.addEventListener('click', async () => {
+      showNotification('GIF-Export noch nicht implementiert', 'info');
+    });
+
+    document.getElementById('export-video')?.addEventListener('click', async () => {
+      showNotification('Video-Export noch nicht implementiert', 'info');
+    });
+
+    document.getElementById('export-png-sequence')?.addEventListener('click', async () => {
+      showNotification('PNG-Sequenz-Export noch nicht implementiert', 'info');
+    });
+
+    document.getElementById('export-json')?.addEventListener('click', () => {
+      if (engine) {
+        const json = engine.exportAsJSON();
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${currentProject?.name || 'animation'}.json`;
+        a.click();
+        showNotification('JSON exportiert!', 'success');
+      }
+    });
+
+    document.getElementById('generate-qr')?.addEventListener('click', () => {
+      showNotification('QR-Code-Generierung noch nicht implementiert', 'info');
+    });
+  }
+
+  // Save Project
+  document.getElementById('save-project')?.addEventListener('click', () => {
+    saveToProjectsList();
+  });
+
+  // Project Name Input
+  document.getElementById('project-name')?.addEventListener('change', (e) => {
+    if (engine && currentProject) {
+      const name = (e.target as HTMLInputElement).value;
+      currentProject.name = name;
+      engine.updateProjectProperty('name', name);
+      saveCurrentProject();
+    }
+  });
+
+  // Utility: Show Notification
+  function showNotification(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
+    // Create toast notification
+    const toast = document.createElement('div');
+    toast.className = `notification notification-${type}`;
+    toast.textContent = message;
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#E57373' : '#2196F3'};
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      z-index: 10000;
+      font-weight: 600;
+      animation: slideIn 0.3s ease;
+    `;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.animation = 'slideOut 0.3s ease';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+</script>
+
+<style>
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-50%) translateY(20px);
+    }
+  }
+</style>

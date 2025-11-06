@@ -1,0 +1,637 @@
+---
+/**
+ * Music Composer Component
+ * Main interface for creating music compositions
+ */
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale: Locale;
+  compositionId?: string;
+}
+
+const { locale, compositionId } = Astro.props;
+---
+
+<div class="music-composer" data-composition-id={compositionId}>
+  <div class="composer-header">
+    <div class="title-controls">
+      <input
+        type="text"
+        id="composition-title"
+        class="composition-title"
+        placeholder="My Composition"
+        maxlength="50"
+      />
+      <div class="tempo-controls">
+        <label for="bpm-slider">BPM: <span id="bpm-value">120</span></label>
+        <input
+          type="range"
+          id="bpm-slider"
+          min="60"
+          max="180"
+          value="120"
+          step="1"
+        />
+      </div>
+      <div class="time-signature">
+        <label for="time-sig">Time:</label>
+        <select id="time-sig">
+          <option value="4/4">4/4</option>
+          <option value="3/4">3/4</option>
+          <option value="6/8">6/8</option>
+        </select>
+      </div>
+      <div class="measures">
+        <label for="measures-input">Measures:</label>
+        <input
+          type="number"
+          id="measures-input"
+          min="1"
+          max="32"
+          value="16"
+        />
+      </div>
+    </div>
+
+    <div class="action-controls">
+      <button id="template-btn" class="btn-secondary">
+        📋 Templates
+      </button>
+      <button id="save-btn" class="btn-primary">
+        💾 Save
+      </button>
+      <button id="export-audio-btn" class="btn-secondary">
+        🎵 Export Audio
+      </button>
+      <button id="export-midi-btn" class="btn-secondary">
+        🎹 Export MIDI
+      </button>
+    </div>
+  </div>
+
+  <div class="composer-toolbar">
+    <div class="instrument-selector">
+      <label for="add-instrument">Add Track:</label>
+      <select id="add-instrument">
+        <option value="">-- Select Instrument --</option>
+        <option value="piano">🎹 Piano</option>
+        <option value="guitar">🎸 Guitar</option>
+        <option value="flute">🎶 Flute</option>
+        <option value="drums">🥁 Drums</option>
+        <option value="xylophone">🎵 Xylophone</option>
+        <option value="trumpet">🎺 Trumpet</option>
+        <option value="violin">🎻 Violin</option>
+        <option value="bells">🔔 Bells</option>
+      </select>
+      <button id="add-track-btn" class="btn-primary">+ Add</button>
+    </div>
+
+    <div class="scale-helper">
+      <label for="scale-select">Scale:</label>
+      <select id="scale-select">
+        <option value="major">Major</option>
+        <option value="minor">Minor</option>
+        <option value="pentatonic">Pentatonic</option>
+        <option value="chromatic">Chromatic</option>
+      </select>
+      <button id="highlight-scale-btn" class="btn-secondary">Highlight</button>
+    </div>
+
+    <div class="chord-helper">
+      <label>Chords:</label>
+      <button class="chord-btn" data-chord="C">C</button>
+      <button class="chord-btn" data-chord="G">G</button>
+      <button class="chord-btn" data-chord="F">F</button>
+      <button class="chord-btn" data-chord="Am">Am</button>
+      <button class="chord-btn" data-chord="Em">Em</button>
+      <button class="chord-btn" data-chord="Dm">Dm</button>
+    </div>
+
+    <div class="rhythm-helper">
+      <label for="rhythm-pattern">Rhythm:</label>
+      <select id="rhythm-pattern">
+        <option value="">-- Select Pattern --</option>
+        <option value="Basic Rock">Basic Rock</option>
+        <option value="Waltz">Waltz</option>
+        <option value="Swing">Swing</option>
+        <option value="March">March</option>
+        <option value="Syncopated">Syncopated</option>
+        <option value="Disco">Disco</option>
+      </select>
+      <button id="apply-rhythm-btn" class="btn-secondary">Apply</button>
+    </div>
+  </div>
+
+  <div class="composer-main">
+    <div class="tracks-panel">
+      <div class="tracks-header">
+        <h3>Tracks</h3>
+      </div>
+      <div id="tracks-list" class="tracks-list">
+        <!-- Tracks will be added dynamically -->
+      </div>
+    </div>
+
+    <div class="piano-roll-container">
+      <div class="piano-roll-header">
+        <div class="playback-controls">
+          <button id="play-btn" class="btn-large">
+            ▶️ Play
+          </button>
+          <button id="pause-btn" class="btn-large">
+            ⏸️ Pause
+          </button>
+          <button id="stop-btn" class="btn-large">
+            ⏹️ Stop
+          </button>
+          <button id="metronome-btn" class="btn-secondary">
+            🎯 Metronome
+          </button>
+        </div>
+
+        <div class="tool-controls">
+          <button id="tool-select" class="tool-btn active" data-tool="select">
+            ⬚ Select
+          </button>
+          <button id="tool-pencil" class="tool-btn" data-tool="pencil">
+            ✏️ Pencil
+          </button>
+          <button id="tool-erase" class="tool-btn" data-tool="erase">
+            🗑️ Erase
+          </button>
+        </div>
+
+        <div class="note-length">
+          <label>Note:</label>
+          <button class="note-length-btn active" data-length="quarter">1/4</button>
+          <button class="note-length-btn" data-length="eighth">1/8</button>
+          <button class="note-length-btn" data-length="half">1/2</button>
+          <button class="note-length-btn" data-length="whole">1</button>
+        </div>
+      </div>
+
+      <div id="piano-roll" class="piano-roll">
+        <!-- Piano roll will be rendered via canvas -->
+      </div>
+    </div>
+  </div>
+
+  <div class="virtual-keyboard-panel">
+    <div id="virtual-keyboard"></div>
+    <div class="recording-controls">
+      <button id="record-btn" class="btn-large">
+        ⏺️ Record
+      </button>
+      <div class="count-in">
+        <label>
+          <input type="checkbox" id="count-in-checkbox" checked />
+          Count-in (1-2-3-4)
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Template Selector Modal -->
+  <div id="template-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Choose a Template</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="template-grid">
+          <button class="template-card" data-template="happy-adventure">
+            <div class="template-icon">🎉</div>
+            <h3>Happy Adventure</h3>
+            <p>Upbeat, major key</p>
+          </button>
+          <button class="template-card" data-template="calm-bedtime">
+            <div class="template-icon">🌙</div>
+            <h3>Calm Bedtime</h3>
+            <p>Soft, slow</p>
+          </button>
+          <button class="template-card" data-template="exciting-chase">
+            <div class="template-icon">🏃</div>
+            <h3>Exciting Chase</h3>
+            <p>Fast tempo</p>
+          </button>
+          <button class="template-card" data-template="magical-wonder">
+            <div class="template-icon">✨</div>
+            <h3>Magical Wonder</h3>
+            <p>Bell sounds, mysterious</p>
+          </button>
+          <button class="template-card" data-template="silly-fun">
+            <div class="template-icon">🤪</div>
+            <h3>Silly Fun</h3>
+            <p>Playful, bouncy</p>
+          </button>
+          <button class="template-card" data-template="sad-moment">
+            <div class="template-icon">😢</div>
+            <h3>Sad Moment</h3>
+            <p>Minor key, slow</p>
+          </button>
+          <button class="template-card" data-template="victory-celebration">
+            <div class="template-icon">🏆</div>
+            <h3>Victory Celebration</h3>
+            <p>Triumphant</p>
+          </button>
+          <button class="template-card" data-template="forest-sounds">
+            <div class="template-icon">🌲</div>
+            <h3>Forest Sounds</h3>
+            <p>Nature-themed</p>
+          </button>
+          <button class="template-card" data-template="space-journey">
+            <div class="template-icon">🚀</div>
+            <h3>Space Journey</h3>
+            <p>Electronic</p>
+          </button>
+          <button class="template-card" data-template="birthday-party">
+            <div class="template-icon">🎂</div>
+            <h3>Birthday Party</h3>
+            <p>Festive</p>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .music-composer {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .composer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .title-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .composition-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    min-width: 200px;
+  }
+
+  .tempo-controls,
+  .time-signature,
+  .measures {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  #bpm-slider {
+    width: 120px;
+  }
+
+  .action-controls {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .composer-toolbar {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .instrument-selector,
+  .scale-helper,
+  .chord-helper,
+  .rhythm-helper {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .chord-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+  }
+
+  .chord-btn:hover {
+    background: #FF9F40;
+    color: white;
+    border-color: #FF9F40;
+  }
+
+  .composer-main {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tracks-panel {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .tracks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .piano-roll-container {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .piano-roll-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .playback-controls,
+  .tool-controls,
+  .note-length {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .tool-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tool-btn.active {
+    background: #6BCF7F;
+    color: white;
+    border-color: #6BCF7F;
+  }
+
+  .note-length-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+  }
+
+  .note-length-btn.active {
+    background: #FF9F40;
+    color: white;
+    border-color: #FF9F40;
+  }
+
+  .piano-roll {
+    width: 100%;
+    height: 500px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    overflow: auto;
+    position: relative;
+    background: #fafafa;
+  }
+
+  .virtual-keyboard-panel {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .recording-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .btn-primary {
+    padding: 0.75rem 1.5rem;
+    background: #FF9F40;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: #ff8c1a;
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    color: #333;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    background: #f0f0f0;
+    border-color: #ccc;
+  }
+
+  .btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-large:hover {
+    background: #6BCF7F;
+    color: white;
+    border-color: #6BCF7F;
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal.active {
+    display: flex;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 900px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 2px solid #eee;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #999;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .template-card {
+    padding: 1.5rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .template-card:hover {
+    background: #FFF5E6;
+    border-color: #FF9F40;
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .template-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .template-card h3 {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+  }
+
+  .template-card p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 768px) {
+    .composer-main {
+      grid-template-columns: 1fr;
+    }
+
+    .composer-header,
+    .composer-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .template-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { MusicComposer } from '../utils/music-composer';
+  import { starWallet } from '../utils/star-wallet';
+  import { achievementTracker } from '../utils/achievements';
+  import { confetti } from '../utils/confetti';
+  import { soundEffects } from '../utils/sound-effects';
+
+  // Initialize composer
+  let composer: MusicComposer;
+  let selectedTrackId: string | null = null;
+  let currentTool: 'select' | 'pencil' | 'erase' = 'select';
+  let currentNoteLength: 'whole' | 'half' | 'quarter' | 'eighth' | 'sixteenth' = 'quarter';
+
+  const composerElement = document.querySelector('.music-composer') as HTMLElement;
+  const compositionIdAttr = composerElement?.dataset.compositionId;
+
+  if (compositionIdAttr) {
+    const saved = MusicComposer.load(compositionIdAttr);
+    if (saved) {
+      composer = new MusicComposer(saved);
+    } else {
+      composer = new MusicComposer();
+    }
+  } else {
+    composer = new MusicComposer();
+  }
+
+  // Update UI with composition data
+  const composition = composer.getComposition();
+  (document.getElementById('composition-title') as HTMLInputElement).value = composition.title;
+  (document.getElementById('bpm-slider') as HTMLInputElement).value = composition.bpm.toString();
+  (document.getElementById('bpm-value') as HTMLElement).textContent = composition.bpm.toString();
+  (document.getElementById('time-sig') as HTMLSelectElement).value = composition.timeSignature;
+  (document.getElementById('measures-input') as HTMLInputElement).value = composition.measures.toString();
+
+  // Event handlers will be implemented in PianoRoll and VirtualKeyboard components
+  console.log('Music Composer initialized');
+</script>

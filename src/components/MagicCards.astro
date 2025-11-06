@@ -1,0 +1,416 @@
+---
+/**
+ * Magic Cards Component - Draw three mystical cards
+ */
+interface Props {
+  locale?: string;
+}
+
+const { locale = 'de' } = Astro.props;
+
+const cardTypes = [
+  { type: 'character', emoji: '🐻', label: 'Character' },
+  { type: 'setting', emoji: '🏰', label: 'Setting' },
+  { type: 'theme', emoji: '❤️', label: 'Theme' },
+];
+---
+
+<div class="magic-cards-container">
+  <h2 class="cards-title" data-i18n="drawThreeCards">Draw Three Cards</h2>
+  <p class="cards-subtitle" data-i18n="cardsRevealFate">Each card reveals part of your story's fate</p>
+
+  <div class="cards-deck" id="cardsDeck">
+    {Array.from({ length: 20 }).map((_, i) => (
+      <div class="card-back" style={`--card-index: ${i}`}>
+        <div class="card-pattern">🌟</div>
+      </div>
+    ))}
+  </div>
+
+  <button class="draw-button" id="drawButton" data-i18n="drawCards">
+    Draw Your Cards
+  </button>
+
+  <div class="drawn-cards hidden" id="drawnCards">
+    <div class="card-slot" data-card="1">
+      <div class="card-placeholder">?</div>
+      <div class="card-content hidden"></div>
+    </div>
+    <div class="card-slot" data-card="2">
+      <div class="card-placeholder">?</div>
+      <div class="card-content hidden"></div>
+    </div>
+    <div class="card-slot" data-card="3">
+      <div class="card-placeholder">?</div>
+      <div class="card-content hidden"></div>
+    </div>
+  </div>
+
+  <div class="cards-interpretation hidden" id="cardsInterpretation">
+    <h3 data-i18n="cardsSpeak">The Cards Speak...</h3>
+    <div class="interpretation-text"></div>
+  </div>
+</div>
+
+<style>
+  .magic-cards-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 700px;
+    padding: 2rem;
+  }
+
+  .cards-title {
+    color: white;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .cards-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    font-style: italic;
+  }
+
+  .cards-deck {
+    position: relative;
+    width: 200px;
+    height: 280px;
+    margin-bottom: 2rem;
+    perspective: 1000px;
+  }
+
+  .card-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 15px;
+    border: 3px solid #ffd700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transform: translateY(calc(var(--card-index) * -2px));
+    animation: cardFloat 3s ease-in-out infinite;
+    animation-delay: calc(var(--card-index) * 0.05s);
+  }
+
+  .card-pattern {
+    font-size: 5rem;
+    opacity: 0.3;
+    animation: rotate 10s linear infinite;
+  }
+
+  .draw-button {
+    padding: 1.25rem 2.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    color: #333;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+  }
+
+  .draw-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 15px 40px rgba(255, 215, 0, 0.6);
+  }
+
+  .draw-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .drawn-cards {
+    display: flex;
+    gap: 2rem;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+  }
+
+  .card-slot {
+    position: relative;
+    width: 180px;
+    height: 250px;
+    perspective: 1000px;
+  }
+
+  .card-placeholder,
+  .card-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    backface-visibility: hidden;
+    transition: transform 0.6s;
+  }
+
+  .card-placeholder {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 3px solid #ffd700;
+    color: #ffd700;
+    font-size: 5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .card-content {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    border: 3px solid #ffd700;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transform: rotateY(180deg);
+    padding: 1.5rem;
+  }
+
+  .card-slot.flipped .card-placeholder {
+    transform: rotateY(180deg);
+  }
+
+  .card-slot.flipped .card-content {
+    transform: rotateY(0deg);
+  }
+
+  .card-emoji {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-label {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+  }
+
+  .cards-interpretation {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 600px;
+    margin-top: 2rem;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .cards-interpretation h3 {
+    color: #667eea;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .interpretation-text {
+    font-size: 1.25rem;
+    color: #333;
+    line-height: 1.6;
+    text-align: center;
+    font-style: italic;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* Animations */
+  @keyframes cardFloat {
+    0%, 100% {
+      transform: translateY(calc(var(--card-index) * -2px));
+    }
+    50% {
+      transform: translateY(calc(var(--card-index) * -2px - 10px));
+    }
+  }
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .drawn-cards {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card-slot {
+      width: 150px;
+      height: 210px;
+    }
+
+    .card-emoji {
+      font-size: 4rem;
+    }
+
+    .card-label {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<script>
+  const drawButton = document.getElementById('drawButton');
+  const cardsDeck = document.getElementById('cardsDeck');
+  const drawnCards = document.getElementById('drawnCards');
+  const cardsInterpretation = document.getElementById('cardsInterpretation');
+
+  const cardOptions = [
+    // Characters
+    { type: 'character', emoji: '🐻', label: 'Bear', value: 'bear' },
+    { type: 'character', emoji: '🦊', label: 'Fox', value: 'fox' },
+    { type: 'character', emoji: '🐰', label: 'Rabbit', value: 'rabbit' },
+    { type: 'character', emoji: '🦉', label: 'Owl', value: 'owl' },
+    // Settings
+    { type: 'setting', emoji: '🌲', label: 'Forest', value: 'forest' },
+    { type: 'setting', emoji: '🏰', label: 'Castle', value: 'castle' },
+    { type: 'setting', emoji: '🏔️', label: 'Mountain', value: 'mountain' },
+    { type: 'setting', emoji: '🏖️', label: 'Beach', value: 'beach' },
+    // Themes
+    { type: 'theme', emoji: '❤️', label: 'Friendship', value: 'friendship' },
+    { type: 'theme', emoji: '🌟', label: 'Courage', value: 'courage' },
+    { type: 'theme', emoji: '🎨', label: 'Creativity', value: 'creativity' },
+    { type: 'theme', emoji: '🧠', label: 'Wisdom', value: 'wisdom' },
+  ];
+
+  let selectedCards: any[] = [];
+
+  drawButton?.addEventListener('click', async () => {
+    if (!drawButton || !cardsDeck || !drawnCards) return;
+
+    drawButton.disabled = true;
+
+    // Shuffle animation
+    await shuffleDeck();
+
+    // Draw cards
+    selectedCards = drawRandomCards(3);
+
+    // Hide deck, show drawn cards
+    cardsDeck.style.opacity = '0';
+    setTimeout(() => {
+      cardsDeck.style.display = 'none';
+      drawnCards.classList.remove('hidden');
+      revealCards();
+    }, 500);
+  });
+
+  async function shuffleDeck() {
+    if (!cardsDeck) return;
+
+    const cards = cardsDeck.querySelectorAll('.card-back');
+
+    // Animate shuffle
+    cards.forEach((card: Element, i: number) => {
+      const htmlCard = card as HTMLElement;
+      const delay = i * 50;
+      setTimeout(() => {
+        htmlCard.style.transform = `translateY(${Math.random() * 20 - 10}px)
+                                     translateX(${Math.random() * 20 - 10}px)
+                                     rotate(${Math.random() * 20 - 10}deg)`;
+      }, delay);
+    });
+
+    return new Promise(resolve => setTimeout(resolve, 1000));
+  }
+
+  function drawRandomCards(count: number) {
+    const characters = cardOptions.filter(c => c.type === 'character');
+    const settings = cardOptions.filter(c => c.type === 'setting');
+    const themes = cardOptions.filter(c => c.type === 'theme');
+
+    return [
+      characters[Math.floor(Math.random() * characters.length)],
+      settings[Math.floor(Math.random() * settings.length)],
+      themes[Math.floor(Math.random() * themes.length)],
+    ];
+  }
+
+  async function revealCards() {
+    const slots = drawnCards?.querySelectorAll('.card-slot');
+    if (!slots) return;
+
+    for (let i = 0; i < slots.length; i++) {
+      await sleep(800);
+
+      const slot = slots[i] as HTMLElement;
+      const card = selectedCards[i];
+      const cardContent = slot.querySelector('.card-content');
+
+      if (cardContent) {
+        cardContent.innerHTML = `
+          <div class="card-emoji">${card.emoji}</div>
+          <div class="card-label">${card.label}</div>
+        `;
+      }
+
+      slot.classList.add('flipped');
+
+      // Sound effect
+      playSound('cardFlip');
+    }
+
+    // Show interpretation
+    await sleep(1000);
+    showInterpretation();
+  }
+
+  function showInterpretation() {
+    if (!cardsInterpretation) return;
+
+    const interpretationText = cardsInterpretation.querySelector('.interpretation-text');
+    if (interpretationText) {
+      const message = `
+        A ${selectedCards[0].label} in a ${selectedCards[1].label},
+        guided by ${selectedCards[2].label}...
+        Your perfect story awaits!
+      `;
+      interpretationText.textContent = message;
+    }
+
+    cardsInterpretation.classList.remove('hidden');
+
+    // Emit event with cards
+    window.dispatchEvent(new CustomEvent('magicCardsDrawn', {
+      detail: { cards: selectedCards }
+    }));
+  }
+
+  function playSound(type: string) {
+    console.log(`Play sound: ${type}`);
+  }
+
+  function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+</script>
