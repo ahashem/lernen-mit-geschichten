@@ -534,6 +534,9 @@ const t = (key: string) => getTranslation(language, key as any);
     getHintForPosition,
   } from '../utils/story-sequencing';
 
+  // Get base path for correct navigation
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
   // Initialize game
   document.addEventListener('DOMContentLoaded', () => {
     const gameContainer = document.querySelector('.sequencing-game') as HTMLElement;
@@ -654,7 +657,7 @@ const t = (key: string) => getTranslation(language, key as any);
       continueBtn?.addEventListener('click', closeModal);
       replayBtn?.addEventListener('click', resetGame);
       backBtn?.addEventListener('click', () => {
-        window.location.href = '/de/stories';
+        window.location.href = `${base}/de/stories`;
       });
     }
 

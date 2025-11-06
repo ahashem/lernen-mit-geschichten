@@ -1,0 +1,379 @@
+---
+/**
+ * Category Dashboard - 8 Large Colorful Tiles
+ * Visual navigation for children ages 3-7
+ */
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale?: Locale;
+  totalStories?: number;
+}
+
+const { locale = 'de', totalStories = 25 } = Astro.props;
+
+// Get base path for correct navigation
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// Category tile configurations
+const categories = [
+  {
+    id: 'stories',
+    emoji: '📚',
+    titleKey: 'stories',
+    subtitleKey: 'readAndLearn',
+    count: totalStories,
+    countSuffix: 'Geschichten',
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    href: '#stories-section',
+  },
+  {
+    id: 'games',
+    emoji: '🎮',
+    titleKey: 'gamesHub',
+    subtitleKey: 'playAndFun',
+    count: totalStories,
+    countSuffix: 'Spiele',
+    gradient: 'linear-gradient(135deg, #FF6B6B 0%, #FF9F40 100%)',
+    href: `${base}/games`,
+  },
+  {
+    id: 'create',
+    emoji: '🎨',
+    titleKey: 'storyBuilder',
+    subtitleKey: 'beCreative',
+    count: 12,
+    countSuffix: 'Werkzeuge',
+    gradient: 'linear-gradient(135deg, #FFD93D 0%, #FFAA00 100%)',
+    href: `${base}/create`,
+  },
+  {
+    id: 'collections',
+    emoji: '⭐',
+    titleKey: 'achievements',
+    subtitleKey: 'rewards',
+    count: 3,
+    countSuffix: 'Sammlungen',
+    gradient: 'linear-gradient(135deg, #C77DFF 0%, #9D4EDD 100%)',
+    href: `${base}/achievements`,
+  },
+  {
+    id: 'progress',
+    emoji: '📊',
+    titleKey: 'progressDashboard',
+    subtitleKey: 'yourPath',
+    count: 'Level 5',
+    countSuffix: '120⭐',
+    gradient: 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)',
+    href: `${base}/progress`,
+  },
+  {
+    id: 'companions',
+    emoji: '🐾',
+    titleKey: 'virtualPets',
+    subtitleKey: 'petAndGarden',
+    count: 2,
+    countSuffix: 'aktive Tiere',
+    gradient: 'linear-gradient(135deg, #FF9ECD 0%, #FF6BA9 100%)',
+    href: `${base}/pets`,
+  },
+  {
+    id: 'tools',
+    emoji: '🎪',
+    titleKey: 'tools',
+    subtitleKey: 'printAndQR',
+    count: 7,
+    countSuffix: 'Tools',
+    gradient: 'linear-gradient(135deg, #4ECDC4 0%, #2EA39D 100%)',
+    href: `${base}/tools`,
+  },
+  {
+    id: 'help',
+    emoji: 'ℹ️',
+    titleKey: 'about',
+    subtitleKey: 'parentInfo',
+    count: '',
+    countSuffix: 'Hilfe',
+    gradient: 'linear-gradient(135deg, #757575 0%, #424242 100%)',
+    href: `${base}/about`,
+  },
+];
+---
+
+<div class="category-dashboard">
+  <div class="dashboard-grid">
+    {categories.map((cat) => (
+      <a href={cat.href} class="category-tile" data-category={cat.id}>
+        <div class="tile-content" style={`background: ${cat.gradient}`}>
+          <div class="tile-emoji">{cat.emoji}</div>
+          <h3 class="tile-title">{cat.titleKey}</h3>
+          <p class="tile-subtitle">{cat.subtitleKey}</p>
+          <div class="tile-count">
+            {cat.count ? (
+              <span>
+                {cat.count} {cat.countSuffix}
+              </span>
+            ) : (
+              <span>{cat.countSuffix}</span>
+            )}
+          </div>
+        </div>
+      </a>
+    ))}
+  </div>
+</div>
+
+<style>
+  .category-dashboard {
+    width: 100%;
+    padding: 2rem 0;
+  }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .category-tile {
+    position: relative;
+    display: block;
+    aspect-ratio: 1;
+    text-decoration: none;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .category-tile:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  }
+
+  .category-tile:active {
+    transform: translateY(-4px) scale(1.01);
+  }
+
+  .tile-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tile-content::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .category-tile:hover .tile-content::before {
+    opacity: 1;
+  }
+
+  .tile-emoji {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+    animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .tile-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0.5rem 0 0.25rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.02em;
+  }
+
+  .tile-subtitle {
+    font-size: 0.875rem;
+    margin: 0 0 0.75rem;
+    opacity: 0.95;
+    font-weight: 500;
+  }
+
+  .tile-count {
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    margin-top: auto;
+  }
+
+  /* Tablet */
+  @media (max-width: 1024px) {
+    .dashboard-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .tile-emoji {
+      font-size: 3.5rem;
+    }
+
+    .tile-title {
+      font-size: 1.25rem;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .category-dashboard {
+      padding: 1.5rem 0;
+    }
+
+    .dashboard-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      padding: 0 1rem;
+    }
+
+    .category-tile {
+      border-radius: 16px;
+    }
+
+    .tile-content {
+      padding: 1rem;
+    }
+
+    .tile-emoji {
+      font-size: 3rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .tile-title {
+      font-size: 1.1rem;
+      margin: 0.25rem 0 0.125rem;
+    }
+
+    .tile-subtitle {
+      font-size: 0.75rem;
+      margin: 0 0 0.5rem;
+    }
+
+    .tile-count {
+      font-size: 0.875rem;
+      padding: 0.4rem 0.75rem;
+    }
+  }
+
+  /* Touch-friendly */
+  @media (hover: none) {
+    .category-tile {
+      min-height: 160px;
+      min-width: 160px;
+    }
+
+    .category-tile:active {
+      transform: scale(0.95);
+      transition: transform 0.1s ease;
+    }
+  }
+
+  /* Accessibility: keyboard navigation */
+  .category-tile:focus {
+    outline: 4px solid #FF9F40;
+    outline-offset: 4px;
+  }
+
+  .category-tile:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .category-tile {
+      border: 3px solid currentColor;
+    }
+
+    .tile-content::before {
+      display: none;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .tile-emoji {
+      animation: none;
+    }
+
+    .category-tile {
+      transition: none;
+    }
+
+    .category-tile:hover {
+      transform: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+  }
+</style>
+
+<script>
+  // Add ripple effect on click
+  document.querySelectorAll('.category-tile').forEach((tile) => {
+    tile.addEventListener('click', function (e) {
+      const rect = (this as HTMLElement).getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const ripple = document.createElement('div');
+      ripple.className = 'ripple';
+      ripple.style.cssText = `
+        position: absolute;
+        left: ${x}px;
+        top: ${y}px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.6);
+        transform: translate(-50%, -50%) scale(0);
+        animation: ripple-animation 0.6s ease-out;
+        pointer-events: none;
+      `;
+
+      const content = (this as HTMLElement).querySelector('.tile-content');
+      content?.appendChild(ripple);
+
+      setTimeout(() => ripple.remove(), 600);
+    });
+  });
+
+  // Add CSS animation for ripple
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes ripple-animation {
+      to {
+        transform: translate(-50%, -50%) scale(20);
+        opacity: 0;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+</script>

@@ -1,0 +1,602 @@
+---
+/**
+ * Story Completion Celebration Screen
+ * Shows amazing rewards and encouragement after completing a story
+ */
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale?: Locale;
+  storyId: string;
+  storyTitle: string;
+  rewards?: any[];
+}
+
+const { locale = 'de', storyId, storyTitle, rewards = [] } = Astro.props;
+---
+
+<div class="celebration-overlay" id="celebration-overlay">
+  <div class="celebration-container">
+    <!-- Animated Trophy/Star Icon -->
+    <div class="trophy-animation">
+      <div class="trophy-glow"></div>
+      <div class="trophy-icon">🏆</div>
+      <div class="sparkles"></div>
+    </div>
+
+    <!-- Celebration Title -->
+    <h1 class="celebration-title" data-i18n="superRead">
+      {locale === 'de' && '🎉 SUPER GELESEN! 🎉'}
+      {locale === 'ar' && '🎉 قراءة رائعة! 🎉'}
+      {locale === 'en' && '🎉 AMAZING READING! 🎉'}
+      {locale === 'tr' && '🎉 HAR İKA OKUMA! 🎉'}
+      {locale === 'ur' && '🎉 شاندار پڑھائی! 🎉'}
+    </h1>
+
+    <!-- Story Title -->
+    <p class="story-complete-text">
+      {locale === 'de' && `Du hast "${storyTitle}" gelesen!`}
+      {locale === 'ar' && `لقد قرأت "${storyTitle}"!`}
+      {locale === 'en' && `You read "${storyTitle}"!`}
+      {locale === 'tr' && `"${storyTitle}" kitabını okudun!`}
+      {locale === 'ur' && `آپ نے "${storyTitle}" پڑھی!`}
+    </p>
+
+    <!-- Rewards Panel -->
+    <div class="rewards-panel">
+      <!-- Stars Earned -->
+      <div class="reward-item stars-reward">
+        <div class="reward-icon">⭐</div>
+        <div class="reward-content">
+          <div class="reward-value" id="stars-earned">+50</div>
+          <div class="reward-label" data-i18n="starsEarned">
+            {locale === 'de' && 'Sterne verdient!'}
+            {locale === 'ar' && 'نجمة حصلت عليها!'}
+            {locale === 'en' && 'Stars earned!'}
+            {locale === 'tr' && 'Yıldız kazandın!'}
+            {locale === 'ur' && 'ستارے ملے!'}
+          </div>
+        </div>
+      </div>
+
+      <!-- Stories Read -->
+      <div class="reward-item">
+        <div class="reward-icon">📚</div>
+        <div class="reward-content">
+          <div class="reward-value"><span id="stories-read">12</span> / 25</div>
+          <div class="reward-label">
+            {locale === 'de' && 'Geschichten gelesen'}
+            {locale === 'ar' && 'قصص قرأتها'}
+            {locale === 'en' && 'Stories read'}
+            {locale === 'tr' && 'Hikaye okundu'}
+            {locale === 'ur' && 'کہانیاں پڑھیں'}
+          </div>
+        </div>
+      </div>
+
+      <!-- Reading Streak -->
+      <div class="reward-item">
+        <div class="reward-icon">🔥</div>
+        <div class="reward-content">
+          <div class="reward-value"><span id="streak-days">3</span> {locale === 'de' ? 'Tage' : locale === 'ar' ? 'أيام' : locale === 'en' ? 'days' : locale === 'tr' ? 'gün' : 'دن'}</div>
+          <div class="reward-label">
+            {locale === 'de' && 'Lese-Serie! (Mach weiter!)'}
+            {locale === 'ar' && 'سلسلة القراءة! (استمر!)'}
+            {locale === 'en' && 'Reading streak! (Keep going!)'}
+            {locale === 'tr' && 'Okuma serisi! (Devam et!)'}
+            {locale === 'ur' && 'پڑھنے کا سلسلہ! (جاری رکھیں!)'}
+          </div>
+        </div>
+      </div>
+
+      <!-- Next Milestone -->
+      <div class="reward-item">
+        <div class="reward-icon">🏆</div>
+        <div class="reward-content">
+          <div class="reward-value"><span id="stories-to-milestone">3</span> {locale === 'de' ? 'Geschichten' : locale === 'ar' ? 'قصص' : locale === 'en' ? 'stories' : locale === 'tr' ? 'hikaye' : 'کہانیاں'}</div>
+          <div class="reward-label">
+            {locale === 'de' && 'Nächste Belohnung'}
+            {locale === 'ar' && 'المكافأة التالية'}
+            {locale === 'en' && 'Next reward'}
+            {locale === 'tr' && 'Sonraki ödül'}
+            {locale === 'ur' && 'اگلا انعام'}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Bar to Next Milestone -->
+    <div class="milestone-progress">
+      <div class="progress-label">
+        {locale === 'de' && 'Fortschritt zur nächsten Belohnung'}
+        {locale === 'ar' && 'التقدم نحو المكافأة التالية'}
+        {locale === 'en' && 'Progress to next reward'}
+        {locale === 'tr' && 'Sonraki ödüle ilerleme'}
+        {locale === 'ur' && 'اگلے انعام کی طرف پیش رفت'}
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="milestone-progress-bar" style="width: 80%"></div>
+      </div>
+      <div class="progress-text">
+        <span id="progress-current">12</span> / <span id="progress-target">15</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="celebration-actions">
+      <button class="btn-next-story" id="btn-next-story">
+        <span class="btn-icon">📖</span>
+        <span class="btn-text">
+          {locale === 'de' && 'Nächste Geschichte'}
+          {locale === 'ar' && 'القصة التالية'}
+          {locale === 'en' && 'Next Story'}
+          {locale === 'tr' && 'Sonraki Hikaye'}
+          {locale === 'ur' && 'اگلی کہانی'}
+        </span>
+      </button>
+      <button class="btn-back-home" id="btn-back-home">
+        <span class="btn-icon">🏠</span>
+        <span class="btn-text">
+          {locale === 'de' && 'Zurück zur Übersicht'}
+          {locale === 'ar' && 'العودة إلى القائمة'}
+          {locale === 'en' && 'Back to Home'}
+          {locale === 'tr' && 'Ana Sayfaya Dön'}
+          {locale === 'ur' && 'ہوم پر واپس'}
+        </span>
+      </button>
+    </div>
+
+    <!-- Share Achievement (QR Code) -->
+    <div class="share-achievement">
+      <button class="btn-share" id="btn-share">
+        <span>📤</span>
+        {locale === 'de' && 'Erfolg teilen'}
+        {locale === 'ar' && 'شارك الإنجاز'}
+        {locale === 'en' && 'Share achievement'}
+        {locale === 'tr' && 'Başarıyı paylaş'}
+        {locale === 'ur' && 'کامیابی شیئر کریں'}
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .celebration-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+    padding: 1rem;
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+
+  .celebration-container {
+    background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
+    border-radius: 30px;
+    padding: 3rem 2rem;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(255, 159, 64, 0.4);
+    animation: slideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100px) scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Trophy Animation */
+  .trophy-animation {
+    position: relative;
+    margin: 0 auto 2rem;
+    width: 150px;
+    height: 150px;
+  }
+
+  .trophy-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 70%);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.2);
+      opacity: 0.8;
+    }
+  }
+
+  .trophy-icon {
+    font-size: 8rem;
+    animation: bounce 1s ease-in-out infinite;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .sparkles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* Celebration Title */
+  .celebration-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #ff6b35;
+    margin-bottom: 1rem;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
+    animation: wiggle 1s ease-in-out;
+  }
+
+  @keyframes wiggle {
+    0%, 100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-5deg);
+    }
+    75% {
+      transform: rotate(5deg);
+    }
+  }
+
+  .story-complete-text {
+    font-size: 1.25rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  /* Rewards Panel */
+  .rewards-panel {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .reward-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+  }
+
+  .reward-item:hover {
+    transform: translateX(5px);
+  }
+
+  .stars-reward {
+    background: linear-gradient(135deg, #fff9e6 0%, #ffe8b3 100%);
+    border: 2px solid #ffd700;
+  }
+
+  .reward-icon {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .reward-content {
+    flex: 1;
+    text-align: left;
+  }
+
+  .reward-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #ff6b35;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  .stars-reward .reward-value {
+    color: #ffa500;
+    animation: countUp 1s ease-out;
+  }
+
+  @keyframes countUp {
+    from {
+      transform: scale(0);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .reward-label {
+    font-size: 0.875rem;
+    color: #666;
+  }
+
+  /* Progress Bar */
+  .milestone-progress {
+    margin-bottom: 2rem;
+  }
+
+  .progress-label {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-bar-container {
+    width: 100%;
+    height: 30px;
+    background: #e0e0e0;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b35 0%, #ffa500 100%);
+    border-radius: 15px;
+    transition: width 1s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 0.5rem;
+    box-shadow: 0 2px 10px rgba(255, 107, 53, 0.4);
+  }
+
+  .progress-text {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333;
+  }
+
+  /* Action Buttons */
+  .celebration-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .celebration-actions button {
+    flex: 1;
+    padding: 1.25rem 1.5rem;
+    border: none;
+    border-radius: 15px;
+    font-size: 1.125rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-next-story {
+    background: linear-gradient(135deg, #ff6b35 0%, #ffa500 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+  }
+
+  .btn-next-story:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+  }
+
+  .btn-back-home {
+    background: white;
+    color: #666;
+    border: 2px solid #e0e0e0;
+  }
+
+  .btn-back-home:hover {
+    background: #f9f9f9;
+    transform: translateY(-2px);
+  }
+
+  .btn-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  /* Share Button */
+  .share-achievement {
+    text-align: center;
+  }
+
+  .btn-share {
+    background: transparent;
+    border: none;
+    color: #666;
+    font-size: 0.875rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-share:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .celebration-container {
+      padding: 2rem 1.5rem;
+    }
+
+    .celebration-title {
+      font-size: 2rem;
+    }
+
+    .trophy-icon {
+      font-size: 6rem;
+    }
+
+    .celebration-actions {
+      flex-direction: column;
+    }
+
+    .reward-value {
+      font-size: 1.5rem;
+    }
+  }
+
+  /* RTL Support */
+  [dir="rtl"] .reward-item {
+    flex-direction: row-reverse;
+  }
+
+  [dir="rtl"] .reward-content {
+    text-align: right;
+  }
+
+  [dir="rtl"] .reward-item:hover {
+    transform: translateX(-5px);
+  }
+</style>
+
+<script>
+  import { readingRewards } from '../utils/reading-rewards';
+  import { readingTracker } from '../utils/reading-tracker';
+  import { starWallet } from '../utils/star-wallet';
+  import { confetti } from '../utils/confetti';
+  import { soundEffects } from '../utils/sound-effects';
+
+  // Get base path for correct navigation
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+  function initCelebration() {
+    const overlay = document.getElementById('celebration-overlay');
+    if (!overlay) return;
+
+    // Play celebration effects
+    setTimeout(() => {
+      confetti.fireworks(3, 500);
+      soundEffects.playSuccess();
+    }, 500);
+
+    // Load and display rewards
+    loadRewardData();
+
+    // Button handlers
+    document.getElementById('btn-next-story')?.addEventListener('click', goToNextStory);
+    document.getElementById('btn-back-home')?.addEventListener('click', goToHome);
+    document.getElementById('btn-share')?.addEventListener('click', shareAchievement);
+
+    // Auto-dismiss after 30 seconds
+    setTimeout(() => {
+      overlay.style.display = 'none';
+    }, 30000);
+  }
+
+  function loadRewardData() {
+    const stats = readingRewards.getReadingStats();
+    const streak = readingRewards.getStreak();
+
+    // Update displays
+    document.getElementById('stories-read')!.textContent = stats.totalStoriesRead.toString();
+    document.getElementById('streak-days')!.textContent = streak.currentStreak.toString();
+
+    // Calculate next milestone
+    const milestones = [5, 10, 15, 20, 25];
+    const nextMilestone = milestones.find(m => m > stats.totalStoriesRead) || 25;
+    const remaining = nextMilestone - stats.totalStoriesRead;
+
+    document.getElementById('stories-to-milestone')!.textContent = remaining.toString();
+    document.getElementById('progress-current')!.textContent = stats.totalStoriesRead.toString();
+    document.getElementById('progress-target')!.textContent = nextMilestone.toString();
+
+    // Update progress bar
+    const progressPercent = (stats.totalStoriesRead / nextMilestone) * 100;
+    const progressBar = document.getElementById('milestone-progress-bar') as HTMLElement;
+    progressBar.style.width = `${Math.min(progressPercent, 100)}%`;
+
+    // Animate star counter
+    animateStarCounter();
+  }
+
+  function animateStarCounter() {
+    const starEl = document.getElementById('stars-earned');
+    if (!starEl) return;
+
+    let count = 0;
+    const target = 50;
+    const duration = 1000;
+    const step = target / (duration / 16);
+
+    const interval = setInterval(() => {
+      count += step;
+      if (count >= target) {
+        count = target;
+        clearInterval(interval);
+      }
+      starEl.textContent = `+${Math.round(count)}`;
+    }, 16);
+  }
+
+  function goToNextStory() {
+    // Get random unread story
+    window.location.href = `${base}/`;
+  }
+
+  function goToHome() {
+    window.location.href = `${base}/`;
+  }
+
+  function shareAchievement() {
+    // Generate QR code or share link
+    alert('Share feature coming soon!');
+  }
+
+  // Initialize on load
+  if (typeof window !== 'undefined') {
+    initCelebration();
+  }
+</script>

@@ -1,178 +1,132 @@
 ---
 /**
  * Maze Game Component
- * Interactive maze gameplay with canvas rendering, player controls, and collectibles
+ * Interactive maze navigation with multiple themes and difficulty levels
+ * Features: Canvas rendering, swipe/keyboard controls, collectibles, hints
  */
 
 interface Props {
-  storyId: string;
-  storyTitle: string;
-  characterEmoji?: string;
   locale?: 'de' | 'ar' | 'en' | 'tr' | 'ur';
-  difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
-  theme?: 'forest' | 'city' | 'beach' | 'space' | 'underwater' | 'mountain';
+  storyId?: string;
 }
 
-const {
-  storyId,
-  storyTitle,
-  characterEmoji = '🐻',
-  locale = 'de',
-  difficulty = 'medium',
-  theme = 'forest',
-} = Astro.props;
+const { locale = 'de', storyId } = Astro.props;
 ---
 
-<div class="maze-game-container" data-locale={locale} data-story-id={storyId}>
-  <!-- Game Setup Screen -->
+<div class="maze-game-container" data-locale={locale} data-story-id={storyId || ''}>
+  <!-- Setup Screen -->
   <div class="maze-setup" id="maze-setup">
-    <div class="setup-header">
-      <h2 class="setup-title">
-        <span class="story-emoji">{characterEmoji}</span>
-        <span data-i18n="mazeAdventure">Labyrinth-Abenteuer</span>
-      </h2>
-      <p class="story-title">{storyTitle}</p>
-    </div>
+    <h2 class="setup-title" data-i18n="mazeGame">Labyrinth-Spiel</h2>
+    <p class="setup-description" data-i18n="mazeAdventure">
+      Finde den Weg durch das Labyrinth!
+    </p>
 
-    <div class="difficulty-selector">
-      <h3 data-i18n="selectDifficulty">Schwierigkeit wählen</h3>
-      <div class="difficulty-grid">
-        <button
-          class="difficulty-card"
-          data-difficulty="easy"
-          class:list={[{ active: difficulty === 'easy' }]}
-        >
-          <span class="difficulty-icon">🟢</span>
-          <strong data-i18n="easy">Einfach</strong>
-          <small>10x10 • 3 Min</small>
-          <ul class="features">
-            <li data-i18n="minimap">Minimap</li>
-            <li data-i18n="noTimer">Kein Timer</li>
-            <li data-i18n="hints">Hinweise</li>
-          </ul>
-        </button>
-
-        <button
-          class="difficulty-card"
-          data-difficulty="medium"
-          class:list={[{ active: difficulty === 'medium' }]}
-        >
-          <span class="difficulty-icon">🟡</span>
-          <strong data-i18n="medium">Mittel</strong>
-          <small>20x20 • 8 Min</small>
-          <ul class="features">
-            <li data-i18n="limitedMinimap">Begrenzte Minimap</li>
-            <li data-i18n="timer">Timer</li>
-            <li data-i18n="collectibles">Sammelobjekte</li>
-          </ul>
-        </button>
-
-        <button
-          class="difficulty-card"
-          data-difficulty="hard"
-          class:list={[{ active: difficulty === 'hard' }]}
-        >
-          <span class="difficulty-icon">🔴</span>
-          <strong data-i18n="hard">Schwer</strong>
-          <small>30x30 • 15 Min</small>
-          <ul class="features">
-            <li data-i18n="fogOfWar">Nebel des Krieges</li>
-            <li data-i18n="enemies">Hindernisse</li>
-            <li data-i18n="lockedDoors">Gesperrte Türen</li>
-          </ul>
-        </button>
-
-        <button class="difficulty-card" data-difficulty="expert">
-          <span class="difficulty-icon">⚫</span>
-          <strong data-i18n="expert">Experte</strong>
-          <small>30x30 • 20 Min</small>
-          <ul class="features">
-            <li data-i18n="movingWalls">Bewegliche Wände</li>
-            <li data-i18n="teleporters">Teleporter</li>
-            <li data-i18n="hardChallenge">Echte Herausforderung</li>
-          </ul>
-        </button>
-      </div>
-    </div>
-
+    <!-- Theme Selector -->
     <div class="theme-selector">
       <h3 data-i18n="selectTheme">Thema wählen</h3>
-      <div class="theme-buttons">
-        <button
-          class="theme-btn"
-          data-theme="forest"
-          class:list={[{ active: theme === 'forest' }]}
-        >
-          <span class="theme-icon">🌲</span>
-          <span data-i18n="forestSetting">Wald</span>
+      <div class="theme-grid">
+        <button class="theme-btn active" data-theme="forest">
+          <span class="theme-emoji">🌲</span>
+          <span class="theme-name" data-i18n="forestSetting">Wald</span>
         </button>
         <button class="theme-btn" data-theme="city">
-          <span class="theme-icon">🏙️</span>
-          <span data-i18n="citySetting">Stadt</span>
+          <span class="theme-emoji">🏙️</span>
+          <span class="theme-name" data-i18n="citySetting">Stadt</span>
         </button>
         <button class="theme-btn" data-theme="beach">
-          <span class="theme-icon">🏖️</span>
-          <span data-i18n="beachSetting">Strand</span>
+          <span class="theme-emoji">🏖️</span>
+          <span class="theme-name" data-i18n="beachSetting">Strand</span>
         </button>
         <button class="theme-btn" data-theme="space">
-          <span class="theme-icon">🚀</span>
-          <span data-i18n="spaceSetting">Weltraum</span>
+          <span class="theme-emoji">🚀</span>
+          <span class="theme-name" data-i18n="spaceSetting">Weltraum</span>
         </button>
         <button class="theme-btn" data-theme="underwater">
-          <span class="theme-icon">🌊</span>
-          <span data-i18n="underwaterSetting">Unterwasser</span>
+          <span class="theme-emoji">🌊</span>
+          <span class="theme-name" data-i18n="underwaterSetting">Unterwasser</span>
         </button>
         <button class="theme-btn" data-theme="mountain">
-          <span class="theme-icon">⛰️</span>
-          <span data-i18n="mountainSetting">Berge</span>
+          <span class="theme-emoji">⛰️</span>
+          <span class="theme-name" data-i18n="mountainSetting">Berge</span>
+        </button>
+        <button class="theme-btn" data-theme="desert">
+          <span class="theme-emoji">🏜️</span>
+          <span class="theme-name">Wüste</span>
+        </button>
+        <button class="theme-btn" data-theme="castle">
+          <span class="theme-emoji">🏰</span>
+          <span class="theme-name" data-i18n="castleSetting">Schloss</span>
         </button>
       </div>
     </div>
 
+    <!-- Difficulty Selector -->
+    <div class="difficulty-selector">
+      <h3 data-i18n="selectDifficulty">Schwierigkeit wählen</h3>
+      <div class="difficulty-buttons">
+        <button class="difficulty-btn active" data-difficulty="easy">
+          <span class="emoji">🟢</span>
+          <div class="difficulty-info">
+            <span class="difficulty-name" data-i18n="easy">Einfach</span>
+            <span class="difficulty-desc">10x10 • 5 Sammelobjekte</span>
+          </div>
+        </button>
+        <button class="difficulty-btn" data-difficulty="medium">
+          <span class="emoji">🟡</span>
+          <div class="difficulty-info">
+            <span class="difficulty-name" data-i18n="medium">Mittel</span>
+            <span class="difficulty-desc">15x15 • 10 Sammelobjekte</span>
+          </div>
+        </button>
+        <button class="difficulty-btn" data-difficulty="hard">
+          <span class="emoji">🔴</span>
+          <div class="difficulty-info">
+            <span class="difficulty-name" data-i18n="hard">Schwer</span>
+            <span class="difficulty-desc">20x20 • 15 Sammelobjekte</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Controls Info -->
     <div class="controls-info">
       <h3 data-i18n="controls">Steuerung</h3>
-      <div class="control-options">
-        <div class="control-option">
+      <div class="control-methods">
+        <div class="control-item">
           <span class="control-icon">⌨️</span>
-          <span data-i18n="arrowKeys">Pfeiltasten oder WASD</span>
+          <span class="control-text" data-i18n="arrowKeys">Pfeiltasten oder WASD</span>
         </div>
-        <div class="control-option">
-          <span class="control-icon">📱</span>
-          <span data-i18n="swipeControl">Wischen auf Touchscreen</span>
+        <div class="control-item">
+          <span class="control-icon">👆</span>
+          <span class="control-text" data-i18n="swipeControl">Wischen auf Touchscreen</span>
         </div>
       </div>
     </div>
 
     <button class="start-maze-btn" id="start-maze-btn">
       <span data-i18n="startMaze">Labyrinth starten</span>
-      <span class="btn-icon">▶</span>
     </button>
   </div>
 
-  <!-- Game Canvas -->
-  <div class="maze-game hidden" id="maze-game">
+  <!-- Game Screen -->
+  <div class="maze-game-screen hidden" id="maze-game-screen">
     <!-- Game Header -->
     <div class="game-header">
       <div class="game-stats">
         <div class="stat-item">
           <span class="stat-icon">⏱️</span>
           <span class="stat-label" data-i18n="time">Zeit</span>
-          <span class="stat-value" id="game-timer">0:00</span>
+          <span class="stat-value" id="maze-time">0:00</span>
         </div>
         <div class="stat-item">
           <span class="stat-icon">👣</span>
           <span class="stat-label" data-i18n="steps">Schritte</span>
-          <span class="stat-value" id="game-steps">0</span>
+          <span class="stat-value" id="maze-steps">0</span>
         </div>
         <div class="stat-item">
           <span class="stat-icon">⭐</span>
           <span class="stat-label" data-i18n="collected">Gesammelt</span>
-          <span class="stat-value" id="game-collectibles">0 / 0</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-icon">🔑</span>
-          <span class="stat-label" data-i18n="keys">Schlüssel</span>
-          <span class="stat-value" id="game-keys">0</span>
+          <span class="stat-value" id="maze-collected">0 / 0</span>
         </div>
       </div>
 
@@ -180,123 +134,82 @@ const {
         <button class="icon-btn" id="hint-btn" title="Hinweis">
           <span>💡</span>
         </button>
-        <button class="icon-btn" id="minimap-toggle-btn" title="Minimap">
-          <span>🗺️</span>
+        <button class="icon-btn" id="reset-maze-btn" title="Neustart">
+          <span>🔄</span>
         </button>
         <button class="icon-btn" id="pause-btn" title="Pause">
           <span>⏸️</span>
         </button>
-        <button class="icon-btn" id="exit-btn" title="Beenden">
-          <span>❌</span>
+        <button class="icon-btn" id="back-to-setup-btn" title="Zurück">
+          <span>⬅️</span>
         </button>
       </div>
     </div>
 
-    <!-- Checkpoint Modal -->
-    <div class="checkpoint-modal hidden" id="checkpoint-modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="checkpoint-title">Checkpoint erreicht!</h3>
-          <p class="checkpoint-event" id="checkpoint-event"></p>
-        </div>
-        <div class="modal-body">
-          <div class="quiz-question" id="checkpoint-quiz">
-            <p class="question-text" id="question-text"></p>
-            <div class="quiz-options" id="quiz-options"></div>
-          </div>
-          <p class="quiz-feedback hidden" id="quiz-feedback"></p>
-        </div>
-        <div class="modal-actions">
-          <button class="btn-primary" id="submit-answer-btn">
-            <span data-i18n="submitAnswer">Antwort prüfen</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- Canvas Container -->
-    <div class="canvas-container" id="canvas-container">
-      <canvas id="maze-canvas"></canvas>
-
-      <!-- Minimap -->
-      <div class="minimap-container hidden" id="minimap-container">
-        <canvas id="minimap-canvas"></canvas>
-      </div>
-
-      <!-- Mobile Controls -->
-      <div class="mobile-controls" id="mobile-controls">
-        <div class="dpad">
-          <button class="dpad-btn dpad-up" data-direction="up">
-            <span>▲</span>
-          </button>
-          <button class="dpad-btn dpad-left" data-direction="left">
-            <span>◀</span>
-          </button>
-          <button class="dpad-btn dpad-right" data-direction="right">
-            <span>▶</span>
-          </button>
-          <button class="dpad-btn dpad-down" data-direction="down">
-            <span>▼</span>
-          </button>
-        </div>
+    <div class="canvas-container">
+      <canvas id="maze-canvas" width="800" height="800"></canvas>
+      
+      <!-- Mini-map (optional) -->
+      <div class="minimap-container" id="minimap-container">
+        <canvas id="minimap-canvas" width="120" height="120"></canvas>
       </div>
     </div>
 
-    <!-- Victory Screen -->
-    <div class="victory-screen hidden" id="victory-screen">
-      <div class="victory-content">
-        <div class="victory-header">
-          <h2 class="victory-title">
-            <span class="victory-emoji">🎉</span>
-            <span data-i18n="mazeComplete">Labyrinth geschafft!</span>
-          </h2>
+    <!-- Mobile Controls -->
+    <div class="mobile-controls" id="mobile-controls">
+      <div class="dpad-container">
+        <button class="dpad-btn" data-direction="up">
+          <span>▲</span>
+        </button>
+        <div class="dpad-middle">
+          <button class="dpad-btn" data-direction="left">
+            <span>◄</span>
+          </button>
+          <button class="dpad-btn" data-direction="right">
+            <span>►</span>
+          </button>
         </div>
+        <button class="dpad-btn" data-direction="down">
+          <span>▼</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
-        <div class="victory-stats">
-          <div class="victory-stat">
-            <span class="stat-icon-large">⏱️</span>
-            <div class="stat-details">
-              <span class="stat-label" data-i18n="completionTime"
-                >Abschlusszeit</span
-              >
-              <span class="stat-value-large" id="final-time">0:00</span>
-            </div>
+  <!-- Completion Modal -->
+  <div class="completion-modal hidden" id="maze-completion-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 data-i18n="mazeComplete">Labyrinth geschafft!</h2>
+        <div class="stars-display" id="maze-stars-display">
+          <span class="star">⭐</span>
+          <span class="star">⭐</span>
+          <span class="star">⭐</span>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="completion-stats">
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="totalSteps">Schritte</span>
+            <span class="stat-value" id="final-steps">0</span>
           </div>
-          <div class="victory-stat">
-            <span class="stat-icon-large">👣</span>
-            <div class="stat-details">
-              <span class="stat-label" data-i18n="totalSteps">Gesamtschritte</span
-              >
-              <span class="stat-value-large" id="final-steps">0</span>
-            </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="completionTime">Zeit</span>
+            <span class="stat-value" id="final-time">0:00</span>
           </div>
-          <div class="victory-stat">
-            <span class="stat-icon-large">⭐</span>
-            <div class="stat-details">
-              <span class="stat-label" data-i18n="collectiblesFound"
-                >Sammelobjekte gefunden</span
-              >
-              <span class="stat-value-large" id="final-collectibles"
-                >0 / 0</span
-              >
-            </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="collectiblesFound">Sammelobjekte</span>
+            <span class="stat-value" id="final-collectibles">0 / 0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="rewardsEarned">Belohnungen</span>
+            <span class="stat-value" id="maze-rewards">50 XP</span>
           </div>
         </div>
 
-        <div class="star-rating" id="star-rating">
-          <span class="star">⭐</span>
-          <span class="star">⭐</span>
-          <span class="star">⭐</span>
-          <span class="star">⭐</span>
-          <span class="star">⭐</span>
-        </div>
-
-        <div class="victory-rewards">
-          <p class="rewards-title" data-i18n="rewardsEarned">Belohnungen:</p>
-          <div class="rewards-list" id="rewards-list"></div>
-        </div>
-
-        <div class="victory-actions">
+        <div class="modal-actions">
           <button class="btn-primary" id="play-again-btn">
             <span data-i18n="playAgain">Nochmal spielen</span>
           </button>
@@ -314,234 +227,201 @@ const {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 1rem;
+    padding: 2rem;
+    font-family: 'Noto Sans', sans-serif;
   }
 
   /* Setup Screen */
   .maze-setup {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 20px;
-    padding: 2rem;
-    color: white;
-  }
-
-  .setup-header {
     text-align: center;
-    margin-bottom: 2rem;
   }
 
   .setup-title {
     font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
   }
 
-  .story-emoji {
-    font-size: 3rem;
-    animation: float 3s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-  }
-
-  .story-title {
+  .setup-description {
     font-size: 1.2rem;
-    opacity: 0.9;
-  }
-
-  /* Difficulty Selector */
-  .difficulty-selector,
-  .theme-selector {
+    color: #7f8c8d;
     margin-bottom: 2rem;
   }
 
-  .difficulty-selector h3,
-  .theme-selector h3,
-  .controls-info h3 {
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-
-  .difficulty-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-
-  .difficulty-card {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 15px;
-    padding: 1.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
-  }
-
-  .difficulty-card:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-5px);
-  }
-
-  .difficulty-card.active {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: #ffd93d;
-    box-shadow: 0 0 20px rgba(255, 217, 61, 0.5);
-  }
-
-  .difficulty-icon {
-    font-size: 2.5rem;
-    display: block;
-    margin-bottom: 0.5rem;
-  }
-
-  .difficulty-card strong {
-    display: block;
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .difficulty-card small {
-    display: block;
-    opacity: 0.8;
-    margin-bottom: 1rem;
-  }
-
-  .features {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    text-align: left;
-  }
-
-  .features li {
-    padding: 0.3rem 0;
-    font-size: 0.9rem;
-    opacity: 0.9;
-  }
-
-  .features li::before {
-    content: '✓ ';
-    margin-right: 0.3rem;
-  }
-
   /* Theme Selector */
-  .theme-buttons {
-    display: flex;
-    flex-wrap: wrap;
+  .theme-selector,
+  .difficulty-selector {
+    margin: 2rem 0;
+  }
+
+  .theme-selector h3,
+  .difficulty-selector h3,
+  .controls-info h3 {
+    font-size: 1.5rem;
+    color: #34495e;
+    margin-bottom: 1rem;
+  }
+
+  .theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 1rem;
-    justify-content: center;
+    max-width: 800px;
+    margin: 0 auto;
   }
 
   .theme-btn {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 15px;
+    background: white;
+    border: 3px solid #ecf0f1;
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .theme-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .theme-btn.active {
+    border-color: #3498db;
+    background: #ebf5fb;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  }
+
+  .theme-emoji {
+    font-size: 2.5rem;
+  }
+
+  .theme-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  /* Difficulty Buttons */
+  .difficulty-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .difficulty-btn {
+    background: white;
+    border: 3px solid #ecf0f1;
+    border-radius: 12px;
     padding: 1rem 1.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 1rem;
-    color: white;
+    gap: 1rem;
+    min-width: 200px;
   }
 
-  .theme-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: scale(1.05);
+  .difficulty-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
   }
 
-  .theme-btn.active {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: #ffd93d;
+  .difficulty-btn.active {
+    border-color: #3498db;
+    background: #ebf5fb;
   }
 
-  .theme-icon {
-    font-size: 1.5rem;
+  .difficulty-btn .emoji {
+    font-size: 2rem;
+  }
+
+  .difficulty-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .difficulty-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .difficulty-desc {
+    font-size: 0.9rem;
+    color: #7f8c8d;
   }
 
   /* Controls Info */
   .controls-info {
-    margin-bottom: 2rem;
+    margin: 2rem 0;
   }
 
-  .control-options {
+  .control-methods {
     display: flex;
     gap: 2rem;
     justify-content: center;
     flex-wrap: wrap;
   }
 
-  .control-option {
+  .control-item {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0.8rem 1.5rem;
-    border-radius: 10px;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
   }
 
   .control-icon {
     font-size: 1.5rem;
   }
 
+  .control-text {
+    font-size: 1rem;
+    color: #2c3e50;
+  }
+
   /* Start Button */
   .start-maze-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    width: 100%;
-    max-width: 400px;
-    margin: 2rem auto 0;
-    padding: 1.2rem 2rem;
-    font-size: 1.3rem;
-    font-weight: bold;
-    background: linear-gradient(135deg, #ffd93d 0%, #ff9f40 100%);
-    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
     border: none;
-    border-radius: 50px;
+    border-radius: 12px;
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+    font-weight: 600;
     cursor: pointer;
+    margin-top: 2rem;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
   }
 
   .start-maze-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 30px rgba(255, 159, 64, 0.4);
-  }
-
-  .btn-icon {
-    font-size: 1.5rem;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
   }
 
   /* Game Screen */
-  .maze-game {
-    position: relative;
+  .maze-game-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 
   .game-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: white;
-    border-radius: 15px;
     padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
   .game-stats {
@@ -552,9 +432,8 @@ const {
 
   .stat-item {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.5rem;
   }
 
   .stat-icon {
@@ -562,14 +441,14 @@ const {
   }
 
   .stat-label {
-    font-size: 0.8rem;
-    color: #666;
+    font-size: 0.9rem;
+    color: #7f8c8d;
   }
 
   .stat-value {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #333;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
   }
 
   .game-actions {
@@ -578,21 +457,17 @@ const {
   }
 
   .icon-btn {
-    background: #f0f0f0;
-    border: none;
-    border-radius: 10px;
-    width: 45px;
-    height: 45px;
+    background: white;
+    border: 2px solid #ecf0f1;
+    border-radius: 8px;
+    padding: 0.5rem;
     cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-size: 1.5rem;
+    transition: all 0.2s ease;
   }
 
   .icon-btn:hover {
-    background: #e0e0e0;
+    background: #f8f9fa;
     transform: scale(1.1);
   }
 
@@ -603,128 +478,106 @@ const {
   /* Canvas Container */
   .canvas-container {
     position: relative;
-    background: #2c3e50;
-    border-radius: 15px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
   }
 
   #maze-canvas {
-    display: block;
-    width: 100%;
+    max-width: 100%;
     height: auto;
-    max-height: 70vh;
+    border-radius: 8px;
   }
 
   /* Minimap */
   .minimap-container {
     position: absolute;
-    top: 1rem;
+    bottom: 1rem;
     right: 1rem;
-    background: rgba(0, 0, 0, 0.7);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #3498db;
+    border-radius: 8px;
     padding: 0.5rem;
-    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
   #minimap-canvas {
     display: block;
-    width: 150px;
-    height: 150px;
+    border-radius: 4px;
   }
 
   /* Mobile Controls */
   .mobile-controls {
     display: none;
-    position: absolute;
-    bottom: 2rem;
-    right: 2rem;
+    justify-content: center;
+    padding: 1rem;
   }
 
-  @media (max-width: 768px) {
-    .mobile-controls {
-      display: block;
-    }
+  .dpad-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
   }
 
-  .dpad {
-    position: relative;
-    width: 150px;
-    height: 150px;
+  .dpad-middle {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
   }
 
   .dpad-btn {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    background: rgba(255, 255, 255, 0.8);
-    border: 2px solid rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
     font-size: 1.5rem;
-    transition: all 0.1s ease;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    user-select: none;
   }
 
   .dpad-btn:active {
-    background: rgba(255, 217, 61, 0.8);
-    transform: scale(0.9);
+    transform: scale(0.95);
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
   }
 
-  .dpad-up {
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .dpad-down {
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .dpad-left {
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  .dpad-right {
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  /* Checkpoint Modal */
-  .checkpoint-modal {
+  /* Completion Modal */
+  .completion-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     z-index: 1000;
-    padding: 1rem;
+    backdrop-filter: blur(4px);
   }
 
   .modal-content {
     background: white;
-    border-radius: 20px;
+    border-radius: 16px;
     padding: 2rem;
-    max-width: 600px;
-    width: 100%;
-    animation: slideUp 0.3s ease;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
   }
 
-  @keyframes slideUp {
+  @keyframes modalSlideIn {
     from {
-      transform: translateY(50px);
+      transform: translateY(-50px);
       opacity: 0;
     }
     to {
@@ -735,285 +588,139 @@ const {
 
   .modal-header {
     text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
   }
 
-  .checkpoint-title {
+  .modal-header h2 {
     font-size: 2rem;
-    color: #667eea;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+  }
+
+  .stars-display {
+    font-size: 2.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .stars-display .star {
+    animation: starPop 0.5s ease;
+    animation-fill-mode: both;
+  }
+
+  .stars-display .star:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .stars-display .star:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+
+  .stars-display .star:nth-child(3) {
+    animation-delay: 0.5s;
+  }
+
+  @keyframes starPop {
+    0% {
+      transform: scale(0) rotate(0deg);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.3) rotate(180deg);
+    }
+    100% {
+      transform: scale(1) rotate(360deg);
+      opacity: 1;
+    }
+  }
+
+  .completion-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .completion-stats .stat-item {
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+
+  .completion-stats .stat-label {
+    font-size: 0.9rem;
+    color: #7f8c8d;
     margin-bottom: 0.5rem;
   }
 
-  .checkpoint-event {
-    font-size: 1.1rem;
-    color: #666;
-  }
-
-  .question-text {
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    color: #333;
-  }
-
-  .quiz-options {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-  }
-
-  .quiz-option {
-    padding: 1rem;
-    background: #f5f5f5;
-    border: 2px solid transparent;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .quiz-option:hover {
-    background: #e8e8e8;
-  }
-
-  .quiz-option.selected {
-    background: #667eea;
-    color: white;
-    border-color: #5568d3;
-  }
-
-  .quiz-feedback {
-    margin-top: 1rem;
-    padding: 1rem;
-    border-radius: 10px;
-    text-align: center;
-    font-weight: bold;
-  }
-
-  .quiz-feedback.correct {
-    background: #4caf50;
-    color: white;
-  }
-
-  .quiz-feedback.incorrect {
-    background: #e57373;
-    color: white;
+  .completion-stats .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
   }
 
   .modal-actions {
-    margin-top: 1.5rem;
     display: flex;
+    gap: 1rem;
     justify-content: center;
   }
 
   .btn-primary,
   .btn-secondary {
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: bold;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    border: none;
   }
 
   .btn-primary {
-    background: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
   }
 
   .btn-primary:hover {
-    background: #5568d3;
     transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
   }
 
   .btn-secondary {
-    background: #f0f0f0;
-    color: #333;
+    background: white;
+    color: #2c3e50;
+    border: 2px solid #ecf0f1;
   }
 
   .btn-secondary:hover {
-    background: #e0e0e0;
+    background: #f8f9fa;
   }
 
-  /* Victory Screen */
-  .victory-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      135deg,
-      rgba(102, 126, 234, 0.95) 0%,
-      rgba(118, 75, 162, 0.95) 100%
-    );
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 1rem;
-    overflow-y: auto;
-  }
-
-  .victory-content {
-    background: white;
-    border-radius: 20px;
-    padding: 3rem;
-    max-width: 700px;
-    width: 100%;
-    animation: zoomIn 0.5s ease;
-  }
-
-  @keyframes zoomIn {
-    from {
-      transform: scale(0.8);
-      opacity: 0;
-    }
-    to {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-
-  .victory-header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-
-  .victory-title {
-    font-size: 2.5rem;
-    color: #667eea;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-  }
-
-  .victory-emoji {
-    font-size: 3rem;
-    animation: bounce 1s ease infinite;
-  }
-
-  @keyframes bounce {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-15px);
-    }
-  }
-
-  .victory-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .victory-stat {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1.5rem;
-    background: #f5f5f5;
-    border-radius: 15px;
-  }
-
-  .stat-icon-large {
-    font-size: 3rem;
-  }
-
-  .stat-details {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .stat-label {
-    font-size: 0.9rem;
-    color: #666;
-  }
-
-  .stat-value-large {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #333;
-  }
-
-  .star-rating {
-    text-align: center;
-    font-size: 3rem;
-    margin-bottom: 2rem;
-  }
-
-  .star {
-    filter: grayscale(100%);
-    transition: filter 0.3s ease;
-  }
-
-  .star.earned {
-    filter: grayscale(0%);
-    animation: starPop 0.5s ease;
-  }
-
-  @keyframes starPop {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.3);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-
-  .victory-rewards {
-    background: #f9f9f9;
-    padding: 1.5rem;
-    border-radius: 15px;
-    margin-bottom: 2rem;
-  }
-
-  .rewards-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-    color: #333;
-  }
-
-  .rewards-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-  }
-
-  .reward-item {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 0.8rem;
-    background: white;
-    border-radius: 10px;
-  }
-
-  .reward-icon {
-    font-size: 1.5rem;
-  }
-
-  .victory-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-  }
-
+  /* Utility Classes */
   .hidden {
     display: none !important;
   }
 
-  /* Responsive */
+  /* Responsive Design */
   @media (max-width: 768px) {
-    .difficulty-grid {
-      grid-template-columns: 1fr;
+    .maze-game-container {
+      padding: 1rem;
+    }
+
+    .setup-title {
+      font-size: 2rem;
+    }
+
+    .theme-grid {
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+
+    .difficulty-buttons {
+      flex-direction: column;
     }
 
     .game-stats {
@@ -1024,674 +731,564 @@ const {
       font-size: 0.9rem;
     }
 
-    .victory-actions {
-      flex-direction: column;
+    .mobile-controls {
+      display: flex;
+    }
+
+    .minimap-container {
+      width: 80px;
+      height: 80px;
+    }
+
+    #minimap-canvas {
+      width: 80px;
+      height: 80px;
     }
   }
 </style>
 
 <script>
   import {
-    generateMazeFromStory,
-    findPath,
-    type MazeData,
-    type Position,
-    CellType,
-    type MazeDifficulty,
+    MazeGenerator,
+    MazeProgressTracker,
+    createMazeConfig,
+    MAZE_THEMES,
+    type MazeCell,
     type MazeTheme,
-  } from '@utils/maze-generator';
+    type MazeGenerationResult
+  } from '../utils/maze-generator';
 
-  // Game state
-  let maze: MazeData;
-  let playerPos: Position;
-  let gameStartTime: number;
-  let gameTimer: number | null = null;
-  let steps = 0;
-  let collectedItems = 0;
-  let collectedKeys: number[] = [];
-  let hintsUsed = 0;
-  let isPaused = false;
-  let selectedDifficulty: MazeDifficulty = 'medium';
-  let selectedTheme: MazeTheme = 'forest';
-  let showMinimap = false;
-  let hintPath: Position[] = [];
+  // Get base path for correct navigation
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-  // Canvas elements
-  let canvas: HTMLCanvasElement;
-  let ctx: CanvasRenderingContext2D;
-  let minimapCanvas: HTMLCanvasElement;
-  let minimapCtx: CanvasRenderingContext2D;
+  class MazeGameController {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private minimapCanvas: HTMLCanvasElement;
+    private minimapCtx: CanvasRenderingContext2D;
+    
+    private maze: MazeGenerationResult | null = null;
+    private currentRow: number = 0;
+    private currentCol: number = 0;
+    private moves: number = 0;
+    private startTime: number = 0;
+    private elapsedTime: number = 0;
+    private timerInterval: number | null = null;
+    private collectedItems: Set<string> = new Set();
+    
+    private cellSize: number = 40;
+    private selectedTheme: MazeTheme = 'forest';
+    private selectedDifficulty: 'easy' | 'medium' | 'hard' = 'easy';
+    
+    private hintCell: { row: number; col: number } | null = null;
+    private showingHint: boolean = false;
+    
+    private touchStartX: number = 0;
+    private touchStartY: number = 0;
 
-  // Theme colors
-  const themeColors: Record<MazeTheme, any> = {
-    forest: {
-      wall: '#2d5016',
-      path: '#8bc34a',
-      start: '#4caf50',
-      end: '#ff9800',
-      fog: 'rgba(0, 0, 0, 0.7)',
-    },
-    city: {
-      wall: '#424242',
-      path: '#bdbdbd',
-      start: '#2196f3',
-      end: '#f44336',
-      fog: 'rgba(0, 0, 0, 0.7)',
-    },
-    beach: {
-      wall: '#795548',
-      path: '#ffd54f',
-      start: '#00bcd4',
-      end: '#ff5722',
-      fog: 'rgba(0, 0, 0, 0.7)',
-    },
-    space: {
-      wall: '#1a1a2e',
-      path: '#0f3460',
-      start: '#16213e',
-      end: '#e94560',
-      fog: 'rgba(0, 0, 0, 0.9)',
-    },
-    underwater: {
-      wall: '#006064',
-      path: '#4dd0e1',
-      start: '#00acc1',
-      end: '#ff6f00',
-      fog: 'rgba(0, 0, 0, 0.7)',
-    },
-    mountain: {
-      wall: '#4e342e',
-      path: '#d7ccc8',
-      start: '#607d8b',
-      end: '#ff5722',
-      fog: 'rgba(0, 0, 0, 0.7)',
-    },
-  };
+    constructor() {
+      this.canvas = document.getElementById('maze-canvas') as HTMLCanvasElement;
+      this.ctx = this.canvas.getContext('2d')!;
+      this.minimapCanvas = document.getElementById('minimap-canvas') as HTMLCanvasElement;
+      this.minimapCtx = this.minimapCanvas.getContext('2d')!;
+      
+      this.initializeEventListeners();
+    }
 
-  // Initialize game
-  function initGame() {
-    const container = document.querySelector('.maze-game-container');
-    if (!container) return;
-
-    const storyId = container.getAttribute('data-story-id') || '001-bruno';
-
-    // Difficulty selection
-    const difficultyButtons = document.querySelectorAll('[data-difficulty]');
-    difficultyButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        difficultyButtons.forEach((b) => b.classList.remove('active'));
-        btn.classList.add('active');
-        selectedDifficulty = btn.getAttribute(
-          'data-difficulty'
-        ) as MazeDifficulty;
+    private initializeEventListeners(): void {
+      // Setup screen
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.addEventListener('click', () => this.selectTheme(btn));
       });
-    });
 
-    // Theme selection
-    const themeButtons = document.querySelectorAll('[data-theme]');
-    themeButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        themeButtons.forEach((b) => b.classList.remove('active'));
-        btn.classList.add('active');
-        selectedTheme = btn.getAttribute('data-theme') as MazeTheme;
+      document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.addEventListener('click', () => this.selectDifficulty(btn));
       });
-    });
 
-    // Start game
-    const startBtn = document.getElementById('start-maze-btn');
-    startBtn?.addEventListener('click', startMaze);
+      document.getElementById('start-maze-btn')?.addEventListener('click', () => this.startGame());
 
-    // Game controls
-    document.getElementById('hint-btn')?.addEventListener('click', showHint);
-    document
-      .getElementById('minimap-toggle-btn')
-      ?.addEventListener('click', toggleMinimap);
-    document.getElementById('pause-btn')?.addEventListener('click', togglePause);
-    document.getElementById('exit-btn')?.addEventListener('click', exitMaze);
+      // Game controls
+      document.getElementById('hint-btn')?.addEventListener('click', () => this.showHint());
+      document.getElementById('reset-maze-btn')?.addEventListener('click', () => this.resetGame());
+      document.getElementById('pause-btn')?.addEventListener('click', () => this.togglePause());
+      document.getElementById('back-to-setup-btn')?.addEventListener('click', () => this.backToSetup());
 
-    // Mobile controls
-    const dpadButtons = document.querySelectorAll('.dpad-btn');
-    dpadButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const direction = btn.getAttribute('data-direction');
-        if (direction) handleMove(direction);
+      // Keyboard controls
+      document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+
+      // Touch controls
+      this.canvas.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
+      this.canvas.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
+
+      // Mobile D-pad
+      document.querySelectorAll('.dpad-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const direction = btn.getAttribute('data-direction') as 'up' | 'down' | 'left' | 'right';
+          this.moveCharacter(direction);
+        });
       });
-    });
 
-    // Keyboard controls
-    document.addEventListener('keydown', handleKeyDown);
+      // Modal actions
+      document.getElementById('play-again-btn')?.addEventListener('click', () => this.playAgain());
+      document.getElementById('back-to-story-btn')?.addEventListener('click', () => this.backToStory());
+    }
 
-    // Touch swipe controls
-    let touchStartX = 0;
-    let touchStartY = 0;
-    canvas = document.getElementById('maze-canvas') as HTMLCanvasElement;
+    private selectTheme(btn: Element): void {
+      document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      this.selectedTheme = btn.getAttribute('data-theme') as MazeTheme;
+    }
 
-    canvas?.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    });
+    private selectDifficulty(btn: Element): void {
+      document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      this.selectedDifficulty = btn.getAttribute('data-difficulty') as 'easy' | 'medium' | 'hard';
+    }
 
-    canvas?.addEventListener('touchend', (e) => {
-      const touchEndX = e.changedTouches[0].clientX;
-      const touchEndY = e.changedTouches[0].clientY;
-      const deltaX = touchEndX - touchStartX;
-      const deltaY = touchEndY - touchStartY;
-      const threshold = 50;
+    private startGame(): void {
+      // Hide setup, show game
+      document.getElementById('maze-setup')?.classList.add('hidden');
+      document.getElementById('maze-game-screen')?.classList.remove('hidden');
 
-      if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        if (Math.abs(deltaX) > threshold) {
-          handleMove(deltaX > 0 ? 'right' : 'left');
-        }
-      } else {
-        if (Math.abs(deltaY) > threshold) {
-          handleMove(deltaY > 0 ? 'down' : 'up');
-        }
+      // Generate maze
+      const config = createMazeConfig(this.selectedDifficulty, this.selectedTheme);
+      const generator = new MazeGenerator(config);
+      this.maze = generator.generate();
+
+      // Initialize game state
+      this.currentRow = this.maze.startCell.row;
+      this.currentCol = this.maze.startCell.col;
+      this.moves = 0;
+      this.collectedItems.clear();
+      this.elapsedTime = 0;
+
+      // Update UI
+      this.updateStats();
+      this.adjustCanvasSize();
+      this.render();
+
+      // Start timer
+      this.startTimer();
+    }
+
+    private adjustCanvasSize(): void {
+      if (!this.maze) return;
+
+      const maxSize = Math.min(window.innerWidth - 40, 800);
+      const gridSize = Math.max(this.maze.config.rows, this.maze.config.cols);
+      this.cellSize = Math.floor(maxSize / gridSize);
+
+      this.canvas.width = this.maze.config.cols * this.cellSize;
+      this.canvas.height = this.maze.config.rows * this.cellSize;
+    }
+
+    private render(): void {
+      if (!this.maze) return;
+
+      const theme = MAZE_THEMES[this.selectedTheme];
+
+      // Clear canvas
+      this.ctx.fillStyle = theme.backgroundColor;
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+      // Draw maze
+      this.maze.grid.forEach((row, rowIndex) => {
+        row.forEach((cell, colIndex) => {
+          const x = colIndex * this.cellSize;
+          const y = rowIndex * this.cellSize;
+
+          // Draw cell background
+          this.ctx.fillStyle = theme.pathColor;
+          this.ctx.fillRect(x, y, this.cellSize, this.cellSize);
+
+          // Draw walls
+          this.ctx.strokeStyle = theme.wallColor;
+          this.ctx.lineWidth = 3;
+
+          if (cell.walls.top) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(x, y);
+            this.ctx.lineTo(x + this.cellSize, y);
+            this.ctx.stroke();
+          }
+          if (cell.walls.right) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(x + this.cellSize, y);
+            this.ctx.lineTo(x + this.cellSize, y + this.cellSize);
+            this.ctx.stroke();
+          }
+          if (cell.walls.bottom) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(x, y + this.cellSize);
+            this.ctx.lineTo(x + this.cellSize, y + this.cellSize);
+            this.ctx.stroke();
+          }
+          if (cell.walls.left) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(x, y);
+            this.ctx.lineTo(x, y + this.cellSize);
+            this.ctx.stroke();
+          }
+
+          // Draw collectibles
+          if (cell.hasCollectible && !this.collectedItems.has(`${rowIndex},${colIndex}`)) {
+            this.ctx.font = `${this.cellSize * 0.5}px Arial`;
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(theme.collectibleEmoji, x + this.cellSize / 2, y + this.cellSize / 2);
+          }
+
+          // Draw goal
+          if (cell.isEnd) {
+            this.ctx.font = `${this.cellSize * 0.6}px Arial`;
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(theme.goalEmoji, x + this.cellSize / 2, y + this.cellSize / 2);
+          }
+        });
+      });
+
+      // Draw hint
+      if (this.showingHint && this.hintCell) {
+        const x = this.hintCell.col * this.cellSize;
+        const y = this.hintCell.row * this.cellSize;
+        this.ctx.fillStyle = 'rgba(255, 215, 0, 0.5)';
+        this.ctx.fillRect(x, y, this.cellSize, this.cellSize);
       }
-    });
-  }
 
-  function startMaze() {
-    const container = document.querySelector('.maze-game-container');
-    const storyId = container?.getAttribute('data-story-id') || '001-bruno';
+      // Draw character
+      const charX = this.currentCol * this.cellSize;
+      const charY = this.currentRow * this.cellSize;
+      this.ctx.font = `${this.cellSize * 0.7}px Arial`;
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.fillText(theme.characterEmoji, charX + this.cellSize / 2, charY + this.cellSize / 2);
 
-    // Generate maze
-    maze = generateMazeFromStory(storyId, selectedDifficulty, selectedTheme);
-    playerPos = { ...maze.start };
-    steps = 0;
-    collectedItems = 0;
-    collectedKeys = [];
-    hintsUsed = 0;
-    hintPath = [];
-
-    // Setup canvas
-    canvas = document.getElementById('maze-canvas') as HTMLCanvasElement;
-    ctx = canvas.getContext('2d')!;
-    minimapCanvas = document.getElementById('minimap-canvas') as HTMLCanvasElement;
-    minimapCtx = minimapCanvas.getContext('2d')!;
-
-    // Set canvas size
-    const cellSize = Math.min(
-      window.innerWidth / maze.width,
-      (window.innerHeight * 0.7) / maze.height
-    );
-    canvas.width = maze.width * Math.max(cellSize, 20);
-    canvas.height = maze.height * Math.max(cellSize, 20);
-
-    // Reveal starting area
-    revealArea(playerPos, selectedDifficulty === 'easy' ? 10 : 3);
-
-    // Show game screen
-    document.getElementById('maze-setup')?.classList.add('hidden');
-    document.getElementById('maze-game')?.classList.remove('hidden');
-
-    // Start timer
-    gameStartTime = Date.now();
-    gameTimer = window.setInterval(updateTimer, 1000);
-
-    // Update stats
-    updateStats();
-
-    // Render maze
-    render();
-  }
-
-  function handleKeyDown(e: KeyboardEvent) {
-    if (isPaused) return;
-
-    const keyMap: Record<string, string> = {
-      ArrowUp: 'up',
-      ArrowDown: 'down',
-      ArrowLeft: 'left',
-      ArrowRight: 'right',
-      w: 'up',
-      s: 'down',
-      a: 'left',
-      d: 'right',
-    };
-
-    const direction = keyMap[e.key.toLowerCase()];
-    if (direction) {
-      e.preventDefault();
-      handleMove(direction);
-    }
-  }
-
-  function handleMove(direction: string) {
-    if (!maze || isPaused) return;
-
-    const newPos = { ...playerPos };
-
-    switch (direction) {
-      case 'up':
-        newPos.y--;
-        break;
-      case 'down':
-        newPos.y++;
-        break;
-      case 'left':
-        newPos.x--;
-        break;
-      case 'right':
-        newPos.x++;
-        break;
+      // Draw minimap
+      this.renderMinimap();
     }
 
-    // Check bounds
-    if (
-      newPos.x < 0 ||
-      newPos.x >= maze.width ||
-      newPos.y < 0 ||
-      newPos.y >= maze.height
-    ) {
-      return;
+    private renderMinimap(): void {
+      if (!this.maze) return;
+
+      const minimapSize = 120;
+      const cellSize = minimapSize / Math.max(this.maze.config.rows, this.maze.config.cols);
+
+      this.minimapCtx.clearRect(0, 0, this.minimapCanvas.width, this.minimapCanvas.height);
+
+      // Draw simple maze representation
+      this.maze.grid.forEach((row, rowIndex) => {
+        row.forEach((cell, colIndex) => {
+          const x = colIndex * cellSize;
+          const y = rowIndex * cellSize;
+
+          this.minimapCtx.fillStyle = '#ddd';
+          this.minimapCtx.fillRect(x, y, cellSize, cellSize);
+
+          // Draw walls (simplified)
+          this.minimapCtx.strokeStyle = '#333';
+          this.minimapCtx.lineWidth = 1;
+          this.minimapCtx.strokeRect(x, y, cellSize, cellSize);
+        });
+      });
+
+      // Draw character position
+      const charX = this.currentCol * cellSize;
+      const charY = this.currentRow * cellSize;
+      this.minimapCtx.fillStyle = '#3498db';
+      this.minimapCtx.fillRect(charX, charY, cellSize, cellSize);
+
+      // Draw goal
+      const goalX = this.maze.endCell.col * cellSize;
+      const goalY = this.maze.endCell.row * cellSize;
+      this.minimapCtx.fillStyle = '#e74c3c';
+      this.minimapCtx.fillRect(goalX, goalY, cellSize, cellSize);
     }
 
-    const cell = maze.grid[newPos.y][newPos.x];
-
-    // Check wall
-    if (cell.type === CellType.WALL) {
-      return;
-    }
-
-    // Check door
-    if (cell.type === CellType.DOOR) {
-      const keyId = cell.data?.keyId;
-      if (!collectedKeys.includes(keyId)) {
-        alert('Du brauchst einen Schlüssel!');
+    private handleKeyboard(e: KeyboardEvent): void {
+      if (!this.maze || document.getElementById('maze-game-screen')?.classList.contains('hidden')) {
         return;
       }
-    }
 
-    // Move player
-    playerPos = newPos;
-    steps++;
+      const keyMap: Record<string, 'up' | 'down' | 'left' | 'right'> = {
+        ArrowUp: 'up',
+        ArrowDown: 'down',
+        ArrowLeft: 'left',
+        ArrowRight: 'right',
+        w: 'up',
+        W: 'up',
+        s: 'down',
+        S: 'down',
+        a: 'left',
+        A: 'left',
+        d: 'right',
+        D: 'right'
+      };
 
-    // Reveal fog of war
-    revealArea(playerPos, selectedDifficulty === 'easy' ? 5 : 2);
-
-    // Check for collectibles
-    if (cell.type === CellType.COLLECTIBLE && cell.data) {
-      const collectible = cell.data;
-      if (!collectible.collected) {
-        collectible.collected = true;
-        collectedItems++;
-        // Award stars
-        const starsEarned = collectible.value;
-        awardStars(starsEarned);
+      const direction = keyMap[e.key];
+      if (direction) {
+        e.preventDefault();
+        this.moveCharacter(direction);
       }
     }
 
-    // Check for key
-    if (cell.type === CellType.KEY && cell.data) {
-      const keyId = cell.data.keyId;
-      if (!collectedKeys.includes(keyId)) {
-        collectedKeys.push(keyId);
+    private handleTouchStart(e: TouchEvent): void {
+      e.preventDefault();
+      const touch = e.touches[0];
+      this.touchStartX = touch.clientX;
+      this.touchStartY = touch.clientY;
+    }
+
+    private handleTouchEnd(e: TouchEvent): void {
+      e.preventDefault();
+      const touch = e.changedTouches[0];
+      const deltaX = touch.clientX - this.touchStartX;
+      const deltaY = touch.clientY - this.touchStartY;
+
+      const threshold = 30;
+
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Horizontal swipe
+        if (Math.abs(deltaX) > threshold) {
+          this.moveCharacter(deltaX > 0 ? 'right' : 'left');
+        }
+      } else {
+        // Vertical swipe
+        if (Math.abs(deltaY) > threshold) {
+          this.moveCharacter(deltaY > 0 ? 'down' : 'up');
+        }
       }
     }
 
-    // Check for checkpoint
-    if (cell.type === CellType.CHECKPOINT && cell.data) {
-      const checkpoint = cell.data;
-      if (!checkpoint.unlocked) {
-        showCheckpointModal(checkpoint);
+    private moveCharacter(direction: 'up' | 'down' | 'left' | 'right'): void {
+      if (!this.maze) return;
+
+      const isValid = MazeGenerator.isValidMove(
+        this.maze.grid,
+        this.currentRow,
+        this.currentCol,
+        direction
+      );
+
+      if (!isValid) {
+        // Play collision sound/animation
+        this.canvas.style.animation = 'shake 0.2s';
+        setTimeout(() => {
+          this.canvas.style.animation = '';
+        }, 200);
+        return;
+      }
+
+      // Move character
+      switch (direction) {
+        case 'up':
+          this.currentRow--;
+          break;
+        case 'down':
+          this.currentRow++;
+          break;
+        case 'left':
+          this.currentCol--;
+          break;
+        case 'right':
+          this.currentCol++;
+          break;
+      }
+
+      this.moves++;
+
+      // Check for collectibles
+      const cell = this.maze.grid[this.currentRow][this.currentCol];
+      if (cell.hasCollectible) {
+        const key = `${this.currentRow},${this.currentCol}`;
+        if (!this.collectedItems.has(key)) {
+          this.collectedItems.add(key);
+          // Play collect sound
+        }
+      }
+
+      // Check for goal
+      if (cell.isEnd) {
+        this.completeGame();
+      }
+
+      // Hide hint after movement
+      this.showingHint = false;
+      this.hintCell = null;
+
+      this.updateStats();
+      this.render();
+    }
+
+    private showHint(): void {
+      if (!this.maze) return;
+
+      this.hintCell = MazeGenerator.getHint(
+        this.maze.grid,
+        { row: this.currentRow, col: this.currentCol },
+        this.maze.endCell
+      );
+
+      this.showingHint = true;
+      this.render();
+
+      // Hide hint after 2 seconds
+      setTimeout(() => {
+        this.showingHint = false;
+        this.render();
+      }, 2000);
+    }
+
+    private startTimer(): void {
+      this.startTime = Date.now();
+      this.timerInterval = window.setInterval(() => {
+        this.elapsedTime = Math.floor((Date.now() - this.startTime) / 1000);
+        this.updateTimeDisplay();
+      }, 1000);
+    }
+
+    private stopTimer(): void {
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
       }
     }
 
-    // Check for end
-    if (cell.type === CellType.END) {
-      winGame();
+    private updateTimeDisplay(): void {
+      const minutes = Math.floor(this.elapsedTime / 60);
+      const seconds = this.elapsedTime % 60;
+      const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      const timeEl = document.getElementById('maze-time');
+      if (timeEl) timeEl.textContent = timeStr;
     }
 
-    updateStats();
-    render();
-  }
+    private updateStats(): void {
+      const stepsEl = document.getElementById('maze-steps');
+      if (stepsEl) stepsEl.textContent = this.moves.toString();
 
-  function revealArea(center: Position, radius: number) {
-    for (let y = center.y - radius; y <= center.y + radius; y++) {
-      for (let x = center.x - radius; x <= center.x + radius; x++) {
-        if (x >= 0 && x < maze.width && y >= 0 && y < maze.height) {
-          const distance = Math.sqrt(
-            Math.pow(x - center.x, 2) + Math.pow(y - center.y, 2)
-          );
-          if (distance <= radius) {
-            maze.grid[y][x].revealed = true;
+      const collectedEl = document.getElementById('maze-collected');
+      if (collectedEl && this.maze) {
+        collectedEl.textContent = `${this.collectedItems.size} / ${this.maze.collectibles.length}`;
+      }
+    }
+
+    private completeGame(): void {
+      this.stopTimer();
+
+      if (!this.maze) return;
+
+      // Calculate stars
+      const stats = {
+        difficulty: this.selectedDifficulty,
+        theme: this.selectedTheme,
+        time: this.elapsedTime,
+        moves: this.moves,
+        collectibles: this.collectedItems.size,
+        totalCollectibles: this.maze.collectibles.length
+      };
+
+      const stars = MazeProgressTracker.calculateStars(stats);
+
+      // Save progress
+      const mazeId = `${this.selectedDifficulty}_${this.selectedTheme}`;
+      MazeProgressTracker.saveMazeCompletion(mazeId, stats);
+
+      // Show completion modal
+      this.showCompletionModal(stars, stats);
+    }
+
+    private showCompletionModal(stars: number, stats: any): void {
+      const modal = document.getElementById('maze-completion-modal');
+      if (!modal) return;
+
+      // Update stars display
+      const starsDisplay = document.getElementById('maze-stars-display');
+      if (starsDisplay) {
+        const starElements = starsDisplay.querySelectorAll('.star');
+        starElements.forEach((star, index) => {
+          if (index >= stars) {
+            (star as HTMLElement).style.opacity = '0.3';
           }
-        }
+        });
       }
+
+      // Update stats
+      const finalSteps = document.getElementById('final-steps');
+      if (finalSteps) finalSteps.textContent = this.moves.toString();
+
+      const finalTime = document.getElementById('final-time');
+      if (finalTime) {
+        const minutes = Math.floor(this.elapsedTime / 60);
+        const seconds = this.elapsedTime % 60;
+        finalTime.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      }
+
+      const finalCollectibles = document.getElementById('final-collectibles');
+      if (finalCollectibles && this.maze) {
+        finalCollectibles.textContent = `${this.collectedItems.size} / ${this.maze.collectibles.length}`;
+      }
+
+      const rewards = document.getElementById('maze-rewards');
+      if (rewards) {
+        const xp = 50 + (stars * 10);
+        rewards.textContent = `${xp} XP`;
+      }
+
+      modal.classList.remove('hidden');
     }
-  }
 
-  function render() {
-    if (!ctx || !maze) return;
+    private resetGame(): void {
+      if (!confirm('Labyrinth neu starten?')) return;
+      this.startGame();
+    }
 
-    const cellSize = canvas.width / maze.width;
-    const colors = themeColors[maze.theme];
-
-    // Clear canvas
-    ctx.fillStyle = colors.wall;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw maze
-    for (let y = 0; y < maze.height; y++) {
-      for (let x = 0; x < maze.width; x++) {
-        const cell = maze.grid[y][x];
-
-        // Fog of war
-        if (
-          !cell.revealed &&
-          (selectedDifficulty === 'hard' || selectedDifficulty === 'expert')
-        ) {
-          ctx.fillStyle = colors.fog;
-          ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
-          continue;
-        }
-
-        // Draw cell based on type
-        switch (cell.type) {
-          case CellType.PATH:
-            ctx.fillStyle = colors.path;
-            break;
-          case CellType.START:
-            ctx.fillStyle = colors.start;
-            break;
-          case CellType.END:
-            ctx.fillStyle = colors.end;
-            break;
-          case CellType.CHECKPOINT:
-            ctx.fillStyle = '#ff9800';
-            break;
-          case CellType.COLLECTIBLE:
-            ctx.fillStyle = colors.path;
-            break;
-          case CellType.DOOR:
-            ctx.fillStyle = '#9c27b0';
-            break;
-          case CellType.KEY:
-            ctx.fillStyle = colors.path;
-            break;
-          default:
-            ctx.fillStyle = colors.wall;
-        }
-
-        ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
-
-        // Draw collectibles
-        if (cell.type === CellType.COLLECTIBLE && cell.data && !cell.data.collected) {
-          ctx.fillStyle = '#ffd700';
-          ctx.beginPath();
-          ctx.arc(
-            x * cellSize + cellSize / 2,
-            y * cellSize + cellSize / 2,
-            cellSize / 4,
-            0,
-            Math.PI * 2
-          );
-          ctx.fill();
-        }
-
-        // Draw keys
-        if (
-          cell.type === CellType.KEY &&
-          cell.data &&
-          !collectedKeys.includes(cell.data.keyId)
-        ) {
-          ctx.fillStyle = '#ffeb3b';
-          ctx.beginPath();
-          ctx.arc(
-            x * cellSize + cellSize / 2,
-            y * cellSize + cellSize / 2,
-            cellSize / 4,
-            0,
-            Math.PI * 2
-          );
-          ctx.fill();
-        }
+    private togglePause(): void {
+      // Implement pause functionality
+      const pauseBtn = document.getElementById('pause-btn');
+      if (this.timerInterval) {
+        this.stopTimer();
+        if (pauseBtn) pauseBtn.innerHTML = '<span>▶️</span>';
+      } else {
+        this.startTimer();
+        if (pauseBtn) pauseBtn.innerHTML = '<span>⏸️</span>';
       }
     }
 
-    // Draw hint path
-    if (hintPath.length > 0) {
-      ctx.strokeStyle = 'rgba(255, 255, 0, 0.5)';
-      ctx.lineWidth = cellSize / 4;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.beginPath();
-      for (let i = 0; i < hintPath.length; i++) {
-        const pos = hintPath[i];
-        const centerX = pos.x * cellSize + cellSize / 2;
-        const centerY = pos.y * cellSize + cellSize / 2;
-        if (i === 0) {
-          ctx.moveTo(centerX, centerY);
-        } else {
-          ctx.lineTo(centerX, centerY);
-        }
-      }
-      ctx.stroke();
-    }
-
-    // Draw player
-    ctx.fillStyle = '#f44336';
-    ctx.beginPath();
-    ctx.arc(
-      playerPos.x * cellSize + cellSize / 2,
-      playerPos.y * cellSize + cellSize / 2,
-      cellSize / 3,
-      0,
-      Math.PI * 2
-    );
-    ctx.fill();
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Render minimap
-    if (showMinimap) {
-      renderMinimap();
-    }
-  }
-
-  function renderMinimap() {
-    if (!minimapCtx || !maze) return;
-
-    const cellSize = minimapCanvas.width / maze.width;
-    const colors = themeColors[maze.theme];
-
-    // Clear
-    minimapCtx.fillStyle = colors.wall;
-    minimapCtx.fillRect(0, 0, minimapCanvas.width, minimapCanvas.height);
-
-    // Draw revealed cells
-    for (let y = 0; y < maze.height; y++) {
-      for (let x = 0; x < maze.width; x++) {
-        const cell = maze.grid[y][x];
-        if (cell.revealed && cell.type !== CellType.WALL) {
-          minimapCtx.fillStyle =
-            cell.type === CellType.END ? colors.end : colors.path;
-          minimapCtx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
-        }
-      }
-    }
-
-    // Draw player
-    minimapCtx.fillStyle = '#f44336';
-    minimapCtx.fillRect(
-      playerPos.x * cellSize,
-      playerPos.y * cellSize,
-      cellSize,
-      cellSize
-    );
-  }
-
-  function updateStats() {
-    const totalCollectibles = maze.collectibles.length;
-    document.getElementById('game-steps')!.textContent = steps.toString();
-    document.getElementById(
-      'game-collectibles'
-    )!.textContent = `${collectedItems} / ${totalCollectibles}`;
-    document.getElementById('game-keys')!.textContent =
-      collectedKeys.length.toString();
-  }
-
-  function updateTimer() {
-    const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
-    const minutes = Math.floor(elapsed / 60);
-    const seconds = elapsed % 60;
-    document.getElementById('game-timer')!.textContent = `${minutes}:${seconds
-      .toString()
-      .padStart(2, '0')}`;
-  }
-
-  function showHint() {
-    hintsUsed++;
-    hintPath = findPath(maze.grid, playerPos, maze.end, maze.width, maze.height);
-    render();
-
-    // Clear hint after 3 seconds
-    setTimeout(() => {
-      hintPath = [];
-      render();
-    }, 3000);
-  }
-
-  function toggleMinimap() {
-    showMinimap = !showMinimap;
-    const minimapContainer = document.getElementById('minimap-container');
-    if (showMinimap) {
-      minimapContainer?.classList.remove('hidden');
-      renderMinimap();
-    } else {
-      minimapContainer?.classList.add('hidden');
-    }
-  }
-
-  function togglePause() {
-    isPaused = !isPaused;
-    const pauseBtn = document.getElementById('pause-btn');
-    if (isPaused) {
-      if (gameTimer) clearInterval(gameTimer);
-      pauseBtn!.querySelector('span')!.textContent = '▶️';
-    } else {
-      gameStartTime = Date.now() - steps * 1000;
-      gameTimer = window.setInterval(updateTimer, 1000);
-      pauseBtn!.querySelector('span')!.textContent = '⏸️';
-    }
-  }
-
-  function exitMaze() {
-    if (confirm('Möchtest du das Labyrinth wirklich verlassen?')) {
-      if (gameTimer) clearInterval(gameTimer);
-      document.getElementById('maze-game')?.classList.add('hidden');
+    private backToSetup(): void {
+      this.stopTimer();
+      document.getElementById('maze-game-screen')?.classList.add('hidden');
       document.getElementById('maze-setup')?.classList.remove('hidden');
     }
-  }
 
-  function showCheckpointModal(checkpoint: any) {
-    checkpoint.unlocked = true;
-    const modal = document.getElementById('checkpoint-modal');
-    document.getElementById('checkpoint-event')!.textContent =
-      checkpoint.storyEvent;
+    private playAgain(): void {
+      document.getElementById('maze-completion-modal')?.classList.add('hidden');
+      this.startGame();
+    }
 
-    // Show modal
-    modal?.classList.remove('hidden');
-    isPaused = true;
-
-    // Continue button
-    const submitBtn = document.getElementById('submit-answer-btn');
-    submitBtn!.textContent = 'Weiter';
-    submitBtn!.onclick = () => {
-      modal?.classList.add('hidden');
-      isPaused = false;
-    };
-  }
-
-  function winGame() {
-    if (gameTimer) clearInterval(gameTimer);
-
-    const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
-    const minutes = Math.floor(elapsed / 60);
-    const seconds = elapsed % 60;
-
-    // Show victory screen
-    document.getElementById('maze-game')?.classList.add('hidden');
-    const victoryScreen = document.getElementById('victory-screen');
-    victoryScreen?.classList.remove('hidden');
-
-    // Update stats
-    document.getElementById(
-      'final-time'
-    )!.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    document.getElementById('final-steps')!.textContent = steps.toString();
-    document.getElementById(
-      'final-collectibles'
-    )!.textContent = `${collectedItems} / ${maze.collectibles.length}`;
-
-    // Calculate star rating
-    const collectionRate = collectedItems / maze.collectibles.length;
-    const timePerStep = elapsed / steps;
-    let stars = 1;
-    if (collectionRate >= 0.7 && timePerStep < 3) stars = 3;
-    else if (collectionRate >= 0.5) stars = 2;
-    if (hintsUsed === 0 && collectionRate === 1) stars = 5;
-    else if (collectionRate === 1) stars = 4;
-
-    // Show stars
-    const starElements = document.querySelectorAll('.star');
-    starElements.forEach((star, index) => {
-      if (index < stars) {
-        setTimeout(() => star.classList.add('earned'), index * 200);
+    private backToStory(): void {
+      const storyId = document.querySelector('.maze-game-container')?.getAttribute('data-story-id');
+      if (storyId) {
+        window.location.href = `${base}/stories/${storyId}`;
+      } else {
+        window.location.href = `${base}/stories`;
       }
-    });
-
-    // Calculate rewards
-    const baseStars = stars * 10;
-    const bonusStars = collectedItems * 5;
-    const totalStars = baseStars + bonusStars;
-    awardStars(totalStars);
-
-    // Show rewards
-    const rewardsList = document.getElementById('rewards-list');
-    rewardsList!.innerHTML = `
-      <div class="reward-item">
-        <span class="reward-icon">⭐</span>
-        <span>Basis-Belohnung: ${baseStars} Sterne</span>
-      </div>
-      <div class="reward-item">
-        <span class="reward-icon">💎</span>
-        <span>Sammelobjekte: ${bonusStars} Sterne</span>
-      </div>
-      <div class="reward-item">
-        <span class="reward-icon">🏆</span>
-        <span><strong>Gesamt: ${totalStars} Sterne</strong></span>
-      </div>
-    `;
-
-    // Button handlers
-    document.getElementById('play-again-btn')!.onclick = () => {
-      victoryScreen?.classList.add('hidden');
-      document.getElementById('maze-setup')?.classList.remove('hidden');
-    };
-
-    document.getElementById('back-to-story-btn')!.onclick = () => {
-      window.history.back();
-    };
+    }
   }
 
-  function awardStars(amount: number) {
-    // Get current stars from localStorage
-    const currentStars = parseInt(localStorage.getItem('star-balance') || '0');
-    const newStars = currentStars + amount;
-    localStorage.setItem('star-balance', newStars.toString());
-
-    // Dispatch event for star updates
-    window.dispatchEvent(
-      new CustomEvent('stars-earned', { detail: { amount, newTotal: newStars } })
-    );
-  }
-
-  // Initialize on load
+  // Initialize game when DOM is ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initGame);
+    document.addEventListener('DOMContentLoaded', () => {
+      new MazeGameController();
+    });
   } else {
-    initGame();
+    new MazeGameController();
   }
 </script>
+
+<style>
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+    20%, 40%, 60%, 80% { transform: translateX(4px); }
+  }
+</style>

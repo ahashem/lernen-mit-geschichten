@@ -1,0 +1,1255 @@
+---
+/**
+ * Building Blocks Component
+ * Interactive physics-based stacking game with quiz integration
+ */
+
+interface Props {
+  locale: 'de' | 'ar' | 'en' | 'tr' | 'ur';
+  mode?: 'quiz' | 'challenge' | 'creative' | 'tutorial';
+  challengeId?: string;
+  questions?: Array<{
+    id: string;
+    text: string;
+    type: 'truefalse' | 'multiplechoice' | 'fillinblank';
+    correctAnswer: string | string[];
+    options?: string[];
+  }>;
+}
+
+const { locale, mode = 'quiz', challengeId, questions = [] } = Astro.props;
+---
+
+<div class="building-blocks-game" data-locale={locale} data-mode={mode} data-challenge={challengeId}>
+  <!-- Game Canvas -->
+  <div class="game-container">
+    <canvas id="building-blocks-canvas" class="game-canvas"></canvas>
+
+    <!-- Floating Control Panel -->
+    <div class="control-panel">
+      <div class="control-section">
+        <h3 class="control-title">
+          <span class="icon">🎮</span>
+          <span class="text" data-i18n="controls">Controls</span>
+        </h3>
+
+        <div class="control-buttons">
+          <button id="pause-btn" class="control-btn" data-i18n="pause">Pause</button>
+          <button id="reset-btn" class="control-btn danger" data-i18n="reset">Reset</button>
+          <button id="settings-btn" class="control-btn" data-i18n="settings">Settings</button>
+        </div>
+      </div>
+
+      <!-- Settings Panel (Expandable) -->
+      <div id="settings-panel" class="settings-panel collapsed">
+        <div class="setting-item">
+          <label for="physics-toggle" data-i18n="physicsEnabled">Physics</label>
+          <input type="checkbox" id="physics-toggle" checked />
+        </div>
+
+        <div class="setting-item">
+          <label for="sound-toggle" data-i18n="soundEnabled">Sound</label>
+          <input type="checkbox" id="sound-toggle" checked />
+        </div>
+
+        <div class="setting-item">
+          <label for="difficulty-select" data-i18n="difficulty">Difficulty</label>
+          <select id="difficulty-select">
+            <option value="easy" data-i18n="easy">Easy</option>
+            <option value="medium" selected data-i18n="medium">Medium</option>
+            <option value="hard" data-i18n="hard">Hard</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz Question Panel -->
+    <div id="question-panel" class="question-panel">
+      <div class="question-header">
+        <span class="question-number"></span>
+        <span class="question-progress"></span>
+      </div>
+
+      <div class="question-text"></div>
+
+      <div class="answer-options"></div>
+
+      <div class="question-feedback">
+        <div class="feedback-message"></div>
+      </div>
+    </div>
+
+    <!-- Block Inventory -->
+    <div class="block-inventory">
+      <h3 class="inventory-title" data-i18n="blockInventory">Block Inventory</h3>
+
+      <div class="inventory-grid">
+        <button class="inventory-block" data-shape="cube" data-unlocked="true">
+          <div class="block-icon">🟦</div>
+          <div class="block-name" data-i18n="cube">Cube</div>
+          <div class="block-count">∞</div>
+        </button>
+
+        <button class="inventory-block locked" data-shape="rectangle" data-unlocked="false">
+          <div class="block-icon">📏</div>
+          <div class="block-name" data-i18n="rectangle">Rectangle</div>
+          <div class="block-unlock" data-i18n="unlock10">Unlock at 5 blocks</div>
+        </button>
+
+        <button class="inventory-block locked" data-shape="triangle" data-unlocked="false">
+          <div class="block-icon">🔺</div>
+          <div class="block-name" data-i18n="triangle">Triangle</div>
+          <div class="block-unlock" data-i18n="unlock10">Unlock at 10 blocks</div>
+        </button>
+
+        <button class="inventory-block locked" data-shape="cylinder" data-unlocked="false">
+          <div class="block-icon">🛢️</div>
+          <div class="block-name" data-i18n="cylinder">Cylinder</div>
+          <div class="block-unlock" data-i18n="unlock15">Unlock at 15 blocks</div>
+        </button>
+
+        <button class="inventory-block locked" data-shape="arc" data-unlocked="false">
+          <div class="block-icon">🌉</div>
+          <div class="block-name" data-i18n="arc">Arc</div>
+          <div class="block-unlock" data-i18n="unlock20">Unlock at 20 blocks</div>
+        </button>
+
+        <button class="inventory-block locked" data-shape="golden" data-unlocked="false">
+          <div class="block-icon">⭐</div>
+          <div class="block-name" data-i18n="golden">Golden</div>
+          <div class="block-unlock" data-i18n="unlock50">Unlock at 50 blocks</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Display -->
+    <div class="stats-display">
+      <div class="stat-item">
+        <span class="stat-icon">📊</span>
+        <span class="stat-label" data-i18n="score">Score</span>
+        <span class="stat-value" id="score-value">0</span>
+      </div>
+
+      <div class="stat-item">
+        <span class="stat-icon">🏗️</span>
+        <span class="stat-label" data-i18n="blocksPlaced">Blocks</span>
+        <span class="stat-value" id="blocks-value">0</span>
+      </div>
+
+      <div class="stat-item">
+        <span class="stat-icon">⭐</span>
+        <span class="stat-label" data-i18n="xp">XP</span>
+        <span class="stat-value" id="xp-value">0</span>
+      </div>
+    </div>
+
+    <!-- Challenge Panel (for challenge mode) -->
+    <div id="challenge-panel" class="challenge-panel" style="display: none;">
+      <div class="challenge-header">
+        <h2 class="challenge-title"></h2>
+        <p class="challenge-description"></p>
+      </div>
+
+      <div class="challenge-progress">
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+        <div class="progress-text"></div>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="game-over-modal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h2 class="modal-title" data-i18n="gameOver">Game Over!</h2>
+
+        <div class="final-stats">
+          <div class="stat-row">
+            <span data-i18n="finalScore">Final Score:</span>
+            <span id="final-score">0</span>
+          </div>
+          <div class="stat-row">
+            <span data-i18n="maxHeight">Max Height:</span>
+            <span id="final-height">0</span>
+          </div>
+          <div class="stat-row">
+            <span data-i18n="blocksPlaced">Blocks Placed:</span>
+            <span id="final-blocks">0</span>
+          </div>
+          <div class="stat-row">
+            <span data-i18n="xpEarned">XP Earned:</span>
+            <span id="final-xp">0</span>
+          </div>
+        </div>
+
+        <div class="achievements-earned">
+          <h3 data-i18n="achievementsUnlocked">Achievements Unlocked</h3>
+          <div id="achievements-list"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button id="play-again-btn" class="btn btn-primary" data-i18n="playAgain">Play Again</button>
+          <button id="back-to-menu-btn" class="btn btn-secondary" data-i18n="backToMenu">Back to Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Instructions Tooltip -->
+    <div class="instructions-tooltip">
+      <button id="instructions-toggle" class="instructions-btn">❓</button>
+      <div id="instructions-content" class="instructions-content collapsed">
+        <h3 data-i18n="howToPlay">How to Play</h3>
+        <ul>
+          <li data-i18n="instruction1">Answer questions correctly to get blocks</li>
+          <li data-i18n="instruction2">Click and drag to position blocks</li>
+          <li data-i18n="instruction3">Use arrow keys or mouse wheel to rotate</li>
+          <li data-i18n="instruction4">Click to place - balance is key!</li>
+          <li data-i18n="instruction5">Build tall towers and complete challenges</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .building-blocks-game {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  .game-container {
+    position: relative;
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .game-canvas {
+    width: 100%;
+    height: 600px;
+    display: block;
+    cursor: crosshair;
+    touch-action: none;
+  }
+
+  /* Control Panel */
+  .control-panel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    min-width: 200px;
+    z-index: 10;
+  }
+
+  .control-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
+  .control-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .control-btn {
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 8px;
+    background: #667eea;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .control-btn:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+  }
+
+  .control-btn.danger {
+    background: #e74c3c;
+  }
+
+  .control-btn.danger:hover {
+    background: #c0392b;
+  }
+
+  /* Settings Panel */
+  .settings-panel {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ddd;
+    max-height: 300px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .settings-panel.collapsed {
+    max-height: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .setting-item input[type="checkbox"] {
+    width: 40px;
+    height: 20px;
+  }
+
+  .setting-item select {
+    padding: 0.3rem 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+
+  /* Question Panel */
+  .question-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    z-index: 20;
+    display: none;
+  }
+
+  .question-panel.active {
+    display: block;
+    animation: slideInScale 0.4s ease-out;
+  }
+
+  @keyframes slideInScale {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  .question-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .question-text {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  .answer-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .answer-btn {
+    padding: 1rem 1.5rem;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    background: white;
+    color: #333;
+    font-size: 1rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .answer-btn:hover {
+    border-color: #667eea;
+    background: #f0f4ff;
+    transform: translateX(5px);
+  }
+
+  .answer-btn.correct {
+    border-color: #27ae60;
+    background: #d5f4e6;
+    animation: correctPulse 0.5s;
+  }
+
+  .answer-btn.wrong {
+    border-color: #e74c3c;
+    background: #fadbd8;
+    animation: wrongShake 0.5s;
+  }
+
+  @keyframes correctPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  @keyframes wrongShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+
+  .question-feedback {
+    margin-top: 1rem;
+    min-height: 30px;
+  }
+
+  .feedback-message {
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .feedback-message.correct {
+    background: #d5f4e6;
+    color: #27ae60;
+  }
+
+  .feedback-message.wrong {
+    background: #fadbd8;
+    color: #e74c3c;
+  }
+
+  /* Block Inventory */
+  .block-inventory {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    max-width: 400px;
+  }
+
+  .inventory-title {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
+  .inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .inventory-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.8rem 0.5rem;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .inventory-block:hover:not(.locked) {
+    border-color: #667eea;
+    background: #f0f4ff;
+    transform: translateY(-3px);
+  }
+
+  .inventory-block.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f5f5f5;
+  }
+
+  .inventory-block.selected {
+    border-color: #27ae60;
+    background: #d5f4e6;
+    box-shadow: 0 0 15px rgba(39, 174, 96, 0.3);
+  }
+
+  .block-icon {
+    font-size: 2rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .block-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .block-count {
+    font-size: 0.7rem;
+    color: #666;
+  }
+
+  .block-unlock {
+    font-size: 0.65rem;
+    color: #999;
+    text-align: center;
+  }
+
+  /* Stats Display */
+  .stats-display {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 1rem;
+    z-index: 10;
+  }
+
+  .stat-item {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 0.8rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-icon {
+    font-size: 1.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: #666;
+    font-weight: 600;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  /* Challenge Panel */
+  .challenge-panel {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1.5rem;
+    max-width: 500px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+  }
+
+  .challenge-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.3rem;
+    font-weight: bold;
+  }
+
+  .challenge-description {
+    margin: 0 0 1rem 0;
+    color: #666;
+  }
+
+  .progress-bar {
+    height: 20px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  .progress-text {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  /* Modal */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: fadeIn 0.3s;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.4s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-title {
+    text-align: center;
+    font-size: 2rem;
+    margin: 0 0 1.5rem 0;
+    color: #333;
+  }
+
+  .final-stats {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 1.1rem;
+  }
+
+  .stat-row:last-child {
+    border-bottom: none;
+  }
+
+  .achievements-earned {
+    margin-bottom: 1.5rem;
+  }
+
+  .achievements-earned h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  #achievements-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .achievement-badge {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .btn {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: #667eea;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+  }
+
+  /* Instructions Tooltip */
+  .instructions-tooltip {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10;
+  }
+
+  .instructions-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+  }
+
+  .instructions-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .instructions-content {
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 1.5rem;
+    min-width: 300px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    max-height: 400px;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+  }
+
+  .instructions-content.collapsed {
+    max-height: 0;
+    padding: 0;
+    opacity: 0;
+  }
+
+  .instructions-content h3 {
+    margin-top: 0;
+  }
+
+  .instructions-content ul {
+    padding-left: 1.2rem;
+    margin: 0;
+  }
+
+  .instructions-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .game-canvas {
+      height: 500px;
+    }
+
+    .control-panel {
+      top: 10px;
+      right: 10px;
+      padding: 0.8rem;
+      min-width: 150px;
+    }
+
+    .stats-display {
+      top: 10px;
+      left: 10px;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .stat-item {
+      padding: 0.5rem 0.8rem;
+    }
+
+    .block-inventory {
+      bottom: 10px;
+      left: 10px;
+      max-width: 300px;
+    }
+
+    .inventory-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .question-panel {
+      padding: 1.5rem;
+      width: 95%;
+    }
+
+    .modal-content {
+      padding: 1.5rem;
+    }
+  }
+
+  /* RTL Support */
+  [dir="rtl"] .answer-btn:hover {
+    transform: translateX(-5px);
+  }
+
+  [dir="rtl"] .instructions-tooltip {
+    left: 20px;
+    right: auto;
+  }
+
+  [dir="rtl"] .instructions-content {
+    left: 0;
+    right: auto;
+  }
+</style>
+
+<script>
+  import {
+    BuildingBlocksGame,
+    CHALLENGES,
+    type QuizQuestion,
+    type BlockShape,
+  } from '../utils/building-blocks';
+  import { soundEffects } from '../utils/sound-effects';
+  import { confetti } from '../utils/confetti';
+
+  // Get base path for correct navigation
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+  // Initialize game
+  document.addEventListener('DOMContentLoaded', () => {
+    const gameContainer = document.querySelector('.building-blocks-game') as HTMLElement;
+    if (!gameContainer) return;
+
+    const mode = (gameContainer.dataset.mode as 'quiz' | 'challenge' | 'creative') || 'quiz';
+    const locale = gameContainer.dataset.locale || 'de';
+    const challengeId = gameContainer.dataset.challenge;
+
+    // Get questions from data attribute or use defaults
+    const questionsData = gameContainer.dataset.questions;
+    const questions: QuizQuestion[] = questionsData
+      ? JSON.parse(questionsData)
+      : [
+          {
+            id: '1',
+            text: 'What is 2 + 2?',
+            type: 'multiplechoice',
+            correctAnswer: '4',
+            options: ['3', '4', '5', '6'],
+          },
+        ];
+
+    const canvas = document.getElementById('building-blocks-canvas') as HTMLCanvasElement;
+    const game = new BuildingBlocksGame(canvas, questions, mode);
+
+    // UI Elements
+    const pauseBtn = document.getElementById('pause-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    const physicsToggle = document.getElementById('physics-toggle') as HTMLInputElement;
+    const soundToggle = document.getElementById('sound-toggle') as HTMLInputElement;
+    const questionPanel = document.getElementById('question-panel');
+    const gameOverModal = document.getElementById('game-over-modal');
+    const instructionsToggle = document.getElementById('instructions-toggle');
+    const instructionsContent = document.getElementById('instructions-content');
+
+    // Set up event callbacks
+    game.setCallbacks({
+      onScoreChange: (score) => {
+        const scoreValue = document.getElementById('score-value');
+        if (scoreValue) scoreValue.textContent = score.toString();
+      },
+
+      onBlockPlaced: (block) => {
+        const state = game.getState();
+        const blocksValue = document.getElementById('blocks-value');
+        const xpValue = document.getElementById('xp-value');
+
+        if (blocksValue) blocksValue.textContent = state.blocksPlaced.toString();
+        if (xpValue) xpValue.textContent = state.xpEarned.toString();
+
+        if (soundToggle.checked) {
+          soundEffects.play('pop');
+        }
+
+        // Update inventory unlocks
+        updateInventory();
+      },
+
+      onBlockToppled: (block) => {
+        if (soundToggle.checked) {
+          soundEffects.play('fail');
+        }
+      },
+
+      onChallengeComplete: (challenge) => {
+        confetti();
+        if (soundToggle.checked) {
+          soundEffects.play('success');
+        }
+
+        // Show notification
+        showNotification(`🎉 Challenge Complete: ${challenge.name[locale]}`, 'success');
+      },
+
+      onQuestionComplete: (isCorrect) => {
+        const feedbackMessage = questionPanel?.querySelector('.feedback-message') as HTMLElement;
+
+        if (feedbackMessage) {
+          feedbackMessage.textContent = isCorrect ? '✅ Correct!' : '❌ Try Again';
+          feedbackMessage.className = `feedback-message ${isCorrect ? 'correct' : 'wrong'}`;
+        }
+
+        if (isCorrect && soundToggle.checked) {
+          soundEffects.play('success');
+        } else if (!isCorrect && soundToggle.checked) {
+          soundEffects.play('fail');
+        }
+
+        // Hide question panel after delay and show next
+        setTimeout(() => {
+          if (questionPanel) {
+            questionPanel.classList.remove('active');
+          }
+
+          // Show next question after 1 second
+          setTimeout(() => {
+            showNextQuestion();
+          }, 1000);
+        }, 1500);
+      },
+
+      onGameOver: (state) => {
+        showGameOverModal(state);
+      },
+    });
+
+    // Control buttons
+    pauseBtn?.addEventListener('click', () => {
+      game.togglePause();
+      const isPaused = game.getState().isPaused;
+      pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
+    });
+
+    resetBtn?.addEventListener('click', () => {
+      if (confirm('Are you sure you want to reset? All progress will be lost.')) {
+        location.reload();
+      }
+    });
+
+    settingsBtn?.addEventListener('click', () => {
+      settingsPanel?.classList.toggle('collapsed');
+    });
+
+    physicsToggle?.addEventListener('change', () => {
+      game.setPhysicsEnabled(physicsToggle.checked);
+    });
+
+    instructionsToggle?.addEventListener('click', () => {
+      instructionsContent?.classList.toggle('collapsed');
+    });
+
+    // Canvas interaction
+    let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+
+    canvas.addEventListener('mousedown', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      isDragging = true;
+      dragOffsetX = x;
+      dragOffsetY = y;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      game.moveCurrentBlock(x, y);
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      if (isDragging) {
+        game.placeBlock();
+        isDragging = false;
+      }
+    });
+
+    // Touch support
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+
+      isDragging = true;
+      dragOffsetX = x;
+      dragOffsetY = y;
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (!isDragging) return;
+
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+
+      game.moveCurrentBlock(x, y);
+    });
+
+    canvas.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      if (isDragging) {
+        game.placeBlock();
+        isDragging = false;
+      }
+    });
+
+    // Keyboard controls (rotation)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        game.rotateCurrentBlock(-0.1);
+      } else if (e.key === 'ArrowRight') {
+        game.rotateCurrentBlock(0.1);
+      } else if (e.key === ' ') {
+        e.preventDefault();
+        game.placeBlock();
+      }
+    });
+
+    // Mouse wheel rotation
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      game.rotateCurrentBlock(e.deltaY > 0 ? 0.05 : -0.05);
+    });
+
+    // Block inventory
+    const inventoryBlocks = document.querySelectorAll('.inventory-block');
+    inventoryBlocks.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const shape = btn.getAttribute('data-shape') as BlockShape;
+        const unlocked = btn.getAttribute('data-unlocked') === 'true';
+
+        if (!unlocked) return;
+
+        // Deselect all
+        inventoryBlocks.forEach((b) => b.classList.remove('selected'));
+
+        // Select this one
+        btn.classList.add('selected');
+
+        // Create block of this shape
+        game.createBlock(shape);
+      });
+    });
+
+    // Show first question
+    function showNextQuestion() {
+      const question = game.getCurrentQuestion();
+      if (!question || !questionPanel) return;
+
+      const state = game.getState();
+
+      // Update question content
+      const questionNumber = questionPanel.querySelector('.question-number');
+      const questionProgress = questionPanel.querySelector('.question-progress');
+      const questionText = questionPanel.querySelector('.question-text');
+      const answerOptions = questionPanel.querySelector('.answer-options');
+
+      if (questionNumber) {
+        questionNumber.textContent = `Question ${state.currentQuestionIndex + 1}`;
+      }
+
+      if (questionProgress) {
+        questionProgress.textContent = `${state.currentQuestionIndex + 1}/${questions.length}`;
+      }
+
+      if (questionText) {
+        questionText.textContent = question.text;
+      }
+
+      // Clear previous answers
+      if (answerOptions) {
+        answerOptions.innerHTML = '';
+
+        // Add answer buttons
+        const answers = question.options || ['true', 'false'];
+
+        answers.forEach((answer) => {
+          const btn = document.createElement('button');
+          btn.className = 'answer-btn';
+          btn.textContent = answer;
+
+          btn.addEventListener('click', () => {
+            game.handleQuizAnswer(answer);
+
+            // Visual feedback
+            const isCorrect = game.getCurrentQuestion() !== question; // Question changed = correct
+            btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+            // Disable all buttons
+            answerOptions.querySelectorAll('.answer-btn').forEach((b) => {
+              (b as HTMLButtonElement).disabled = true;
+            });
+          });
+
+          answerOptions.appendChild(btn);
+        });
+      }
+
+      // Show panel
+      questionPanel.classList.add('active');
+    }
+
+    // Update inventory based on unlocks
+    function updateInventory() {
+      const inventory = game.getInventory();
+
+      Object.entries(inventory).forEach(([shape, data]) => {
+        const btn = document.querySelector(`.inventory-block[data-shape="${shape}"]`);
+        if (!btn) return;
+
+        if (data.unlocked) {
+          btn.classList.remove('locked');
+          btn.setAttribute('data-unlocked', 'true');
+
+          const countEl = btn.querySelector('.block-count');
+          if (countEl) {
+            countEl.textContent = data.count === Infinity ? '∞' : data.count.toString();
+          }
+        }
+      });
+    }
+
+    // Show game over modal
+    function showGameOverModal(state: any) {
+      if (!gameOverModal) return;
+
+      document.getElementById('final-score')!.textContent = state.score.toString();
+      document.getElementById('final-height')!.textContent = state.maxTowerHeight.toString();
+      document.getElementById('final-blocks')!.textContent = state.blocksPlaced.toString();
+      document.getElementById('final-xp')!.textContent = state.xpEarned.toString();
+
+      const achievementsList = document.getElementById('achievements-list');
+      if (achievementsList && state.completedChallenges.length > 0) {
+        achievementsList.innerHTML = state.completedChallenges
+          .map((id: string) => {
+            const challenge = CHALLENGES.find((c) => c.id === id);
+            return `<div class="achievement-badge">${challenge?.name[locale] || id}</div>`;
+          })
+          .join('');
+      } else if (achievementsList) {
+        achievementsList.innerHTML = '<p>No achievements unlocked yet</p>';
+      }
+
+      gameOverModal.style.display = 'flex';
+
+      // Confetti
+      confetti();
+    }
+
+    // Notification system
+    function showNotification(message: string, type: 'success' | 'error' | 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.textContent = message;
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#3498db'};
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        z-index: 1000;
+        animation: slideDown 0.3s ease-out;
+      `;
+
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // Modal buttons
+    document.getElementById('play-again-btn')?.addEventListener('click', () => {
+      location.reload();
+    });
+
+    document.getElementById('back-to-menu-btn')?.addEventListener('click', () => {
+      window.location.href = `${base}/games`;
+    });
+
+    // Start game
+    game.start();
+
+    // Show first question if in quiz mode
+    if (mode === 'quiz') {
+      setTimeout(() => {
+        showNextQuestion();
+      }, 1000);
+    }
+  });
+</script>
