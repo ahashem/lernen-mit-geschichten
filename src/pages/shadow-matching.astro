@@ -6,10 +6,11 @@
 
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ShadowMatching from '../components/ShadowMatching.astro';
+import { getTranslation, type Locale } from '../utils/i18n';
 
-const locale = 'de';
-const title = 'Schatten zuordnen';
-const description = 'Finde den passenden Schatten für jeden Charakter';
+const locale: Locale = 'de';
+const title = getTranslation(locale, 'shadowMatching');
+const description = getTranslation(locale, 'shadowMatchingDescription');
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
@@ -21,22 +22,22 @@ const description = 'Finde den passenden Schatten für jeden Charakter';
 
     <!-- Game Instructions -->
     <section class="instructions-section">
-      <h2>{t(locale, 'howToPlay')}</h2>
+      <h2>{getTranslation(locale, 'howToPlay')}</h2>
       <div class="instructions-grid">
         <div class="instruction-card">
           <div class="instruction-icon">👀</div>
-          <h3>{t(locale, 'step')} 1: {t(locale, 'lookAtShadows')}</h3>
-          <p>{t(locale, 'lookAtShadowsDesc')}</p>
+          <h3>{getTranslation(locale, 'step')} 1: {getTranslation(locale, 'lookAtShadows')}</h3>
+          <p>{getTranslation(locale, 'lookAtShadowsDesc')}</p>
         </div>
         <div class="instruction-card">
           <div class="instruction-icon">🖱️</div>
-          <h3>{t(locale, 'step')} 2: {t(locale, 'dragCharacter')}</h3>
-          <p>{t(locale, 'dragCharacterDesc')}</p>
+          <h3>{getTranslation(locale, 'step')} 2: {getTranslation(locale, 'dragCharacter')}</h3>
+          <p>{getTranslation(locale, 'dragCharacterDesc')}</p>
         </div>
         <div class="instruction-card">
           <div class="instruction-icon">✨</div>
-          <h3>{t(locale, 'step')} 3: {t(locale, 'matchAndEarn')}</h3>
-          <p>{t(locale, 'matchAndEarnDesc')}</p>
+          <h3>{getTranslation(locale, 'step')} 3: {getTranslation(locale, 'matchAndEarn')}</h3>
+          <p>{getTranslation(locale, 'matchAndEarnDesc')}</p>
         </div>
       </div>
     </section>
@@ -48,18 +49,18 @@ const description = 'Finde den passenden Schatten für jeden Charakter';
 
     <!-- Best Scores Section -->
     <section class="scores-section">
-      <h2>{t(locale, 'bestScores')}</h2>
+      <h2>{getTranslation(locale, 'bestTimes')}</h2>
       <div class="scores-container" id="scores-container">
         <div class="score-card">
-          <h3>{t(locale, 'easy')}</h3>
+          <h3>{getTranslation(locale, 'easy')}</h3>
           <div class="score-value" id="best-easy">--:--</div>
         </div>
         <div class="score-card">
-          <h3>{t(locale, 'medium')}</h3>
+          <h3>{getTranslation(locale, 'medium')}</h3>
           <div class="score-value" id="best-medium">--:--</div>
         </div>
         <div class="score-card">
-          <h3>{t(locale, 'hard')}</h3>
+          <h3>{getTranslation(locale, 'hard')}</h3>
           <div class="score-value" id="best-hard">--:--</div>
         </div>
       </div>
@@ -67,7 +68,7 @@ const description = 'Finde den passenden Schatten für jeden Charakter';
 
     <!-- Achievements Section -->
     <section class="achievements-section">
-      <h2>{t(locale, 'achievements')}</h2>
+      <h2>{getTranslation(locale, 'achievements')}</h2>
       <div class="achievements-grid" id="achievements-grid">
         <!-- Achievements will be loaded dynamically -->
       </div>
