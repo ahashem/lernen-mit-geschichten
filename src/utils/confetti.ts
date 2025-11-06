@@ -236,5 +236,5 @@ export class ConfettiCelebration {
   }
 }
 
-// Global instance for easy access
-export const confetti = new ConfettiCelebration();
+// Global instance for easy access (only in browser)
+export const confetti = typeof document !== 'undefined' ? new ConfettiCelebration() : null as any;

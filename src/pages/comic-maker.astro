@@ -1,0 +1,26 @@
+---
+/**
+ * Comic Book Maker Page
+ * Main entry point for creating comics
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ComicMaker from '../components/ComicMaker.astro';
+
+const locale = 'de';
+const title = 'Comic Maker';
+const description = 'Create your own comic book from stories';
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="page-container">
+    <ComicMaker locale={locale} />
+  </div>
+</BaseLayout>
+
+<style>
+  .page-container {
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+  }
+</style>

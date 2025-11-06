@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MagicGardenView from '../components/MagicGarden.astro';
+
+const locale = (Astro.url.searchParams.get('locale') || 'de') as 'de' | 'en' | 'ar' | 'tr' | 'ur';
+---
+
+<BaseLayout
+  title="Magic Garden"
+  description="Grow plants as you learn and progress"
+  locale={locale}
+>
+  <div class="magic-garden-page">
+    <header class="page-header">
+      <h1>
+        🌱 Magic Garden
+      </h1>
+      <p class="subtitle">Grow plants as you learn and progress</p>
+    </header>
+
+    <MagicGardenView locale={locale} />
+  </div>
+</BaseLayout>
+
+<style>
+  .magic-garden-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    font-size: 2.5rem;
+    color: #2d5016;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.125rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+  }
+</style>

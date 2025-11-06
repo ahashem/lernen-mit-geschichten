@@ -1,0 +1,10 @@
+---
+import DressUpStudio from '../components/DressUpStudio.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const locale = 'de'; // Default to German
+---
+
+<BaseLayout title="Dress Up Studio" description="Create unique outfits for story characters">
+  <DressUpStudio locale={locale} />
+</BaseLayout>

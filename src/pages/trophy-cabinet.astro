@@ -1,0 +1,646 @@
+---
+/**
+ * Trophy Cabinet Page
+ * Main page displaying the 3D trophy cabinet
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TrophyCabinet from '../components/TrophyCabinet.astro';
+import TrophyPresentation from '../components/TrophyPresentation.astro';
+import TrophyDetails from '../components/TrophyDetails.astro';
+
+const locale = (Astro.currentLocale as 'de' | 'ar' | 'en' | 'tr' | 'ur') || 'de';
+
+const pageTitle = {
+  de: 'Trophäenschrank',
+  ar: 'خزانة الكؤوس',
+  en: 'Trophy Cabinet',
+  tr: 'Kupa Dolabı',
+  ur: 'ٹرافی الماری',
+};
+
+const pageDescription = {
+  de: 'Deine Sammlung von Trophäen und Erfolgen',
+  ar: 'مجموعتك من الكؤوس والإنجازات',
+  en: 'Your collection of trophies and achievements',
+  tr: 'Kupa ve başarı koleksiyonun',
+  ur: 'آپ کی ٹرافیوں اور کامیابیوں کا مجموعہ',
+};
+
+const messages = {
+  de: {
+    title: 'Trophäenschrank',
+    subtitle: 'Deine Erfolge und Belohnungen',
+    customizeTitle: 'Anpassen',
+    cabinetStyle: 'Schrankstil',
+    scene: 'Szene',
+    lighting: 'Beleuchtung',
+    shelfMaterial: 'Regalmaterial',
+    filterTitle: 'Filtern',
+    allTrophies: 'Alle Trophäen',
+    earned: 'Verdient',
+    locked: 'Gesperrt',
+    byMaterial: 'Nach Material',
+    bySize: 'Nach Größe',
+    byShape: 'Nach Form',
+    sortBy: 'Sortieren nach',
+    sortDate: 'Datum',
+    sortRarity: 'Seltenheit',
+    sortName: 'Name',
+    search: 'Trophäen suchen...',
+    showcaseMode: 'Ausstellungsmodus',
+    takePhoto: 'Foto machen',
+    shareCollection: 'Sammlung teilen',
+    exportData: 'Daten exportieren',
+  },
+  ar: {
+    title: 'خزانة الكؤوس',
+    subtitle: 'إنجازاتك ومكافآتك',
+    customizeTitle: 'تخصيص',
+    cabinetStyle: 'نمط الخزانة',
+    scene: 'المشهد',
+    lighting: 'الإضاءة',
+    shelfMaterial: 'مادة الرف',
+    filterTitle: 'تصفية',
+    allTrophies: 'جميع الكؤوس',
+    earned: 'تم الحصول عليها',
+    locked: 'مقفلة',
+    byMaterial: 'حسب المادة',
+    bySize: 'حسب الحجم',
+    byShape: 'حسب الشكل',
+    sortBy: 'ترتيب حسب',
+    sortDate: 'التاريخ',
+    sortRarity: 'الندرة',
+    sortName: 'الاسم',
+    search: 'البحث عن الكؤوس...',
+    showcaseMode: 'وضع العرض',
+    takePhoto: 'التقاط صورة',
+    shareCollection: 'مشاركة المجموعة',
+    exportData: 'تصدير البيانات',
+  },
+  en: {
+    title: 'Trophy Cabinet',
+    subtitle: 'Your achievements and rewards',
+    customizeTitle: 'Customize',
+    cabinetStyle: 'Cabinet Style',
+    scene: 'Scene',
+    lighting: 'Lighting',
+    shelfMaterial: 'Shelf Material',
+    filterTitle: 'Filter',
+    allTrophies: 'All Trophies',
+    earned: 'Earned',
+    locked: 'Locked',
+    byMaterial: 'By Material',
+    bySize: 'By Size',
+    byShape: 'By Shape',
+    sortBy: 'Sort by',
+    sortDate: 'Date',
+    sortRarity: 'Rarity',
+    sortName: 'Name',
+    search: 'Search trophies...',
+    showcaseMode: 'Showcase Mode',
+    takePhoto: 'Take Photo',
+    shareCollection: 'Share Collection',
+    exportData: 'Export Data',
+  },
+  tr: {
+    title: 'Kupa Dolabı',
+    subtitle: 'Başarıların ve ödüllerin',
+    customizeTitle: 'Özelleştir',
+    cabinetStyle: 'Dolap Stili',
+    scene: 'Sahne',
+    lighting: 'Aydınlatma',
+    shelfMaterial: 'Raf Malzemesi',
+    filterTitle: 'Filtrele',
+    allTrophies: 'Tüm Kupalar',
+    earned: 'Kazanılan',
+    locked: 'Kilitli',
+    byMaterial: 'Malzemeye Göre',
+    bySize: 'Boyuta Göre',
+    byShape: 'Şekle Göre',
+    sortBy: 'Sırala',
+    sortDate: 'Tarih',
+    sortRarity: 'Nadirlik',
+    sortName: 'İsim',
+    search: 'Kupa ara...',
+    showcaseMode: 'Vitrin Modu',
+    takePhoto: 'Fotoğraf Çek',
+    shareCollection: 'Koleksiyonu Paylaş',
+    exportData: 'Verileri Dışa Aktar',
+  },
+  ur: {
+    title: 'ٹرافی الماری',
+    subtitle: 'آپ کی کامیابیاں اور انعامات',
+    customizeTitle: 'تخصیص کریں',
+    cabinetStyle: 'الماری کا انداز',
+    scene: 'منظر',
+    lighting: 'روشنی',
+    shelfMaterial: 'شیلف کا مواد',
+    filterTitle: 'فلٹر کریں',
+    allTrophies: 'تمام ٹرافیاں',
+    earned: 'حاصل شدہ',
+    locked: 'بند',
+    byMaterial: 'مواد کے مطابق',
+    bySize: 'سائز کے مطابق',
+    byShape: 'شکل کے مطابق',
+    sortBy: 'ترتیب دیں',
+    sortDate: 'تاریخ',
+    sortRarity: 'نایابیت',
+    sortName: 'نام',
+    search: 'ٹرافیاں تلاش کریں...',
+    showcaseMode: 'نمائش موڈ',
+    takePhoto: 'تصویر لیں',
+    shareCollection: 'مجموعہ شیئر کریں',
+    exportData: 'ڈیٹا ایکسپورٹ کریں',
+  },
+};
+
+const t = messages[locale];
+---
+
+<BaseLayout title={pageTitle[locale]} description={pageDescription[locale]}>
+  <!-- Trophy Presentation Ceremony (hidden by default) -->
+  <TrophyPresentation />
+
+  <!-- Trophy Details Modal (hidden by default) -->
+  <TrophyDetails />
+
+  <!-- Page Header -->
+  <div class="cabinet-page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <span class="title-icon">🏆</span>
+        {t.title}
+      </h1>
+      <p class="page-subtitle">{t.subtitle}</p>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <button class="action-btn showcase-btn" id="showcase-btn">
+        <span class="btn-icon">🎬</span>
+        <span class="btn-text">{t.showcaseMode}</span>
+      </button>
+      <button class="action-btn photo-btn" id="photo-btn">
+        <span class="btn-icon">📸</span>
+        <span class="btn-text">{t.takePhoto}</span>
+      </button>
+      <button class="action-btn share-btn" id="share-btn">
+        <span class="btn-icon">📤</span>
+        <span class="btn-text">{t.shareCollection}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="cabinet-page-layout">
+    <!-- Sidebar: Filters & Customization -->
+    <aside class="cabinet-sidebar">
+      <!-- Search -->
+      <div class="sidebar-section">
+        <input
+          type="text"
+          class="trophy-search"
+          id="trophy-search"
+          placeholder={t.search}
+        />
+      </div>
+
+      <!-- Filter Section -->
+      <div class="sidebar-section">
+        <h3 class="section-title">{t.filterTitle}</h3>
+
+        <div class="filter-group">
+          <label class="filter-label">Status:</label>
+          <div class="filter-options">
+            <button class="filter-btn active" data-filter="all">
+              {t.allTrophies}
+            </button>
+            <button class="filter-btn" data-filter="earned">
+              {t.earned}
+            </button>
+            <button class="filter-btn" data-filter="locked">
+              {t.locked}
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">{t.byMaterial}:</label>
+          <select class="filter-select" id="material-filter">
+            <option value="">All Materials</option>
+            <option value="bronze">Bronze</option>
+            <option value="silver">Silver</option>
+            <option value="gold">Gold</option>
+            <option value="platinum">Platinum</option>
+            <option value="diamond">Diamond</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">{t.sortBy}:</label>
+          <select class="filter-select" id="sort-select">
+            <option value="date">{t.sortDate}</option>
+            <option value="rarity">{t.sortRarity}</option>
+            <option value="name">{t.sortName}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Customization Section -->
+      <div class="sidebar-section">
+        <h3 class="section-title">{t.customizeTitle}</h3>
+
+        <div class="customize-group">
+          <label class="customize-label">{t.cabinetStyle}:</label>
+          <select class="customize-select" id="style-select">
+            <option value="classic-wood">Classic Wood</option>
+            <option value="modern-glass">Modern Glass</option>
+            <option value="antique-bronze">Antique Bronze</option>
+            <option value="crystal-display">Crystal Display</option>
+            <option value="space-station">Space Station</option>
+          </select>
+        </div>
+
+        <div class="customize-group">
+          <label class="customize-label">{t.lighting}:</label>
+          <div class="lighting-options">
+            <button class="lighting-btn active" data-lighting="warm">☀️</button>
+            <button class="lighting-btn" data-lighting="cool">❄️</button>
+            <button class="lighting-btn" data-lighting="spotlight">💡</button>
+            <button class="lighting-btn" data-lighting="rainbow">🌈</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Cabinet Display -->
+    <main class="cabinet-main">
+      <TrophyCabinet interactive={true} showControls={true} />
+    </main>
+  </div>
+</BaseLayout>
+
+<style>
+  .cabinet-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 0;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #e0e0e0;
+  }
+
+  .header-content {
+    flex: 1;
+  }
+
+  .page-title {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .title-icon {
+    font-size: 56px;
+  }
+
+  .page-subtitle {
+    font-size: 18px;
+    color: #666;
+    margin: 0;
+  }
+
+  /* Quick Actions */
+  .quick-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-icon {
+    font-size: 20px;
+  }
+
+  /* Layout */
+  .cabinet-page-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+
+  /* Sidebar */
+  .cabinet-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .sidebar-section {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+  }
+
+  /* Search */
+  .trophy-search {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+
+  .trophy-search:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  /* Filters */
+  .filter-group,
+  .customize-group {
+    margin-bottom: 15px;
+  }
+
+  .filter-label,
+  .customize-label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 8px;
+  }
+
+  .filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filter-btn {
+    padding: 10px 15px;
+    background: #f5f5f5;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+  }
+
+  .filter-btn:hover {
+    background: #e0e0e0;
+  }
+
+  .filter-btn.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-color: #667eea;
+  }
+
+  .filter-select,
+  .customize-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .filter-select:focus,
+  .customize-select:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+
+  /* Lighting Options */
+  .lighting-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .lighting-btn {
+    padding: 10px;
+    background: #f5f5f5;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .lighting-btn:hover {
+    background: #e0e0e0;
+  }
+
+  .lighting-btn.active {
+    background: #667eea;
+    border-color: #667eea;
+    transform: scale(1.1);
+  }
+
+  /* Main Cabinet */
+  .cabinet-main {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .cabinet-page-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .cabinet-sidebar {
+      order: 2;
+    }
+
+    .cabinet-main {
+      order: 1;
+    }
+
+    .quick-actions {
+      flex-wrap: wrap;
+    }
+
+    .action-btn .btn-text {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .cabinet-page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .page-title {
+      font-size: 32px;
+    }
+
+    .quick-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .page-title {
+    flex-direction: row-reverse;
+  }
+
+  [dir='rtl'] .action-btn {
+    flex-direction: row-reverse;
+  }
+</style>
+
+<script>
+  import { trophyCabinet } from '../utils/trophy-cabinet';
+
+  // Search functionality
+  const searchInput = document.getElementById('trophy-search') as HTMLInputElement;
+  searchInput?.addEventListener('input', (e) => {
+    const query = (e.target as HTMLInputElement).value;
+    const locale = document.documentElement.lang as 'de' | 'ar' | 'en' | 'tr' | 'ur' || 'de';
+    const results = trophyCabinet.searchTrophies(query, locale);
+    // Update display with results
+    console.log('Search results:', results);
+  });
+
+  // Filter functionality
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const target = e.currentTarget as HTMLElement;
+      const filter = target.dataset.filter;
+
+      // Update active state
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      target.classList.add('active');
+
+      // Apply filter
+      applyFilters();
+    });
+  });
+
+  // Material filter
+  document.getElementById('material-filter')?.addEventListener('change', applyFilters);
+
+  // Sort
+  document.getElementById('sort-select')?.addEventListener('change', applyFilters);
+
+  function applyFilters() {
+    const statusFilter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter');
+    const materialFilter = (document.getElementById('material-filter') as HTMLSelectElement)?.value;
+    const sortBy = (document.getElementById('sort-select') as HTMLSelectElement)?.value;
+
+    // Get filtered trophies
+    let trophies = trophyCabinet.filterTrophies({
+      material: materialFilter as any,
+      earnedOnly: statusFilter === 'earned',
+    });
+
+    if (statusFilter === 'locked') {
+      trophies = trophies.filter(t => !trophyCabinet.isTrophyEarned(t.id));
+    }
+
+    // Sort
+    const locale = document.documentElement.lang as 'de' | 'ar' | 'en' | 'tr' | 'ur' || 'de';
+    trophies = trophyCabinet.sortTrophies(trophies, sortBy as any, locale);
+
+    console.log('Filtered and sorted trophies:', trophies);
+    // Update display
+  }
+
+  // Customization
+  document.getElementById('style-select')?.addEventListener('change', (e) => {
+    const style = (e.target as HTMLSelectElement).value;
+    trophyCabinet.updateCustomization({ style: style as any });
+  });
+
+  document.querySelectorAll('.lighting-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const target = e.currentTarget as HTMLElement;
+      const lighting = target.dataset.lighting;
+
+      // Update active state
+      document.querySelectorAll('.lighting-btn').forEach(b => b.classList.remove('active'));
+      target.classList.add('active');
+
+      // Update customization
+      trophyCabinet.updateCustomization({ lighting: lighting as any });
+    });
+  });
+
+  // Showcase mode (fullscreen)
+  document.getElementById('showcase-btn')?.addEventListener('click', () => {
+    const cabinet = document.querySelector('.cabinet-scene');
+    if (cabinet) {
+      cabinet.requestFullscreen?.();
+    }
+  });
+
+  // Take photo
+  document.getElementById('photo-btn')?.addEventListener('click', async () => {
+    const blob = await trophyCabinet.takeScreenshot();
+    if (blob) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'trophy-cabinet.png';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  });
+
+  // Share collection
+  document.getElementById('share-btn')?.addEventListener('click', () => {
+    const data = trophyCabinet.exportCollection();
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'trophy-collection.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+</script>

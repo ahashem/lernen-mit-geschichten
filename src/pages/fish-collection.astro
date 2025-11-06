@@ -1,0 +1,497 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getTranslation } from '../utils/i18n';
+
+const locale = 'de'; // Default locale, can be made dynamic
+const title = getTranslation(locale, 'fishCollection');
+const description = getTranslation(locale, 'fishCollectionDescription');
+---
+
+<BaseLayout title={title} description={description} lang={locale}>
+  <main class="fish-collection-page">
+    <div class="page-header">
+      <h1>{title}</h1>
+      <p class="page-description">{description}</p>
+      <div class="collection-progress" id="collection-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
+        <p class="progress-text" id="progress-text">0 / 12 Fischarten gesammelt</p>
+      </div>
+    </div>
+
+    <div class="collection-grid" id="collection-grid">
+      <!-- Fish cards will be rendered here by JavaScript -->
+    </div>
+
+    <div class="collection-actions">
+      <a href="/fishing-game" class="action-btn primary">
+        <span data-i18n="backToGame">{getTranslation(locale, 'backToGame')}</span>
+      </a>
+      <button class="action-btn secondary" id="reset-collection-btn">
+        <span data-i18n="resetCollection">{getTranslation(locale, 'resetCollection')}</span>
+      </button>
+    </div>
+
+    <!-- Fish Detail Modal -->
+    <div class="fish-modal hidden" id="fish-modal">
+      <div class="modal-content">
+        <button class="close-btn" id="close-modal-btn">✕</button>
+        <div class="fish-detail">
+          <div class="fish-emoji-large" id="modal-fish-emoji">🐟</div>
+          <h2 id="modal-fish-name">Goldfish</h2>
+          <div class="fish-stats">
+            <div class="stat">
+              <span class="stat-label" data-i18n="rarity">Seltenheit</span>
+              <span class="stat-value" id="modal-fish-rarity">Common</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label" data-i18n="points">Punkte</span>
+              <span class="stat-value" id="modal-fish-points">100</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label" data-i18n="speed">Geschwindigkeit</span>
+              <span class="stat-value" id="modal-fish-speed">2</span>
+            </div>
+          </div>
+          <div class="catch-status" id="modal-catch-status">
+            <span class="status-badge caught">Gefangen!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .fish-collection-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 80vh;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-header h1 {
+    font-size: 3rem;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+
+  .page-description {
+    font-size: 1.3rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .collection-progress {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 30px;
+    background: #e0e0e0;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6BCF7F 0%, #4CAF50 100%);
+    transition: width 0.5s ease;
+  }
+
+  .progress-text {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .fish-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .fish-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .fish-card.locked {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .fish-card.locked:hover {
+    transform: none;
+  }
+
+  .fish-emoji {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .fish-card.locked .fish-emoji {
+    filter: grayscale(100%);
+  }
+
+  .fish-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .fish-card.locked .fish-name {
+    color: #999;
+  }
+
+  .rarity-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+
+  .rarity-badge.common {
+    background: #E0E0E0;
+    color: #666;
+  }
+
+  .rarity-badge.uncommon {
+    background: #FFD93D;
+    color: #333;
+  }
+
+  .rarity-badge.rare {
+    background: linear-gradient(135deg, #FF9F40 0%, #E57373 100%);
+    color: white;
+  }
+
+  .lock-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5rem;
+  }
+
+  .collection-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 3rem;
+  }
+
+  .action-btn {
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .action-btn.primary {
+    background: linear-gradient(135deg, #6BCF7F 0%, #4CAF50 100%);
+    color: white;
+  }
+
+  .action-btn.secondary {
+    background: #e0e0e0;
+    color: #333;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Fish Modal */
+  .fish-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-in;
+  }
+
+  .fish-modal .modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    animation: slideUp 0.4s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: #e0e0e0;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .close-btn:hover {
+    background: #ccc;
+    transform: scale(1.1);
+  }
+
+  .fish-detail {
+    text-align: center;
+  }
+
+  .fish-emoji-large {
+    font-size: 6rem;
+    margin-bottom: 1rem;
+  }
+
+  .fish-detail h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 2rem;
+  }
+
+  .fish-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .catch-status {
+    margin-top: 1.5rem;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+
+  .status-badge.caught {
+    background: linear-gradient(135deg, #6BCF7F 0%, #4CAF50 100%);
+    color: white;
+  }
+
+  .status-badge.locked {
+    background: #e0e0e0;
+    color: #666;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  @media (max-width: 768px) {
+    .fish-collection-page {
+      padding: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .collection-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .collection-actions {
+      flex-direction: column;
+    }
+
+    .fish-stats {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { FISH_TYPES } from '../utils/fishing-game';
+
+  // Load collection data
+  function loadCollection() {
+    const caughtKey = 'fishing-game-collection';
+    const saved = localStorage.getItem(caughtKey);
+    return saved ? JSON.parse(saved) : [];
+  }
+
+  // Render collection grid
+  function renderCollection() {
+    const caughtIds = loadCollection();
+    const grid = document.getElementById('collection-grid');
+
+    if (!grid) return;
+
+    grid.innerHTML = FISH_TYPES.map(fish => {
+      const isCaught = caughtIds.includes(fish.id);
+      const lockedClass = isCaught ? '' : 'locked';
+
+      return `
+        <div class="fish-card ${lockedClass}" data-fish-id="${fish.id}">
+          ${!isCaught ? '<span class="lock-icon">🔒</span>' : ''}
+          <span class="fish-emoji">${isCaught ? fish.emoji : '❓'}</span>
+          <h3 class="fish-name">${isCaught ? fish.name : '???'}</h3>
+          ${isCaught ? `<span class="rarity-badge ${fish.rarity}">${fish.rarity}</span>` : ''}
+        </div>
+      `;
+    }).join('');
+
+    // Add click listeners
+    grid.querySelectorAll('.fish-card:not(.locked)').forEach(card => {
+      card.addEventListener('click', () => {
+        const fishId = card.getAttribute('data-fish-id');
+        showFishDetail(fishId);
+      });
+    });
+
+    // Update progress
+    updateProgress(caughtIds.length);
+  }
+
+  // Update progress bar
+  function updateProgress(caught: number) {
+    const total = FISH_TYPES.length;
+    const percentage = (caught / total) * 100;
+
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+
+    if (progressFill) {
+      progressFill.style.width = `${percentage}%`;
+    }
+
+    if (progressText) {
+      progressText.textContent = `${caught} / ${total} Fischarten gesammelt`;
+    }
+  }
+
+  // Show fish detail modal
+  function showFishDetail(fishId: string | null) {
+    if (!fishId) return;
+
+    const fish = FISH_TYPES.find(f => f.id === fishId);
+    if (!fish) return;
+
+    const caughtIds = loadCollection();
+    const isCaught = caughtIds.includes(fish.id);
+
+    // Update modal content
+    document.getElementById('modal-fish-emoji')!.textContent = fish.emoji;
+    document.getElementById('modal-fish-name')!.textContent = fish.name;
+    document.getElementById('modal-fish-rarity')!.textContent = fish.rarity;
+    document.getElementById('modal-fish-points')!.textContent = fish.points.toString();
+    document.getElementById('modal-fish-speed')!.textContent = fish.speed.toString();
+
+    const statusBadge = document.getElementById('modal-catch-status')?.querySelector('.status-badge');
+    if (statusBadge) {
+      statusBadge.textContent = isCaught ? 'Gefangen!' : 'Noch nicht gefangen';
+      statusBadge.className = `status-badge ${isCaught ? 'caught' : 'locked'}`;
+    }
+
+    // Show modal
+    document.getElementById('fish-modal')?.classList.remove('hidden');
+  }
+
+  // Close modal
+  document.getElementById('close-modal-btn')?.addEventListener('click', () => {
+    document.getElementById('fish-modal')?.classList.add('hidden');
+  });
+
+  // Click outside to close
+  document.getElementById('fish-modal')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('fish-modal')) {
+      document.getElementById('fish-modal')?.classList.add('hidden');
+    }
+  });
+
+  // Reset collection
+  document.getElementById('reset-collection-btn')?.addEventListener('click', () => {
+    if (confirm('Möchtest du wirklich deine gesamte Sammlung zurücksetzen?')) {
+      localStorage.removeItem('fishing-game-collection');
+      renderCollection();
+    }
+  });
+
+  // Initialize on load
+  renderCollection();
+</script>

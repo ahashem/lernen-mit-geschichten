@@ -6,6 +6,9 @@ import LanguageSelector from '@components/LanguageSelector.astro';
 import AccessibilityPanel from '@components/AccessibilityPanel.astro';
 import AchievementToast from '@components/AchievementToast.astro';
 import GTMTracking from '@components/GTMTracking.astro';
+import WeatherOverlay from '@components/WeatherOverlay.astro';
+import WeatherWidget from '@components/WeatherWidget.astro';
+import SeasonalTheme from '@components/SeasonalTheme.astro';
 import type { Locale } from '@utils/i18n';
 import { getTranslation, isRTL } from '@utils/i18n';
 import { BASE_PATH as base } from '@utils/site';
@@ -133,6 +136,9 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
               class="nav-quest-link"
               >⚔️ {getTranslation(locale, 'adventureQuests')}</a
             >
+            <a href={locale === 'de' ? `${base}/weather-settings` : `${base}/${locale}/weather-settings`}
+              >⛅ {getTranslation(locale, 'weatherSettings')}</a
+            >
             <button
               class="nav-accessibility-btn"
               aria-label={getTranslation(locale, 'accessibility')}
@@ -171,6 +177,11 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
 
     <!-- Achievement Toast (Global) -->
     <AchievementToast />
+
+    <!-- Weather System (Global) -->
+    <WeatherOverlay />
+    <WeatherWidget locale={locale} />
+    <SeasonalTheme />
 
     <script>
       // Connect nav accessibility button to panel

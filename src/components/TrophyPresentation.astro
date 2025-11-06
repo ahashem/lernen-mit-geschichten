@@ -1,0 +1,686 @@
+---
+/**
+ * Trophy Presentation Ceremony Component
+ * Dramatic award animation when a new trophy is earned
+ * Features: Cabinet doors open, trophy rises, spotlight, fanfare
+ */
+import TrophyModel from './TrophyModel.astro';
+
+const locale = (Astro.currentLocale as 'de' | 'ar' | 'en' | 'tr' | 'ur') || 'de';
+
+const messages = {
+  de: {
+    congratulations: 'Herzlichen Glückwunsch!',
+    newTrophy: 'Neue Trophäe freigeschaltet!',
+    earned: 'Du hast verdient',
+    close: 'Schließen',
+  },
+  ar: {
+    congratulations: 'تهانينا!',
+    newTrophy: 'تم فتح كأس جديدة!',
+    earned: 'لقد حصلت على',
+    close: 'إغلاق',
+  },
+  en: {
+    congratulations: 'Congratulations!',
+    newTrophy: 'New Trophy Unlocked!',
+    earned: 'You earned',
+    close: 'Close',
+  },
+  tr: {
+    congratulations: 'Tebrikler!',
+    newTrophy: 'Yeni Kupa Kazanıldı!',
+    earned: 'Kazandın',
+    close: 'Kapat',
+  },
+  ur: {
+    congratulations: 'مبارک ہو!',
+    newTrophy: 'نیا ٹرافی حاصل ہوا!',
+    earned: 'آپ نے حاصل کیا',
+    close: 'بند کریں',
+  },
+};
+
+const t = messages[locale];
+---
+
+<div class="trophy-presentation-overlay" id="trophy-presentation" style="display: none;">
+  <!-- Background Overlay -->
+  <div class="presentation-backdrop"></div>
+
+  <!-- Fireworks Canvas -->
+  <canvas class="fireworks-canvas" id="fireworks-canvas"></canvas>
+
+  <!-- Presentation Stage -->
+  <div class="presentation-stage">
+    <!-- Spotlight Effects -->
+    <div class="spotlight-effects">
+      <div class="spotlight spotlight-1"></div>
+      <div class="spotlight spotlight-2"></div>
+      <div class="spotlight spotlight-3"></div>
+    </div>
+
+    <!-- Trophy Rising Platform -->
+    <div class="rising-platform" id="rising-platform">
+      <!-- Trophy Container -->
+      <div class="trophy-container" id="trophy-container">
+        <!-- Trophy will be inserted here dynamically -->
+      </div>
+
+      <!-- Pedestal -->
+      <div class="presentation-pedestal">
+        <div class="pedestal-top"></div>
+        <div class="pedestal-body"></div>
+        <div class="pedestal-base"></div>
+      </div>
+
+      <!-- Light Beam -->
+      <div class="light-beam"></div>
+    </div>
+
+    <!-- Particle Effects -->
+    <div class="particle-container" id="particle-container">
+      {[...Array(30)].map((_, i) => (
+        <div class={`particle particle-${i}`} key={i}>✨</div>
+      ))}
+    </div>
+
+    <!-- Trophy Information -->
+    <div class="trophy-info" id="trophy-info">
+      <h2 class="presentation-title">{t.congratulations}</h2>
+      <div class="trophy-badge">
+        <span class="badge-icon">🏆</span>
+        <span class="badge-text">{t.newTrophy}</span>
+      </div>
+      <p class="trophy-earned">{t.earned}</p>
+      <h3 class="trophy-name" id="trophy-name"></h3>
+      <p class="trophy-description" id="trophy-description"></p>
+
+      <!-- Trophy Details -->
+      <div class="trophy-details">
+        <div class="detail-item">
+          <span class="detail-label">Material:</span>
+          <span class="detail-value material-badge" id="material-badge"></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Size:</span>
+          <span class="detail-value size-badge" id="size-badge"></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Stars Earned:</span>
+          <span class="detail-value stars-earned" id="stars-earned">⭐ 0</span>
+        </div>
+      </div>
+
+      <!-- Close Button -->
+      <button class="close-presentation-btn" id="close-presentation">
+        {t.close}
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .trophy-presentation-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .presentation-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+  }
+
+  .fireworks-canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /* Presentation Stage */
+  .presentation-stage {
+    position: relative;
+    width: 90%;
+    max-width: 800px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  /* Spotlights */
+  .spotlight-effects {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .spotlight {
+    position: absolute;
+    width: 300px;
+    height: 400px;
+    background: radial-gradient(
+      ellipse at top,
+      rgba(255, 255, 200, 0.4),
+      transparent
+    );
+    animation: spotlight-sway 4s ease-in-out infinite;
+  }
+
+  .spotlight-1 {
+    top: -50px;
+    left: 20%;
+    animation-delay: 0s;
+  }
+
+  .spotlight-2 {
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation-delay: 1s;
+  }
+
+  .spotlight-3 {
+    top: -50px;
+    right: 20%;
+    animation-delay: 2s;
+  }
+
+  @keyframes spotlight-sway {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(20px); }
+  }
+
+  /* Rising Platform */
+  .rising-platform {
+    position: relative;
+    width: 300px;
+    height: 400px;
+    animation: platform-rise 1.5s ease-out;
+  }
+
+  @keyframes platform-rise {
+    0% {
+      transform: translateY(400px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  /* Trophy Container */
+  .trophy-container {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: trophy-appear 2s ease-out 1s;
+    animation-fill-mode: both;
+  }
+
+  @keyframes trophy-appear {
+    0% {
+      transform: translateX(-50%) scale(0) rotateY(0deg);
+      opacity: 0;
+    }
+    50% {
+      transform: translateX(-50%) scale(1.2) rotateY(180deg);
+    }
+    100% {
+      transform: translateX(-50%) scale(1) rotateY(360deg);
+      opacity: 1;
+    }
+  }
+
+  /* Pedestal */
+  .presentation-pedestal {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+  }
+
+  .pedestal-top {
+    width: 100%;
+    height: 20px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .pedestal-body {
+    width: 90%;
+    height: 80px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, #8B4513, #654321);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .pedestal-base {
+    width: 100%;
+    height: 30px;
+    background: linear-gradient(135deg, #A0522D, #8B4513);
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Light Beam */
+  .light-beam {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 500px;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(255, 255, 200, 0.3),
+      rgba(255, 255, 200, 0.1)
+    );
+    pointer-events: none;
+    animation: beam-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes beam-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  /* Particles */
+  .particle-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .particle {
+    position: absolute;
+    font-size: 24px;
+    animation: particle-float 3s ease-in-out infinite;
+  }
+
+  @keyframes particle-float {
+    0% {
+      transform: translateY(0) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-400px) rotate(360deg);
+      opacity: 0;
+    }
+  }
+
+  /* Distribute particles randomly */
+  .particle-0 { left: 10%; animation-delay: 0s; }
+  .particle-1 { left: 15%; animation-delay: 0.1s; }
+  .particle-2 { left: 20%; animation-delay: 0.2s; }
+  .particle-3 { left: 25%; animation-delay: 0.3s; }
+  .particle-4 { left: 30%; animation-delay: 0.4s; }
+  .particle-5 { left: 35%; animation-delay: 0.5s; }
+  .particle-6 { left: 40%; animation-delay: 0.6s; }
+  .particle-7 { left: 45%; animation-delay: 0.7s; }
+  .particle-8 { left: 50%; animation-delay: 0.8s; }
+  .particle-9 { left: 55%; animation-delay: 0.9s; }
+  .particle-10 { left: 60%; animation-delay: 1s; }
+  .particle-11 { left: 65%; animation-delay: 1.1s; }
+  .particle-12 { left: 70%; animation-delay: 1.2s; }
+  .particle-13 { left: 75%; animation-delay: 1.3s; }
+  .particle-14 { left: 80%; animation-delay: 1.4s; }
+  .particle-15 { left: 85%; animation-delay: 1.5s; }
+  .particle-16 { left: 90%; animation-delay: 1.6s; }
+  .particle-17 { left: 12%; animation-delay: 1.7s; }
+  .particle-18 { left: 22%; animation-delay: 1.8s; }
+  .particle-19 { left: 32%; animation-delay: 1.9s; }
+  .particle-20 { left: 42%; animation-delay: 2s; }
+  .particle-21 { left: 52%; animation-delay: 2.1s; }
+  .particle-22 { left: 62%; animation-delay: 2.2s; }
+  .particle-23 { left: 72%; animation-delay: 2.3s; }
+  .particle-24 { left: 82%; animation-delay: 2.4s; }
+  .particle-25 { left: 17%; animation-delay: 2.5s; }
+  .particle-26 { left: 27%; animation-delay: 2.6s; }
+  .particle-27 { left: 37%; animation-delay: 2.7s; }
+  .particle-28 { left: 47%; animation-delay: 2.8s; }
+  .particle-29 { left: 57%; animation-delay: 2.9s; }
+
+  /* Trophy Information */
+  .trophy-info {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    color: white;
+    animation: info-slide-up 1s ease-out 2s;
+    animation-fill-mode: both;
+  }
+
+  @keyframes info-slide-up {
+    from {
+      transform: translateX(-50%) translateY(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .presentation-title {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: title-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes title-glow {
+    0%, 100% { filter: drop-shadow(0 0 10px #FFD700); }
+    50% { filter: drop-shadow(0 0 20px #FFA500); }
+  }
+
+  .trophy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
+    border: 2px solid #FFD700;
+    border-radius: 25px;
+    margin-bottom: 15px;
+  }
+
+  .badge-icon {
+    font-size: 32px;
+  }
+
+  .badge-text {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .trophy-earned {
+    font-size: 18px;
+    margin-bottom: 5px;
+    opacity: 0.9;
+  }
+
+  .trophy-name {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #FFD700;
+  }
+
+  .trophy-description {
+    font-size: 16px;
+    margin-bottom: 20px;
+    opacity: 0.8;
+  }
+
+  /* Trophy Details */
+  .trophy-details {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .detail-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .detail-value {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .material-badge,
+  .size-badge {
+    padding: 5px 15px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .stars-earned {
+    color: #FFD700;
+    font-size: 24px;
+  }
+
+  /* Close Button */
+  .close-presentation-btn {
+    padding: 15px 40px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .close-presentation-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .close-presentation-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .presentation-title {
+      font-size: 32px;
+    }
+
+    .trophy-name {
+      font-size: 24px;
+    }
+
+    .rising-platform {
+      width: 250px;
+      height: 300px;
+    }
+
+    .trophy-details {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .trophy-info {
+    direction: rtl;
+  }
+</style>
+
+<script>
+  import { trophyCabinet, type Trophy } from '../utils/trophy-cabinet';
+
+  // Listen for trophy awards
+  window.addEventListener('trophyAwarded', ((e: CustomEvent) => {
+    const { trophy } = e.detail;
+    showPresentation(trophy);
+  }) as EventListener);
+
+  function showPresentation(trophy: Trophy) {
+    const overlay = document.getElementById('trophy-presentation');
+    const container = document.getElementById('trophy-container');
+    const nameEl = document.getElementById('trophy-name');
+    const descEl = document.getElementById('trophy-description');
+    const materialEl = document.getElementById('material-badge');
+    const sizeEl = document.getElementById('size-badge');
+    const starsEl = document.getElementById('stars-earned');
+
+    if (!overlay || !container) return;
+
+    // Get locale
+    const locale = document.documentElement.lang as 'de' | 'ar' | 'en' | 'tr' | 'ur' || 'de';
+
+    // Populate trophy info
+    if (nameEl) nameEl.textContent = trophy.name[locale];
+    if (descEl) descEl.textContent = trophy.description[locale];
+    if (materialEl) materialEl.textContent = trophy.material.toUpperCase();
+    if (sizeEl) sizeEl.textContent = trophy.size.toUpperCase();
+
+    // Calculate star bonus
+    const starBonus = {
+      small: 10,
+      medium: 25,
+      large: 50,
+      mega: 100,
+    };
+    if (starsEl) starsEl.textContent = `⭐ ${starBonus[trophy.size]}`;
+
+    // Show overlay
+    overlay.style.display = 'flex';
+
+    // Start fireworks
+    startFireworks();
+
+    // Play trophy fanfare sound
+    playFanfare();
+  }
+
+  // Close presentation
+  document.getElementById('close-presentation')?.addEventListener('click', () => {
+    const overlay = document.getElementById('trophy-presentation');
+    if (overlay) {
+      overlay.style.display = 'none';
+      stopFireworks();
+    }
+  });
+
+  // Fireworks canvas
+  let fireworksInterval: number | null = null;
+
+  function startFireworks() {
+    const canvas = document.getElementById('fireworks-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const fireworks: any[] = [];
+    const particles: any[] = [];
+
+    fireworksInterval = window.setInterval(() => {
+      // Launch firework
+      fireworks.push({
+        x: Math.random() * canvas.width,
+        y: canvas.height,
+        targetY: Math.random() * canvas.height * 0.5,
+        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+      });
+    }, 500);
+
+    function animate() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Update fireworks
+      fireworks.forEach((fw, i) => {
+        fw.y -= 5;
+        ctx.fillStyle = fw.color;
+        ctx.fillRect(fw.x, fw.y, 3, 10);
+
+        if (fw.y <= fw.targetY) {
+          // Explode
+          for (let j = 0; j < 30; j++) {
+            particles.push({
+              x: fw.x,
+              y: fw.y,
+              vx: (Math.random() - 0.5) * 8,
+              vy: (Math.random() - 0.5) * 8,
+              color: fw.color,
+              life: 100,
+            });
+          }
+          fireworks.splice(i, 1);
+        }
+      });
+
+      // Update particles
+      particles.forEach((p, i) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.1; // Gravity
+        p.life -= 2;
+
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.life / 100;
+        ctx.fillRect(p.x, p.y, 2, 2);
+
+        if (p.life <= 0) {
+          particles.splice(i, 1);
+        }
+      });
+
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  }
+
+  function stopFireworks() {
+    if (fireworksInterval) {
+      clearInterval(fireworksInterval);
+      fireworksInterval = null;
+    }
+  }
+
+  function playFanfare() {
+    // Play trophy award sound using existing sound system
+    if (typeof window !== 'undefined' && (window as any).soundEffects) {
+      (window as any).soundEffects.play('trophy-award');
+    }
+  }
+
+  // Keyboard support
+  document.addEventListener('keydown', (e) => {
+    const overlay = document.getElementById('trophy-presentation');
+    if (overlay && overlay.style.display !== 'none' && e.key === 'Escape') {
+      overlay.style.display = 'none';
+      stopFireworks();
+    }
+  });
+</script>

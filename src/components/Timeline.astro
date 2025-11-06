@@ -1,0 +1,280 @@
+---
+/**
+ * Timeline Component for Story Sequencing Game
+ * Visual representation of story sequence progress
+ */
+
+interface Props {
+  totalEvents: number;
+  language?: string;
+}
+
+const { totalEvents, language = 'de' } = Astro.props;
+---
+
+<div class="timeline-container" role="progressbar" aria-label="Story sequence timeline">
+  <div class="timeline-header">
+    <h3 class="timeline-title">
+      {language === 'de' && '📖 Geschichten-Zeitstrahl'}
+      {language === 'en' && '📖 Story Timeline'}
+      {language === 'ar' && '📖 الجدول الزمني للقصة'}
+      {language === 'tr' && '📖 Hikaye Zaman Çizelgesi'}
+      {language === 'ur' && '📖 کہانی کی ٹائم لائن'}
+    </h3>
+    <div class="timeline-progress">
+      <span class="progress-text">0 / {totalEvents}</span>
+    </div>
+  </div>
+
+  <div class="timeline-track">
+    {
+      Array.from({ length: totalEvents }).map((_, i) => (
+        <div class="timeline-node" data-position={i + 1} data-filled="false">
+          <div class="node-circle">
+            <span class="node-number">{i + 1}</span>
+            <span class="node-checkmark">✓</span>
+          </div>
+          {i < totalEvents - 1 && <div class="node-connector" data-filled="false" />}
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="timeline-labels">
+    <span class="label-start">
+      {language === 'de' && 'Anfang'}
+      {language === 'en' && 'Beginning'}
+      {language === 'ar' && 'البداية'}
+      {language === 'tr' && 'Başlangıç'}
+      {language === 'ur' && 'شروعات'}
+    </span>
+    <span class="label-end">
+      {language === 'de' && 'Ende'}
+      {language === 'en' && 'End'}
+      {language === 'ar' && 'النهاية'}
+      {language === 'tr' && 'Son'}
+      {language === 'ur' && 'اختتام'}
+    </span>
+  </div>
+</div>
+
+<style>
+  .timeline-container {
+    background: linear-gradient(135deg, #f9f9f9 0%, #e8f4f8 100%);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 20px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .timeline-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+  }
+
+  .timeline-progress {
+    background: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .progress-text {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ff9f40;
+  }
+
+  .timeline-track {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 20px 0;
+  }
+
+  .timeline-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex: 1;
+  }
+
+  .node-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: white;
+    border: 4px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+  }
+
+  .timeline-node[data-filled='true'] .node-circle {
+    background: #4caf50;
+    border-color: #4caf50;
+    animation: nodeFill 0.5s ease-out;
+  }
+
+  @keyframes nodeFill {
+    0% {
+      transform: scale(0.8);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .node-number {
+    font-size: 18px;
+    font-weight: bold;
+    color: #999;
+  }
+
+  .timeline-node[data-filled='true'] .node-number {
+    display: none;
+  }
+
+  .node-checkmark {
+    display: none;
+    font-size: 24px;
+    color: white;
+  }
+
+  .timeline-node[data-filled='true'] .node-checkmark {
+    display: block;
+  }
+
+  .node-connector {
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    width: 100%;
+    height: 4px;
+    background: #e0e0e0;
+    z-index: 1;
+    transition: background 0.3s ease;
+  }
+
+  .node-connector[data-filled='true'] {
+    background: linear-gradient(to right, #4caf50, #6bcf7f);
+    animation: connectorFill 0.5s ease-out;
+  }
+
+  @keyframes connectorFill {
+    from {
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .timeline-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .timeline-container {
+      padding: 16px;
+    }
+
+    .timeline-title {
+      font-size: 16px;
+    }
+
+    .node-circle {
+      width: 36px;
+      height: 36px;
+    }
+
+    .node-number {
+      font-size: 14px;
+    }
+
+    .node-checkmark {
+      font-size: 18px;
+    }
+
+    .timeline-labels {
+      font-size: 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .timeline-header {
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .node-circle {
+      width: 28px;
+      height: 28px;
+    }
+
+    .node-number {
+      font-size: 12px;
+    }
+
+    .node-checkmark {
+      font-size: 16px;
+    }
+
+    .node-connector {
+      height: 3px;
+      top: 14px;
+    }
+  }
+
+  /* RTL support */
+  [dir='rtl'] .node-connector[data-filled='true'] {
+    animation: connectorFillRTL 0.5s ease-out;
+  }
+
+  @keyframes connectorFillRTL {
+    from {
+      transform: scaleX(0);
+      transform-origin: right;
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* Accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .node-circle,
+    .node-connector,
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+</style>

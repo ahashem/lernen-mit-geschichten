@@ -1,0 +1,660 @@
+---
+/**
+ * BadgeCollection Component
+ * Main badge collection grid with filtering, sorting, and searching
+ */
+
+import BadgeCard from './BadgeCard.astro';
+import type { BadgeCategory, BadgeRarity } from '../utils/badge-system';
+
+interface Props {
+  locale: string;
+}
+
+const { locale } = Astro.props;
+
+// These will be populated by client-side JavaScript
+---
+
+<div class="badge-collection-container">
+  <!-- Header -->
+  <div class="badge-collection-header">
+    <h2 class="badge-collection-title">
+      <span class="icon">🏆</span>
+      Badge Collection
+    </h2>
+    <div class="badge-stats">
+      <span id="badges-earned">0</span>/<span id="badges-total">102</span>
+      <span class="percentage" id="completion-percentage">0%</span>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="badge-controls">
+    <!-- Search -->
+    <div class="search-box">
+      <input
+        type="text"
+        id="badge-search"
+        placeholder="Search badges..."
+        aria-label="Search badges"
+      />
+      <span class="search-icon">🔍</span>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-group">
+      <label for="filter-status">Status:</label>
+      <select id="filter-status">
+        <option value="all">All</option>
+        <option value="unlocked">Unlocked</option>
+        <option value="locked">Locked</option>
+        <option value="almost">Almost (80%+)</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="filter-category">Category:</label>
+      <select id="filter-category">
+        <option value="all">All</option>
+        <option value="reading">Reading</option>
+        <option value="skill">Skill</option>
+        <option value="activity">Activity</option>
+        <option value="challenge">Challenge</option>
+        <option value="seasonal">Seasonal</option>
+        <option value="secret">Secret</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="filter-rarity">Rarity:</label>
+      <select id="filter-rarity">
+        <option value="all">All</option>
+        <option value="bronze">Bronze</option>
+        <option value="silver">Silver</option>
+        <option value="gold">Gold</option>
+        <option value="platinum">Platinum</option>
+        <option value="diamond">Diamond</option>
+      </select>
+    </div>
+
+    <!-- Sort -->
+    <div class="filter-group">
+      <label for="sort-by">Sort by:</label>
+      <select id="sort-by">
+        <option value="date-earned">Date Earned</option>
+        <option value="name">Name</option>
+        <option value="rarity">Rarity</option>
+        <option value="progress">Progress</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Pinned Badges Showcase -->
+  <div class="pinned-badges" id="pinned-badges">
+    <h3>Pinned Badges (Max 6)</h3>
+    <div class="pinned-grid" id="pinned-grid">
+      <!-- Populated by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Badge Grid -->
+  <div class="badge-grid" id="badge-grid">
+    <!-- Populated by JavaScript -->
+    <div class="loading">Loading badges...</div>
+  </div>
+
+  <!-- Badge Detail Modal -->
+  <div class="badge-modal" id="badge-modal" role="dialog" aria-modal="true" hidden>
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+
+      <div class="modal-badge-display" id="modal-badge-display">
+        <!-- Badge SVG will be inserted here -->
+      </div>
+
+      <div class="modal-badge-info">
+        <h3 class="modal-badge-name" id="modal-badge-name"></h3>
+        <div class="modal-badge-rarity" id="modal-badge-rarity"></div>
+        <p class="modal-badge-description" id="modal-badge-description"></p>
+
+        <!-- Unlock condition -->
+        <div class="modal-unlock-condition">
+          <h4>Unlock Condition</h4>
+          <p id="modal-unlock-condition"></p>
+        </div>
+
+        <!-- Progress -->
+        <div class="modal-progress" id="modal-progress" hidden>
+          <h4>Progress</h4>
+          <div class="progress-bar-large">
+            <div class="progress-fill-large" id="modal-progress-fill"></div>
+          </div>
+          <div class="progress-text-large" id="modal-progress-text"></div>
+        </div>
+
+        <!-- Earned info -->
+        <div class="modal-earned-info" id="modal-earned-info" hidden>
+          <h4>Earned</h4>
+          <p id="modal-earned-date"></p>
+        </div>
+
+        <!-- Related activities -->
+        <div class="modal-related" id="modal-related" hidden>
+          <h4>Related Activities</h4>
+          <ul id="modal-related-list"></ul>
+        </div>
+
+        <!-- Badge number -->
+        <div class="modal-badge-number" id="modal-badge-number"></div>
+
+        <!-- Pin button -->
+        <button class="btn-pin" id="btn-pin">
+          <span class="pin-icon">📌</span>
+          <span class="pin-text">Pin Badge</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .badge-collection-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .badge-collection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .badge-collection-title {
+    font-size: 2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .badge-collection-title .icon {
+    font-size: 2.5rem;
+  }
+
+  .badge-stats {
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .percentage {
+    font-size: 1.25rem;
+    color: var(--color-primary);
+  }
+
+  .badge-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .search-box {
+    position: relative;
+    flex: 1;
+    min-width: 250px;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+
+  .search-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.25rem;
+    opacity: 0.5;
+  }
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .filter-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .filter-group select {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    background: white;
+    transition: border-color 0.3s ease;
+  }
+
+  .filter-group select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+
+  .pinned-badges {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    color: white;
+  }
+
+  .pinned-badges h3 {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+  }
+
+  .pinned-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .badge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 2rem;
+    min-height: 400px;
+  }
+
+  .loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem;
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+  }
+
+  /* Modal Styles */
+  .badge-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+  }
+
+  .modal-content {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modal-appear 0.3s ease-out;
+  }
+
+  @keyframes modal-appear {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+
+  .modal-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--color-text);
+  }
+
+  .modal-badge-display {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 2rem;
+  }
+
+  .modal-badge-info h3 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .modal-badge-rarity {
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .modal-badge-description {
+    text-align: center;
+    color: var(--color-text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .modal-unlock-condition,
+  .modal-progress,
+  .modal-earned-info,
+  .modal-related {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+
+  .modal-unlock-condition h4,
+  .modal-progress h4,
+  .modal-earned-info h4,
+  .modal-related h4 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+
+  .progress-bar-large {
+    height: 12px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-fill-large {
+    height: 100%;
+    background: linear-gradient(90deg, #4caf50, #8bc34a);
+    transition: width 0.5s ease;
+  }
+
+  .progress-text-large {
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .modal-badge-number {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .btn-pin {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: transform 0.3s ease;
+  }
+
+  .btn-pin:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .btn-pin:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 768px) {
+    .badge-collection-header {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .badge-controls {
+      flex-direction: column;
+    }
+
+    .filter-group {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .badge-grid {
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 1rem;
+    }
+  }
+</style>
+
+<script>
+  import { badgeManager } from '../utils/badge-system';
+  import type { Badge } from '../utils/badge-system';
+
+  // Initialize badge collection
+  document.addEventListener('DOMContentLoaded', () => {
+    loadBadges();
+    setupEventListeners();
+  });
+
+  function loadBadges() {
+    const badges = badgeManager.getAllBadges();
+    const stats = badgeManager.getStatistics();
+
+    // Update stats
+    document.getElementById('badges-earned')!.textContent = stats.totalEarned.toString();
+    document.getElementById('badges-total')!.textContent = stats.totalBadges.toString();
+    document.getElementById('completion-percentage')!.textContent =
+      `${stats.percentageComplete.toFixed(1)}%`;
+
+    // Load pinned badges
+    loadPinnedBadges();
+
+    // Display all badges
+    displayBadges(badges);
+  }
+
+  function loadPinnedBadges() {
+    const pinnedBadges = badgeManager.getPinnedBadges();
+    const grid = document.getElementById('pinned-grid')!;
+
+    if (pinnedBadges.length === 0) {
+      grid.innerHTML = '<p style="opacity: 0.7;">No pinned badges yet. Pin your favorites!</p>';
+      return;
+    }
+
+    grid.innerHTML = pinnedBadges
+      .map((badge) => `<div class="pinned-badge" data-badge-id="${badge.id}">
+        <!-- Badge will be rendered via BadgeCard component -->
+      </div>`)
+      .join('');
+  }
+
+  function displayBadges(badges: Badge[]) {
+    const grid = document.getElementById('badge-grid')!;
+    grid.innerHTML = badges
+      .map((badge) => `<div data-badge-id="${badge.id}"></div>`)
+      .join('');
+
+    // Render each badge using BadgeCard component (client-side)
+    // This would typically be done server-side in Astro, but for dynamic filtering we do it client-side
+  }
+
+  function setupEventListeners() {
+    // Search
+    document.getElementById('badge-search')!.addEventListener('input', applyFilters);
+
+    // Filters
+    document.getElementById('filter-status')!.addEventListener('change', applyFilters);
+    document.getElementById('filter-category')!.addEventListener('change', applyFilters);
+    document.getElementById('filter-rarity')!.addEventListener('change', applyFilters);
+    document.getElementById('sort-by')!.addEventListener('change', applyFilters);
+
+    // Modal
+    document.getElementById('modal-close')!.addEventListener('click', closeModal);
+    document.getElementById('modal-overlay')!.addEventListener('click', closeModal);
+
+    // Badge detail event
+    window.addEventListener('show-badge-detail', (e: CustomEvent) => {
+      showBadgeDetail(e.detail.badgeId);
+    });
+
+    // Pin badge
+    document.getElementById('btn-pin')!.addEventListener('click', togglePinBadge);
+  }
+
+  function applyFilters() {
+    const search = (document.getElementById('badge-search') as HTMLInputElement).value.toLowerCase();
+    const status = (document.getElementById('filter-status') as HTMLSelectElement).value;
+    const category = (document.getElementById('filter-category') as HTMLSelectElement).value;
+    const rarity = (document.getElementById('filter-rarity') as HTMLSelectElement).value;
+    const sortBy = (document.getElementById('sort-by') as HTMLSelectElement).value;
+
+    let badges = badgeManager.getAllBadges();
+
+    // Apply filters
+    if (search) {
+      badges = badgeManager.searchBadges(search);
+    }
+
+    if (status !== 'all') {
+      if (status === 'unlocked') {
+        badges = badges.filter((b) => b.unlocked);
+      } else if (status === 'locked') {
+        badges = badges.filter((b) => !b.unlocked);
+      } else if (status === 'almost') {
+        badges = badges.filter((b) => {
+          if (!b.progress || b.unlocked) return false;
+          return (b.progress.current / b.progress.total) >= 0.8;
+        });
+      }
+    }
+
+    if (category !== 'all') {
+      badges = badges.filter((b) => b.category === category);
+    }
+
+    if (rarity !== 'all') {
+      badges = badges.filter((b) => b.rarity === rarity);
+    }
+
+    // Apply sorting
+    badges.sort((a, b) => {
+      switch (sortBy) {
+        case 'date-earned':
+          return (b.earnedAt || 0) - (a.earnedAt || 0);
+        case 'name':
+          return a.name.de.localeCompare(b.name.de);
+        case 'rarity':
+          const rarityOrder = { bronze: 1, silver: 2, gold: 3, platinum: 4, diamond: 5 };
+          return rarityOrder[b.rarity] - rarityOrder[a.rarity];
+        case 'progress':
+          const progressA = a.progress ? a.progress.current / a.progress.total : (a.unlocked ? 1 : 0);
+          const progressB = b.progress ? b.progress.current / b.progress.total : (b.unlocked ? 1 : 0);
+          return progressB - progressA;
+        default:
+          return 0;
+      }
+    });
+
+    displayBadges(badges);
+  }
+
+  function showBadgeDetail(badgeId: string) {
+    const badge = badgeManager.getAllBadges().find((b) => b.id === badgeId);
+    if (!badge) return;
+
+    // Populate modal with badge details
+    // ... (implementation details)
+
+    // Show modal
+    const modal = document.getElementById('badge-modal')!;
+    modal.hidden = false;
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('badge-modal')!;
+    modal.hidden = true;
+  }
+
+  let currentBadgeId = '';
+
+  function togglePinBadge() {
+    if (!currentBadgeId) return;
+
+    const success = badgeManager.togglePinBadge(currentBadgeId);
+    if (success) {
+      loadPinnedBadges();
+      // Update button text
+      const btn = document.getElementById('btn-pin')!;
+      const pinnedBadges = badgeManager.getPinnedBadges();
+      const isPinned = pinnedBadges.some((b) => b.id === currentBadgeId);
+      btn.querySelector('.pin-text')!.textContent = isPinned ? 'Unpin Badge' : 'Pin Badge';
+    }
+  }
+</script>

@@ -257,6 +257,49 @@ class SoundEffectsEngine {
   }
 
   /**
+   * Play trophy award fanfare
+   */
+  playTrophyAward() {
+    if (!this.enabled) return;
+
+    const ctx = this.getContext();
+    const now = ctx.currentTime;
+
+    // Triumphant fanfare: Rising notes with harmony
+    const melody = [
+      [523.25, 659.25], // C5, E5
+      [587.33, 739.99], // D5, F#5
+      [659.25, 830.61], // E5, G#5
+      [783.99, 987.77], // G5, B5
+      [1046.50, 1318.51], // C6, E6 (final triumphant chord)
+    ];
+
+    melody.forEach((chord, i) => {
+      chord.forEach((freq, j) => {
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        oscillator.frequency.value = freq;
+        oscillator.type = i === melody.length - 1 ? 'triangle' : 'sine';
+
+        const startTime = now + (i * 0.15);
+        const duration = i === melody.length - 1 ? 0.6 : 0.3;
+        const volume = i === melody.length - 1 ? 0.25 : 0.15;
+
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+      });
+    });
+  }
+
+  /**
    * Toggle sound effects on/off
    */
   toggle() {
@@ -576,6 +619,112 @@ class SoundEffectsEngine {
   }
 
   /**
+   * Play balloon pop sound (correct answer)
+   */
+  playBalloonPop() {
+    if (!this.enabled) return;
+
+    const ctx = this.getContext();
+    const now = ctx.currentTime;
+
+    // Balloon pop: quick descending frequency
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    oscillator.frequency.setValueAtTime(800, now);
+    oscillator.frequency.exponentialRampToValueAtTime(200, now + 0.15);
+    oscillator.type = 'sine';
+
+    gainNode.gain.setValueAtTime(0.3, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+    oscillator.start(now);
+    oscillator.stop(now + 0.15);
+
+    // Add sparkle effect
+    setTimeout(() => {
+      this.playMagicSparkle();
+    }, 100);
+  }
+
+  /**
+   * Play balloon deflate sound (wrong answer)
+   */
+  playBalloonDeflate() {
+    if (!this.enabled) return;
+
+    const ctx = this.getContext();
+    const now = ctx.currentTime;
+
+    // Deflating sound: descending whoosh
+    const bufferSize = ctx.sampleRate * 0.5;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1000, now);
+    filter.frequency.exponentialRampToValueAtTime(100, now + 0.5);
+
+    const gainNode = ctx.createGain();
+    gainNode.gain.setValueAtTime(0.2, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+
+    noise.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    noise.start(now);
+    noise.stop(now + 0.5);
+  }
+
+  /**
+   * Play balloon float sound (gentle whoosh)
+   */
+  playBalloonFloat() {
+    if (!this.enabled) return;
+
+    const ctx = this.getContext();
+    const now = ctx.currentTime;
+
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    const lfo = ctx.createOscillator();
+    const lfoGain = ctx.createGain();
+
+    lfo.frequency.value = 4; // Gentle wobble
+    lfoGain.gain.value = 20;
+
+    lfo.connect(lfoGain);
+    lfoGain.connect(oscillator.frequency);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    oscillator.frequency.value = 400;
+    oscillator.type = 'sine';
+
+    gainNode.gain.setValueAtTime(0.05, now);
+    gainNode.gain.linearRampToValueAtTime(0.1, now + 0.1);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+
+    lfo.start(now);
+    oscillator.start(now);
+    oscillator.stop(now + 0.3);
+    lfo.stop(now + 0.3);
+  }
+
+  /**
    * Play by name (for dynamic sound triggering)
    */
   play(soundName: string) {
@@ -594,6 +743,10 @@ class SoundEffectsEngine {
       'correct': () => this.playCorrect(),
       'incorrect': () => this.playIncorrect(),
       'achievement': () => this.playAchievement(),
+      'balloon-pop': () => this.playBalloonPop(),
+      'balloon-deflate': () => this.playBalloonDeflate(),
+      'balloon-float': () => this.playBalloonFloat(),
+      'trophy-award': () => this.playTrophyAward(),
     };
 
     const soundFn = soundMap[soundName];

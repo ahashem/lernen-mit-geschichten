@@ -1,0 +1,41 @@
+---
+/**
+ * Connect the Dots Game Page
+ *
+ * Main page for the Connect the Dots educational game
+ */
+
+import ConnectDots from '../components/ConnectDots.astro';
+
+const locale = (Astro.url.searchParams.get('locale') as 'de' | 'ar' | 'en' | 'tr' | 'ur') || 'de';
+---
+
+<!DOCTYPE html>
+<html lang={locale} dir={locale === 'ar' || locale === 'ur' ? 'rtl' : 'ltr'}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connect the Dots - Lernen mit Geschichten</title>
+  <meta name="description" content="Educational connect the dots game for children ages 3-7. Learn numbers and sequencing while revealing story characters!" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <ConnectDots locale={locale} />
+</body>
+</html>
+
+<style is:global>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Noto Sans', sans-serif;
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    min-height: 100vh;
+  }
+</style>

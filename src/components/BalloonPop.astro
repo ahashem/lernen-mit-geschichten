@@ -1,0 +1,1015 @@
+---
+import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
+import type { QuizQuestion } from '../utils/balloon-pop';
+
+export interface Props {
+  questions: QuizQuestion[];
+  language: Locale;
+  storyId: string;
+  storyTitle: string;
+}
+
+const { questions, language, storyId, storyTitle } = Astro.props;
+---
+
+<div class="balloon-pop-game" data-story-id={storyId} data-language={language}>
+  <!-- Game Header -->
+  <div class="game-header">
+    <div class="header-left">
+      <h2 class="game-title">{getTranslation(language, 'balloonPopTitle')}</h2>
+      <p class="story-title">{storyTitle}</p>
+    </div>
+    <div class="header-right">
+      <button class="btn-icon btn-back" id="btn-back" title={getTranslation(language, 'back')}>
+        ←
+      </button>
+    </div>
+  </div>
+
+  <!-- Game Setup Screen -->
+  <div class="game-setup" id="game-setup">
+    <div class="setup-card">
+      <h3>{getTranslation(language, 'selectGameMode')}</h3>
+
+      <div class="mode-selection">
+        <button class="mode-btn" data-mode="practice">
+          <span class="mode-icon">🎯</span>
+          <span class="mode-name">{getTranslation(language, 'practiceMode')}</span>
+          <span class="mode-desc">{getTranslation(language, 'practiceModeDesc')}</span>
+        </button>
+
+        <button class="mode-btn" data-mode="timed">
+          <span class="mode-icon">⏱️</span>
+          <span class="mode-name">{getTranslation(language, 'timedMode')}</span>
+          <span class="mode-desc">{getTranslation(language, 'timedModeDesc')}</span>
+        </button>
+
+        <button class="mode-btn" data-mode="survival">
+          <span class="mode-icon">❤️</span>
+          <span class="mode-name">{getTranslation(language, 'survivalMode')}</span>
+          <span class="mode-desc">{getTranslation(language, 'survivalModeDesc')}</span>
+        </button>
+
+        <button class="mode-btn" data-mode="speed">
+          <span class="mode-icon">⚡</span>
+          <span class="mode-name">{getTranslation(language, 'speedMode')}</span>
+          <span class="mode-desc">{getTranslation(language, 'speedModeDesc')}</span>
+        </button>
+      </div>
+
+      <h4>{getTranslation(language, 'selectDifficulty')}</h4>
+      <div class="difficulty-selection">
+        <button class="difficulty-btn" data-difficulty="slow">
+          <span class="difficulty-icon">🐢</span>
+          <span>{getTranslation(language, 'slow')}</span>
+        </button>
+        <button class="difficulty-btn active" data-difficulty="medium">
+          <span class="difficulty-icon">🐇</span>
+          <span>{getTranslation(language, 'medium')}</span>
+        </button>
+        <button class="difficulty-btn" data-difficulty="fast">
+          <span class="difficulty-icon">🚀</span>
+          <span>{getTranslation(language, 'fast')}</span>
+        </button>
+      </div>
+
+      <button class="btn-primary btn-start" id="btn-start-game">
+        {getTranslation(language, 'startGame')}
+      </button>
+    </div>
+  </div>
+
+  <!-- Game Canvas -->
+  <div class="game-canvas-container" id="game-canvas-container" style="display: none;">
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Question Display -->
+    <div class="question-display">
+      <div class="question-number">
+        <span id="current-question">1</span> / <span id="total-questions">{questions.length}</span>
+      </div>
+      <div class="question-text" id="question-text"></div>
+    </div>
+
+    <!-- Game HUD -->
+    <div class="game-hud">
+      <div class="hud-item hud-score">
+        <span class="hud-label">{getTranslation(language, 'score')}:</span>
+        <span class="hud-value" id="hud-score">0</span>
+      </div>
+
+      <div class="hud-item hud-combo" id="hud-combo" style="display: none;">
+        <span class="combo-text">🔥 {getTranslation(language, 'combo')}: <span id="combo-value">0</span>x</span>
+      </div>
+
+      <div class="hud-item hud-lives" id="hud-lives">
+        <span class="hud-label">{getTranslation(language, 'lives')}:</span>
+        <span class="hud-value" id="lives-value">❤️❤️❤️</span>
+      </div>
+
+      <div class="hud-item hud-timer" id="hud-timer" style="display: none;">
+        <span class="hud-label">⏱️</span>
+        <span class="hud-value" id="timer-value">0:00</span>
+      </div>
+
+      <button class="btn-icon btn-pause" id="btn-pause" title={getTranslation(language, 'pause')}>
+        ⏸️
+      </button>
+    </div>
+
+    <!-- Power-Ups Panel -->
+    <div class="powerups-panel" id="powerups-panel" style="display: none;">
+      <h4>{getTranslation(language, 'powerUps')}</h4>
+      <div class="powerup-buttons">
+        <button class="powerup-btn" data-powerup="slow-motion" title={getTranslation(language, 'slowMotion')}>
+          🐌
+        </button>
+        <button class="powerup-btn" data-powerup="freeze-time" title={getTranslation(language, 'freezeTime')}>
+          ⏸️
+        </button>
+        <button class="powerup-btn" data-powerup="extra-time" title={getTranslation(language, 'extraTime')}>
+          ⏱️
+        </button>
+        <button class="powerup-btn" data-powerup="auto-pop" title={getTranslation(language, 'autoPop')}>
+          ✨
+        </button>
+      </div>
+    </div>
+
+    <!-- Character Cheerleader -->
+    <div class="character-cheerleader" id="character-cheerleader">
+      <div class="character-emoji">🎉</div>
+      <div class="character-message" id="character-message"></div>
+    </div>
+  </div>
+
+  <!-- Game Over Screen -->
+  <div class="game-over-screen" id="game-over-screen" style="display: none;">
+    <div class="game-over-card">
+      <h2>{getTranslation(language, 'gameOver')}</h2>
+
+      <div class="final-score">
+        <span class="score-label">{getTranslation(language, 'finalScore')}:</span>
+        <span class="score-value" id="final-score">0</span>
+      </div>
+
+      <div class="stars-display" id="stars-display">
+        ⭐⭐⭐
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-label">{getTranslation(language, 'correctAnswers')}:</span>
+          <span class="stat-value" id="stat-correct">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">{getTranslation(language, 'wrongAnswers')}:</span>
+          <span class="stat-value" id="stat-wrong">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">{getTranslation(language, 'maxCombo')}:</span>
+          <span class="stat-value" id="stat-combo">0</span>
+        </div>
+      </div>
+
+      <div class="achievement-message" id="achievement-message"></div>
+
+      <div class="game-over-buttons">
+        <button class="btn-primary" id="btn-play-again">
+          {getTranslation(language, 'playAgain')}
+        </button>
+        <button class="btn-secondary" id="btn-back-story">
+          {getTranslation(language, 'backToStory')}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden questions data -->
+  <script type="application/json" id="questions-data">
+    {JSON.stringify(questions)}
+  </script>
+</div>
+
+<script>
+  import { BalloonPopGame, type GameMode, type DifficultyLevel } from '../utils/balloon-pop';
+  import { soundEffects } from '../utils/sound-effects';
+  import { confetti } from '../utils/confetti';
+  import { starWallet } from '../utils/star-wallet';
+  import type { Locale } from '../utils/i18n';
+
+  document.querySelectorAll('.balloon-pop-game').forEach(gameContainer => {
+    const questionsData = JSON.parse(
+      (gameContainer.querySelector('#questions-data') as HTMLScriptElement)?.textContent || '[]'
+    );
+    const language = gameContainer.getAttribute('data-language') as Locale || 'de';
+    const storyId = gameContainer.getAttribute('data-story-id') || '';
+
+    let selectedMode: GameMode = 'practice';
+    let selectedDifficulty: DifficultyLevel = 'medium';
+    let game: BalloonPopGame | null = null;
+
+    // UI Elements
+    const gameSetup = gameContainer.querySelector('#game-setup') as HTMLElement;
+    const gameCanvasContainer = gameContainer.querySelector('#game-canvas-container') as HTMLElement;
+    const gameOverScreen = gameContainer.querySelector('#game-over-screen') as HTMLElement;
+    const canvas = gameContainer.querySelector('#game-canvas') as HTMLCanvasElement;
+
+    // Setup screen buttons
+    const modeButtons = gameContainer.querySelectorAll('.mode-btn');
+    const difficultyButtons = gameContainer.querySelectorAll('.difficulty-btn');
+    const btnStartGame = gameContainer.querySelector('#btn-start-game') as HTMLButtonElement;
+
+    // Game screen elements
+    const questionText = gameContainer.querySelector('#question-text') as HTMLElement;
+    const currentQuestionEl = gameContainer.querySelector('#current-question') as HTMLElement;
+    const hudScore = gameContainer.querySelector('#hud-score') as HTMLElement;
+    const hudCombo = gameContainer.querySelector('#hud-combo') as HTMLElement;
+    const comboValue = gameContainer.querySelector('#combo-value') as HTMLElement;
+    const hudLives = gameContainer.querySelector('#hud-lives') as HTMLElement;
+    const livesValue = gameContainer.querySelector('#lives-value') as HTMLElement;
+    const hudTimer = gameContainer.querySelector('#hud-timer') as HTMLElement;
+    const timerValue = gameContainer.querySelector('#timer-value') as HTMLElement;
+    const btnPause = gameContainer.querySelector('#btn-pause') as HTMLButtonElement;
+    const characterCheerleader = gameContainer.querySelector('#character-cheerleader') as HTMLElement;
+    const characterMessage = gameContainer.querySelector('#character-message') as HTMLElement;
+
+    // Game over screen elements
+    const finalScore = gameContainer.querySelector('#final-score') as HTMLElement;
+    const starsDisplay = gameContainer.querySelector('#stars-display') as HTMLElement;
+    const statCorrect = gameContainer.querySelector('#stat-correct') as HTMLElement;
+    const statWrong = gameContainer.querySelector('#stat-wrong') as HTMLElement;
+    const statCombo = gameContainer.querySelector('#stat-combo') as HTMLElement;
+    const achievementMessage = gameContainer.querySelector('#achievement-message') as HTMLElement;
+    const btnPlayAgain = gameContainer.querySelector('#btn-play-again') as HTMLButtonElement;
+    const btnBackStory = gameContainer.querySelector('#btn-back-story') as HTMLButtonElement;
+    const btnBack = gameContainer.querySelector('#btn-back') as HTMLButtonElement;
+
+    // Mode selection
+    modeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        modeButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedMode = btn.getAttribute('data-mode') as GameMode;
+        soundEffects.playClick();
+      });
+    });
+
+    // Difficulty selection
+    difficultyButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        difficultyButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedDifficulty = btn.getAttribute('data-difficulty') as DifficultyLevel;
+        soundEffects.playClick();
+      });
+    });
+
+    // Start game
+    btnStartGame.addEventListener('click', () => {
+      soundEffects.playClick();
+      startGame();
+    });
+
+    // Pause button
+    btnPause.addEventListener('click', () => {
+      if (game) {
+        game.togglePause();
+        btnPause.textContent = game.getState().isPaused ? '▶️' : '⏸️';
+        soundEffects.playClick();
+      }
+    });
+
+    // Back buttons
+    btnBack.addEventListener('click', () => {
+      if (game) {
+        game.stop();
+      }
+      window.history.back();
+    });
+
+    btnBackStory.addEventListener('click', () => {
+      if (game) {
+        game.stop();
+      }
+      window.history.back();
+    });
+
+    // Play again
+    btnPlayAgain.addEventListener('click', () => {
+      soundEffects.playClick();
+      gameOverScreen.style.display = 'none';
+      gameSetup.style.display = 'flex';
+    });
+
+    /**
+     * Start the game
+     */
+    function startGame() {
+      // Hide setup, show canvas
+      gameSetup.style.display = 'none';
+      gameCanvasContainer.style.display = 'block';
+      gameOverScreen.style.display = 'none';
+
+      // Resize canvas
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+
+      // Create game instance
+      game = new BalloonPopGame(canvas, questionsData, selectedMode, selectedDifficulty);
+
+      // Set up callbacks
+      game.setCallbacks({
+        onScoreChange: (score) => {
+          hudScore.textContent = score.toString();
+          const state = game!.getState();
+
+          // Update combo display
+          if (state.combo > 1) {
+            hudCombo.style.display = 'block';
+            comboValue.textContent = state.combo.toString();
+          } else {
+            hudCombo.style.display = 'none';
+          }
+        },
+        onGameOver: (finalScoreValue, stars) => {
+          showGameOver(finalScoreValue, stars);
+        },
+        onQuestionComplete: (isCorrect) => {
+          if (isCorrect) {
+            soundEffects.play('balloon-pop');
+            showCheerMessage(getRandomCheerMessage());
+            confetti.burst(canvas.width / 2, canvas.height / 2, 50);
+          } else {
+            soundEffects.play('balloon-deflate');
+          }
+          updateQuestionDisplay();
+        },
+        onPowerUpActivated: (type) => {
+          soundEffects.playMagicSparkle();
+        },
+      });
+
+      // Show lives/timer based on mode
+      if (selectedMode === 'survival' || selectedMode === 'multiplayer') {
+        hudLives.style.display = 'flex';
+      } else {
+        hudLives.style.display = 'none';
+      }
+
+      if (selectedMode === 'timed' || selectedMode === 'multiplayer') {
+        hudTimer.style.display = 'flex';
+        startTimerDisplay();
+      } else {
+        hudTimer.style.display = 'none';
+      }
+
+      // Initial question display
+      updateQuestionDisplay();
+
+      // Handle canvas clicks
+      canvas.addEventListener('click', handleCanvasClick);
+      canvas.addEventListener('touchstart', handleCanvasTouch, { passive: false });
+
+      // Start game
+      game.start();
+    }
+
+    /**
+     * Handle canvas click
+     */
+    function handleCanvasClick(e: MouseEvent) {
+      if (!game) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const hit = game.handleBalloonClick(x, y);
+
+      if (hit) {
+        const state = game.getState();
+        updateLivesDisplay(state.lives);
+      }
+    }
+
+    /**
+     * Handle canvas touch
+     */
+    function handleCanvasTouch(e: TouchEvent) {
+      e.preventDefault();
+      if (!game) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+
+      const hit = game.handleBalloonClick(x, y);
+
+      if (hit) {
+        const state = game.getState();
+        updateLivesDisplay(state.lives);
+      }
+    }
+
+    /**
+     * Update question display
+     */
+    function updateQuestionDisplay() {
+      if (!game) return;
+
+      const question = game.getCurrentQuestion();
+      if (!question) return;
+
+      const state = game.getState();
+      currentQuestionEl.textContent = (state.currentQuestionIndex + 1).toString();
+      questionText.textContent = question.text;
+    }
+
+    /**
+     * Update lives display
+     */
+    function updateLivesDisplay(lives: number) {
+      if (lives === Infinity) return;
+
+      const hearts = '❤️'.repeat(Math.max(0, lives));
+      livesValue.textContent = hearts || '💔';
+    }
+
+    /**
+     * Start timer display
+     */
+    function startTimerDisplay() {
+      const timerInterval = setInterval(() => {
+        if (!game || game.getState().isGameOver) {
+          clearInterval(timerInterval);
+          return;
+        }
+
+        const state = game.getState();
+        const minutes = Math.floor(state.timeRemaining / 60);
+        const seconds = state.timeRemaining % 60;
+        timerValue.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    /**
+     * Show cheer message
+     */
+    function showCheerMessage(message: string) {
+      characterMessage.textContent = message;
+      characterCheerleader.classList.add('show');
+
+      setTimeout(() => {
+        characterCheerleader.classList.remove('show');
+      }, 2000);
+    }
+
+    /**
+     * Get random cheer message
+     */
+    function getRandomCheerMessage(): string {
+      const messages = {
+        de: ['Super!', 'Toll gemacht!', 'Weiter so!', 'Perfekt!', 'Prima!'],
+        ar: ['رائع!', 'أحسنت!', 'ممتاز!', 'عظيم!'],
+        en: ['Great!', 'Awesome!', 'Well done!', 'Perfect!', 'Amazing!'],
+        tr: ['Harika!', 'Süper!', 'Aferin!', 'Mükemmel!'],
+        ur: ['بہترین!', 'شاباش!', 'زبردست!', 'کمال!'],
+      };
+
+      const languageMessages = messages[language] || messages.de;
+      return languageMessages[Math.floor(Math.random() * languageMessages.length)];
+    }
+
+    /**
+     * Show game over screen
+     */
+    function showGameOver(finalScoreValue: number, stars: number) {
+      if (!game) return;
+
+      soundEffects.playCompletion();
+      confetti.fireworks(5, 400);
+
+      const state = game.getState();
+
+      // Update stats
+      finalScore.textContent = finalScoreValue.toString();
+      statCorrect.textContent = state.correctAnswers.toString();
+      statWrong.textContent = state.wrongAnswers.toString();
+      statCombo.textContent = state.maxCombo.toString();
+
+      // Update stars display
+      const starIcons = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+      starsDisplay.textContent = starIcons;
+
+      // Achievement message
+      if (state.wrongAnswers === 0) {
+        achievementMessage.textContent = {
+          de: '🏆 Perfekt! Keine Fehler!',
+          ar: '🏆 مثالي! لا أخطاء!',
+          en: '🏆 Perfect! No mistakes!',
+          tr: '🏆 Mükemmel! Hatasız!',
+          ur: '🏆 کامل! کوئی غلطی نہیں!',
+        }[language] || '🏆 Perfect! No mistakes!';
+      } else if (stars === 3) {
+        achievementMessage.textContent = {
+          de: '🌟 Fantastisch! 3 Sterne!',
+          ar: '🌟 رائع! 3 نجوم!',
+          en: '🌟 Fantastic! 3 Stars!',
+          tr: '🌟 Harika! 3 Yıldız!',
+          ur: '🌟 شاندار! 3 ستارے!',
+        }[language] || '🌟 Fantastic! 3 Stars!';
+      }
+
+      // Award stars
+      starWallet.earnStars('balloon-pop-completion');
+
+      // Show game over screen
+      gameCanvasContainer.style.display = 'none';
+      gameOverScreen.style.display = 'flex';
+    }
+  });
+</script>
+
+<style>
+  .balloon-pop-game {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
+    position: relative;
+  }
+
+  /* Game Header */
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .game-title {
+    font-size: 1.8rem;
+    color: #333;
+    margin: 0;
+  }
+
+  .story-title {
+    font-size: 1rem;
+    color: #666;
+    margin: 0.25rem 0 0;
+  }
+
+  .btn-icon {
+    background: #fff;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: all 0.2s;
+  }
+
+  .btn-icon:hover {
+    background: #f0f0f0;
+    transform: scale(1.1);
+  }
+
+  /* Game Setup */
+  .game-setup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    min-height: calc(100vh - 100px);
+  }
+
+  .setup-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  .setup-card h3 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+
+  .setup-card h4 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #555;
+  }
+
+  .mode-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .mode-btn {
+    background: white;
+    border: 3px solid #ddd;
+    border-radius: 15px;
+    padding: 1.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .mode-btn:hover {
+    border-color: #4ECDC4;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(78, 205, 196, 0.3);
+  }
+
+  .mode-btn.active {
+    border-color: #4ECDC4;
+    background: linear-gradient(135deg, #4ECDC4, #44A08D);
+    color: white;
+  }
+
+  .mode-icon {
+    font-size: 2.5rem;
+  }
+
+  .mode-name {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .mode-desc {
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+
+  .difficulty-selection {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .difficulty-btn {
+    background: white;
+    border: 3px solid #ddd;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+  }
+
+  .difficulty-btn:hover {
+    border-color: #FFA07A;
+    transform: scale(1.05);
+  }
+
+  .difficulty-btn.active {
+    border-color: #FFA07A;
+    background: linear-gradient(135deg, #FFA07A, #FF7F50);
+    color: white;
+  }
+
+  .difficulty-icon {
+    font-size: 2rem;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #4ECDC4, #44A08D);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 5px 20px rgba(78, 205, 196, 0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(78, 205, 196, 0.4);
+  }
+
+  .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    color: #333;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    background: #f0f0f0;
+    border-color: #bbb;
+  }
+
+  /* Game Canvas */
+  .game-canvas-container {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 100px);
+  }
+
+  #game-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Question Display */
+  .question-display {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 1.5rem 2rem;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+  }
+
+  .question-number {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  .question-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.5;
+  }
+
+  /* Game HUD */
+  .game-hud {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50px;
+    padding: 0.75rem 1.5rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .hud-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+  }
+
+  .hud-label {
+    color: #666;
+    font-size: 0.9rem;
+  }
+
+  .hud-value {
+    color: #333;
+    font-size: 1.2rem;
+  }
+
+  .hud-combo {
+    background: linear-gradient(135deg, #FF6B6B, #FF4757);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  /* Character Cheerleader */
+  .character-cheerleader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 100;
+  }
+
+  .character-cheerleader.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+
+  .character-emoji {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: bounce 0.5s ease infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .character-message {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  /* Game Over Screen */
+  .game-over-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+  }
+
+  .game-over-card {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+
+  .game-over-card h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+
+  .final-score {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .score-label {
+    font-size: 1.2rem;
+    color: #666;
+  }
+
+  .score-value {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #4ECDC4;
+  }
+
+  .stars-display {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f9f9f9;
+    border-radius: 15px;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .achievement-message {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #4ECDC4;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: rgba(78, 205, 196, 0.1);
+    border-radius: 10px;
+  }
+
+  .game-over-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .game-header {
+    direction: rtl;
+  }
+
+  [dir='rtl'] .question-display,
+  [dir='rtl'] .question-text {
+    direction: rtl;
+    text-align: right;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .game-header {
+      padding: 1rem;
+    }
+
+    .game-title {
+      font-size: 1.3rem;
+    }
+
+    .story-title {
+      font-size: 0.85rem;
+    }
+
+    .setup-card {
+      padding: 1.5rem;
+    }
+
+    .mode-selection {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .question-display {
+      padding: 1rem 1.5rem;
+    }
+
+    .question-text {
+      font-size: 1rem;
+    }
+
+    .game-hud {
+      flex-wrap: wrap;
+      padding: 0.5rem 1rem;
+    }
+
+    .hud-item {
+      font-size: 0.85rem;
+    }
+
+    .game-over-card {
+      padding: 2rem 1.5rem;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+  }
+</style>

@@ -1,0 +1,391 @@
+---
+/**
+ * BadgeCard Component
+ * Individual badge display with beautiful SVG design, animations, and detail modal
+ */
+
+import type { Badge, BadgeRarity } from '../utils/badge-system';
+import { RARITY_COLORS } from '../utils/badge-system';
+
+interface Props {
+  badge: Badge;
+  locale: string;
+  showProgress?: boolean;
+  size?: 'small' | 'medium' | 'large';
+}
+
+const { badge, locale, showProgress = true, size = 'medium' } = Astro.props;
+
+const name = badge.name[locale as keyof typeof badge.name];
+const description = badge.description[locale as keyof typeof badge.description];
+const hint = badge.hint[locale as keyof typeof badge.hint];
+const colors = RARITY_COLORS[badge.rarity];
+
+// Calculate progress percentage
+const progressPercent = badge.progress
+  ? Math.min((badge.progress.current / badge.progress.total) * 100, 100)
+  : badge.unlocked
+  ? 100
+  : 0;
+
+const sizeClasses = {
+  small: 'w-16 h-16',
+  medium: 'w-24 h-24',
+  large: 'w-32 h-32',
+};
+---
+
+<div
+  class="badge-card"
+  class:list={[sizeClasses[size], badge.unlocked ? 'unlocked' : 'locked', `rarity-${badge.rarity}`]}
+  data-badge-id={badge.id}
+  data-unlocked={badge.unlocked}
+  data-rarity={badge.rarity}
+>
+  <!-- Badge SVG -->
+  <svg
+    class="badge-svg"
+    viewBox="0 0 200 200"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <!-- Outer glow (only for unlocked badges) -->
+    {
+      badge.unlocked && (
+        <defs>
+          <radialGradient id={`glow-${badge.id}`}>
+            <stop offset="0%" style={`stop-color: ${colors.glow}; stop-opacity: 0.8`} />
+            <stop offset="100%" style={`stop-color: ${colors.glow}; stop-opacity: 0`} />
+          </radialGradient>
+          <filter id={`shimmer-${badge.id}`}>
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+            <feComponentTransfer>
+              <feFuncA type="discrete" tableValues="0 1" />
+            </feComponentTransfer>
+          </filter>
+        </defs>
+      )
+    }
+
+    {
+      badge.unlocked && (
+        <circle
+          cx="100"
+          cy="100"
+          r="95"
+          fill={`url(#glow-${badge.id})`}
+          class="badge-glow"
+        />
+      )
+    }
+
+    <!-- Badge base (shield shape) -->
+    <path
+      d="M100,10 L150,40 L160,90 L140,150 L100,180 L60,150 L40,90 L50,40 Z"
+      fill={badge.unlocked ? colors.primary : '#666'}
+      stroke={badge.unlocked ? colors.secondary : '#444'}
+      stroke-width="3"
+      class="badge-base"
+    />
+
+    <!-- Inner shield -->
+    <path
+      d="M100,30 L135,50 L142,85 L128,130 L100,155 L72,130 L58,85 L65,50 Z"
+      fill={badge.unlocked ? colors.secondary : '#555'}
+      opacity="0.8"
+      class="badge-inner"
+    />
+
+    <!-- Icon circle background -->
+    <circle
+      cx="100"
+      cy="90"
+      r="40"
+      fill={badge.unlocked ? '#fff' : '#333'}
+      opacity={badge.unlocked ? '0.9' : '0.3'}
+    />
+
+    <!-- Icon (emoji or text) -->
+    <text
+      x="100"
+      y="100"
+      font-size={badge.unlocked ? '40' : '30'}
+      text-anchor="middle"
+      dominant-baseline="middle"
+      opacity={badge.unlocked ? '1' : '0.3'}
+      class="badge-icon"
+    >
+      {badge.unlocked ? badge.icon : '🔒'}
+    </text>
+
+    <!-- Ribbon banner -->
+    <path
+      d="M40,140 L160,140 L155,155 L100,150 L45,155 Z"
+      fill={badge.unlocked ? colors.glow : '#444'}
+      opacity="0.9"
+    />
+
+    <!-- Rarity stars -->
+    {
+      badge.unlocked &&
+        Array.from({ length: getRarityStars(badge.rarity) }).map((_, i) => (
+          <text
+            x={100 + (i - 1) * 15}
+            y={140}
+            font-size="12"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            fill="#FFD700"
+            class="badge-star"
+          >
+            ⭐
+          </text>
+        ))
+    }
+
+    <!-- Shimmer effect for rare badges -->
+    {
+      badge.unlocked && (badge.rarity === 'platinum' || badge.rarity === 'diamond') && (
+        <rect
+          x="50"
+          y="20"
+          width="100"
+          height="140"
+          fill="url(#shimmer-${badge.id})"
+          opacity="0.3"
+          class="badge-shimmer"
+        />
+      )
+    }
+  </svg>
+
+  <!-- Badge name (below badge) -->
+  <div class="badge-name" title={description}>
+    {name}
+  </div>
+
+  <!-- Progress bar (for progressive badges) -->
+  {
+    showProgress && badge.progress && !badge.unlocked && (
+      <div class="badge-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" style={`width: ${progressPercent}%`} />
+        </div>
+        <div class="progress-text">
+          {badge.progress.current}/{badge.progress.total}
+        </div>
+      </div>
+    )
+  }
+
+  <!-- "Almost there!" indicator -->
+  {
+    badge.progress && !badge.unlocked && progressPercent >= 80 && (
+      <div class="badge-almost">
+        🔥 Fast geschafft!
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .badge-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .badge-card:hover {
+    transform: scale(1.1);
+  }
+
+  .badge-card.unlocked .badge-svg {
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+  }
+
+  .badge-card.locked .badge-svg {
+    opacity: 0.6;
+    filter: grayscale(70%);
+  }
+
+  .badge-svg {
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s ease;
+  }
+
+  /* Rarity-specific animations */
+  .badge-card.unlocked.rarity-platinum .badge-svg,
+  .badge-card.unlocked.rarity-diamond .badge-svg {
+    animation: shimmer 2s infinite ease-in-out;
+  }
+
+  @keyframes shimmer {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+    }
+    50% {
+      filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+    }
+  }
+
+  .badge-glow {
+    animation: pulse-glow 3s infinite ease-in-out;
+  }
+
+  @keyframes pulse-glow {
+    0%,
+    100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  .badge-shimmer {
+    animation: shimmer-sweep 3s infinite;
+  }
+
+  @keyframes shimmer-sweep {
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.3;
+    }
+    100% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  .badge-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--color-text);
+  }
+
+  .badge-card.locked .badge-name {
+    opacity: 0.6;
+  }
+
+  .badge-progress {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4caf50, #8bc34a);
+    transition: width 0.5s ease;
+  }
+
+  .progress-text {
+    font-size: 0.65rem;
+    color: var(--color-text-secondary);
+    text-align: center;
+  }
+
+  .badge-almost {
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    animation: bounce 1s infinite;
+  }
+
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  /* Hover card details */
+  .badge-card:hover::after {
+    content: attr(data-badge-id);
+    position: absolute;
+    bottom: -2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 10;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  function getRarityStars(rarity: string): number {
+    switch (rarity) {
+      case 'bronze':
+        return 1;
+      case 'silver':
+        return 2;
+      case 'gold':
+        return 3;
+      case 'platinum':
+        return 4;
+      case 'diamond':
+        return 5;
+      default:
+        return 1;
+    }
+  }
+
+  // Add click handler to show detail modal
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.badge-card').forEach((card) => {
+      card.addEventListener('click', () => {
+        const badgeId = card.getAttribute('data-badge-id');
+        if (badgeId) {
+          window.dispatchEvent(
+            new CustomEvent('show-badge-detail', {
+              detail: { badgeId },
+            })
+          );
+        }
+      });
+    });
+  });
+</script>
+
+<script is:inline define:vars={{ getRarityStars }}>
+  // Make function globally available
+  window.getRarityStars = getRarityStars;
+</script>

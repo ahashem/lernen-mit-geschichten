@@ -1,0 +1,825 @@
+---
+/**
+ * 3D Trophy Cabinet Component
+ * Beautiful wooden cabinet with glass doors displaying trophies on 5 shelves
+ * Features: Rotation, zoom, lighting effects, customization
+ */
+import TrophyModel from './TrophyModel.astro';
+
+interface Props {
+  interactive?: boolean;
+  showControls?: boolean;
+  initialRotation?: number;
+  initialZoom?: number;
+}
+
+const {
+  interactive = true,
+  showControls = true,
+  initialRotation = 0,
+  initialZoom = 1,
+} = Astro.props;
+
+const locale = (Astro.currentLocale as 'de' | 'ar' | 'en' | 'tr' | 'ur') || 'de';
+---
+
+<div class="trophy-cabinet-container" data-locale={locale}>
+  {showControls && (
+    <div class="cabinet-controls">
+      <!-- Rotation Controls -->
+      <div class="control-group rotation-controls">
+        <button class="control-btn rotate-left" aria-label="Rotate left">
+          ◀
+        </button>
+        <button class="control-btn rotate-right" aria-label="Rotate right">
+          ▶
+        </button>
+        <button class="control-btn reset-view" aria-label="Reset view">
+          🔄
+        </button>
+      </div>
+
+      <!-- Zoom Controls -->
+      <div class="control-group zoom-controls">
+        <button class="control-btn zoom-in" aria-label="Zoom in">
+          🔍+
+        </button>
+        <button class="control-btn zoom-out" aria-label="Zoom out">
+          🔍−
+        </button>
+      </div>
+
+      <!-- Shelf Selector -->
+      <div class="control-group shelf-selector">
+        <label for="shelf-select">Shelf:</label>
+        <select id="shelf-select" class="shelf-dropdown">
+          <option value="all">All Shelves</option>
+          <option value="0">Shelf 1 (Top)</option>
+          <option value="1">Shelf 2</option>
+          <option value="2">Shelf 3</option>
+          <option value="3">Shelf 4</option>
+          <option value="4">Shelf 5 (Bottom)</option>
+        </select>
+      </div>
+
+      <!-- View Mode -->
+      <div class="control-group view-mode">
+        <button class="control-btn view-3d active" data-view="3d">
+          3D View
+        </button>
+        <button class="control-btn view-list" data-view="list">
+          List View
+        </button>
+      </div>
+    </div>
+  )}
+
+  <!-- 3D Cabinet Scene -->
+  <div class="cabinet-scene" id="cabinet-scene">
+    <!-- Background -->
+    <div class="cabinet-background"></div>
+
+    <!-- Lighting -->
+    <div class="cabinet-lighting">
+      <div class="spotlight spotlight-left"></div>
+      <div class="spotlight spotlight-right"></div>
+      <div class="ambient-light"></div>
+    </div>
+
+    <!-- 3D Cabinet -->
+    <div
+      class="trophy-cabinet-3d"
+      id="trophy-cabinet-3d"
+      style={`transform: rotateY(${initialRotation}deg); --zoom: ${initialZoom};`}
+    >
+      <!-- Cabinet Frame -->
+      <div class="cabinet-frame">
+        <!-- Back Wall -->
+        <div class="cabinet-back"></div>
+
+        <!-- Side Walls -->
+        <div class="cabinet-left"></div>
+        <div class="cabinet-right"></div>
+
+        <!-- Top -->
+        <div class="cabinet-top"></div>
+
+        <!-- Bottom -->
+        <div class="cabinet-bottom"></div>
+
+        <!-- Glass Doors -->
+        <div class="cabinet-doors">
+          <div class="door door-left">
+            <div class="door-glass"></div>
+            <div class="door-frame-left"></div>
+            <div class="door-handle door-handle-left"></div>
+          </div>
+          <div class="door door-right">
+            <div class="door-glass"></div>
+            <div class="door-frame-right"></div>
+            <div class="door-handle door-handle-right"></div>
+          </div>
+        </div>
+
+        <!-- Shelves (5 shelves, 10 slots each) -->
+        <div class="cabinet-shelves">
+          {[...Array(5)].map((_, shelfIndex) => (
+            <div class="shelf" data-shelf={shelfIndex} key={shelfIndex}>
+              <div class="shelf-surface"></div>
+              <div class="shelf-slots" id={`shelf-${shelfIndex}`}>
+                {[...Array(10)].map((_, slotIndex) => (
+                  <div
+                    class="trophy-slot"
+                    data-shelf={shelfIndex}
+                    data-slot={slotIndex}
+                    key={slotIndex}
+                  >
+                    <!-- Trophy will be inserted here dynamically -->
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Cabinet Shadow -->
+      <div class="cabinet-shadow"></div>
+    </div>
+
+    <!-- Loading Placeholder -->
+    <div class="cabinet-loading" id="cabinet-loading">
+      <div class="loading-spinner"></div>
+      <p>Loading Trophy Cabinet...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="cabinet-empty" id="cabinet-empty" style="display: none;">
+      <div class="empty-icon">🏆</div>
+      <h3>Start Your Trophy Collection!</h3>
+      <p>Complete stories and challenges to earn trophies</p>
+    </div>
+  </div>
+
+  <!-- Statistics Panel -->
+  <div class="cabinet-stats">
+    <div class="stat-item">
+      <span class="stat-label">Total Trophies:</span>
+      <span class="stat-value" id="stat-total">0</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">Completion:</span>
+      <span class="stat-value" id="stat-completion">0%</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">Shelves Filled:</span>
+      <span class="stat-value" id="stat-shelves">0/5</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .trophy-cabinet-container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* Controls */
+  .cabinet-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .control-group label {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .control-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .control-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .control-btn:active {
+    transform: translateY(0);
+  }
+
+  .control-btn.active {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+  }
+
+  .shelf-dropdown {
+    padding: 8px 12px;
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  /* Cabinet Scene */
+  .cabinet-scene {
+    position: relative;
+    width: 100%;
+    height: 700px;
+    perspective: 2000px;
+    background: linear-gradient(180deg, #2c3e50, #34495e);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .cabinet-background {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, #3a506b, #1c2e3e);
+    opacity: 0.8;
+  }
+
+  /* Lighting */
+  .cabinet-lighting {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .spotlight {
+    position: absolute;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.3), transparent);
+    opacity: 0.6;
+  }
+
+  .spotlight-left {
+    left: 10%;
+  }
+
+  .spotlight-right {
+    right: 10%;
+  }
+
+  .ambient-light {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1), transparent);
+  }
+
+  /* 3D Cabinet */
+  .trophy-cabinet-3d {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-style: preserve-3d;
+    transform: translate(-50%, -50%) rotateY(0deg) scale(var(--zoom, 1));
+    transition: transform 0.5s ease;
+    width: 600px;
+    height: 550px;
+  }
+
+  .cabinet-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+  }
+
+  /* Cabinet Walls */
+  .cabinet-back,
+  .cabinet-left,
+  .cabinet-right,
+  .cabinet-top,
+  .cabinet-bottom {
+    position: absolute;
+    background: linear-gradient(135deg, #8B4513, #A0522D);
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .cabinet-back {
+    width: 100%;
+    height: 100%;
+    transform: translateZ(-150px);
+    background: linear-gradient(135deg, #654321, #8B4513);
+  }
+
+  .cabinet-left {
+    width: 150px;
+    height: 100%;
+    left: 0;
+    transform-origin: left;
+    transform: rotateY(90deg);
+  }
+
+  .cabinet-right {
+    width: 150px;
+    height: 100%;
+    right: 0;
+    transform-origin: right;
+    transform: rotateY(-90deg);
+  }
+
+  .cabinet-top {
+    width: 100%;
+    height: 150px;
+    top: 0;
+    transform-origin: top;
+    transform: rotateX(90deg);
+  }
+
+  .cabinet-bottom {
+    width: 100%;
+    height: 150px;
+    bottom: 0;
+    transform-origin: bottom;
+    transform: rotateX(-90deg);
+  }
+
+  /* Glass Doors */
+  .cabinet-doors {
+    position: absolute;
+    inset: 20px;
+    z-index: 10;
+    transform: translateZ(10px);
+  }
+
+  .door {
+    position: absolute;
+    top: 0;
+    width: calc(50% - 10px);
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.8s ease;
+  }
+
+  .door-left {
+    left: 0;
+    transform-origin: left;
+  }
+
+  .door-right {
+    right: 0;
+    transform-origin: right;
+  }
+
+  .trophy-cabinet-3d.doors-open .door-left {
+    transform: rotateY(-120deg);
+  }
+
+  .trophy-cabinet-3d.doors-open .door-right {
+    transform: rotateY(120deg);
+  }
+
+  .door-glass {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3));
+    backdrop-filter: blur(2px);
+    border: 3px solid #8B4513;
+    border-radius: 8px;
+    box-shadow:
+      inset 0 0 20px rgba(255, 255, 255, 0.2),
+      0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .door-handle {
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 40px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border-radius: 6px;
+    transform: translateY(-50%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .door-handle-left {
+    right: 10px;
+  }
+
+  .door-handle-right {
+    left: 10px;
+  }
+
+  /* Shelves */
+  .cabinet-shelves {
+    position: absolute;
+    inset: 40px;
+    z-index: 5;
+  }
+
+  .shelf {
+    position: absolute;
+    width: 100%;
+    height: 100px;
+    transform-style: preserve-3d;
+  }
+
+  .shelf[data-shelf='0'] { top: 0; }
+  .shelf[data-shelf='1'] { top: 110px; }
+  .shelf[data-shelf='2'] { top: 220px; }
+  .shelf[data-shelf='3'] { top: 330px; }
+  .shelf[data-shelf='4'] { top: 440px; }
+
+  .shelf-surface {
+    position: absolute;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(135deg, #A0522D, #8B4513);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    transform: translateZ(-50px);
+  }
+
+  .shelf-slots {
+    position: absolute;
+    top: -80px;
+    width: 100%;
+    height: 80px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-end;
+    padding: 0 10px;
+    transform: translateZ(-50px);
+  }
+
+  .trophy-slot {
+    flex: 1;
+    max-width: 50px;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    position: relative;
+  }
+
+  .trophy-slot.empty::after {
+    content: '🏆';
+    position: absolute;
+    bottom: 0;
+    font-size: 24px;
+    opacity: 0.2;
+  }
+
+  /* Cabinet Shadow */
+  .cabinet-shadow {
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120%;
+    height: 20px;
+    background: radial-gradient(ellipse, rgba(0, 0, 0, 0.4), transparent);
+    border-radius: 50%;
+  }
+
+  /* Loading State */
+  .cabinet-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+  }
+
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 20px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Empty State */
+  .cabinet-empty {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+  }
+
+  .empty-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+  }
+
+  .cabinet-empty h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .cabinet-empty p {
+    font-size: 16px;
+    opacity: 0.8;
+  }
+
+  /* Statistics Panel */
+  .cabinet-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-label {
+    display: block;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    color: #667eea;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .cabinet-scene {
+      height: 500px;
+    }
+
+    .trophy-cabinet-3d {
+      width: 400px;
+      height: 400px;
+      --zoom: 0.7;
+    }
+
+    .cabinet-controls {
+      flex-direction: column;
+    }
+
+    .control-group {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .trophy-cabinet-3d {
+    transform: translate(-50%, -50%) rotateY(0deg) scale(var(--zoom, 1)) scaleX(-1);
+  }
+</style>
+
+<script>
+  import { trophyCabinet } from '../utils/trophy-cabinet';
+
+  // Initialize cabinet
+  function initCabinet() {
+    const cabinet = document.getElementById('trophy-cabinet-3d');
+    const loading = document.getElementById('cabinet-loading');
+    const empty = document.getElementById('cabinet-empty');
+
+    if (!cabinet || !loading) return;
+
+    // Load trophies
+    setTimeout(() => {
+      const trophies = trophyCabinet.getTrophies();
+      const earnedTrophies = trophyCabinet.getEarnedTrophies();
+      const shelfLayout = trophyCabinet.getShelfLayout();
+
+      // Hide loading
+      loading.style.display = 'none';
+
+      // Show empty state or populate shelves
+      if (earnedTrophies.length === 0 && empty) {
+        empty.style.display = 'block';
+      } else {
+        populateShelves(shelfLayout);
+      }
+
+      // Update statistics
+      updateStatistics();
+    }, 1000);
+  }
+
+  // Populate shelves with trophies
+  function populateShelves(shelfLayout: (string | null)[][]) {
+    shelfLayout.forEach((shelf, shelfIndex) => {
+      shelf.forEach((trophyId, slotIndex) => {
+        const slot = document.querySelector(
+          `.trophy-slot[data-shelf="${shelfIndex}"][data-slot="${slotIndex}"]`
+        );
+
+        if (!slot) return;
+
+        if (trophyId) {
+          const trophy = trophyCabinet.getTrophy(trophyId);
+          if (trophy) {
+            // Trophy will be rendered server-side in actual implementation
+            // For now, show placeholder
+            slot.innerHTML = `<div class="trophy-placeholder">${trophy.icon}</div>`;
+          }
+        } else {
+          slot.classList.add('empty');
+        }
+      });
+    });
+  }
+
+  // Update statistics
+  function updateStatistics() {
+    const stats = trophyCabinet.getStatistics();
+    const completion = trophyCabinet.getCompletionPercentage();
+
+    const totalEl = document.getElementById('stat-total');
+    const completionEl = document.getElementById('stat-completion');
+    const shelvesEl = document.getElementById('stat-shelves');
+
+    if (totalEl) totalEl.textContent = stats.totalEarned.toString();
+    if (completionEl) completionEl.textContent = `${completion}%`;
+    if (shelvesEl) shelvesEl.textContent = `${stats.completedShelves}/5`;
+  }
+
+  // Rotation controls
+  let currentRotation = 0;
+  let currentZoom = 1;
+
+  document.querySelector('.rotate-left')?.addEventListener('click', () => {
+    currentRotation -= 45;
+    rotateCabinet(currentRotation);
+  });
+
+  document.querySelector('.rotate-right')?.addEventListener('click', () => {
+    currentRotation += 45;
+    rotateCabinet(currentRotation);
+  });
+
+  document.querySelector('.reset-view')?.addEventListener('click', () => {
+    currentRotation = 0;
+    currentZoom = 1;
+    rotateCabinet(0);
+    zoomCabinet(1);
+  });
+
+  function rotateCabinet(angle: number) {
+    const cabinet = document.getElementById('trophy-cabinet-3d');
+    if (cabinet) {
+      cabinet.style.transform = `translate(-50%, -50%) rotateY(${angle}deg) scale(${currentZoom})`;
+      trophyCabinet.rotateCabinet(angle);
+    }
+  }
+
+  // Zoom controls
+  document.querySelector('.zoom-in')?.addEventListener('click', () => {
+    currentZoom = Math.min(currentZoom + 0.2, 2);
+    zoomCabinet(currentZoom);
+  });
+
+  document.querySelector('.zoom-out')?.addEventListener('click', () => {
+    currentZoom = Math.max(currentZoom - 0.2, 0.5);
+    zoomCabinet(currentZoom);
+  });
+
+  function zoomCabinet(zoom: number) {
+    const cabinet = document.getElementById('trophy-cabinet-3d');
+    if (cabinet) {
+      cabinet.style.transform = `translate(-50%, -50%) rotateY(${currentRotation}deg) scale(${zoom})`;
+    }
+  }
+
+  // Shelf selector
+  document.getElementById('shelf-select')?.addEventListener('change', (e) => {
+    const target = e.target as HTMLSelectElement;
+    const shelfIndex = target.value;
+
+    if (shelfIndex === 'all') {
+      // Show all shelves
+      document.querySelectorAll('.shelf').forEach(shelf => {
+        (shelf as HTMLElement).style.display = 'block';
+      });
+    } else {
+      // Show only selected shelf
+      document.querySelectorAll('.shelf').forEach(shelf => {
+        (shelf as HTMLElement).style.display = 'none';
+      });
+      const selectedShelf = document.querySelector(`.shelf[data-shelf="${shelfIndex}"]`);
+      if (selectedShelf) {
+        (selectedShelf as HTMLElement).style.display = 'block';
+      }
+    }
+  });
+
+  // View mode toggle
+  document.querySelectorAll('[data-view]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const target = e.currentTarget as HTMLElement;
+      const view = target.dataset.view;
+
+      // Toggle active state
+      document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
+      target.classList.add('active');
+
+      if (view === 'list') {
+        // Redirect to list view page
+        window.location.href = '/trophy-list';
+      }
+    });
+  });
+
+  // Drag to rotate
+  let isDragging = false;
+  let startX = 0;
+  let startRotation = 0;
+
+  const scene = document.getElementById('cabinet-scene');
+  scene?.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startX = e.clientX;
+    startRotation = currentRotation;
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+
+    const deltaX = e.clientX - startX;
+    currentRotation = startRotation + (deltaX * 0.5);
+    rotateCabinet(currentRotation);
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+
+  // Touch support
+  scene?.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    startX = e.touches[0].clientX;
+    startRotation = currentRotation;
+  });
+
+  scene?.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+
+    const deltaX = e.touches[0].clientX - startX;
+    currentRotation = startRotation + (deltaX * 0.5);
+    rotateCabinet(currentRotation);
+  });
+
+  scene?.addEventListener('touchend', () => {
+    isDragging = false;
+  });
+
+  // Listen for trophy awards
+  window.addEventListener('trophyAwarded', ((e: CustomEvent) => {
+    const { trophy } = e.detail;
+
+    // Open doors
+    const cabinet = document.getElementById('trophy-cabinet-3d');
+    cabinet?.classList.add('doors-open');
+
+    // Close doors after 3 seconds
+    setTimeout(() => {
+      cabinet?.classList.remove('doors-open');
+      // Refresh display
+      initCabinet();
+    }, 3000);
+  }) as EventListener);
+
+  // Initialize on load
+  initCabinet();
+</script>

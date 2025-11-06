@@ -1,0 +1,1090 @@
+---
+/**
+ * Fishing Quiz Game Component
+ * Interactive fishing game with quiz questions
+ */
+
+interface Props {
+  locale?: 'de' | 'ar' | 'en' | 'tr' | 'ur';
+}
+
+const { locale = 'de' } = Astro.props;
+---
+
+<div class="fishing-game-container" data-locale={locale}>
+  <!-- Game Setup Screen -->
+  <div class="game-setup" id="game-setup">
+    <h2 class="setup-title" data-i18n="fishingGameTitle">Angelspiel</h2>
+    <p class="setup-description" data-i18n="fishingGameDescription">
+      Fange Fische mit den richtigen Antworten!
+    </p>
+
+    <div class="difficulty-selector">
+      <h3 data-i18n="selectDifficulty">Schwierigkeit wählen</h3>
+      <div class="difficulty-buttons">
+        <button class="difficulty-btn" data-difficulty="shallow">
+          <span class="emoji">🟢</span>
+          <span data-i18n="shallow">Seicht</span>
+          <span class="detail" data-i18n="slowFish">Langsame Fische</span>
+        </button>
+        <button class="difficulty-btn active" data-difficulty="medium">
+          <span class="emoji">🟡</span>
+          <span data-i18n="medium">Mittel</span>
+          <span class="detail" data-i18n="mediumFish">Mittlere Fische</span>
+        </button>
+        <button class="difficulty-btn" data-difficulty="deepsea">
+          <span class="emoji">🔴</span>
+          <span data-i18n="deepSea">Tiefsee</span>
+          <span class="detail" data-i18n="fastFish">Schnelle Fische</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mode-selector">
+      <h3 data-i18n="selectMode">Spielmodus wählen</h3>
+      <div class="mode-buttons">
+        <button class="mode-btn active" data-mode="relaxed">
+          <span class="emoji">🌊</span>
+          <span data-i18n="relaxedFishing">Entspannt</span>
+        </button>
+        <button class="mode-btn" data-mode="competitive">
+          <span class="emoji">🏆</span>
+          <span data-i18n="competitiveFishing">Wettkampf</span>
+        </button>
+        <button class="mode-btn" data-mode="night">
+          <span class="emoji">🌙</span>
+          <span data-i18n="nightFishing">Nachtangeln</span>
+        </button>
+        <button class="mode-btn" data-mode="ice">
+          <span class="emoji">❄️</span>
+          <span data-i18n="iceFishing">Eisangeln</span>
+        </button>
+        <button class="mode-btn" data-mode="ocean">
+          <span class="emoji">🌊</span>
+          <span data-i18n="oceanChallenge">Ozean</span>
+        </button>
+      </div>
+    </div>
+
+    <button class="start-game-btn" id="start-game-btn">
+      <span data-i18n="startFishing">Angeln starten</span>
+    </button>
+  </div>
+
+  <!-- Game Board -->
+  <div class="game-board hidden" id="game-board">
+    <!-- Game Header -->
+    <div class="game-header">
+      <div class="game-info">
+        <div class="info-item">
+          <span class="info-label" data-i18n="question">Frage</span>
+          <span class="info-value" id="question-number">1 / 10</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label" data-i18n="score">Punkte</span>
+          <span class="info-value" id="game-score">0</span>
+        </div>
+        <div class="info-item time-item">
+          <span class="info-label" data-i18n="time">Zeit</span>
+          <span class="info-value" id="time-remaining">30</span>
+        </div>
+        <div class="info-item combo-item">
+          <span class="info-label" data-i18n="combo">Combo</span>
+          <span class="info-value combo-value" id="combo-count">0</span>
+        </div>
+      </div>
+
+      <div class="game-actions">
+        <button class="icon-btn" id="pause-btn" title="Pause">
+          <span>⏸️</span>
+        </button>
+        <button class="icon-btn" id="back-to-setup-btn" title="Zurück">
+          <span>⬅️</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Question Display -->
+    <div class="question-display" id="question-display">
+      <p class="question-text" id="question-text">
+        Was ist die Hauptstadt von Deutschland?
+      </p>
+    </div>
+
+    <!-- Fishing Canvas Container -->
+    <div class="fishing-canvas-wrapper">
+      <canvas id="fishing-canvas" width="800" height="600"></canvas>
+      <div class="fishing-instructions" id="fishing-instructions">
+        <p data-i18n="clickToCast">Klicke zum Auswerfen</p>
+      </div>
+    </div>
+
+    <!-- Best Score Display -->
+    <div class="best-score" id="best-score">
+      <span data-i18n="bestScore">Bester Punktestand</span>: <span id="best-score-value">0</span>
+    </div>
+  </div>
+
+  <!-- Completion Modal -->
+  <div class="completion-modal hidden" id="completion-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 data-i18n="congratulations">Glückwunsch!</h2>
+        <div class="trophy-display">
+          <span class="trophy-emoji">🏆</span>
+        </div>
+        <div class="stars-display" id="stars-display">
+          <span class="star">⭐</span>
+          <span class="star">⭐</span>
+          <span class="star">⭐</span>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="completion-stats">
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="totalScore">Gesamtpunktzahl</span>
+            <span class="stat-value" id="final-score">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="accuracy">Genauigkeit</span>
+            <span class="stat-value" id="final-accuracy">0%</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="fishCaught">Gefangene Fische</span>
+            <span class="stat-value" id="fish-caught-count">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="starsEarned">Sterne</span>
+            <span class="stat-value" id="stars-earned">0 ⭐</span>
+          </div>
+        </div>
+
+        <div class="bonus-display" id="bonus-display">
+          <p class="bonus-text" data-i18n="allFishBonus">Alle Fischarten gefangen! +500 Bonuspunkte</p>
+        </div>
+
+        <div class="modal-actions">
+          <button class="modal-btn primary" id="play-again-btn">
+            <span data-i18n="playAgain">Nochmal spielen</span>
+          </button>
+          <button class="modal-btn secondary" id="view-collection-btn">
+            <span data-i18n="viewCollection">Sammlung ansehen</span>
+          </button>
+          <button class="modal-btn secondary" id="change-settings-btn">
+            <span data-i18n="changeSettings">Einstellungen ändern</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pause Modal -->
+  <div class="pause-modal hidden" id="pause-modal">
+    <div class="modal-content">
+      <h2 data-i18n="gamePaused">Spiel pausiert</h2>
+      <div class="modal-actions">
+        <button class="modal-btn primary" id="resume-btn">
+          <span data-i18n="resume">Fortsetzen</span>
+        </button>
+        <button class="modal-btn secondary" id="quit-btn">
+          <span data-i18n="quitGame">Spiel beenden</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .fishing-game-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* Game Setup */
+  .game-setup {
+    text-align: center;
+    animation: fadeIn 0.5s ease-in;
+  }
+
+  .setup-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .setup-description {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .difficulty-selector,
+  .mode-selector {
+    margin-bottom: 2rem;
+  }
+
+  .difficulty-selector h3,
+  .mode-selector h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .difficulty-buttons,
+  .mode-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .difficulty-btn,
+  .mode-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem 2rem;
+    border: 3px solid #e0e0e0;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 140px;
+  }
+
+  .difficulty-btn:hover,
+  .mode-btn:hover {
+    transform: translateY(-4px);
+    border-color: #6BCF7F;
+    box-shadow: 0 4px 12px rgba(107, 207, 127, 0.3);
+  }
+
+  .difficulty-btn.active,
+  .mode-btn.active {
+    border-color: #6BCF7F;
+    background: #E8F5E9;
+  }
+
+  .difficulty-btn .emoji,
+  .mode-btn .emoji {
+    font-size: 2rem;
+  }
+
+  .difficulty-btn .detail {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .start-game-btn {
+    padding: 1rem 3rem;
+    font-size: 1.3rem;
+    font-weight: bold;
+    background: linear-gradient(135deg, #6BCF7F 0%, #4CAF50 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 2rem;
+  }
+
+  .start-game-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  }
+
+  /* Game Board */
+  .game-board {
+    animation: fadeIn 0.5s ease-in;
+  }
+
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .game-info {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .info-label {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .info-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .time-item .info-value {
+    color: #FF9F40;
+  }
+
+  .combo-item {
+    position: relative;
+  }
+
+  .combo-value {
+    color: #6BCF7F;
+  }
+
+  .combo-value.active {
+    animation: comboPulse 0.5s ease-out;
+  }
+
+  @keyframes comboPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+  }
+
+  .game-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .icon-btn:hover {
+    border-color: #6BCF7F;
+    transform: scale(1.1);
+  }
+
+  /* Question Display */
+  .question-display {
+    background: linear-gradient(135deg, #6BCF7F 0%, #4CAF50 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .question-text {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    margin: 0;
+  }
+
+  /* Fishing Canvas */
+  .fishing-canvas-wrapper {
+    position: relative;
+    background: linear-gradient(180deg, #87CEEB 0%, #4682B4 50%, #1E3A5F 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1rem;
+  }
+
+  #fishing-canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    cursor: crosshair;
+  }
+
+  .fishing-instructions {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    pointer-events: none;
+    animation: pulse 2s infinite;
+  }
+
+  .fishing-instructions.hidden {
+    display: none;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+  }
+
+  .best-score {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #666;
+  }
+
+  /* Modals */
+  .completion-modal,
+  .pause-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-in;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    animation: slideUp 0.4s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .modal-header h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .trophy-display {
+    font-size: 4rem;
+    margin: 1rem 0;
+  }
+
+  .stars-display {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    font-size: 2.5rem;
+  }
+
+  .stars-display .star {
+    filter: grayscale(100%);
+    opacity: 0.3;
+    transition: all 0.3s ease;
+  }
+
+  .stars-display .star.earned {
+    filter: grayscale(0%);
+    opacity: 1;
+    animation: starPop 0.5s ease-out;
+  }
+
+  @keyframes starPop {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+  }
+
+  .completion-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+
+  .stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .bonus-display {
+    background: linear-gradient(135deg, #FFD93D 0%, #FF9F40 100%);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .bonus-display.hidden {
+    display: none;
+  }
+
+  .bonus-text {
+    color: white;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .modal-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .modal-btn.primary {
+    background: #6BCF7F;
+    color: white;
+  }
+
+  .modal-btn.secondary {
+    background: #e0e0e0;
+    color: #333;
+  }
+
+  .modal-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Utilities */
+  .hidden {
+    display: none !important;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .fishing-game-container {
+      padding: 1rem;
+    }
+
+    .setup-title {
+      font-size: 2rem;
+    }
+
+    .game-header {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .game-info {
+      gap: 1rem;
+    }
+
+    .completion-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .modal-actions {
+      flex-direction: column;
+    }
+  }
+
+  /* RTL Support */
+  [dir="rtl"] .game-header,
+  [dir="rtl"] .modal-actions {
+    direction: rtl;
+  }
+</style>
+
+<script>
+  import { fishingGame } from '../utils/fishing-game';
+  import type { DifficultyLevel, GameMode, QuizQuestion } from '../utils/fishing-game';
+
+  // Game state
+  let selectedDifficulty: DifficultyLevel = 'medium';
+  let selectedMode: GameMode = 'relaxed';
+
+  // DOM Elements
+  const gameSetup = document.getElementById('game-setup');
+  const gameBoard = document.getElementById('game-board');
+  const completionModal = document.getElementById('completion-modal');
+  const pauseModal = document.getElementById('pause-modal');
+  const canvas = document.getElementById('fishing-canvas') as HTMLCanvasElement;
+  const ctx = canvas?.getContext('2d');
+
+  // Sample quiz questions (will be replaced with actual quiz data)
+  const sampleQuestions: QuizQuestion[] = [
+    {
+      id: 'q1',
+      question: 'Was ist die Hauptstadt von Deutschland?',
+      answers: ['Berlin', 'München', 'Hamburg', 'Köln'],
+      correctAnswer: 'Berlin',
+    },
+    {
+      id: 'q2',
+      question: 'Wie viele Beine hat eine Spinne?',
+      answers: ['6', '8', '10', '12'],
+      correctAnswer: '8',
+    },
+    {
+      id: 'q3',
+      question: 'Welche Farbe entsteht aus Gelb und Blau?',
+      answers: ['Grün', 'Orange', 'Lila', 'Rosa'],
+      correctAnswer: 'Grün',
+    },
+    {
+      id: 'q4',
+      question: 'Wie heißt der höchste Berg der Welt?',
+      answers: ['Mount Everest', 'K2', 'Matterhorn', 'Zugspitze'],
+      correctAnswer: 'Mount Everest',
+    },
+    {
+      id: 'q5',
+      question: 'Wie viele Planeten gibt es in unserem Sonnensystem?',
+      answers: ['7', '8', '9', '10'],
+      correctAnswer: '8',
+    },
+    {
+      id: 'q6',
+      question: 'Welches Tier kann nicht rückwärts laufen?',
+      answers: ['Känguru', 'Hund', 'Katze', 'Pferd'],
+      correctAnswer: 'Känguru',
+    },
+    {
+      id: 'q7',
+      question: 'In welchem Land stehen die Pyramiden?',
+      answers: ['Ägypten', 'Mexiko', 'Griechenland', 'Italien'],
+      correctAnswer: 'Ägypten',
+    },
+    {
+      id: 'q8',
+      question: 'Wie viele Tage hat der Februar normalerweise?',
+      answers: ['28', '29', '30', '31'],
+      correctAnswer: '28',
+    },
+    {
+      id: 'q9',
+      question: 'Welche Form hat eine Stopp-Schild?',
+      answers: ['Achteck', 'Kreis', 'Dreieck', 'Quadrat'],
+      correctAnswer: 'Achteck',
+    },
+    {
+      id: 'q10',
+      question: 'Was ist das größte Säugetier der Welt?',
+      answers: ['Blauwal', 'Elefant', 'Giraffe', 'Hai'],
+      correctAnswer: 'Blauwal',
+    },
+  ];
+
+  // Difficulty buttons
+  document.querySelectorAll('.difficulty-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedDifficulty = btn.getAttribute('data-difficulty') as DifficultyLevel;
+    });
+  });
+
+  // Mode buttons
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedMode = btn.getAttribute('data-mode') as GameMode;
+    });
+  });
+
+  // Start game button
+  document.getElementById('start-game-btn')?.addEventListener('click', () => {
+    startNewGame();
+  });
+
+  // Pause button
+  document.getElementById('pause-btn')?.addEventListener('click', () => {
+    fishingGame.pauseGame();
+    pauseModal?.classList.remove('hidden');
+  });
+
+  // Resume button
+  document.getElementById('resume-btn')?.addEventListener('click', () => {
+    fishingGame.resumeGame();
+    pauseModal?.classList.add('hidden');
+  });
+
+  // Quit button
+  document.getElementById('quit-btn')?.addEventListener('click', () => {
+    pauseModal?.classList.add('hidden');
+    gameBoard?.classList.add('hidden');
+    gameSetup?.classList.remove('hidden');
+  });
+
+  // Back to setup button
+  document.getElementById('back-to-setup-btn')?.addEventListener('click', () => {
+    gameBoard?.classList.add('hidden');
+    gameSetup?.classList.remove('hidden');
+  });
+
+  // Play again button
+  document.getElementById('play-again-btn')?.addEventListener('click', () => {
+    completionModal?.classList.add('hidden');
+    fishingGame.resetGame();
+  });
+
+  // View collection button
+  document.getElementById('view-collection-btn')?.addEventListener('click', () => {
+    window.location.href = '/fish-collection';
+  });
+
+  // Change settings button
+  document.getElementById('change-settings-btn')?.addEventListener('click', () => {
+    completionModal?.classList.add('hidden');
+    gameBoard?.classList.add('hidden');
+    gameSetup?.classList.remove('hidden');
+  });
+
+  // Canvas mouse events
+  canvas?.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * canvas.width;
+    const y = ((e.clientY - rect.top) / rect.height) * canvas.height;
+    fishingGame.updateRodPosition(x, Math.min(y, 100));
+  });
+
+  canvas?.addEventListener('click', () => {
+    fishingGame.castLine();
+    document.getElementById('fishing-instructions')?.classList.add('hidden');
+  });
+
+  // Touch support
+  canvas?.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    const x = ((touch.clientX - rect.left) / rect.width) * canvas.width;
+    const y = ((touch.clientY - rect.top) / rect.height) * canvas.height;
+    fishingGame.updateRodPosition(x, Math.min(y, 100));
+  });
+
+  canvas?.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    fishingGame.castLine();
+    document.getElementById('fishing-instructions')?.classList.add('hidden');
+  });
+
+  function startNewGame() {
+    fishingGame.startGame(sampleQuestions, selectedDifficulty, selectedMode);
+
+    gameSetup?.classList.add('hidden');
+    gameBoard?.classList.remove('hidden');
+
+    // Update best score
+    const bestScore = fishingGame.getBestScore(selectedDifficulty);
+    document.getElementById('best-score-value')!.textContent = bestScore.toString();
+
+    // Show instructions
+    document.getElementById('fishing-instructions')?.classList.remove('hidden');
+  }
+
+  // Event listeners
+  window.addEventListener('fishing-game-animation-frame', ((event: CustomEvent) => {
+    renderGame();
+  }) as EventListener);
+
+  window.addEventListener('fishing-game-cast-line', ((event: CustomEvent) => {
+    playSound('cast');
+  }) as EventListener);
+
+  window.addEventListener('fishing-game-fish-caught', ((event: CustomEvent) => {
+    playSound('splash');
+  }) as EventListener);
+
+  window.addEventListener('fishing-game-correct-answer', ((event: CustomEvent) => {
+    const { points, combo } = event.detail;
+    playSound('success');
+    showFloatingText(`+${points}`, '#4CAF50');
+
+    if (combo >= 3) {
+      showFloatingText(`Combo x${combo}!`, '#FFD93D');
+    }
+  }) as EventListener);
+
+  window.addEventListener('fishing-game-wrong-answer', ((event: CustomEvent) => {
+    playSound('error');
+    showFloatingText('Falsch!', '#E57373');
+  }) as EventListener);
+
+  window.addEventListener('fishing-game-time-update', ((event: CustomEvent) => {
+    const { timeRemaining } = event.detail;
+    document.getElementById('time-remaining')!.textContent = timeRemaining.toString();
+  }) as EventListener);
+
+  window.addEventListener('fishing-game-game-complete', ((event: CustomEvent) => {
+    const { score, duration, accuracy, stars, caughtFishes, totalFishTypes } = event.detail;
+
+    // Update completion modal
+    document.getElementById('final-score')!.textContent = score.toString();
+    document.getElementById('final-accuracy')!.textContent = `${Math.floor(accuracy)}%`;
+    document.getElementById('fish-caught-count')!.textContent = `${caughtFishes.length} / ${totalFishTypes}`;
+    document.getElementById('stars-earned')!.textContent = `${stars * 5} ⭐`;
+
+    // Update stars display
+    const starsDisplay = document.getElementById('stars-display');
+    if (starsDisplay) {
+      const starElements = starsDisplay.querySelectorAll('.star');
+      starElements.forEach((star, index) => {
+        if (index < stars) {
+          setTimeout(() => {
+            star.classList.add('earned');
+          }, index * 200);
+        } else {
+          star.classList.remove('earned');
+        }
+      });
+    }
+
+    // Show bonus if all fish types caught
+    const bonusDisplay = document.getElementById('bonus-display');
+    if (caughtFishes.length === totalFishTypes) {
+      bonusDisplay?.classList.remove('hidden');
+    } else {
+      bonusDisplay?.classList.add('hidden');
+    }
+
+    // Show modal
+    setTimeout(() => {
+      completionModal?.classList.remove('hidden');
+    }, 500);
+  }) as EventListener);
+
+  function renderGame() {
+    if (!ctx || !canvas) return;
+
+    const state = fishingGame.getState();
+    if (!state) return;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw water background (gradient already in CSS)
+
+    // Draw decorative elements
+    drawSeaweed(ctx);
+    drawBubbles(ctx);
+
+    // Draw fishes
+    state.fishes.forEach(fish => {
+      drawFish(ctx, fish);
+    });
+
+    // Draw fishing rod and line
+    drawFishingRod(ctx, state.rod);
+
+    // Update UI
+    const questionNum = state.currentQuestion + 1;
+    document.getElementById('question-number')!.textContent = `${questionNum} / ${state.totalQuestions}`;
+    document.getElementById('game-score')!.textContent = state.score.toString();
+    document.getElementById('combo-count')!.textContent = state.combo.toString();
+
+    const comboEl = document.getElementById('combo-count');
+    if (state.combo >= 3) {
+      comboEl?.classList.add('active');
+    } else {
+      comboEl?.classList.remove('active');
+    }
+
+    // Update question text
+    const currentQ = fishingGame.getCurrentQuestion();
+    if (currentQ) {
+      document.getElementById('question-text')!.textContent = currentQ.question;
+    }
+  }
+
+  function drawFish(ctx: CanvasRenderingContext2D, fish: any) {
+    ctx.save();
+
+    // Draw fish emoji
+    ctx.font = `${fish.type.size * 30}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Flip if swimming left
+    if (fish.direction === -1) {
+      ctx.translate(fish.x, fish.y);
+      ctx.scale(-1, 1);
+      ctx.fillText(fish.type.emoji, 0, 0);
+    } else {
+      ctx.fillText(fish.type.emoji, fish.x, fish.y);
+    }
+
+    // Draw answer text below fish
+    ctx.font = '14px Arial';
+    ctx.fillStyle = 'white';
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 3;
+    const answerText = fish.answer;
+    if (fish.direction === -1) {
+      ctx.scale(-1, 1);
+      ctx.strokeText(answerText, 0, 30);
+      ctx.fillText(answerText, 0, 30);
+    } else {
+      ctx.strokeText(answerText, fish.x, fish.y + 30);
+      ctx.fillText(answerText, fish.x, fish.y + 30);
+    }
+
+    ctx.restore();
+  }
+
+  function drawFishingRod(ctx: CanvasRenderingContext2D, rod: any) {
+    // Draw rod
+    ctx.strokeStyle = '#8B4513';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(rod.x, 0);
+    ctx.lineTo(rod.x, rod.y);
+    ctx.stroke();
+
+    // Draw fishing line
+    if (rod.lineLength > 0) {
+      ctx.strokeStyle = '#666';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.moveTo(rod.x, rod.y);
+
+      // Curved line for realistic physics
+      const controlY = rod.y + rod.lineLength / 2 + Math.sin(Date.now() / 200) * 10;
+      ctx.quadraticCurveTo(rod.x + 20, controlY, rod.hookX, rod.hookY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw hook
+      ctx.fillStyle = '#FFD700';
+      ctx.beginPath();
+      ctx.arc(rod.hookX, rod.hookY, 6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Draw caught fish
+    if (rod.caughtFish) {
+      ctx.font = `${rod.caughtFish.type.size * 30}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.fillText(rod.caughtFish.type.emoji, rod.hookX, rod.hookY - 20);
+    }
+  }
+
+  function drawSeaweed(ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = 'rgba(34, 139, 34, 0.5)';
+    for (let i = 0; i < 5; i++) {
+      const x = 100 + i * 150;
+      const sway = Math.sin(Date.now() / 500 + i) * 10;
+
+      ctx.beginPath();
+      ctx.moveTo(x, 600);
+      ctx.quadraticCurveTo(x + sway, 500, x, 400);
+      ctx.quadraticCurveTo(x - sway, 450, x, 350);
+      ctx.lineWidth = 8;
+      ctx.strokeStyle = 'rgba(34, 139, 34, 0.6)';
+      ctx.stroke();
+    }
+  }
+
+  function drawBubbles(ctx: CanvasRenderingContext2D) {
+    const time = Date.now() / 1000;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+
+    for (let i = 0; i < 10; i++) {
+      const x = (i * 80 + time * 20) % 800;
+      const y = 600 - ((time * 50 + i * 60) % 600);
+      const size = 3 + (i % 3) * 2;
+
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function showFloatingText(text: string, color: string) {
+    const floater = document.createElement('div');
+    floater.textContent = text;
+    floater.style.position = 'fixed';
+    floater.style.top = '50%';
+    floater.style.left = '50%';
+    floater.style.transform = 'translate(-50%, -50%)';
+    floater.style.color = color;
+    floater.style.fontSize = '2rem';
+    floater.style.fontWeight = 'bold';
+    floater.style.pointerEvents = 'none';
+    floater.style.zIndex = '9999';
+    floater.style.animation = 'floatUp 1.5s ease-out';
+
+    document.body.appendChild(floater);
+
+    setTimeout(() => {
+      floater.remove();
+    }, 1500);
+  }
+
+  function playSound(type: 'cast' | 'splash' | 'success' | 'error') {
+    // Sound effects would be implemented here
+    // For now, we'll skip actual audio playback
+  }
+
+  // CSS animation for floating text
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -150%) scale(1.5);
+      }
+    }
+  `;
+  document.head.appendChild(style);
+</script>

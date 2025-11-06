@@ -1,0 +1,1099 @@
+---
+/**
+ * Connect the Dots Game Component
+ *
+ * Interactive puzzle game where children connect numbered dots to reveal characters
+ * Supports multiple difficulty levels, sequence types, and accessibility features
+ */
+
+export interface Props {
+  puzzleId?: string;
+  locale: 'de' | 'ar' | 'en' | 'tr' | 'ur';
+}
+
+const { puzzleId, locale = 'de' } = Astro.props;
+
+// Import translations
+import deTranslations from '../locales/de.json';
+import arTranslations from '../locales/ar.json';
+import enTranslations from '../locales/en.json';
+import trTranslations from '../locales/tr.json';
+import urTranslations from '../locales/ur.json';
+
+const translations: Record<string, any> = {
+  de: deTranslations,
+  ar: arTranslations,
+  en: enTranslations,
+  tr: trTranslations,
+  ur: urTranslations
+};
+
+const t = translations[locale];
+---
+
+<div class="connect-dots-container" data-locale={locale}>
+  <!-- Header -->
+  <div class="game-header">
+    <h1>{t.connectDotsGame}</h1>
+    <p class="game-description">{t.connectDotsDescription}</p>
+  </div>
+
+  <!-- Settings Panel -->
+  <div class="settings-panel">
+    <div class="setting-group">
+      <label for="difficulty-select">{t.difficulty}</label>
+      <select id="difficulty-select" class="difficulty-selector">
+        <option value="easy">{t.easy}</option>
+        <option value="medium">{t.medium}</option>
+        <option value="hard">{t.hard}</option>
+        <option value="expert">{t.expert}</option>
+      </select>
+    </div>
+
+    <div class="setting-group">
+      <label for="sequence-select">{t.sequenceType}</label>
+      <select id="sequence-select" class="sequence-selector">
+        <option value="standard">{t.standardSequence}</option>
+        <option value="skip2">{t.skipBy2}</option>
+        <option value="skip5">{t.skipBy5}</option>
+        <option value="skip10">{t.skipBy10}</option>
+        <option value="alphabet">{t.alphabetMode}</option>
+        <option value="reverse">{t.reverseSequence}</option>
+      </select>
+    </div>
+
+    <div class="setting-toggles">
+      <label class="toggle-item">
+        <input type="checkbox" id="show-numbers" checked />
+        <span>{t.showNumbers}</span>
+      </label>
+
+      <label class="toggle-item">
+        <input type="checkbox" id="play-sound" checked />
+        <span>{t.soundEffectsEnabled}</span>
+      </label>
+
+      <label class="toggle-item">
+        <input type="checkbox" id="enable-hints" checked />
+        <span>{t.showHint}</span>
+      </label>
+
+      <label class="toggle-item">
+        <input type="checkbox" id="practice-mode" />
+        <span>{t.practiceMode}</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Puzzle Selection Grid -->
+  <div class="puzzle-grid" id="puzzle-grid">
+    <!-- Populated dynamically -->
+  </div>
+
+  <!-- Game Canvas (hidden initially) -->
+  <div class="game-canvas-wrapper" id="game-wrapper" style="display: none;">
+    <!-- Progress Bar -->
+    <div class="progress-bar-container">
+      <div class="progress-info">
+        <span id="dots-connected">0</span> / <span id="total-dots">0</span> {t.dotsConnected}
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+
+    <!-- Stats Display -->
+    <div class="stats-display">
+      <div class="stat-item">
+        <span class="stat-label">{t.completionTimeShort}:</span>
+        <span class="stat-value" id="time-display">0:00</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">{t.mistakesMade}:</span>
+        <span class="stat-value" id="mistakes-count">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">{t.hintsUsedShort}:</span>
+        <span class="stat-value" id="hints-count">0</span>
+      </div>
+    </div>
+
+    <!-- Main Canvas -->
+    <canvas id="dots-canvas" width="800" height="600"></canvas>
+
+    <!-- Control Buttons -->
+    <div class="game-controls">
+      <button id="hint-button" class="control-btn hint-btn">
+        <span class="icon">💡</span> {t.showHint}
+      </button>
+      <button id="reset-button" class="control-btn reset-btn">
+        <span class="icon">🔄</span> {t.resetPuzzle}
+      </button>
+      <button id="back-button" class="control-btn back-btn">
+        <span class="icon">⬅️</span> {t.backToConnectDots}
+      </button>
+    </div>
+  </div>
+
+  <!-- Completion Modal -->
+  <div class="completion-modal" id="completion-modal" style="display: none;">
+    <div class="modal-content">
+      <div class="completion-animation" id="completion-animation">
+        <!-- Character reveal animation -->
+      </div>
+      <h2 class="completion-title">{t.characterRevealed}</h2>
+      <p class="completion-message" id="completion-message"></p>
+
+      <div class="completion-stats">
+        <div class="stat-row">
+          <span>{t.completionTimeShort}:</span>
+          <span id="final-time">-</span>
+        </div>
+        <div class="stat-row">
+          <span>{t.mistakesMade}:</span>
+          <span id="final-mistakes">-</span>
+        </div>
+        <div class="stat-row">
+          <span>{t.hintsUsedShort}:</span>
+          <span id="final-hints">-</span>
+        </div>
+      </div>
+
+      <div class="stars-earned" id="stars-display">
+        <span class="stars-icon">⭐</span>
+        <span class="stars-count" id="stars-earned">0</span>
+        <span>{t.earnedStars}</span>
+      </div>
+
+      <div class="completion-actions">
+        <button id="save-image-btn" class="action-btn">
+          {t.saveAsImage}
+        </button>
+        <button id="color-btn" class="action-btn">
+          {t.colorCompletedImage}
+        </button>
+        <button id="next-puzzle-btn" class="action-btn primary">
+          {t.nextPuzzle}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .connect-dots-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Noto Sans', sans-serif;
+  }
+
+  .game-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .game-header h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .game-description {
+    font-size: 1.2rem;
+    color: #666;
+  }
+
+  /* Settings Panel */
+  .settings-panel {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .setting-group {
+    display: inline-block;
+    margin-right: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .setting-group label {
+    display: block;
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .difficulty-selector,
+  .sequence-selector {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .difficulty-selector:hover,
+  .sequence-selector:hover {
+    background: white;
+    transform: translateY(-2px);
+  }
+
+  .setting-toggles {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .toggle-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .toggle-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+
+  /* Puzzle Grid */
+  .puzzle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .puzzle-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+  }
+
+  .puzzle-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    border-color: #667eea;
+  }
+
+  .puzzle-card.locked {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .puzzle-card.locked:hover {
+    transform: none;
+  }
+
+  .puzzle-emoji {
+    font-size: 4rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .puzzle-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  .puzzle-info {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #f0f0f0;
+  }
+
+  .info-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .info-label {
+    font-size: 0.75rem;
+    color: #999;
+    text-transform: uppercase;
+  }
+
+  .info-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #667eea;
+  }
+
+  .difficulty-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .difficulty-easy {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .difficulty-medium {
+    background: #fff3cd;
+    color: #856404;
+  }
+
+  .difficulty-hard {
+    background: #f8d7da;
+    color: #721c24;
+  }
+
+  .difficulty-expert {
+    background: #d1ecf1;
+    color: #0c5460;
+  }
+
+  /* Game Canvas */
+  .game-canvas-wrapper {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .progress-bar-container {
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-info {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .stats-display {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+  }
+
+  #dots-canvas {
+    display: block;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+  }
+
+  .game-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .control-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .hint-btn {
+    background: #ffd93d;
+    color: #333;
+  }
+
+  .hint-btn:hover {
+    background: #ffc107;
+    transform: translateY(-2px);
+  }
+
+  .reset-btn {
+    background: #6c757d;
+    color: white;
+  }
+
+  .reset-btn:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+  }
+
+  .back-btn {
+    background: #007bff;
+    color: white;
+  }
+
+  .back-btn:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+  }
+
+  /* Completion Modal */
+  .completion-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 24px;
+    padding: 3rem;
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    animation: slideUp 0.5s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .completion-animation {
+    font-size: 8rem;
+    margin-bottom: 1rem;
+    animation: bounce 1s ease infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+  }
+
+  .completion-title {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+
+  .completion-message {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .completion-stats {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 1.1rem;
+  }
+
+  .stat-row span:first-child {
+    color: #666;
+  }
+
+  .stat-row span:last-child {
+    font-weight: 700;
+    color: #333;
+  }
+
+  .stars-earned {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffd700;
+    margin-bottom: 2rem;
+  }
+
+  .stars-icon {
+    font-size: 2rem;
+  }
+
+  .stars-count {
+    font-size: 2.5rem;
+  }
+
+  .completion-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #667eea;
+    border-radius: 12px;
+    background: white;
+    color: #667eea;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .action-btn:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .action-btn.primary {
+    background: #667eea;
+    color: white;
+  }
+
+  .action-btn.primary:hover {
+    background: #764ba2;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .connect-dots-container {
+      padding: 1rem;
+    }
+
+    .game-header h1 {
+      font-size: 2rem;
+    }
+
+    .settings-panel {
+      padding: 1rem;
+    }
+
+    .setting-group {
+      margin-right: 1rem;
+    }
+
+    .puzzle-grid {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    #dots-canvas {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .game-controls {
+      flex-direction: column;
+    }
+
+    .modal-content {
+      padding: 2rem 1.5rem;
+    }
+
+    .completion-animation {
+      font-size: 5rem;
+    }
+  }
+
+  /* RTL Support */
+  [dir="rtl"] .setting-group {
+    margin-right: 0;
+    margin-left: 2rem;
+  }
+
+  [dir="rtl"] .toggle-item {
+    flex-direction: row-reverse;
+  }
+
+  [dir="rtl"] .control-btn {
+    flex-direction: row-reverse;
+  }
+</style>
+
+<script>
+  import {
+    getCharacterPuzzles,
+    type DotPuzzle,
+    type ConnectDotsProgress,
+    connectDot,
+    calculateStars,
+    saveProgress,
+    loadProgress,
+    clearProgress,
+    savePuzzleStats,
+    getPuzzleStats
+  } from '../utils/connect-dots.ts';
+
+  // Initialize game state
+  let currentPuzzle: DotPuzzle | null = null;
+  let progress: ConnectDotsProgress | null = null;
+  let canvas: HTMLCanvasElement;
+  let ctx: CanvasRenderingContext2D;
+  let startTime: number = 0;
+  let timerInterval: number | null = null;
+
+  // Audio feedback
+  const playSound = (type: 'correct' | 'wrong' | 'complete') => {
+    const soundEnabled = (document.getElementById('play-sound') as HTMLInputElement)?.checked;
+    if (!soundEnabled) return;
+
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    if (type === 'correct') {
+      oscillator.frequency.value = 523.25; // C5
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+    } else if (type === 'wrong') {
+      oscillator.frequency.value = 196; // G3
+      gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.2);
+    } else if (type === 'complete') {
+      // Play ascending notes
+      [261.63, 329.63, 392, 523.25].forEach((freq, i) => {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.3, audioContext.currentTime + i * 0.1);
+        osc.start(audioContext.currentTime + i * 0.1);
+        osc.stop(audioContext.currentTime + i * 0.1 + 0.2);
+      });
+    }
+  };
+
+  // Initialize puzzle grid
+  function initializePuzzleGrid() {
+    const puzzles = getCharacterPuzzles();
+    const grid = document.getElementById('puzzle-grid');
+    if (!grid) return;
+
+    grid.innerHTML = puzzles.map(puzzle => `
+      <div class="puzzle-card ${puzzle.locked ? 'locked' : ''}" data-puzzle-id="${puzzle.id}">
+        <div class="puzzle-emoji">${puzzle.emoji}</div>
+        <h3 class="puzzle-name">${puzzle.characterName.en}</h3>
+        <div class="puzzle-info">
+          <div class="info-badge">
+            <span class="info-label">Dots</span>
+            <span class="info-value">${puzzle.dotCount}</span>
+          </div>
+          <div class="info-badge">
+            <span class="difficulty-badge difficulty-${puzzle.difficulty}">
+              ${puzzle.difficulty}
+            </span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    // Add click handlers
+    grid.querySelectorAll('.puzzle-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        const puzzleId = (e.currentTarget as HTMLElement).dataset.puzzleId;
+        if (!puzzleId) return;
+        const puzzle = puzzles.find(p => p.id === puzzleId);
+        if (puzzle && !puzzle.locked) {
+          startPuzzle(puzzle);
+        }
+      });
+    });
+  }
+
+  // Start a puzzle
+  function startPuzzle(puzzle: DotPuzzle) {
+    currentPuzzle = puzzle;
+
+    // Initialize progress
+    progress = {
+      currentDot: 0,
+      connectedDots: [],
+      isComplete: false,
+      startTime: Date.now(),
+      hintsUsed: 0,
+      mistakes: 0
+    };
+
+    // Show canvas, hide grid
+    const gridEl = document.getElementById('puzzle-grid');
+    const wrapperEl = document.getElementById('game-wrapper');
+    if (gridEl) gridEl.style.display = 'none';
+    if (wrapperEl) wrapperEl.style.display = 'block';
+
+    // Setup canvas
+    canvas = document.getElementById('dots-canvas') as HTMLCanvasElement;
+    ctx = canvas.getContext('2d')!;
+
+    // Update UI
+    const totalDotsEl = document.getElementById('total-dots');
+    if (totalDotsEl) totalDotsEl.textContent = puzzle.dotCount.toString();
+
+    // Draw initial state
+    drawPuzzle();
+
+    // Start timer
+    startTimer();
+  }
+
+  // Draw puzzle on canvas
+  function drawPuzzle() {
+    if (!currentPuzzle || !ctx) return;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const showNumbers = (document.getElementById('show-numbers') as HTMLInputElement)?.checked ?? true;
+
+    // Draw connected lines
+    ctx.strokeStyle = '#667eea';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+
+    if (progress && progress.connectedDots.length > 1) {
+      ctx.beginPath();
+      const firstDot = currentPuzzle.dots[progress.connectedDots[0]];
+      ctx.moveTo(firstDot.x, firstDot.y);
+
+      for (let i = 1; i < progress.connectedDots.length; i++) {
+        const dot = currentPuzzle.dots[progress.connectedDots[i]];
+        ctx.lineTo(dot.x, dot.y);
+      }
+
+      ctx.stroke();
+    }
+
+    // Draw dots
+    currentPuzzle.dots.forEach((dot, index) => {
+      const isConnected = progress?.connectedDots.includes(index) ?? false;
+      const isNext = progress?.currentDot === index;
+
+      // Dot circle
+      ctx.beginPath();
+      ctx.arc(dot.x, dot.y, isNext ? 25 : 18, 0, Math.PI * 2);
+      ctx.fillStyle = isConnected ? '#4CAF50' : isNext ? '#FFD93D' : 'white';
+      ctx.fill();
+      ctx.strokeStyle = isConnected ? '#388E3C' : isNext ? '#FFC107' : '#667eea';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Glow effect for next dot
+      if (isNext) {
+        ctx.shadowColor = '#FFD93D';
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, 25, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+
+      // Number/letter
+      if (showNumbers || !isConnected) {
+        ctx.fillStyle = isConnected ? 'white' : '#333';
+        ctx.font = 'bold 16px "Noto Sans"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(dot.number.toString(), dot.x, dot.y);
+      }
+    });
+  }
+
+  // Handle dot click
+  function handleCanvasClick(event: MouseEvent) {
+    if (!currentPuzzle || !progress || progress.isComplete) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    // Check if clicked on next dot
+    const nextDot = currentPuzzle.dots[progress.currentDot];
+    const distance = Math.sqrt((x - nextDot.x) ** 2 + (y - nextDot.y) ** 2);
+
+    if (distance <= 25) {
+      // Correct dot!
+      progress = connectDot(progress.currentDot, progress, currentPuzzle.dotCount);
+      playSound('correct');
+
+      // Update UI
+      updateProgress();
+      drawPuzzle();
+
+      // Check completion
+      if (progress.isComplete) {
+        completePuzzle();
+      }
+    } else {
+      // Wrong dot - check if clicked any other dot
+      const clickedWrongDot = currentPuzzle.dots.some((dot, index) => {
+        const dist = Math.sqrt((x - dot.x) ** 2 + (y - dot.y) ** 2);
+        return dist <= 25 && index !== progress!.currentDot;
+      });
+
+      if (clickedWrongDot) {
+        progress.mistakes++;
+        playSound('wrong');
+        updateProgress();
+
+        // Shake animation
+        canvas.style.animation = 'shake 0.5s';
+        setTimeout(() => {
+          canvas.style.animation = '';
+        }, 500);
+      }
+    }
+  }
+
+  // Update progress display
+  function updateProgress() {
+    if (!progress) return;
+
+    const dotsConnectedEl = document.getElementById('dots-connected');
+    const mistakesEl = document.getElementById('mistakes-count');
+    const hintsEl = document.getElementById('hints-count');
+    const progressFillEl = document.getElementById('progress-fill');
+
+    if (dotsConnectedEl) dotsConnectedEl.textContent = progress.connectedDots.length.toString();
+    if (mistakesEl) mistakesEl.textContent = progress.mistakes.toString();
+    if (hintsEl) hintsEl.textContent = progress.hintsUsed.toString();
+    if (progressFillEl && currentPuzzle) {
+      const percent = (progress.connectedDots.length / currentPuzzle.dotCount) * 100;
+      progressFillEl.style.width = `${percent}%`;
+    }
+  }
+
+  // Start timer
+  function startTimer() {
+    startTime = Date.now();
+    if (timerInterval) clearInterval(timerInterval);
+
+    timerInterval = window.setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+      const timeEl = document.getElementById('time-display');
+      if (timeEl) {
+        timeEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      }
+    }, 1000);
+  }
+
+  // Complete puzzle
+  function completePuzzle() {
+    if (!currentPuzzle || !progress) return;
+
+    // Stop timer
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    playSound('complete');
+
+    // Calculate stars
+    const stars = calculateStars(progress, currentPuzzle);
+
+    // Show completion modal
+    showCompletionModal(stars);
+
+    // Save stats
+    const stats = getPuzzleStats(currentPuzzle.id) || {
+      puzzleId: currentPuzzle.id,
+      completions: 0,
+      bestTime: Infinity,
+      totalStars: 0
+    };
+
+    const completionTime = Math.floor((Date.now() - progress.startTime) / 1000);
+    stats.completions++;
+    stats.bestTime = Math.min(stats.bestTime, completionTime);
+    stats.totalStars += stars;
+    stats.lastCompleted = Date.now();
+
+    savePuzzleStats(currentPuzzle.id, stats);
+  }
+
+  // Show completion modal
+  function showCompletionModal(stars: number) {
+    if (!currentPuzzle || !progress) return;
+
+    const modal = document.getElementById('completion-modal');
+    const animationEl = document.getElementById('completion-animation');
+    const messageEl = document.getElementById('completion-message');
+    const finalTimeEl = document.getElementById('final-time');
+    const finalMistakesEl = document.getElementById('final-mistakes');
+    const finalHintsEl = document.getElementById('final-hints');
+    const starsEarnedEl = document.getElementById('stars-earned');
+
+    if (!modal) return;
+
+    if (animationEl) animationEl.textContent = currentPuzzle.emoji;
+    if (messageEl) {
+      const message = progress.mistakes === 0 && progress.hintsUsed === 0
+        ? 'Perfect Completion!'
+        : 'Great Work!';
+      messageEl.textContent = message;
+    }
+
+    const completionTime = Math.floor((Date.now() - progress.startTime) / 1000);
+    const minutes = Math.floor(completionTime / 60);
+    const seconds = completionTime % 60;
+
+    if (finalTimeEl) finalTimeEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    if (finalMistakesEl) finalMistakesEl.textContent = progress.mistakes.toString();
+    if (finalHintsEl) finalHintsEl.textContent = progress.hintsUsed.toString();
+    if (starsEarnedEl) starsEarnedEl.textContent = stars.toString();
+
+    modal.style.display = 'flex';
+  }
+
+  // Event listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    initializePuzzleGrid();
+
+    // Canvas click
+    const canvasEl = document.getElementById('dots-canvas') as HTMLCanvasElement;
+    if (canvasEl) {
+      canvasEl.addEventListener('click', handleCanvasClick);
+    }
+
+    // Control buttons
+    document.getElementById('back-button')?.addEventListener('click', () => {
+      const gridEl = document.getElementById('puzzle-grid');
+      const wrapperEl = document.getElementById('game-wrapper');
+      if (gridEl) gridEl.style.display = 'grid';
+      if (wrapperEl) wrapperEl.style.display = 'none';
+      if (timerInterval) clearInterval(timerInterval);
+    });
+
+    document.getElementById('reset-button')?.addEventListener('click', () => {
+      if (currentPuzzle && confirm('Reset puzzle progress?')) {
+        startPuzzle(currentPuzzle);
+      }
+    });
+
+    document.getElementById('hint-button')?.addEventListener('click', () => {
+      if (progress) {
+        progress.hintsUsed++;
+        updateProgress();
+        // Hint: highlight next dot with animation
+        drawPuzzle();
+      }
+    });
+
+    // Completion modal actions
+    document.getElementById('next-puzzle-btn')?.addEventListener('click', () => {
+      const modal = document.getElementById('completion-modal');
+      if (modal) modal.style.display = 'none';
+
+      const puzzles = getCharacterPuzzles();
+      const currentIndex = puzzles.findIndex(p => p.id === currentPuzzle?.id);
+      const nextPuzzle = puzzles[currentIndex + 1] || puzzles[0];
+
+      startPuzzle(nextPuzzle);
+    });
+
+    document.getElementById('save-image-btn')?.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = `connect-dots-${currentPuzzle?.id}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  });
+</script>
+
+<style>
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+</style>

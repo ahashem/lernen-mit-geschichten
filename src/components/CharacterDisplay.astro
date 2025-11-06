@@ -1,0 +1,421 @@
+---
+/**
+ * Character Display Component
+ * Renders character with equipped clothing items using SVG layers
+ */
+interface Props {
+  characterId: string;
+  outfit: Array<{
+    itemId: string;
+    color: string;
+    pattern: string;
+    size: string;
+    flipped: boolean;
+  }>;
+  pose?: 'standing' | 'waving' | 'jumping' | 'sitting';
+  expression?: 'happy' | 'excited' | 'cool' | 'surprised' | 'neutral';
+  viewAngle?: 'front' | 'side' | 'back';
+  scale?: number;
+}
+
+const {
+  characterId,
+  outfit,
+  pose = 'standing',
+  expression = 'happy',
+  viewAngle = 'front',
+  scale = 1,
+} = Astro.props;
+
+// Character emoji mapping
+const characterEmojis: Record<string, string> = {
+  bruno: '🐻',
+  fritz: '👦',
+  lina: '👧',
+  leo: '🦁',
+  mila: '👧',
+  moritz: '🐭',
+  tobi: '👦',
+  dino: '🦕',
+  milo: '🐨',
+  finn: '🦝',
+};
+
+const emoji = characterEmojis[characterId] || '👤';
+---
+
+<div class="character-display-wrapper" style={`transform: scale(${scale})`}>
+  <svg
+    class="character-svg"
+    viewBox="0 0 200 300"
+    xmlns="http://www.w3.org/2000/svg"
+    data-character={characterId}
+    data-pose={pose}
+    data-expression={expression}
+    data-view={viewAngle}
+  >
+    <!-- Background -->
+    <defs>
+      <!-- Patterns -->
+      <pattern id="stripes" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+        <line x1="0" y1="0" x2="0" y2="10" stroke="currentColor" stroke-width="2" />
+      </pattern>
+
+      <pattern id="dots" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+        <circle cx="5" cy="5" r="2" fill="currentColor" />
+      </pattern>
+
+      <pattern id="stars" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+        <text x="10" y="15" text-anchor="middle" font-size="12">⭐</text>
+      </pattern>
+
+      <pattern id="hearts" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+        <text x="10" y="15" text-anchor="middle" font-size="12">❤️</text>
+      </pattern>
+
+      <pattern id="flowers" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+        <text x="10" y="15" text-anchor="middle" font-size="12">🌸</text>
+      </pattern>
+
+      <!-- Gradients -->
+      <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" style="stop-color:currentColor;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:currentColor;stop-opacity:0.5" />
+      </linearGradient>
+
+      <!-- Glitter filter -->
+      <filter id="glitter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise" />
+        <feDiffuseLighting in="noise" lighting-color="white" surfaceScale="1">
+          <feDistantLight azimuth="45" elevation="60" />
+        </feDiffuseLighting>
+        <feBlend in="SourceGraphic" mode="overlay" />
+      </filter>
+    </defs>
+
+    <!-- Character Body Base -->
+    <g class="character-body" data-layer="body">
+      <!-- Simple character representation (emoji-based for MVP) -->
+      <text x="100" y="150" font-size="120" text-anchor="middle" dominant-baseline="middle">
+        {emoji}
+      </text>
+
+      <!-- Expression overlay -->
+      <g class="expression" transform="translate(100, 80)">
+        {
+          expression === 'happy' && (
+            <text font-size="40" text-anchor="middle">
+              😊
+            </text>
+          )
+        }
+        {
+          expression === 'excited' && (
+            <text font-size="40" text-anchor="middle">
+              🤩
+            </text>
+          )
+        }
+        {
+          expression === 'cool' && (
+            <text font-size="40" text-anchor="middle">
+              😎
+            </text>
+          )
+        }
+        {
+          expression === 'surprised' && (
+            <text font-size="40" text-anchor="middle">
+              😲
+            </text>
+          )
+        }
+      </g>
+    </g>
+
+    <!-- Clothing Layers -->
+    <!-- Bottoms -->
+    <g class="clothing-layer" data-layer="bottoms">
+      {
+        outfit
+          .filter(item => item.itemId.startsWith('bottoms'))
+          .map(item => (
+            <g class="clothing-item" data-item={item.itemId}>
+              <rect
+                x="60"
+                y="180"
+                width="80"
+                height="100"
+                fill={item.color}
+                rx="5"
+                class={`pattern-${item.pattern}`}
+              />
+            </g>
+          ))
+      }
+    </g>
+
+    <!-- Tops -->
+    <g class="clothing-layer" data-layer="tops">
+      {
+        outfit
+          .filter(item => item.itemId.startsWith('tops'))
+          .map(item => (
+            <g class="clothing-item" data-item={item.itemId}>
+              <rect
+                x="60"
+                y="120"
+                width="80"
+                height="70"
+                fill={item.color}
+                rx="5"
+                class={`pattern-${item.pattern}`}
+              />
+            </g>
+          ))
+      }
+    </g>
+
+    <!-- Outerwear -->
+    <g class="clothing-layer" data-layer="outerwear">
+      {
+        outfit
+          .filter(item => item.itemId.startsWith('outerwear'))
+          .map(item => (
+            <g class="clothing-item" data-item={item.itemId}>
+              <rect
+                x="50"
+                y="110"
+                width="100"
+                height="90"
+                fill={item.color}
+                rx="10"
+                class={`pattern-${item.pattern}`}
+                opacity="0.9"
+              />
+            </g>
+          ))
+      }
+    </g>
+
+    <!-- Footwear -->
+    <g class="clothing-layer" data-layer="footwear">
+      {
+        outfit
+          .filter(item => item.itemId.startsWith('footwear'))
+          .map(item => (
+            <g class="clothing-item" data-item={item.itemId}>
+              <ellipse cx="80" cy="280" rx="15" ry="8" fill={item.color} />
+              <ellipse cx="120" cy="280" rx="15" ry="8" fill={item.color} />
+            </g>
+          ))
+      }
+    </g>
+
+    <!-- Accessories -->
+    <g class="clothing-layer" data-layer="accessories">
+      {
+        outfit
+          .filter(item => item.itemId.startsWith('accessories'))
+          .map(item => {
+            // Hat/headwear
+            if (item.itemId.includes('hat') || item.itemId.includes('cap')) {
+              return (
+                <g class="clothing-item" data-item={item.itemId}>
+                  <ellipse cx="100" cy="40" rx="35" ry="10" fill={item.color} />
+                  <rect x="75" y="30" width="50" height="15" fill={item.color} rx="5" />
+                </g>
+              );
+            }
+            // Glasses
+            if (item.itemId.includes('glasses')) {
+              return (
+                <g class="clothing-item" data-item={item.itemId}>
+                  <circle cx="85" cy="90" r="12" fill="none" stroke={item.color} stroke-width="2" />
+                  <circle cx="115" cy="90" r="12" fill="none" stroke={item.color} stroke-width="2" />
+                  <line x1="97" y1="90" x2="103" y2="90" stroke={item.color} stroke-width="2" />
+                </g>
+              );
+            }
+            // Necklace
+            if (item.itemId.includes('necklace')) {
+              return (
+                <g class="clothing-item" data-item={item.itemId}>
+                  <path
+                    d="M 70 115 Q 100 125 130 115"
+                    fill="none"
+                    stroke={item.color}
+                    stroke-width="3"
+                  />
+                  <circle cx="100" cy="127" r="5" fill={item.color} />
+                </g>
+              );
+            }
+            // Default accessory
+            return (
+              <g class="clothing-item" data-item={item.itemId}>
+                <circle cx="100" cy="150" r="8" fill={item.color} />
+              </g>
+            );
+          })
+      }
+    </g>
+
+    <!-- Pose indicators -->
+    {
+      pose === 'waving' && (
+        <g class="pose-indicator" transform="translate(140, 140)">
+          <text font-size="30">👋</text>
+        </g>
+      )
+    }
+    {
+      pose === 'jumping' && (
+        <g transform="translate(0, -20)">
+          <text x="100" y="290" font-size="20" text-anchor="middle">
+            ⬆️
+          </text>
+        </g>
+      )
+    }
+  </svg>
+
+  <!-- Outfit info -->
+  <div class="outfit-info">
+    <span class="item-count">{outfit.length} items</span>
+  </div>
+</div>
+
+<style>
+  .character-display-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+  }
+
+  .character-svg {
+    width: 100%;
+    height: auto;
+    max-width: 400px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  }
+
+  .character-body {
+    transition: transform 0.3s ease;
+  }
+
+  .clothing-layer {
+    transition: opacity 0.3s ease;
+  }
+
+  .clothing-item {
+    transition: all 0.3s ease;
+  }
+
+  /* Pattern classes */
+  .pattern-stripes {
+    fill: url(#stripes);
+  }
+
+  .pattern-dots {
+    fill: url(#dots);
+  }
+
+  .pattern-stars {
+    fill: url(#stars);
+  }
+
+  .pattern-hearts {
+    fill: url(#hearts);
+  }
+
+  .pattern-flowers {
+    fill: url(#flowers);
+  }
+
+  .pattern-gradient {
+    fill: url(#gradient);
+  }
+
+  .pattern-glitter {
+    filter: url(#glitter);
+  }
+
+  /* Pose animations */
+  [data-pose='waving'] .character-body {
+    animation: wave 1s ease-in-out infinite;
+  }
+
+  [data-pose='jumping'] .character-body {
+    animation: jump 0.6s ease-in-out infinite;
+  }
+
+  [data-pose='sitting'] .character-body {
+    transform: translateY(30px);
+  }
+
+  @keyframes wave {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-5deg);
+    }
+    75% {
+      transform: rotate(5deg);
+    }
+  }
+
+  @keyframes jump {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .outfit-info {
+    margin-top: 1rem;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    font-weight: 600;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .item-count {
+    font-size: 0.9rem;
+  }
+
+  /* View angle adjustments */
+  [data-view='side'] .character-body {
+    transform: scaleX(0.7);
+  }
+
+  [data-view='back'] .expression {
+    display: none;
+  }
+
+  /* Size variations */
+  .character-item[data-size='small'] {
+    transform: scale(0.8);
+  }
+
+  .character-item[data-size='large'] {
+    transform: scale(1.2);
+  }
+
+  /* Flipped items */
+  .character-item[data-flipped='true'] {
+    transform: scaleX(-1);
+  }
+</style>

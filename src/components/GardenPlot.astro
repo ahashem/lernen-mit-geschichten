@@ -1,0 +1,28 @@
+---
+/**
+ * Garden Plot Component
+ * Represents a single plot in the Magic Garden (4x5 grid)
+ * Note: Most rendering logic is in MagicGarden.astro for dynamic updates
+ */
+
+interface Props {
+  plotId: number;
+  plantId?: string | null;
+  growthStage?: string;
+  growthProgress?: number;
+  needsWater?: boolean;
+  isWilted?: boolean;
+}
+
+const { plotId, plantId, growthStage, growthProgress, needsWater, isWilted } = Astro.props;
+---
+
+<div class="garden-plot-wrapper" data-plot-id={plotId}>
+  <!-- Plot content is dynamically rendered via JavaScript in MagicGarden.astro -->
+</div>
+
+<style>
+  .garden-plot-wrapper {
+    position: relative;
+  }
+</style>

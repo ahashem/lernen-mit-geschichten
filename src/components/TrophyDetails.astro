@@ -1,0 +1,519 @@
+---
+/**
+ * Trophy Details Modal
+ * Shows detailed information about a trophy when clicked
+ */
+const locale = (Astro.currentLocale as 'de' | 'ar' | 'en' | 'tr' | 'ur') || 'de';
+
+const messages = {
+  de: {
+    close: 'Schließen',
+    earned: 'Erhalten',
+    notEarned: 'Noch nicht freigeschaltet',
+    material: 'Material',
+    size: 'Größe',
+    shape: 'Form',
+    rarity: 'Seltenheit',
+    earnedDate: 'Erhalten am',
+    relatedBadge: 'Zugehöriges Abzeichen',
+    nextTier: 'Nächste Stufe',
+    viewBadge: 'Abzeichen ansehen',
+  },
+  ar: {
+    close: 'إغلاق',
+    earned: 'تم الحصول عليها',
+    notEarned: 'لم يتم فتحها بعد',
+    material: 'المادة',
+    size: 'الحجم',
+    shape: 'الشكل',
+    rarity: 'الندرة',
+    earnedDate: 'تم الحصول عليها في',
+    relatedBadge: 'الشارة المرتبطة',
+    nextTier: 'المستوى التالي',
+    viewBadge: 'عرض الشارة',
+  },
+  en: {
+    close: 'Close',
+    earned: 'Earned',
+    notEarned: 'Not yet unlocked',
+    material: 'Material',
+    size: 'Size',
+    shape: 'Shape',
+    rarity: 'Rarity',
+    earnedDate: 'Earned on',
+    relatedBadge: 'Related Badge',
+    nextTier: 'Next Tier',
+    viewBadge: 'View Badge',
+  },
+  tr: {
+    close: 'Kapat',
+    earned: 'Kazanıldı',
+    notEarned: 'Henüz açılmadı',
+    material: 'Malzeme',
+    size: 'Boyut',
+    shape: 'Şekil',
+    rarity: 'Nadirlik',
+    earnedDate: 'Kazanma tarihi',
+    relatedBadge: 'İlgili Rozet',
+    nextTier: 'Sonraki Seviye',
+    viewBadge: 'Rozeti Görüntüle',
+  },
+  ur: {
+    close: 'بند کریں',
+    earned: 'حاصل ہوا',
+    notEarned: 'ابھی کھلا نہیں',
+    material: 'مواد',
+    size: 'سائز',
+    shape: 'شکل',
+    rarity: 'نایابیت',
+    earnedDate: 'حاصل ہونے کی تاریخ',
+    relatedBadge: 'متعلقہ بیج',
+    nextTier: 'اگلی سطح',
+    viewBadge: 'بیج دیکھیں',
+  },
+};
+
+const t = messages[locale];
+---
+
+<div class="trophy-details-modal" id="trophy-details-modal" style="display: none;">
+  <!-- Backdrop -->
+  <div class="modal-backdrop" id="trophy-details-backdrop"></div>
+
+  <!-- Modal Content -->
+  <div class="modal-content">
+    <!-- Close Button -->
+    <button class="modal-close-btn" id="close-trophy-details" aria-label={t.close}>
+      ✕
+    </button>
+
+    <!-- Trophy Display -->
+    <div class="trophy-display">
+      <div class="trophy-showcase" id="trophy-showcase">
+        <!-- Trophy will be inserted here -->
+      </div>
+
+      <!-- Status Badge -->
+      <div class="status-badge" id="status-badge">
+        <span class="status-icon"></span>
+        <span class="status-text"></span>
+      </div>
+    </div>
+
+    <!-- Trophy Information -->
+    <div class="trophy-information">
+      <h2 class="trophy-title" id="trophy-title"></h2>
+      <p class="trophy-desc" id="trophy-desc"></p>
+
+      <!-- Details Grid -->
+      <div class="details-grid">
+        <div class="detail-card">
+          <div class="detail-icon">💎</div>
+          <div class="detail-label">{t.material}</div>
+          <div class="detail-value" id="detail-material"></div>
+        </div>
+
+        <div class="detail-card">
+          <div class="detail-icon">📏</div>
+          <div class="detail-label">{t.size}</div>
+          <div class="detail-value" id="detail-size"></div>
+        </div>
+
+        <div class="detail-card">
+          <div class="detail-icon">🎨</div>
+          <div class="detail-label">{t.shape}</div>
+          <div class="detail-value" id="detail-shape"></div>
+        </div>
+
+        <div class="detail-card" id="earned-date-card" style="display: none;">
+          <div class="detail-icon">📅</div>
+          <div class="detail-label">{t.earnedDate}</div>
+          <div class="detail-value" id="detail-date"></div>
+        </div>
+      </div>
+
+      <!-- Related Badge -->
+      <div class="related-section" id="related-badge-section" style="display: none;">
+        <h3 class="section-title">{t.relatedBadge}</h3>
+        <button class="view-badge-btn" id="view-badge-btn">
+          <span class="badge-icon" id="badge-icon"></span>
+          <span class="badge-name" id="badge-name"></span>
+        </button>
+      </div>
+
+      <!-- Next Tier -->
+      <div class="next-tier-section" id="next-tier-section" style="display: none;">
+        <h3 class="section-title">{t.nextTier}</h3>
+        <div class="next-tier-preview" id="next-tier-preview">
+          <!-- Next tier trophy preview -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .trophy-details-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: modal-fade-in 0.3s ease;
+  }
+
+  @keyframes modal-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+  }
+
+  .modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: modal-slide-up 0.4s ease;
+    z-index: 1;
+  }
+
+  @keyframes modal-slide-up {
+    from {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+  }
+
+  .modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+  }
+
+  /* Trophy Display */
+  .trophy-display {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .trophy-showcase {
+    width: 200px;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
+    border-radius: 20px;
+    margin-bottom: 15px;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
+    color: white;
+    font-weight: bold;
+  }
+
+  .status-icon {
+    font-size: 20px;
+  }
+
+  /* Trophy Information */
+  .trophy-information {
+    color: white;
+  }
+
+  .trophy-title {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .trophy-desc {
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 30px;
+    opacity: 0.9;
+    line-height: 1.6;
+  }
+
+  /* Details Grid */
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+
+  .detail-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .detail-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .detail-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+
+  .detail-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    opacity: 0.8;
+    margin-bottom: 5px;
+  }
+
+  .detail-value {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  /* Related Section */
+  .related-section {
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    opacity: 0.9;
+  }
+
+  .view-badge-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .view-badge-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateX(5px);
+  }
+
+  .badge-icon {
+    font-size: 32px;
+  }
+
+  .badge-name {
+    flex: 1;
+    text-align: left;
+    font-weight: bold;
+  }
+
+  /* Next Tier */
+  .next-tier-section {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+  }
+
+  .next-tier-preview {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .modal-content {
+      padding: 30px 20px;
+    }
+
+    .trophy-title {
+      font-size: 24px;
+    }
+
+    .details-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .badge-name {
+    text-align: right;
+  }
+
+  [dir='rtl'] .view-badge-btn:hover {
+    transform: translateX(-5px);
+  }
+</style>
+
+<script>
+  import { trophyCabinet, type Trophy } from '../utils/trophy-cabinet';
+
+  // Open trophy details
+  window.addEventListener('showTrophyDetails', ((e: CustomEvent) => {
+    const { trophy } = e.detail;
+    showTrophyDetails(trophy);
+  }) as EventListener);
+
+  function showTrophyDetails(trophy: Trophy) {
+    const modal = document.getElementById('trophy-details-modal');
+    const showcase = document.getElementById('trophy-showcase');
+    const title = document.getElementById('trophy-title');
+    const desc = document.getElementById('trophy-desc');
+    const statusBadge = document.getElementById('status-badge');
+
+    if (!modal || !showcase || !title || !desc || !statusBadge) return;
+
+    const locale = document.documentElement.lang as 'de' | 'ar' | 'en' | 'tr' | 'ur' || 'de';
+    const isEarned = trophyCabinet.isTrophyEarned(trophy.id);
+
+    // Populate content
+    title.textContent = trophy.name[locale];
+    desc.textContent = trophy.description[locale];
+
+    // Status badge
+    const statusIcon = statusBadge.querySelector('.status-icon');
+    const statusText = statusBadge.querySelector('.status-text');
+    if (statusIcon && statusText) {
+      if (isEarned) {
+        statusIcon.textContent = '✓';
+        statusText.textContent = getStatusText('earned', locale);
+        statusBadge.style.background = 'rgba(76, 175, 80, 0.3)';
+        statusBadge.style.borderColor = 'rgba(76, 175, 80, 0.6)';
+      } else {
+        statusIcon.textContent = '🔒';
+        statusText.textContent = getStatusText('notEarned', locale);
+        statusBadge.style.background = 'rgba(158, 158, 158, 0.3)';
+        statusBadge.style.borderColor = 'rgba(158, 158, 158, 0.6)';
+      }
+    }
+
+    // Details
+    const materialEl = document.getElementById('detail-material');
+    const sizeEl = document.getElementById('detail-size');
+    const shapeEl = document.getElementById('detail-shape');
+
+    if (materialEl) materialEl.textContent = trophy.material.toUpperCase();
+    if (sizeEl) sizeEl.textContent = trophy.size.toUpperCase();
+    if (shapeEl) shapeEl.textContent = trophy.shape.toUpperCase();
+
+    // Earned date (only if earned)
+    const earnedDateCard = document.getElementById('earned-date-card');
+    const dateEl = document.getElementById('detail-date');
+    if (isEarned && trophy.earnedAt && earnedDateCard && dateEl) {
+      earnedDateCard.style.display = 'block';
+      dateEl.textContent = new Date(trophy.earnedAt).toLocaleDateString(locale);
+    } else if (earnedDateCard) {
+      earnedDateCard.style.display = 'none';
+    }
+
+    // Related badge
+    const badgeSection = document.getElementById('related-badge-section');
+    const badgeIcon = document.getElementById('badge-icon');
+    const badgeName = document.getElementById('badge-name');
+
+    if (badgeSection && badgeIcon && badgeName) {
+      badgeSection.style.display = 'block';
+      badgeIcon.textContent = trophy.icon;
+      badgeName.textContent = trophy.name[locale];
+    }
+
+    // Show modal
+    modal.style.display = 'flex';
+  }
+
+  function getStatusText(key: 'earned' | 'notEarned', locale: string): string {
+    const messages = {
+      de: { earned: 'Erhalten', notEarned: 'Noch nicht freigeschaltet' },
+      ar: { earned: 'تم الحصول عليها', notEarned: 'لم يتم فتحها بعد' },
+      en: { earned: 'Earned', notEarned: 'Not yet unlocked' },
+      tr: { earned: 'Kazanıldı', notEarned: 'Henüz açılmadı' },
+      ur: { earned: 'حاصل ہوا', notEarned: 'ابھی کھلا نہیں' },
+    };
+    return messages[locale as keyof typeof messages]?.[key] || messages.en[key];
+  }
+
+  // Close modal
+  function closeModal() {
+    const modal = document.getElementById('trophy-details-modal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  }
+
+  document.getElementById('close-trophy-details')?.addEventListener('click', closeModal);
+  document.getElementById('trophy-details-backdrop')?.addEventListener('click', closeModal);
+
+  // Keyboard support
+  document.addEventListener('keydown', (e) => {
+    const modal = document.getElementById('trophy-details-modal');
+    if (modal && modal.style.display !== 'none' && e.key === 'Escape') {
+      closeModal();
+    }
+  });
+
+  // View badge
+  document.getElementById('view-badge-btn')?.addEventListener('click', () => {
+    // Navigate to badge collection
+    window.location.href = '/badge-collection';
+  });
+</script>

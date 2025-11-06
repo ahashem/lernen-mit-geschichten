@@ -1,0 +1,1180 @@
+---
+import type { Locale } from '../utils/i18n';
+import GardenPlot from './GardenPlot.astro';
+import PlantCatalog from './PlantCatalog.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<div class="magic-garden-container" data-locale={locale}>
+  <!-- Garden Background -->
+  <div class="garden-background">
+    <div class="sky">
+      <div class="sun"></div>
+      <div class="clouds">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Garden Stats Dashboard -->
+  <div class="garden-stats">
+    <div class="stat-card">
+      <span class="stat-icon">🌱</span>
+      <div class="stat-info">
+        <span class="stat-value" id="plants-grown">0</span>
+        <span class="stat-label" data-i18n="totalPlantsGrown">Plants Grown</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">🌾</span>
+      <div class="stat-info">
+        <span class="stat-value" id="total-harvests">0</span>
+        <span class="stat-label" data-i18n="totalHarvests">Total Harvests</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">🔥</span>
+      <div class="stat-info">
+        <span class="stat-value" id="care-streak">0</span>
+        <span class="stat-label" data-i18n="careStreak">Care Streak</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily Garden Care Section -->
+  <div class="daily-care-section">
+    <h2 data-i18n="dailyGardenCare">Daily Garden Care</h2>
+    <div class="daily-goals">
+      <div class="goal" id="water-goal">
+        <span class="goal-icon">💧</span>
+        <span class="goal-text" data-i18n="waterAllPlantsGoal">Water all plants</span>
+        <span class="goal-status">❌</span>
+      </div>
+      <div class="goal" id="story-goal">
+        <span class="goal-icon">📖</span>
+        <span class="goal-text" data-i18n="readStoryGoal">Read 1 story</span>
+        <span class="goal-status">❌</span>
+      </div>
+    </div>
+    <button class="water-all-btn" id="water-all-button">
+      <span data-i18n="waterAllPlants">Water All Plants</span> 💧
+    </button>
+  </div>
+
+  <!-- Weather Info -->
+  <div class="weather-info">
+    <span data-i18n="weatherToday">Weather Today</span>:
+    <span id="current-weather">☀️ Sunny</span>
+    <span id="weather-bonus" class="hidden">+20% Growth</span>
+  </div>
+
+  <!-- Garden Plots Grid (4x5 = 20 plots) -->
+  <div class="garden-plots-container">
+    <h2 data-i18n="myGarden">My Garden</h2>
+    <div class="garden-grid" id="garden-grid">
+      <!-- Plots will be generated dynamically -->
+    </div>
+  </div>
+
+  <!-- Seed Inventory -->
+  <div class="seed-inventory">
+    <h2 data-i18n="seedInventory">Seed Inventory</h2>
+    <div class="seeds-list" id="seeds-list">
+      <!-- Seeds will be populated dynamically -->
+    </div>
+    <div class="earn-seeds-info">
+      <p data-i18n="earnSeedsBy">Earn seeds by:</p>
+      <ul>
+        <li data-i18n="earnSeedsStory">Reading a story: 1 seed</li>
+        <li data-i18n="earnSeedsQuiz">Completing a quiz: 1 seed</li>
+        <li data-i18n="earnSeedsPerfectQuiz">Perfect quiz: 2 seeds</li>
+        <li data-i18n="earnSeedsGame">Playing a game: 1 seed</li>
+        <li data-i18n="earnSeedsDailyLogin">Daily login: 1 seed</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Plant Collection Encyclopedia Button -->
+  <div class="collection-button-wrapper">
+    <button class="view-collection-btn" id="view-collection-button">
+      <span data-i18n="plantEncyclopedia">Plant Encyclopedia</span> 📖
+    </button>
+  </div>
+
+  <!-- Modal for Plant Selection -->
+  <div class="modal" id="plant-selection-modal">
+    <div class="modal-content">
+      <button class="modal-close" id="close-plant-modal">&times;</button>
+      <h2 data-i18n="selectSeedToPlant">Select a Seed to Plant</h2>
+      <div class="available-seeds" id="available-seeds">
+        <!-- Available seeds for planting -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Plant Encyclopedia -->
+  <div class="modal" id="encyclopedia-modal">
+    <div class="modal-content large">
+      <button class="modal-close" id="close-encyclopedia-modal">&times;</button>
+      <PlantCatalog locale={locale} />
+    </div>
+  </div>
+
+  <!-- Harvest Animation Container -->
+  <div class="harvest-animation hidden" id="harvest-animation">
+    <div class="harvest-content">
+      <div class="harvest-icon">🌟</div>
+      <div class="harvest-message"></div>
+      <div class="harvest-stars"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .magic-garden-container {
+    position: relative;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #90EE90 100%);
+    padding: 2rem 1rem;
+  }
+
+  /* Garden Background */
+  .garden-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50vh;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .sky {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .sun {
+    position: absolute;
+    top: 10%;
+    right: 10%;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, #FFD700 0%, #FFA500 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+    animation: sunMove 60s linear infinite;
+  }
+
+  @keyframes sunMove {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-100px); }
+  }
+
+  .clouds {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 100px;
+    opacity: 0.7;
+  }
+
+  .cloud::before,
+  .cloud::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 100px;
+  }
+
+  .cloud-1 {
+    width: 120px;
+    height: 40px;
+    top: 15%;
+    left: 20%;
+    animation: cloudFloat 30s linear infinite;
+  }
+
+  .cloud-1::before {
+    width: 60px;
+    height: 60px;
+    top: -30px;
+    left: 20px;
+  }
+
+  .cloud-1::after {
+    width: 80px;
+    height: 50px;
+    top: -20px;
+    right: 20px;
+  }
+
+  .cloud-2 {
+    width: 100px;
+    height: 35px;
+    top: 30%;
+    right: 15%;
+    animation: cloudFloat 40s linear infinite reverse;
+  }
+
+  .cloud-2::before {
+    width: 50px;
+    height: 50px;
+    top: -25px;
+    left: 15px;
+  }
+
+  .cloud-2::after {
+    width: 70px;
+    height: 45px;
+    top: -18px;
+    right: 15px;
+  }
+
+  .cloud-3 {
+    width: 140px;
+    height: 45px;
+    top: 50%;
+    left: 60%;
+    animation: cloudFloat 50s linear infinite;
+  }
+
+  .cloud-3::before {
+    width: 70px;
+    height: 70px;
+    top: -35px;
+    left: 25px;
+  }
+
+  .cloud-3::after {
+    width: 90px;
+    height: 60px;
+    top: -25px;
+    right: 25px;
+  }
+
+  @keyframes cloudFloat {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(100vw); }
+  }
+
+  /* Garden Stats */
+  .garden-stats {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+  }
+
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2d5016;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: #666;
+  }
+
+  /* Daily Care Section */
+  .daily-care-section {
+    position: relative;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin: 0 auto 2rem;
+    max-width: 600px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .daily-care-section h2 {
+    color: #2d5016;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .daily-goals {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .goal {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+  }
+
+  .goal-icon {
+    font-size: 1.5rem;
+  }
+
+  .goal-text {
+    flex: 1;
+  }
+
+  .goal-status {
+    font-size: 1.25rem;
+  }
+
+  .goal.completed .goal-status {
+    content: '✅';
+  }
+
+  .water-all-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #4FC3F7 0%, #2196F3 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.125rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .water-all-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
+  }
+
+  .water-all-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Weather Info */
+  .weather-info {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.75rem 1.5rem;
+    border-radius: 24px;
+    display: inline-block;
+    margin: 0 auto 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Garden Plots */
+  .garden-plots-container {
+    position: relative;
+    z-index: 10;
+    background: rgba(139, 69, 19, 0.3);
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 0 auto 2rem;
+    max-width: 1000px;
+  }
+
+  .garden-plots-container h2 {
+    text-align: center;
+    color: #2d5016;
+    margin-bottom: 1.5rem;
+  }
+
+  .garden-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+
+  @media (max-width: 968px) {
+    .garden-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .garden-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+  }
+
+  /* Seed Inventory */
+  .seed-inventory {
+    position: relative;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 0 auto 2rem;
+    max-width: 800px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .seed-inventory h2 {
+    color: #2d5016;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .seeds-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .seed-item {
+    background: #f9f9f9;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .seed-item:hover {
+    transform: scale(1.05);
+    border-color: #4CAF50;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  }
+
+  .seed-item .seed-emoji {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .seed-item .seed-count {
+    background: #4CAF50;
+    color: white;
+    border-radius: 12px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    font-weight: bold;
+    margin-top: 0.5rem;
+    display: inline-block;
+  }
+
+  .earn-seeds-info {
+    background: #E8F5E9;
+    border-left: 4px solid #4CAF50;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+  }
+
+  .earn-seeds-info p {
+    font-weight: bold;
+    color: #2d5016;
+    margin-bottom: 0.5rem;
+  }
+
+  .earn-seeds-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .earn-seeds-info li {
+    padding: 0.25rem 0;
+    color: #555;
+  }
+
+  .earn-seeds-info li::before {
+    content: '🌱 ';
+  }
+
+  /* Collection Button */
+  .collection-button-wrapper {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .view-collection-btn {
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #8E24AA 0%, #6A1B9A 100%);
+    color: white;
+    border: none;
+    border-radius: 24px;
+    font-size: 1.125rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(142, 36, 170, 0.4);
+  }
+
+  .view-collection-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(142, 36, 170, 0.6);
+  }
+
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .modal.active {
+    display: flex;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .modal-content.large {
+    max-width: 1000px;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #666;
+    z-index: 10;
+  }
+
+  .modal-close:hover {
+    color: #000;
+  }
+
+  .available-seeds {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  /* Harvest Animation */
+  .harvest-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .harvest-animation.hidden {
+    display: none;
+  }
+
+  .harvest-content {
+    text-align: center;
+    animation: bounceIn 0.5s ease-out;
+  }
+
+  .harvest-icon {
+    font-size: 6rem;
+    animation: rotate 1s ease-in-out infinite;
+  }
+
+  .harvest-message {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    margin: 1rem 0;
+  }
+
+  .harvest-stars {
+    font-size: 3rem;
+    color: #FFD700;
+  }
+
+  @keyframes bounceIn {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes rotate {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* RTL Support */
+  [dir="rtl"] .garden-stats,
+  [dir="rtl"] .seeds-list,
+  [dir="rtl"] .available-seeds {
+    direction: rtl;
+  }
+</style>
+
+<script>
+  import { magicGarden } from '../utils/magic-garden';
+  import { starWallet } from '../utils/star-wallet';
+
+  // Initialize garden on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeGarden();
+    updateStats();
+    updateWeatherDisplay();
+    renderSeeds();
+    renderGardenPlots();
+    updateDailyGoals();
+    setupEventListeners();
+  });
+
+  function initializeGarden() {
+    // Check if it's a new day and award login seed
+    const lastLogin = localStorage.getItem('last-garden-login');
+    const today = new Date().toDateString();
+
+    if (lastLogin !== today) {
+      const earnedSeeds = magicGarden.earnSeeds('login');
+      localStorage.setItem('last-garden-login', today);
+      showSeedsEarnedNotification(earnedSeeds);
+    }
+  }
+
+  function updateStats() {
+    const stats = magicGarden.getStatistics();
+    document.getElementById('plants-grown')!.textContent = stats.totalPlantsGrown.toString();
+    document.getElementById('total-harvests')!.textContent = stats.totalHarvests.toString();
+    document.getElementById('care-streak')!.textContent = stats.consecutiveDaysCare.toString();
+  }
+
+  function updateWeatherDisplay() {
+    const state = magicGarden.getState();
+    const weatherEl = document.getElementById('current-weather')!;
+    const bonusEl = document.getElementById('weather-bonus')!;
+
+    const weatherEmojis = {
+      sunny: '☀️ Sunny',
+      rainy: '🌧️ Rainy',
+      cloudy: '☁️ Cloudy'
+    };
+
+    weatherEl.textContent = weatherEmojis[state.weather];
+
+    if (state.weather === 'rainy') {
+      bonusEl.classList.remove('hidden');
+    } else {
+      bonusEl.classList.add('hidden');
+    }
+  }
+
+  function renderSeeds() {
+    const seeds = magicGarden.getSeeds();
+    const seedsList = document.getElementById('seeds-list')!;
+
+    if (seeds.size === 0) {
+      seedsList.innerHTML = '<p class="no-seeds">No seeds available. Complete activities to earn seeds!</p>';
+      return;
+    }
+
+    seedsList.innerHTML = '';
+    seeds.forEach((count, plantId) => {
+      if (count > 0) {
+        const plant = magicGarden.getPlantDefinition(plantId);
+        if (!plant) return;
+
+        const seedItem = document.createElement('div');
+        seedItem.className = 'seed-item';
+        seedItem.innerHTML = `
+          <span class="seed-emoji">${plant.emoji}</span>
+          <div class="seed-name">${plant.name.en}</div>
+          <span class="seed-count">×${count}</span>
+        `;
+        seedsList.appendChild(seedItem);
+      }
+    });
+  }
+
+  function renderGardenPlots() {
+    const plots = magicGarden.getAllPlots();
+    const grid = document.getElementById('garden-grid')!;
+    grid.innerHTML = '';
+
+    plots.forEach(plot => {
+      const plotElement = createPlotElement(plot);
+      grid.appendChild(plotElement);
+    });
+  }
+
+  function createPlotElement(plot: any) {
+    const div = document.createElement('div');
+    div.className = 'garden-plot';
+    div.dataset.plotId = plot.plotId.toString();
+
+    if (!plot.plantId) {
+      // Empty plot
+      div.innerHTML = `
+        <div class="plot-content empty">
+          <div class="empty-icon">🌱</div>
+          <div class="empty-text">Empty Plot</div>
+        </div>
+      `;
+      div.addEventListener('click', () => openPlantSelectionModal(plot.plotId));
+    } else {
+      // Plot with plant
+      const plant = magicGarden.getPlantDefinition(plot.plantId);
+      if (!plant) return div;
+
+      const stageEmoji = getPlantStageEmoji(plot.growthStage, plant.emoji);
+      const canHarvest = plot.growthProgress >= 100;
+
+      div.innerHTML = `
+        <div class="plot-content planted">
+          <div class="plant-visual">
+            <div class="plant-emoji">${stageEmoji}</div>
+            ${plot.needsWater ? '<div class="water-indicator">💧</div>' : ''}
+            ${plot.isWilted ? '<div class="wilted-indicator">🥀</div>' : ''}
+          </div>
+          <div class="plant-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${plot.growthProgress}%"></div>
+            </div>
+            <div class="progress-text">${Math.round(plot.growthProgress)}%</div>
+          </div>
+          <div class="plant-actions">
+            ${!canHarvest && plot.needsWater ?
+              '<button class="action-btn water-btn">💧 Water</button>' : ''}
+            ${canHarvest ?
+              '<button class="action-btn harvest-btn">🌾 Harvest</button>' : ''}
+          </div>
+        </div>
+      `;
+
+      // Add event listeners
+      const waterBtn = div.querySelector('.water-btn');
+      if (waterBtn) {
+        waterBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          waterPlant(plot.plotId);
+        });
+      }
+
+      const harvestBtn = div.querySelector('.harvest-btn');
+      if (harvestBtn) {
+        harvestBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          harvestPlant(plot.plotId);
+        });
+      }
+    }
+
+    return div;
+  }
+
+  function getPlantStageEmoji(stage: string, baseEmoji: string): string {
+    const stageEmojis: Record<string, string> = {
+      seed: '🌱',
+      sprout: '🌿',
+      seedling: '🪴',
+      plant: '🌳',
+      flower: baseEmoji
+    };
+    return stageEmojis[stage] || baseEmoji;
+  }
+
+  function openPlantSelectionModal(plotId: number) {
+    const modal = document.getElementById('plant-selection-modal')!;
+    const seedsContainer = document.getElementById('available-seeds')!;
+
+    const seeds = magicGarden.getSeeds();
+    seedsContainer.innerHTML = '';
+
+    seeds.forEach((count, plantId) => {
+      if (count > 0) {
+        const plant = magicGarden.getPlantDefinition(plantId);
+        if (!plant) return;
+
+        const seedCard = document.createElement('div');
+        seedCard.className = 'seed-card';
+        seedCard.innerHTML = `
+          <div class="seed-emoji">${plant.emoji}</div>
+          <div class="seed-name">${plant.name.en}</div>
+          <div class="seed-count">×${count}</div>
+          <button class="plant-btn">Plant</button>
+        `;
+
+        seedCard.querySelector('.plant-btn')!.addEventListener('click', () => {
+          plantSeed(plotId, plantId);
+          modal.classList.remove('active');
+        });
+
+        seedsContainer.appendChild(seedCard);
+      }
+    });
+
+    modal.classList.add('active');
+  }
+
+  function plantSeed(plotId: number, plantId: string) {
+    const success = magicGarden.plantSeed(plotId, plantId);
+    if (success) {
+      showNotification('Plant successfully planted! 🌱');
+      renderGardenPlots();
+      renderSeeds();
+      updateStats();
+    }
+  }
+
+  function waterPlant(plotId: number) {
+    const success = magicGarden.waterPlant(plotId);
+    if (success) {
+      showNotification('Plant watered! 💧');
+      renderGardenPlots();
+      checkDailyGoals();
+    }
+  }
+
+  function harvestPlant(plotId: number) {
+    const result = magicGarden.harvestPlant(plotId);
+    if (result.success && result.stars && result.plantId) {
+      // Award stars
+      starWallet.earnStars('garden-harvest', result.stars);
+
+      // Show harvest animation
+      showHarvestAnimation(result.plantId, result.stars);
+
+      // Update UI
+      renderGardenPlots();
+      renderSeeds();
+      updateStats();
+    }
+  }
+
+  function showHarvestAnimation(plantId: string, stars: number) {
+    const plant = magicGarden.getPlantDefinition(plantId);
+    if (!plant) return;
+
+    const animation = document.getElementById('harvest-animation')!;
+    const message = animation.querySelector('.harvest-message')!;
+    const starsEl = animation.querySelector('.harvest-stars')!;
+
+    message.textContent = `Harvested ${plant.name.en}!`;
+    starsEl.textContent = `+${stars} ⭐`;
+
+    animation.classList.remove('hidden');
+
+    setTimeout(() => {
+      animation.classList.add('hidden');
+    }, 2000);
+  }
+
+  function waterAllPlants() {
+    const watered = magicGarden.waterAllPlants();
+    if (watered > 0) {
+      showNotification(`Watered ${watered} plants! 💧`);
+      renderGardenPlots();
+      checkDailyGoals();
+    }
+  }
+
+  function checkDailyGoals() {
+    const goals = magicGarden.getDailyGoal();
+    const waterGoal = document.getElementById('water-goal')!;
+    const storyGoal = document.getElementById('story-goal')!;
+
+    if (goals.watered) {
+      waterGoal.classList.add('completed');
+      waterGoal.querySelector('.goal-status')!.textContent = '✅';
+    }
+
+    if (goals.storyRead) {
+      storyGoal.classList.add('completed');
+      storyGoal.querySelector('.goal-status')!.textContent = '✅';
+    }
+
+    if (goals.complete) {
+      showNotification('Daily goal complete! 🎉');
+    }
+  }
+
+  function updateDailyGoals() {
+    checkDailyGoals();
+  }
+
+  function setupEventListeners() {
+    // Water all button
+    document.getElementById('water-all-button')!.addEventListener('click', waterAllPlants);
+
+    // Close modals
+    document.getElementById('close-plant-modal')!.addEventListener('click', () => {
+      document.getElementById('plant-selection-modal')!.classList.remove('active');
+    });
+
+    document.getElementById('close-encyclopedia-modal')!.addEventListener('click', () => {
+      document.getElementById('encyclopedia-modal')!.classList.remove('active');
+    });
+
+    // View collection button
+    document.getElementById('view-collection-button')!.addEventListener('click', () => {
+      document.getElementById('encyclopedia-modal')!.classList.add('active');
+    });
+
+    // Close modal on background click
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+    });
+  }
+
+  function showNotification(message: string) {
+    // Simple notification (can be enhanced with a toast system)
+    alert(message);
+  }
+
+  function showSeedsEarnedNotification(seeds: string[]) {
+    if (seeds.length > 0) {
+      showNotification(`You earned ${seeds.length} seed(s)! 🌱`);
+    }
+  }
+</script>
+
+<style is:global>
+  .garden-plot {
+    background: linear-gradient(to bottom, #8B4513 0%, #654321 100%);
+    border: 3px solid #5a3a1a;
+    border-radius: 12px;
+    padding: 1rem;
+    min-height: 180px;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .garden-plot:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .plot-content.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #999;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.5;
+  }
+
+  .empty-text {
+    font-size: 0.875rem;
+  }
+
+  .plot-content.planted {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .plant-visual {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .plant-emoji {
+    font-size: 3.5rem;
+    animation: plantGrow 2s ease-in-out;
+  }
+
+  @keyframes plantGrow {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  .water-indicator,
+  .wilted-indicator {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 1.5rem;
+  }
+
+  .wilted-indicator {
+    animation: shake 0.5s ease-in-out infinite;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+
+  .plant-progress {
+    margin: 0.5rem 0;
+  }
+
+  .progress-bar {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    height: 8px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%);
+    transition: width 0.5s ease-out;
+  }
+
+  .progress-text {
+    text-align: center;
+    font-size: 0.75rem;
+    color: white;
+    margin-top: 0.25rem;
+  }
+
+  .plant-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .action-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .water-btn {
+    background: linear-gradient(135deg, #4FC3F7 0%, #2196F3 100%);
+    color: white;
+  }
+
+  .harvest-btn {
+    background: linear-gradient(135deg, #FFD54F 0%, #FFA000 100%);
+    color: #333;
+  }
+
+  .action-btn:hover {
+    transform: scale(1.05);
+  }
+
+  .action-btn:active {
+    transform: scale(0.95);
+  }
+
+  .seed-card {
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .seed-card:hover {
+    border-color: #4CAF50;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  }
+
+  .seed-card .seed-emoji {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .seed-card .seed-name {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .seed-card .plant-btn {
+    width: 100%;
+    padding: 0.5rem;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+
+  .seed-card .plant-btn:hover {
+    background: #45a049;
+  }
+</style>

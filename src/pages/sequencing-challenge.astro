@@ -1,0 +1,312 @@
+---
+/**
+ * Story Sequencing Challenge Page
+ * Individual game session
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SequencingGame from '../components/SequencingGame.astro';
+import { getCollection } from 'astro:content';
+import { extractEventsFromStory, shuffleEvents } from '../utils/story-sequencing';
+
+const locale = 'de';
+
+// Get query parameters
+const storyId = Astro.url.searchParams.get('story');
+const difficulty = (Astro.url.searchParams.get('difficulty') as 'easy' | 'medium' | 'hard') || 'easy';
+
+if (!storyId) {
+  return Astro.redirect('/sequencing-game');
+}
+
+// Get the story
+const allStories = await getCollection('stories');
+const story = allStories.find((s) => s.data.storyId === storyId);
+
+if (!story) {
+  return Astro.redirect('/sequencing-game');
+}
+
+// Extract events from story content
+const events = extractEventsFromStory(story.body, story.data.emoji, difficulty);
+const shuffledEvents = shuffleEvents(events);
+
+// Set time limits based on difficulty
+const timeLimits = {
+  easy: 0, // No time limit
+  medium: 180, // 3 minutes
+  hard: 120, // 2 minutes
+};
+
+const timeLimit = timeLimits[difficulty];
+const maxAttempts = 3;
+
+const title = `${story.data.title} - Sequenzierung`;
+const description = 'Ordne die Ereignisse dieser Geschichte in der richtigen Reihenfolge.';
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="challenge-page">
+    <div class="challenge-header">
+      <a href="/sequencing-game" class="back-btn">← Zurück zur Auswahl</a>
+
+      <div class="story-info">
+        <span class="story-emoji">{story.data.emoji}</span>
+        <div class="story-details">
+          <h1 class="story-title">{story.data.title}</h1>
+          <div class="difficulty-badge" data-difficulty={difficulty}>
+            {difficulty === 'easy' && '😊 Einfach'}
+            {difficulty === 'medium' && '🤔 Mittel'}
+            {difficulty === 'hard' && '🚀 Schwer'}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Show story option -->
+    <div class="story-preview-section">
+      <button class="show-story-btn" id="show-story-btn">
+        📖 Geschichte zuerst lesen
+      </button>
+
+      <div class="story-preview" id="story-preview" style="display: none;">
+        <div class="preview-content">
+          <h2>Die Geschichte</h2>
+          <div class="story-body" set:html={story.body} />
+          <button class="close-preview-btn" id="close-preview-btn">Schließen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Component -->
+    <SequencingGame
+      storyId={story.data.storyId}
+      events={shuffledEvents}
+      difficulty={difficulty}
+      language={locale}
+      timeLimit={timeLimit}
+      maxAttempts={maxAttempts}
+    />
+  </div>
+</BaseLayout>
+
+<style>
+  .challenge-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e8f4f8 0%, #f9f9f9 100%);
+    padding: 24px 0;
+  }
+
+  .challenge-header {
+    max-width: 1200px;
+    margin: 0 auto 32px;
+    padding: 0 24px;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: white;
+    color: #333;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 24px;
+  }
+
+  .back-btn:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .story-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .story-emoji {
+    font-size: 64px;
+  }
+
+  .story-details {
+    flex: 1;
+  }
+
+  .story-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 12px 0;
+  }
+
+  .difficulty-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .difficulty-badge[data-difficulty='easy'] {
+    background: #c8e6c9;
+    color: #2e7d32;
+  }
+
+  .difficulty-badge[data-difficulty='medium'] {
+    background: #fff9c4;
+    color: #f57f17;
+  }
+
+  .difficulty-badge[data-difficulty='hard'] {
+    background: #ffccbc;
+    color: #d84315;
+  }
+
+  /* Story Preview */
+  .story-preview-section {
+    max-width: 1200px;
+    margin: 0 auto 32px;
+    padding: 0 24px;
+  }
+
+  .show-story-btn {
+    width: 100%;
+    padding: 16px;
+    background: white;
+    color: #333;
+    border: 3px dashed #d0d0d0;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .show-story-btn:hover {
+    background: #f9f9f9;
+    border-color: #ff9f40;
+  }
+
+  .story-preview {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-y: auto;
+  }
+
+  .preview-content {
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .preview-content h2 {
+    font-size: 28px;
+    color: #333;
+    margin: 0 0 24px 0;
+  }
+
+  .story-body {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #333;
+    margin-bottom: 32px;
+  }
+
+  .close-preview-btn {
+    width: 100%;
+    padding: 16px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .close-preview-btn:hover {
+    background: #66bb6a;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .story-info {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .story-title {
+      font-size: 24px;
+    }
+
+    .story-emoji {
+      font-size: 48px;
+    }
+
+    .preview-content {
+      padding: 24px;
+    }
+
+    .preview-content h2 {
+      font-size: 22px;
+    }
+
+    .story-body {
+      font-size: 16px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const showBtn = document.getElementById('show-story-btn');
+    const closeBtn = document.getElementById('close-preview-btn');
+    const preview = document.getElementById('story-preview');
+
+    showBtn?.addEventListener('click', () => {
+      preview!.style.display = 'flex';
+    });
+
+    closeBtn?.addEventListener('click', () => {
+      preview!.style.display = 'none';
+    });
+
+    // Close on background click
+    preview?.addEventListener('click', (e) => {
+      if (e.target === preview) {
+        preview.style.display = 'none';
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && preview!.style.display === 'flex') {
+        preview!.style.display = 'none';
+      }
+    });
+  });
+</script>

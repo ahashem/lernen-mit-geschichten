@@ -1,0 +1,488 @@
+---
+/**
+ * Story Sequencing Game - Story Selection Page
+ * Choose story and difficulty level
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { getTranslation } from '../utils/i18n';
+
+const locale = 'de';
+const title = getTranslation(locale, 'sequencingGame' as any) || 'Geschichten-Reihenfolge';
+const description =
+  getTranslation(locale, 'sequencingGameDescription' as any) ||
+  'Lerne Geschichtenstruktur durch das Ordnen von Ereignissen!';
+
+// Get all German stories
+const allStories = await getCollection('stories', (entry) => {
+  return entry.data.languages.includes('de');
+});
+
+// Filter stories with sufficient content
+const stories = allStories
+  .filter((story) => story.body.length > 500)
+  .sort((a, b) => {
+    const difficultyOrder = { beginner: 0, intermediate: 1 };
+    return (
+      (difficultyOrder[a.data.difficulty || 'beginner'] || 0) -
+      (difficultyOrder[b.data.difficulty || 'beginner'] || 0)
+    );
+  })
+  .slice(0, 20); // Limit to 20 stories
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="sequencing-page">
+    <div class="container">
+      <!-- Header -->
+      <header class="page-header">
+        <div class="header-content">
+          <h1 class="page-title">📖 {title}</h1>
+          <p class="page-description">{description}</p>
+        </div>
+
+        <div class="info-card">
+          <h3>Wie funktioniert's?</h3>
+          <ol>
+            <li>Wähle eine Geschichte und Schwierigkeitsgrad</li>
+            <li>Ziehe die Ereigniskarten in die richtige Reihenfolge</li>
+            <li>Verdiene Sterne basierend auf deiner Performance!</li>
+          </ol>
+        </div>
+      </header>
+
+      <!-- Difficulty Selection -->
+      <section class="difficulty-section">
+        <h2 class="section-title">Wähle Schwierigkeitsgrad</h2>
+        <div class="difficulty-cards">
+          <div class="difficulty-card" data-difficulty="easy">
+            <div class="card-icon">😊</div>
+            <h3 class="card-title">Einfach</h3>
+            <p class="card-description">
+              {getTranslation(locale, 'easyDescription' as any) || '4 Ereignisse • Keine Zeitbegrenzung • 3 Leben'}
+            </p>
+            <div class="card-badge">Für Anfänger</div>
+          </div>
+
+          <div class="difficulty-card" data-difficulty="medium">
+            <div class="card-icon">🤔</div>
+            <h3 class="card-title">Mittel</h3>
+            <p class="card-description">
+              {
+                getTranslation(locale, 'mediumDescription' as any) ||
+                  '6 Ereignisse • Optional zeitlich begrenzt • 3 Leben'
+              }
+            </p>
+            <div class="card-badge">Empfohlen</div>
+          </div>
+
+          <div class="difficulty-card" data-difficulty="hard">
+            <div class="card-icon">🚀</div>
+            <h3 class="card-title">Schwer</h3>
+            <p class="card-description">
+              {getTranslation(locale, 'hardDescription' as any) || '10 Ereignisse • Zeitlich begrenzt • 3 Leben'}
+            </p>
+            <div class="card-badge">Für Experten</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Story Selection -->
+      <section class="stories-section">
+        <h2 class="section-title">Wähle eine Geschichte</h2>
+        <div class="stories-grid">
+          {
+            stories.map((story) => (
+              <div class="story-card" data-story-id={story.data.storyId}>
+                <div class="story-icon">{story.data.emoji}</div>
+                <div class="story-content">
+                  <h3 class="story-title">{story.data.title}</h3>
+                  <div class="story-meta">
+                    <span class="story-difficulty">{story.data.difficulty || 'beginner'}</span>
+                    <span class="story-time">{story.data.estimatedReadTime || 3} Min</span>
+                  </div>
+                  <div class="story-skills">
+                    {story.data.skills.slice(0, 2).map((skill) => (
+                      <span class="skill-tag">{skill}</span>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  class="play-btn"
+                  data-story-id={story.data.storyId}
+                  data-story-title={story.data.title}
+                  data-story-emoji={story.data.emoji}
+                  disabled
+                >
+                  Spielen
+                </button>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- Stats Section -->
+      <section class="stats-section">
+        <h2 class="section-title">Deine Statistiken</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">🎮</div>
+            <div class="stat-value" id="games-played">0</div>
+            <div class="stat-label">Spiele gespielt</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value" id="games-completed">0</div>
+            <div class="stat-label">Abgeschlossen</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-value" id="total-stars">0</div>
+            <div class="stat-label">Sterne verdient</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-value" id="perfect-games">0</div>
+            <div class="stat-label">Perfekte Spiele</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .sequencing-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e8f4f8 0%, #f9f9f9 100%);
+    padding: 40px 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Header */
+  .page-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .page-title {
+    font-size: 48px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 16px 0;
+  }
+
+  .page-description {
+    font-size: 20px;
+    color: #666;
+    margin: 0 0 32px 0;
+  }
+
+  .info-card {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .info-card h3 {
+    font-size: 20px;
+    color: #333;
+    margin: 0 0 16px 0;
+  }
+
+  .info-card ol {
+    margin: 0;
+    padding-left: 24px;
+  }
+
+  .info-card li {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 8px;
+  }
+
+  /* Section Title */
+  .section-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 24px 0;
+    text-align: center;
+  }
+
+  /* Difficulty Cards */
+  .difficulty-section {
+    margin-bottom: 48px;
+  }
+
+  .difficulty-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .difficulty-card {
+    background: white;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+  }
+
+  .difficulty-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .difficulty-card.selected {
+    border-color: #ff9f40;
+    box-shadow: 0 8px 24px rgba(255, 159, 64, 0.3);
+  }
+
+  .card-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 12px 0;
+  }
+
+  .card-description {
+    font-size: 16px;
+    color: #666;
+    margin: 0 0 16px 0;
+    line-height: 1.6;
+  }
+
+  .card-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    background: #ffe8cc;
+    color: #ff9f40;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  /* Stories Grid */
+  .stories-section {
+    margin-bottom: 48px;
+  }
+
+  .stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  .story-card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+
+  .story-card:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .story-icon {
+    font-size: 48px;
+    flex-shrink: 0;
+  }
+
+  .story-content {
+    flex: 1;
+  }
+
+  .story-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 8px 0;
+  }
+
+  .story-meta {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .story-difficulty,
+  .story-time {
+    font-size: 14px;
+    color: #999;
+  }
+
+  .story-skills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .skill-tag {
+    padding: 4px 8px;
+    background: #e8f4f8;
+    color: #6bcf7f;
+    border-radius: 8px;
+    font-size: 12px;
+  }
+
+  .play-btn {
+    padding: 12px 24px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .play-btn:hover:not(:disabled) {
+    background: #66bb6a;
+    transform: scale(1.05);
+  }
+
+  .play-btn:disabled {
+    background: #e0e0e0;
+    color: #999;
+    cursor: not-allowed;
+  }
+
+  /* Stats Grid */
+  .stats-section {
+    margin-bottom: 48px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .stat-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+
+  .stat-value {
+    font-size: 36px;
+    font-weight: bold;
+    color: #ff9f40;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: #666;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 32px;
+    }
+
+    .section-title {
+      font-size: 24px;
+    }
+
+    .difficulty-cards {
+      grid-template-columns: 1fr;
+    }
+
+    .stories-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .story-card {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  import { getGameStats } from '../utils/story-sequencing';
+
+  // Load and display stats
+  document.addEventListener('DOMContentLoaded', () => {
+    const stats = getGameStats();
+
+    document.getElementById('games-played')!.textContent = String(stats.gamesPlayed);
+    document.getElementById('games-completed')!.textContent = String(stats.gamesCompleted);
+    document.getElementById('total-stars')!.textContent = String(stats.totalStars);
+    document.getElementById('perfect-games')!.textContent = String(stats.perfectGames);
+
+    // Difficulty selection
+    let selectedDifficulty: 'easy' | 'medium' | 'hard' | null = null;
+
+    const difficultyCards = document.querySelectorAll('.difficulty-card');
+    difficultyCards.forEach((card) => {
+      card.addEventListener('click', () => {
+        // Remove previous selection
+        difficultyCards.forEach((c) => c.classList.remove('selected'));
+
+        // Add new selection
+        card.classList.add('selected');
+        selectedDifficulty = card.getAttribute('data-difficulty') as
+          | 'easy'
+          | 'medium'
+          | 'hard';
+
+        // Enable play buttons
+        updatePlayButtons();
+      });
+    });
+
+    function updatePlayButtons() {
+      const playButtons = document.querySelectorAll('.play-btn');
+      playButtons.forEach((btn) => {
+        const button = btn as HTMLButtonElement;
+        button.disabled = !selectedDifficulty;
+
+        button.addEventListener('click', () => {
+          if (selectedDifficulty) {
+            const storyId = button.dataset.storyId!;
+            window.location.href = `/sequencing-challenge?story=${storyId}&difficulty=${selectedDifficulty}`;
+          }
+        });
+      });
+    }
+  });
+</script>

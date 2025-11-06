@@ -1,0 +1,652 @@
+---
+/**
+ * My Comics Gallery Page
+ * View and manage saved comics
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const locale = 'de';
+const title = 'My Comics';
+const description = 'Your comic collection';
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <div class="page-container">
+    <header class="page-header">
+      <div class="header-content">
+        <h1>
+          <span class="icon">📚</span>
+          <span data-i18n="myComics">My Comics</span>
+        </h1>
+        <div class="header-actions">
+          <a href="/comic-maker" class="btn btn-primary">
+            + <span data-i18n="createComic">Create Comic</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <div class="filters-bar">
+      <div class="filter-group">
+        <label for="sortBy" data-i18n="sortBy">Sort By:</label>
+        <select id="sortBy" class="filter-select">
+          <option value="newest" data-i18n="sortByNewest">Newest First</option>
+          <option value="oldest" data-i18n="sortByOldest">Oldest First</option>
+          <option value="title" data-i18n="sortByTitle">By Title</option>
+          <option value="story" data-i18n="sortByStory">By Story</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filterBy" data-i18n="filterBy">Filter:</label>
+        <select id="filterBy" class="filter-select">
+          <option value="all" data-i18n="allComics">All Comics</option>
+          <option value="story-based" data-i18n="storyBasedComics">Story-Based</option>
+          <option value="original" data-i18n="originalComics">Original</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="comicsGrid" class="comics-grid">
+      <!-- Comics will be loaded dynamically -->
+    </div>
+
+    <div id="emptyState" class="empty-state" hidden>
+      <div class="empty-icon">📖</div>
+      <h2 data-i18n="noComicsYet">No comics yet</h2>
+      <p data-i18n="createFirstComic">Create your first comic masterpiece!</p>
+      <a href="/comic-maker" class="btn btn-primary btn-lg">
+        <span data-i18n="createComic">Create Comic</span>
+      </a>
+    </div>
+
+    <!-- Stats Panel -->
+    <aside class="stats-panel">
+      <h3 data-i18n="comicStats">Comic Stats</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📚</div>
+          <div class="stat-value" id="totalComicsCount">0</div>
+          <div class="stat-label" data-i18n="totalComics">Total Comics</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📄</div>
+          <div class="stat-value" id="totalPanelsCount">0</div>
+          <div class="stat-label" data-i18n="panelsCreated">Panels Created</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💬</div>
+          <div class="stat-value" id="totalBubblesCount">0</div>
+          <div class="stat-label" data-i18n="bubblesAdded">Bubbles Added</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✨</div>
+          <div class="stat-value" id="totalEffectsCount">0</div>
+          <div class="stat-label" data-i18n="effectsUsed">Effects Used</div>
+        </div>
+      </div>
+
+      <div class="achievements-section">
+        <h4 data-i18n="comicAchievements">Comic Achievements</h4>
+        <div id="achievementsList" class="achievements-list"></div>
+      </div>
+    </aside>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal" hidden>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 data-i18n="confirmDeleteComic">Delete this comic?</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>This action cannot be undone.</p>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" id="cancelDeleteBtn" data-i18n="cancel">Cancel</button>
+            <button class="btn btn-danger" id="confirmDeleteBtn" data-i18n="deleteComic">Delete Comic</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .page-header {
+    margin-bottom: 2rem;
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .page-header h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 2rem;
+    margin: 0;
+  }
+
+  .icon {
+    font-size: 2.5rem;
+  }
+
+  .filters-bar {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .filter-select {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background: white;
+    font-size: 0.95rem;
+  }
+
+  .comics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .comic-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+
+  .comic-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .comic-thumbnail {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #FFE8CC 0%, #FFD1A3 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    border-bottom: 2px solid #e0e0e0;
+  }
+
+  .comic-info {
+    padding: 1.5rem;
+  }
+
+  .comic-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  .comic-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .comic-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .empty-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+  }
+
+  .empty-state h2 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  .empty-state p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .stats-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .stats-panel h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    text-align: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #FFF8F0 0%, #FFE8CC 100%);
+    border-radius: 8px;
+  }
+
+  .stat-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #FF9F40;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .achievements-section h4 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .achievements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .achievement-badge {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border-left: 4px solid #FF9F40;
+  }
+
+  .achievement-icon {
+    font-size: 2rem;
+  }
+
+  .achievement-info {
+    flex: 1;
+  }
+
+  .achievement-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .achievement-desc {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .achievement-locked {
+    opacity: 0.5;
+    border-left-color: #ccc;
+  }
+
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal[hidden] {
+    display: none;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .modal-close {
+    font-size: 1.5rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .comics-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filters-bar {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+</style>
+
+<script>
+  import {
+    loadComicProjects,
+    deleteComicProject,
+    type ComicProject,
+  } from '../utils/comic-maker';
+
+  let comics: ComicProject[] = [];
+  let comicToDelete: string | null = null;
+
+  // Load comics on page load
+  loadComics();
+
+  function loadComics() {
+    comics = loadComicProjects();
+    renderComics();
+    updateStats();
+  }
+
+  function renderComics() {
+    const grid = document.getElementById('comicsGrid');
+    const emptyState = document.getElementById('emptyState');
+
+    if (!grid) return;
+
+    if (comics.length === 0) {
+      grid.innerHTML = '';
+      emptyState?.removeAttribute('hidden');
+      return;
+    }
+
+    emptyState?.setAttribute('hidden', '');
+
+    grid.innerHTML = comics
+      .map(
+        (comic) => `
+        <div class="comic-card" data-comic-id="${comic.id}">
+          <div class="comic-thumbnail">📖</div>
+          <div class="comic-info">
+            <h3 class="comic-title">${comic.title}</h3>
+            <div class="comic-meta">
+              <div>
+                <strong>Author:</strong> ${comic.author}
+              </div>
+              <div>
+                <strong>Pages:</strong> ${comic.pages.length}
+              </div>
+              <div>
+                <strong>Last Edited:</strong> ${new Date(comic.updatedAt).toLocaleDateString()}
+              </div>
+            </div>
+            <div class="comic-actions">
+              <button class="btn btn-sm btn-primary view-btn" data-id="${comic.id}">
+                <span data-i18n="viewComic">View</span>
+              </button>
+              <button class="btn btn-sm btn-secondary edit-btn" data-id="${comic.id}">
+                <span data-i18n="editComic">Edit</span>
+              </button>
+              <button class="btn btn-sm btn-danger delete-btn" data-id="${comic.id}">
+                <span data-i18n="deleteComic">Delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `
+      )
+      .join('');
+
+    // Add event listeners
+    document.querySelectorAll('.view-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = (e.target as HTMLElement).dataset.id;
+        viewComic(id!);
+      });
+    });
+
+    document.querySelectorAll('.edit-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = (e.target as HTMLElement).dataset.id;
+        editComic(id!);
+      });
+    });
+
+    document.querySelectorAll('.delete-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = (e.target as HTMLElement).dataset.id;
+        showDeleteModal(id!);
+      });
+    });
+  }
+
+  function viewComic(id: string) {
+    window.location.href = `/comic-viewer?id=${id}`;
+  }
+
+  function editComic(id: string) {
+    window.location.href = `/comic-maker?edit=${id}`;
+  }
+
+  function showDeleteModal(id: string) {
+    comicToDelete = id;
+    document.getElementById('deleteModal')?.removeAttribute('hidden');
+  }
+
+  function updateStats() {
+    const totalPanels = comics.reduce((sum, c) => sum + c.pages.reduce((s, p) => s + p.panels.length, 0), 0);
+    const totalBubbles = comics.reduce(
+      (sum, c) => sum + c.pages.reduce((s, p) => s + p.panels.reduce((ps, panel) => ps + panel.speechBubbles.length, 0), 0),
+      0
+    );
+    const totalEffects = comics.reduce(
+      (sum, c) => sum + c.pages.reduce((s, p) => s + p.panels.reduce((ps, panel) => ps + panel.effects.length, 0), 0),
+      0
+    );
+
+    document.getElementById('totalComicsCount')!.textContent = comics.length.toString();
+    document.getElementById('totalPanelsCount')!.textContent = totalPanels.toString();
+    document.getElementById('totalBubblesCount')!.textContent = totalBubbles.toString();
+    document.getElementById('totalEffectsCount')!.textContent = totalEffects.toString();
+
+    // Update achievements
+    const achievementsList = document.getElementById('achievementsList');
+    if (achievementsList) {
+      const achievements = [
+        {
+          id: 'comic-artist',
+          name: 'Comic Artist',
+          desc: 'Create your first comic',
+          icon: '🎨',
+          unlocked: comics.length >= 1,
+        },
+        {
+          id: 'storyteller',
+          name: 'Storyteller',
+          desc: 'Create 5 comics',
+          icon: '📚',
+          unlocked: comics.length >= 5,
+        },
+        {
+          id: 'publisher',
+          name: 'Publisher',
+          desc: 'Create 10 comics',
+          icon: '🏆',
+          unlocked: comics.length >= 10,
+        },
+        {
+          id: 'bubble-expert',
+          name: 'Bubble Expert',
+          desc: 'Add 100 speech bubbles',
+          icon: '💬',
+          unlocked: totalBubbles >= 100,
+        },
+        {
+          id: 'effect-master',
+          name: 'Effect Master',
+          desc: 'Use 50 different effects',
+          icon: '✨',
+          unlocked: totalEffects >= 50,
+        },
+      ];
+
+      achievementsList.innerHTML = achievements
+        .map(
+          (ach) => `
+          <div class="achievement-badge ${ach.unlocked ? '' : 'achievement-locked'}">
+            <div class="achievement-icon">${ach.unlocked ? ach.icon : '🔒'}</div>
+            <div class="achievement-info">
+              <div class="achievement-name">${ach.name}</div>
+              <div class="achievement-desc">${ach.desc}</div>
+            </div>
+          </div>
+        `
+        )
+        .join('');
+    }
+  }
+
+  // Modal actions
+  document.querySelector('.modal-close')?.addEventListener('click', () => {
+    document.getElementById('deleteModal')?.setAttribute('hidden', '');
+    comicToDelete = null;
+  });
+
+  document.getElementById('cancelDeleteBtn')?.addEventListener('click', () => {
+    document.getElementById('deleteModal')?.setAttribute('hidden', '');
+    comicToDelete = null;
+  });
+
+  document.getElementById('confirmDeleteBtn')?.addEventListener('click', () => {
+    if (comicToDelete) {
+      deleteComicProject(comicToDelete);
+      document.getElementById('deleteModal')?.setAttribute('hidden', '');
+      comicToDelete = null;
+      loadComics();
+    }
+  });
+
+  // Filters
+  document.getElementById('sortBy')?.addEventListener('change', (e) => {
+    const value = (e.target as HTMLSelectElement).value;
+    sortComics(value);
+  });
+
+  document.getElementById('filterBy')?.addEventListener('change', (e) => {
+    const value = (e.target as HTMLSelectElement).value;
+    filterComics(value);
+  });
+
+  function sortComics(sortBy: string) {
+    switch (sortBy) {
+      case 'newest':
+        comics.sort((a, b) => b.updatedAt - a.updatedAt);
+        break;
+      case 'oldest':
+        comics.sort((a, b) => a.updatedAt - b.updatedAt);
+        break;
+      case 'title':
+        comics.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case 'story':
+        comics.sort((a, b) => (a.storyId || '').localeCompare(b.storyId || ''));
+        break;
+    }
+    renderComics();
+  }
+
+  function filterComics(filterBy: string) {
+    const allComics = loadComicProjects();
+
+    switch (filterBy) {
+      case 'all':
+        comics = allComics;
+        break;
+      case 'story-based':
+        comics = allComics.filter((c) => c.storyId);
+        break;
+      case 'original':
+        comics = allComics.filter((c) => !c.storyId);
+        break;
+    }
+
+    renderComics();
+  }
+</script>

@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BalloonPop from '../components/BalloonPop.astro';
+import { getCollection } from 'astro:content';
+import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
+
+// Get language from URL query parameter or default to German
+const url = new URL(Astro.request.url);
+const language = (url.searchParams.get('lang') || 'de') as Locale;
+const storyId = url.searchParams.get('story') || '';
+
+// Fetch the story
+const allStories = await getCollection('stories');
+const story = allStories.find(s => s.data.storyId === storyId);
+
+if (!story || !story.data.questions || story.data.questions.length === 0) {
+  return Astro.redirect(`/${language}/stories`);
+}
+
+// Get localized title
+const titleMap = {
+  de: story.data.title,
+  ar: story.data.titleAr || story.data.title,
+  en: story.data.titleEn || story.data.title,
+  tr: story.data.titleTr || story.data.title,
+  ur: story.data.titleUr || story.data.title,
+};
+
+const storyTitle = titleMap[language] || story.data.title;
+---
+
+<BaseLayout
+  title={`${getTranslation(language, 'balloonPopTitle')} - ${storyTitle}`}
+  description={getTranslation(language, 'balloonPopDescription')}
+  language={language}
+>
+  <BalloonPop
+    questions={story.data.questions}
+    language={language}
+    storyId={story.data.storyId}
+    storyTitle={storyTitle}
+  />
+</BaseLayout>
+
+<style>
+  :global(body) {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+</style>

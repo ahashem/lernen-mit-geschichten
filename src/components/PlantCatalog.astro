@@ -1,0 +1,490 @@
+---
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<div class="plant-catalog" data-locale={locale}>
+  <h2 data-i18n="plantEncyclopedia">Plant Encyclopedia</h2>
+  <p class="catalog-subtitle" data-i18n="collectedPlants">Discover all 30 plants by growing them in your garden!</p>
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    <button class="filter-tab active" data-filter="all">
+      <span data-i18n="allPlants">All Plants</span>
+    </button>
+    <button class="filter-tab" data-filter="flower">
+      <span data-i18n="flowers">Flowers</span> 🌸
+    </button>
+    <button class="filter-tab" data-filter="vegetable">
+      <span data-i18n="vegetables">Vegetables</span> 🥕
+    </button>
+    <button class="filter-tab" data-filter="tree">
+      <span data-i18n="trees">Trees</span> 🌳
+    </button>
+  </div>
+
+  <!-- Plant Grid -->
+  <div class="plants-grid" id="plants-catalog-grid">
+    <!-- Plants will be populated dynamically -->
+  </div>
+
+  <!-- Plant Detail Modal -->
+  <div class="plant-detail-modal hidden" id="plant-detail-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-body">
+      <button class="close-detail-btn" id="close-detail-btn">&times;</button>
+      <div class="plant-detail-content" id="plant-detail-content">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .plant-catalog {
+    padding: 1rem;
+  }
+
+  .plant-catalog h2 {
+    color: #2d5016;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .catalog-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .filter-tabs {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-tab {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+  }
+
+  .filter-tab:hover {
+    border-color: #4CAF50;
+    transform: translateY(-2px);
+  }
+
+  .filter-tab.active {
+    background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+    color: white;
+    border-color: #4CAF50;
+  }
+
+  .plants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .plants-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+  }
+
+  .plant-card {
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .plant-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    border-color: #4CAF50;
+  }
+
+  .plant-card.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .plant-card.locked:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: #ddd;
+  }
+
+  .plant-emoji {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  .plant-card.locked .plant-emoji {
+    filter: grayscale(100%) brightness(0.5);
+  }
+
+  .plant-name {
+    font-weight: bold;
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  .plant-type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .plant-type-badge.flower {
+    background: #E1BEE7;
+    color: #7B1FA2;
+  }
+
+  .plant-type-badge.vegetable {
+    background: #FFCCBC;
+    color: #E64A19;
+  }
+
+  .plant-type-badge.tree {
+    background: #C8E6C9;
+    color: #388E3C;
+  }
+
+  .plant-rarity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .rarity-common {
+    color: #757575;
+  }
+
+  .rarity-uncommon {
+    color: #2196F3;
+  }
+
+  .rarity-rare {
+    color: #F44336;
+  }
+
+  .harvest-count {
+    font-size: 0.875rem;
+    color: #666;
+  }
+
+  .locked-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+  }
+
+  /* Plant Detail Modal */
+  .plant-detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3000;
+  }
+
+  .plant-detail-modal.hidden {
+    display: none;
+  }
+
+  .modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  .modal-body {
+    position: relative;
+    background: white;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: 5vh auto;
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .close-detail-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #666;
+    z-index: 10;
+  }
+
+  .close-detail-btn:hover {
+    color: #000;
+  }
+
+  .detail-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .detail-emoji {
+    font-size: 6rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .detail-name {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2d5016;
+    margin-bottom: 0.5rem;
+  }
+
+  .detail-info {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .info-section {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+
+  .info-section h3 {
+    color: #2d5016;
+    margin-bottom: 0.75rem;
+    font-size: 1.125rem;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .info-row:last-child {
+    border-bottom: none;
+  }
+
+  .info-label {
+    font-weight: 500;
+    color: #666;
+  }
+
+  .info-value {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .fun-fact-box {
+    background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+    border-left: 4px solid #4CAF50;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    font-style: italic;
+    color: #2d5016;
+  }
+
+  .fun-fact-box::before {
+    content: '💡 ';
+    font-size: 1.5rem;
+    vertical-align: middle;
+  }
+</style>
+
+<script>
+  import { magicGarden, PLANT_DEFINITIONS } from '../utils/magic-garden';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeCatalog();
+    setupFilterTabs();
+  });
+
+  function initializeCatalog() {
+    renderPlants('all');
+  }
+
+  function renderPlants(filter: string) {
+    const grid = document.getElementById('plants-catalog-grid');
+    if (!grid) return;
+
+    const harvestedPlants = magicGarden.getState().harvestedPlants;
+    const plants = filter === 'all'
+      ? PLANT_DEFINITIONS
+      : PLANT_DEFINITIONS.filter(p => p.type === filter);
+
+    grid.innerHTML = '';
+
+    plants.forEach(plant => {
+      const isDiscovered = harvestedPlants.includes(plant.id);
+      const card = createPlantCard(plant, isDiscovered);
+      grid.appendChild(card);
+    });
+  }
+
+  function createPlantCard(plant: any, isDiscovered: boolean) {
+    const div = document.createElement('div');
+    div.className = `plant-card ${!isDiscovered ? 'locked' : ''}`;
+
+    const rarityStars = {
+      common: '⭐',
+      uncommon: '⭐⭐',
+      rare: '⭐⭐⭐'
+    };
+
+    div.innerHTML = `
+      ${isDiscovered ? `
+        <div class="plant-emoji">${plant.emoji}</div>
+        <div class="plant-type-badge ${plant.type}">${plant.type}</div>
+        <div class="plant-name">${plant.name.en}</div>
+        <div class="plant-rarity rarity-${plant.rarity}">
+          ${rarityStars[plant.rarity]}
+        </div>
+        <div class="harvest-count">
+          ${plant.harvestReward} stars per harvest
+        </div>
+      ` : `
+        <div class="plant-emoji">❓</div>
+        <div class="plant-name">???</div>
+        <div class="locked-overlay">🔒</div>
+        <div style="margin-top: 1rem; color: #999; font-size: 0.875rem;">
+          Not yet discovered
+        </div>
+      `}
+    `;
+
+    if (isDiscovered) {
+      div.addEventListener('click', () => showPlantDetail(plant));
+    }
+
+    return div;
+  }
+
+  function showPlantDetail(plant: any) {
+    const modal = document.getElementById('plant-detail-modal');
+    const content = document.getElementById('plant-detail-content');
+    if (!modal || !content) return;
+
+    const rarityLabels = {
+      common: 'Common',
+      uncommon: 'Uncommon',
+      rare: 'Rare'
+    };
+
+    const typeLabels = {
+      flower: 'Flower',
+      vegetable: 'Vegetable',
+      tree: 'Tree'
+    };
+
+    content.innerHTML = `
+      <div class="detail-header">
+        <div class="detail-emoji">${plant.emoji}</div>
+        <div class="detail-name">${plant.name.en}</div>
+        <div class="plant-type-badge ${plant.type}">${typeLabels[plant.type]}</div>
+      </div>
+
+      <div class="detail-info">
+        <div class="info-section">
+          <h3>Plant Information</h3>
+          <div class="info-row">
+            <span class="info-label">Rarity:</span>
+            <span class="info-value rarity-${plant.rarity}">${rarityLabels[plant.rarity]}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Growth Time:</span>
+            <span class="info-value">${plant.growthTime} days</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Harvest Reward:</span>
+            <span class="info-value">${plant.harvestReward} ⭐</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Care Needed:</span>
+            <span class="info-value">${plant.careNeeded ? 'Daily Water 💧' : 'Low Maintenance 🌱'}</span>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3>Gardener's Notes</h3>
+          <div class="fun-fact-box">
+            ${plant.funFact.en}
+          </div>
+        </div>
+      </div>
+    `;
+
+    modal.classList.remove('hidden');
+  }
+
+  function setupFilterTabs() {
+    const tabs = document.querySelectorAll('.filter-tab');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Update active state
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // Filter plants
+        const filter = tab.dataset.filter || 'all';
+        renderPlants(filter);
+      });
+    });
+
+    // Close modal
+    const closeBtn = document.getElementById('close-detail-btn');
+    const backdrop = document.querySelector('.modal-backdrop');
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        document.getElementById('plant-detail-modal')?.classList.add('hidden');
+      });
+    }
+
+    if (backdrop) {
+      backdrop.addEventListener('click', () => {
+        document.getElementById('plant-detail-modal')?.classList.add('hidden');
+      });
+    }
+  }
+</script>

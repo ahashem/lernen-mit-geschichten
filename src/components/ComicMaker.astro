@@ -1,0 +1,856 @@
+---
+/**
+ * Comic Book Maker - Main Editor Interface
+ * Full-featured comic creation with panels, bubbles, and effects
+ */
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale: Locale;
+  storyId?: string;
+  storyTitle?: string;
+  storyText?: string;
+  characterEmoji?: string;
+  characterName?: string;
+}
+
+const { locale, storyId, storyTitle, storyText, characterEmoji, characterName } = Astro.props;
+---
+
+<div class="comic-maker" data-locale={locale}>
+  <!-- Header -->
+  <header class="comic-header">
+    <h1 class="comic-title-header">
+      <span class="icon">📚</span>
+      <span data-i18n="comicMaker">Comic Book Maker</span>
+    </h1>
+    <div class="comic-actions">
+      <button class="btn btn-secondary" id="backBtn">
+        <span data-i18n="back">Back</span>
+      </button>
+      <button class="btn btn-primary" id="saveComicBtn">
+        <span data-i18n="saveComic">Save Comic</span>
+      </button>
+      <button class="btn btn-success" id="exportBtn">
+        <span data-i18n="exportComic">Export Comic</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Editor Area -->
+  <div class="comic-editor-container">
+    <!-- Left Sidebar - Tools -->
+    <aside class="comic-sidebar comic-sidebar-left">
+      <div class="sidebar-section">
+        <h3 data-i18n="comicTemplates">Templates</h3>
+        <div id="templateList" class="template-grid"></div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 data-i18n="panelLayout">Panel Layout</h3>
+        <div class="layout-selector">
+          <button class="layout-btn active" data-layout="4-panel">
+            <div class="layout-preview grid-2x2"></div>
+            <span data-i18n="4panel">4-Panel</span>
+          </button>
+          <button class="layout-btn" data-layout="6-panel">
+            <div class="layout-preview grid-3x2"></div>
+            <span data-i18n="6panel">6-Panel</span>
+          </button>
+          <button class="layout-btn" data-layout="9-panel">
+            <div class="layout-preview grid-3x3"></div>
+            <span data-i18n="9panel">9-Panel</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 data-i18n="characters">Characters</h3>
+        <div id="characterPalette" class="character-palette"></div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 data-i18n="speechBubbles">Speech Bubbles</h3>
+        <div class="bubble-types">
+          <button class="bubble-type-btn" data-bubble="round" title="Round Bubble">💬</button>
+          <button class="bubble-type-btn" data-bubble="rectangular" title="Rectangular">💭</button>
+          <button class="bubble-type-btn" data-bubble="thought" title="Thought Cloud">☁️</button>
+          <button class="bubble-type-btn" data-bubble="shout" title="Shout">💥</button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 data-i18n="visualEffects">Visual Effects</h3>
+        <div class="effects-palette">
+          <button class="effect-btn" data-effect="hearts" title="Hearts">❤️</button>
+          <button class="effect-btn" data-effect="stars" title="Stars">⭐</button>
+          <button class="effect-btn" data-effect="anger" title="Anger">💢</button>
+          <button class="effect-btn" data-effect="sweat" title="Sweat">💦</button>
+          <button class="effect-btn" data-effect="sparkles" title="Sparkles">✨</button>
+          <button class="effect-btn" data-effect="shock" title="Shock">⚡</button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 data-i18n="soundEffects">Sound Effects</h3>
+        <select id="soundEffectSelect" class="sound-effect-select">
+          <option value="" data-i18n="selectSoundEffect">Select Sound Effect</option>
+        </select>
+        <button id="addSoundEffectBtn" class="btn btn-sm btn-primary">
+          <span data-i18n="addEffect">Add Effect</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Center - Canvas -->
+    <main class="comic-canvas-container">
+      <div class="canvas-toolbar">
+        <div class="toolbar-group">
+          <button id="undoBtn" class="tool-btn" title="Undo">↶</button>
+          <button id="redoBtn" class="tool-btn" title="Redo">↷</button>
+        </div>
+        <div class="toolbar-group">
+          <button id="zoomInBtn" class="tool-btn" title="Zoom In">🔍+</button>
+          <button id="zoomOutBtn" class="tool-btn" title="Zoom Out">🔍−</button>
+          <button id="fitScreenBtn" class="tool-btn" data-i18n="fitToScreen">Fit</button>
+        </div>
+        <div class="toolbar-group">
+          <label class="toggle-label">
+            <input type="checkbox" id="gridSnappingToggle" checked />
+            <span data-i18n="gridSnapping">Grid Snapping</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="showGuidesToggle" checked />
+            <span data-i18n="showGuides">Show Guides</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="comic-canvas-wrapper">
+        <canvas id="comicCanvas" class="comic-canvas"></canvas>
+        <div id="panelOverlay" class="panel-overlay"></div>
+      </div>
+
+      <div class="canvas-footer">
+        <div class="page-navigation">
+          <button id="prevPageBtn" class="btn btn-sm">
+            <span data-i18n="previousPage">Previous</span>
+          </button>
+          <span class="page-indicator">
+            <span data-i18n="comicPages">Page</span>
+            <span id="currentPage">1</span> / <span id="totalPages">1</span>
+          </span>
+          <button id="nextPageBtn" class="btn btn-sm">
+            <span data-i18n="nextPage">Next</span>
+          </button>
+        </div>
+        <button id="addPageBtn" class="btn btn-sm btn-primary">
+          + <span data-i18n="addPage">Add Page</span>
+        </button>
+      </div>
+    </main>
+
+    <!-- Right Sidebar - Properties -->
+    <aside class="comic-sidebar comic-sidebar-right">
+      <div class="properties-panel">
+        <h3 data-i18n="properties">Properties</h3>
+
+        <div id="propertiesContent" class="properties-content">
+          <!-- Dynamic content based on selection -->
+          <div class="no-selection">
+            <p data-i18n="selectElementToEdit">Select an element to edit its properties</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 data-i18n="comicStats">Comic Stats</h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="panelsCreated">Panels</span>
+            <span class="stat-value" id="panelCount">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="bubblesAdded">Bubbles</span>
+            <span class="stat-value" id="bubbleCount">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="effectsUsed">Effects</span>
+            <span class="stat-value" id="effectCount">0</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Modals -->
+  <div id="exportModal" class="modal" hidden>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 data-i18n="exportComic">Export Comic</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="export-options">
+          <button class="export-option-btn" id="exportPDFBtn">
+            <span class="icon">📄</span>
+            <span data-i18n="exportPDF">Export as PDF</span>
+          </button>
+          <button class="export-option-btn" id="exportPNGBtn">
+            <span class="icon">🖼️</span>
+            <span data-i18n="exportPNG">Export as PNG Sequence</span>
+          </button>
+          <button class="export-option-btn" id="shareQRBtn">
+            <span class="icon">📱</span>
+            <span data-i18n="shareQR">Share via QR Code</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help Modal -->
+  <div id="helpModal" class="modal" hidden>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 data-i18n="comicHelp">Comic Help</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="help-content">
+          <h3 data-i18n="howToMakeComics">How to Make Comics</h3>
+          <ol class="help-steps">
+            <li data-i18n="step1Comics">Choose a story or start from scratch</li>
+            <li data-i18n="step2Comics">Select panel layout and background</li>
+            <li data-i18n="step3Comics">Add characters and position them</li>
+            <li data-i18n="step4Comics">Create speech bubbles and add dialogue</li>
+            <li data-i18n="step5Comics">Add visual effects for excitement</li>
+            <li data-i18n="step6Comics">Save and share your comic!</li>
+          </ol>
+
+          <h3 data-i18n="comicTips">Comic Tips</h3>
+          <ul class="help-tips">
+            <li data-i18n="tipDialogue">Use speech bubbles for dialogue</li>
+            <li data-i18n="tipAction">Add action lines for movement</li>
+            <li data-i18n="tipEffects">Sound effects make it exciting</li>
+            <li data-i18n="tipLayout">Vary panel sizes for drama</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .comic-maker {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #f5f5f5;
+  }
+
+  .comic-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: white;
+    border-bottom: 2px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .comic-title-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    margin: 0;
+  }
+
+  .comic-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .comic-editor-container {
+    display: grid;
+    grid-template-columns: 280px 1fr 320px;
+    gap: 1rem;
+    flex: 1;
+    overflow: hidden;
+    padding: 1rem;
+  }
+
+  .comic-sidebar {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    overflow-y: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebar-section {
+    margin-bottom: 2rem;
+  }
+
+  .sidebar-section h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .layout-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .layout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .layout-btn:hover {
+    border-color: #FF9F40;
+    background: #FFF8F0;
+  }
+
+  .layout-btn.active {
+    border-color: #FF9F40;
+    background: #FFE8CC;
+  }
+
+  .layout-preview {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: grid;
+    gap: 2px;
+    padding: 2px;
+  }
+
+  .grid-2x2 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  .grid-3x2 {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  .grid-3x3 {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+  }
+
+  .layout-preview::before,
+  .layout-preview::after {
+    content: '';
+    background: #ddd;
+  }
+
+  .character-palette,
+  .bubble-types,
+  .effects-palette {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .character-palette button,
+  .bubble-type-btn,
+  .effect-btn {
+    aspect-ratio: 1;
+    font-size: 2rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .character-palette button:hover,
+  .bubble-type-btn:hover,
+  .effect-btn:hover {
+    transform: scale(1.1);
+    border-color: #FF9F40;
+    box-shadow: 0 4px 8px rgba(255, 159, 64, 0.3);
+  }
+
+  .comic-canvas-container {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .canvas-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    background: #fafafa;
+  }
+
+  .toolbar-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .tool-btn {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tool-btn:hover {
+    background: #f0f0f0;
+    border-color: #FF9F40;
+  }
+
+  .toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  .comic-canvas-wrapper {
+    flex: 1;
+    position: relative;
+    overflow: auto;
+    background: #e5e5e5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .comic-canvas {
+    background: white;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    cursor: crosshair;
+  }
+
+  .panel-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+  }
+
+  .canvas-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-top: 1px solid #e0e0e0;
+    background: #fafafa;
+  }
+
+  .page-navigation {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .page-indicator {
+    font-weight: 500;
+  }
+
+  .properties-panel {
+    margin-bottom: 2rem;
+  }
+
+  .properties-content {
+    min-height: 200px;
+  }
+
+  .no-selection {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: #999;
+    text-align: center;
+    font-style: italic;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #FF9F40;
+  }
+
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal[hidden] {
+    display: none;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .modal-close {
+    font-size: 1.5rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .export-options {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .export-option-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+  }
+
+  .export-option-btn:hover {
+    border-color: #FF9F40;
+    background: #FFF8F0;
+    transform: translateX(4px);
+  }
+
+  .export-option-btn .icon {
+    font-size: 2rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 1200px) {
+    .comic-editor-container {
+      grid-template-columns: 240px 1fr 280px;
+    }
+  }
+
+  @media (max-width: 968px) {
+    .comic-editor-container {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .comic-sidebar {
+      max-height: 300px;
+    }
+  }
+</style>
+
+<script>
+  import {
+    createComicProject,
+    saveComicProject,
+    loadComicProjects,
+    autoGenerateComicFromStory,
+    SOUND_EFFECTS,
+    COMIC_TEMPLATES,
+    type ComicProject,
+    type PanelLayout,
+  } from '../utils/comic-maker';
+  import { characters } from '../utils/story-map';
+
+  // Get props from data attributes
+  const comicMaker = document.querySelector('.comic-maker') as HTMLElement;
+  const locale = comicMaker.dataset.locale as any;
+  const storyId = comicMaker.dataset.storyId;
+  const storyTitle = comicMaker.dataset.storyTitle;
+  const storyText = comicMaker.dataset.storyText;
+  const characterEmoji = comicMaker.dataset.characterEmoji;
+  const characterName = comicMaker.dataset.characterName;
+
+  let currentProject: ComicProject | null = null;
+  let currentPageIndex = 0;
+  let selectedLayout: PanelLayout = '4-panel';
+
+  // Initialize canvas
+  const canvas = document.getElementById('comicCanvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+  canvas.width = 1200;
+  canvas.height = 800;
+
+  // Populate character palette
+  const characterPalette = document.getElementById('characterPalette');
+  if (characterPalette) {
+    characters.forEach((char) => {
+      const btn = document.createElement('button');
+      btn.textContent = char.emoji;
+      btn.title = char.name;
+      btn.dataset.characterId = char.characterId;
+      btn.addEventListener('click', () => addCharacterToPanel(char.characterId, char.emoji, char.name));
+      characterPalette.appendChild(btn);
+    });
+  }
+
+  // Populate sound effects
+  const soundEffectSelect = document.getElementById('soundEffectSelect') as HTMLSelectElement;
+  if (soundEffectSelect) {
+    SOUND_EFFECTS.forEach((effect) => {
+      const option = document.createElement('option');
+      option.value = effect;
+      option.textContent = effect;
+      soundEffectSelect.appendChild(option);
+    });
+  }
+
+  // Populate templates
+  const templateList = document.getElementById('templateList');
+  if (templateList) {
+    COMIC_TEMPLATES.forEach((template) => {
+      const btn = document.createElement('button');
+      btn.className = 'template-btn';
+      btn.innerHTML = `<span class="icon">${template.preview}</span><span>${template.name[locale]}</span>`;
+      btn.addEventListener('click', () => selectTemplate(template.layout));
+      templateList.appendChild(btn);
+    });
+  }
+
+  // Layout selection
+  document.querySelectorAll('.layout-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const target = e.currentTarget as HTMLElement;
+      const layout = target.dataset.layout as PanelLayout;
+
+      document.querySelectorAll('.layout-btn').forEach((b) => b.classList.remove('active'));
+      target.classList.add('active');
+
+      selectedLayout = layout;
+      if (currentProject) {
+        updatePanelLayout(layout);
+      }
+    });
+  });
+
+  // Auto-generate from story if provided
+  if (storyId && storyTitle && storyText && characterEmoji && characterName) {
+    currentProject = autoGenerateComicFromStory(
+      storyText,
+      storyTitle,
+      storyId,
+      characterEmoji,
+      characterName,
+      locale,
+      '6-panel'
+    );
+    renderComic();
+  } else {
+    // Create new blank project
+    currentProject = createComicProject('My Comic', 'Me', locale, '4-panel');
+    renderComic();
+  }
+
+  // Save comic
+  document.getElementById('saveComicBtn')?.addEventListener('click', () => {
+    if (currentProject) {
+      saveComicProject(currentProject);
+      showNotification('Comic saved!', 'success');
+    }
+  });
+
+  // Export modal
+  document.getElementById('exportBtn')?.addEventListener('click', () => {
+    document.getElementById('exportModal')?.removeAttribute('hidden');
+  });
+
+  // Close modals
+  document.querySelectorAll('.modal-close').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const modal = (e.target as HTMLElement).closest('.modal');
+      modal?.setAttribute('hidden', '');
+    });
+  });
+
+  // Export PDF
+  document.getElementById('exportPDFBtn')?.addEventListener('click', async () => {
+    if (!currentProject) return;
+
+    // Use jsPDF to export
+    showNotification('Exporting PDF...', 'info');
+    // Implementation with jsPDF
+  });
+
+  // Export PNG
+  document.getElementById('exportPNGBtn')?.addEventListener('click', () => {
+    if (!currentProject) return;
+
+    currentProject.pages.forEach((page, i) => {
+      const link = document.createElement('a');
+      link.download = `${currentProject!.title}-page-${i + 1}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+
+    showNotification('PNG sequence exported!', 'success');
+  });
+
+  function addCharacterToPanel(id: string, emoji: string, name: string) {
+    // Add character to current selected panel
+    showNotification(`Added ${name} to panel!`, 'success');
+    // Implementation
+  }
+
+  function selectTemplate(layout: PanelLayout) {
+    selectedLayout = layout;
+    if (currentProject) {
+      updatePanelLayout(layout);
+    }
+  }
+
+  function updatePanelLayout(layout: PanelLayout) {
+    // Update project panels based on layout
+    renderComic();
+  }
+
+  function renderComic() {
+    if (!currentProject) return;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw panels
+    const page = currentProject.pages[currentPageIndex];
+    if (!page) return;
+
+    // Update stats
+    updateStats();
+
+    // Render each panel
+    page.panels.forEach((panel, i) => {
+      renderPanel(panel, i, page.layout);
+    });
+  }
+
+  function renderPanel(panel: any, index: number, layout: PanelLayout) {
+    const { rows, cols } = layout === '4-panel' ? { rows: 2, cols: 2 }
+      : layout === '6-panel' ? { rows: 2, cols: 3 }
+      : { rows: 3, cols: 3 };
+
+    const panelWidth = canvas.width / cols;
+    const panelHeight = canvas.height / rows;
+    const x = (index % cols) * panelWidth;
+    const y = Math.floor(index / cols) * panelHeight;
+
+    // Draw panel border
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(x, y, panelWidth, panelHeight);
+
+    // Draw characters
+    panel.characters.forEach((char: any) => {
+      ctx.font = '48px Arial';
+      ctx.fillText(char.emoji, x + (char.position.x / 100) * panelWidth, y + (char.position.y / 100) * panelHeight);
+    });
+
+    // Draw speech bubbles
+    panel.speechBubbles.forEach((bubble: any) => {
+      ctx.fillStyle = bubble.bubbleColor;
+      ctx.strokeStyle = bubble.borderColor;
+      const bx = x + (bubble.position.x / 100) * panelWidth;
+      const by = y + (bubble.position.y / 100) * panelHeight;
+
+      ctx.beginPath();
+      ctx.ellipse(bx, by, bubble.width, bubble.height / 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Draw text
+      ctx.fillStyle = bubble.textColor;
+      ctx.font = `${bubble.fontSize}px ${bubble.font}`;
+      ctx.textAlign = 'center';
+      ctx.fillText(bubble.text.substring(0, 30) + '...', bx, by);
+    });
+  }
+
+  function updateStats() {
+    if (!currentProject) return;
+
+    const page = currentProject.pages[currentPageIndex];
+    const panelCount = page.panels.length;
+    const bubbleCount = page.panels.reduce((sum, p) => sum + p.speechBubbles.length, 0);
+    const effectCount = page.panels.reduce((sum, p) => sum + p.effects.length, 0);
+
+    document.getElementById('panelCount')!.textContent = panelCount.toString();
+    document.getElementById('bubbleCount')!.textContent = bubbleCount.toString();
+    document.getElementById('effectCount')!.textContent = effectCount.toString();
+  }
+
+  function showNotification(message: string, type: 'success' | 'error' | 'info') {
+    // Simple notification
+    alert(message);
+  }
+</script>

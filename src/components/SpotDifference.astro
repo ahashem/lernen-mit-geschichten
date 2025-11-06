@@ -1,0 +1,992 @@
+---
+/**
+ * Spot the Difference Game Component
+ * Main game interface with side-by-side images and click detection
+ */
+
+interface Props {
+  sceneId: string;
+  mode?: 'practice' | 'timed' | 'oneshot' | 'speedrun';
+  locale?: string;
+}
+
+const { sceneId, mode = 'practice', locale = 'de' } = Astro.props;
+---
+
+<div class="spot-difference-game" data-scene-id={sceneId} data-mode={mode}>
+  <!-- Game Header -->
+  <div class="game-header">
+    <div class="game-info">
+      <h2 class="game-title">
+        <span class="emoji">🔍</span>
+        <span class="title-text">Finde die Unterschiede</span>
+      </h2>
+      <div class="scene-info">
+        <span class="scene-name"></span>
+        <span class="difficulty-badge"></span>
+      </div>
+    </div>
+
+    <div class="game-stats">
+      <div class="stat-item">
+        <span class="stat-label">Gefunden:</span>
+        <span class="stat-value" id="found-count">0/0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Punkte:</span>
+        <span class="stat-value" id="score">0</span>
+      </div>
+      <div class="stat-item" id="timer-display" style="display: none;">
+        <span class="stat-label">Zeit:</span>
+        <span class="stat-value" id="timer">0:00</span>
+      </div>
+    </div>
+
+    <div class="game-controls">
+      <button id="hint-btn" class="btn-hint" title="Hinweis verwenden">
+        💡 <span id="hint-count">3</span>
+      </button>
+      <button id="pause-btn" class="btn-icon" title="Pause">⏸️</button>
+      <button id="reset-btn" class="btn-icon" title="Neu starten">🔄</button>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-container">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+    </div>
+    <div class="progress-text" id="progress-text">0% abgeschlossen</div>
+  </div>
+
+  <!-- Image Comparison Area -->
+  <div class="image-comparison">
+    <div class="image-container left-image">
+      <div class="image-label">Bild 1</div>
+      <div class="image-wrapper" id="left-image-wrapper">
+        <canvas id="left-canvas" class="difference-canvas"></canvas>
+        <img id="left-image" class="scene-image" alt="Linkes Bild" />
+      </div>
+    </div>
+
+    <div class="image-container right-image">
+      <div class="image-label">Bild 2</div>
+      <div class="image-wrapper" id="right-image-wrapper">
+        <canvas id="right-canvas" class="difference-canvas"></canvas>
+        <img id="right-image" class="scene-image" alt="Rechtes Bild" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback Messages -->
+  <div class="feedback-area" id="feedback-area"></div>
+
+  <!-- Hint Overlay -->
+  <div class="hint-overlay" id="hint-overlay" style="display: none;">
+    <div class="hint-zone zone-1"></div>
+    <div class="hint-zone zone-2"></div>
+    <div class="hint-zone zone-3"></div>
+    <div class="hint-zone zone-4"></div>
+  </div>
+
+  <!-- Completion Modal -->
+  <div class="completion-modal" id="completion-modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="completion-title">🎉 Geschafft!</h3>
+      </div>
+      <div class="modal-body">
+        <div class="stars-display" id="stars-display"></div>
+        <div class="completion-stats">
+          <div class="stat-row">
+            <span>Zeit:</span>
+            <span id="final-time">0:00</span>
+          </div>
+          <div class="stat-row">
+            <span>Punkte:</span>
+            <span id="final-score">0</span>
+          </div>
+          <div class="stat-row">
+            <span>Fehler:</span>
+            <span id="final-wrong">0</span>
+          </div>
+          <div class="stat-row">
+            <span>Hinweise:</span>
+            <span id="final-hints">0</span>
+          </div>
+        </div>
+        <div class="reward-info">
+          <span class="reward-stars" id="reward-stars">+0 ⭐</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" id="play-again-btn">Nochmal spielen</button>
+        <button class="btn-secondary" id="back-to-menu-btn">Zurück zur Auswahl</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .spot-difference-game {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Noto Sans', sans-serif;
+  }
+
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    color: white;
+  }
+
+  .game-title {
+    margin: 0;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .game-title .emoji {
+    font-size: 2.5rem;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+
+  .scene-info {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    opacity: 0.9;
+  }
+
+  .difficulty-badge {
+    padding: 0.25rem 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .game-stats {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .game-controls {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .btn-icon,
+  .btn-hint {
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    color: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+  }
+
+  .btn-icon:hover,
+  .btn-hint:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .btn-hint:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .progress-container {
+    margin-bottom: 2rem;
+  }
+
+  .progress-bar {
+    height: 12px;
+    background: #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
+    border-radius: 6px;
+    transition: width 0.5s ease;
+  }
+
+  .progress-text {
+    text-align: center;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+  }
+
+  .image-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .image-container {
+    position: relative;
+  }
+
+  .image-label {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    background: linear-gradient(135deg, #ff9f40 0%, #ffd93d 100%);
+    border-radius: 8px;
+    color: #333;
+  }
+
+  .image-wrapper {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    cursor: crosshair;
+    background: #f5f5f5;
+  }
+
+  .scene-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .difference-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .feedback-area {
+    min-height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .feedback-message {
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .feedback-message.correct {
+    background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+    color: white;
+  }
+
+  .feedback-message.wrong {
+    background: linear-gradient(135deg, #e57373 0%, #ef5350 100%);
+    color: white;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hint-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .hint-zone {
+    position: absolute;
+    border: 4px dashed #ffd93d;
+    background: rgba(255, 217, 61, 0.2);
+    animation: hintPulse 1.5s ease-in-out infinite;
+  }
+
+  .hint-zone.zone-1 {
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 50%;
+  }
+
+  .hint-zone.zone-2 {
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 50%;
+  }
+
+  .hint-zone.zone-3 {
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    height: 50%;
+  }
+
+  .hint-zone.zone-4 {
+    bottom: 0;
+    right: 0;
+    width: 50%;
+    height: 50%;
+  }
+
+  @keyframes hintPulse {
+    0%,
+    100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  .completion-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: scaleIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.7);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .modal-header h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 2rem;
+    text-align: center;
+    color: #333;
+  }
+
+  .stars-display {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 3rem;
+  }
+
+  .completion-stats {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .stat-row:last-child {
+    border-bottom: none;
+  }
+
+  .stat-row span:first-child {
+    color: #666;
+  }
+
+  .stat-row span:last-child {
+    font-weight: 700;
+    color: #333;
+  }
+
+  .reward-info {
+    text-align: center;
+    padding: 1rem;
+    background: linear-gradient(135deg, #ffd93d 0%, #ff9f40 100%);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+  }
+
+  .reward-stars {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .btn-secondary {
+    background: #e0e0e0;
+    color: #333;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-secondary:hover {
+    background: #d0d0d0;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .spot-difference-game {
+      padding: 1rem;
+    }
+
+    .game-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .game-title {
+      font-size: 1.5rem;
+    }
+
+    .game-stats {
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .image-comparison {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .modal-content {
+      padding: 1.5rem;
+    }
+  }
+
+  /* Click effect animation */
+  @keyframes clickEffect {
+    0% {
+      transform: scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+
+  .click-marker {
+    position: absolute;
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  .click-marker.correct {
+    color: #4caf50;
+  }
+
+  .click-marker.wrong {
+    color: #e57373;
+  }
+</style>
+
+<script>
+  import { spotDifferenceGame, type ScenePair, SCENE_LIBRARY } from '../utils/spot-difference';
+
+  class SpotDifferenceUI {
+    private gameContainer: HTMLElement;
+    private sceneId: string;
+    private mode: string;
+    private leftCanvas: HTMLCanvasElement;
+    private rightCanvas: HTMLCanvasElement;
+    private leftImage: HTMLImageElement;
+    private rightImage: HTMLImageElement;
+    private timerInterval: number | null = null;
+
+    constructor() {
+      this.gameContainer = document.querySelector('.spot-difference-game')!;
+      this.sceneId = this.gameContainer.dataset.sceneId || '';
+      this.mode = this.gameContainer.dataset.mode || 'practice';
+
+      this.leftCanvas = document.getElementById('left-canvas') as HTMLCanvasElement;
+      this.rightCanvas = document.getElementById('right-canvas') as HTMLCanvasElement;
+      this.leftImage = document.getElementById('left-image') as HTMLImageElement;
+      this.rightImage = document.getElementById('right-image') as HTMLImageElement;
+
+      this.init();
+    }
+
+    private init(): void {
+      // Load scene
+      const scene = SCENE_LIBRARY.find((s) => s.id === this.sceneId);
+      if (!scene) {
+        console.error('Scene not found');
+        return;
+      }
+
+      // Update UI with scene info
+      this.updateSceneInfo(scene);
+
+      // Load images
+      this.loadImages(scene);
+
+      // Setup event listeners
+      this.setupEventListeners();
+
+      // Start game
+      spotDifferenceGame.startGame(this.sceneId, this.mode as any);
+
+      // Update UI
+      this.updateUI();
+
+      // Start timer if timed mode
+      if (this.mode === 'timed') {
+        this.startTimer();
+      }
+    }
+
+    private updateSceneInfo(scene: ScenePair): void {
+      const sceneName = this.gameContainer.querySelector('.scene-name');
+      const difficultyBadge = this.gameContainer.querySelector('.difficulty-badge');
+
+      if (sceneName) sceneName.textContent = scene.name;
+      if (difficultyBadge) {
+        difficultyBadge.textContent = scene.difficulty;
+        difficultyBadge.classList.add(`difficulty-${scene.difficulty}`);
+      }
+    }
+
+    private loadImages(scene: ScenePair): void {
+      this.leftImage.src = scene.leftImageUrl;
+      this.rightImage.src = scene.rightImageUrl;
+
+      // Setup canvas dimensions when image loads
+      this.leftImage.onload = () => {
+        this.setupCanvas(this.leftCanvas, this.leftImage);
+      };
+
+      this.rightImage.onload = () => {
+        this.setupCanvas(this.rightCanvas, this.rightImage);
+      };
+    }
+
+    private setupCanvas(canvas: HTMLCanvasElement, image: HTMLImageElement): void {
+      canvas.width = image.width;
+      canvas.height = image.height;
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+    }
+
+    private setupEventListeners(): void {
+      // Click handlers for both images
+      const leftWrapper = document.getElementById('left-image-wrapper')!;
+      const rightWrapper = document.getElementById('right-image-wrapper')!;
+
+      leftWrapper.addEventListener('click', (e) => this.handleImageClick(e, 'left'));
+      rightWrapper.addEventListener('click', (e) => this.handleImageClick(e, 'right'));
+
+      // Control buttons
+      document.getElementById('hint-btn')?.addEventListener('click', () => this.useHint());
+      document.getElementById('pause-btn')?.addEventListener('click', () => this.togglePause());
+      document.getElementById('reset-btn')?.addEventListener('click', () => this.resetGame());
+
+      // Modal buttons
+      document.getElementById('play-again-btn')?.addEventListener('click', () => this.playAgain());
+      document.getElementById('back-to-menu-btn')?.addEventListener('click', () => this.backToMenu());
+
+      // Listen for game events
+      window.addEventListener('spot-difference-complete', (e: any) => this.onGameComplete(e.detail));
+      window.addEventListener('spot-difference-failed', (e: any) => this.onGameFailed(e.detail));
+    }
+
+    private handleImageClick(event: MouseEvent, side: 'left' | 'right'): void {
+      const wrapper = event.currentTarget as HTMLElement;
+      const rect = wrapper.getBoundingClientRect();
+
+      // Calculate click position as percentage
+      const x = ((event.clientX - rect.left) / rect.width) * 100;
+      const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+      // Handle click in game logic
+      const result = spotDifferenceGame.handleClick(x, y);
+
+      // Show feedback
+      this.showFeedback(result.message, result.found);
+
+      // Draw marker on both canvases
+      const canvas = side === 'left' ? this.leftCanvas : this.rightCanvas;
+      const otherCanvas = side === 'left' ? this.rightCanvas : this.leftCanvas;
+
+      if (result.found && result.difference) {
+        this.drawDifferenceMarker(canvas, result.difference.x, result.difference.y, true);
+        this.drawDifferenceMarker(otherCanvas, result.difference.x, result.difference.y, true);
+      } else {
+        this.drawClickMarker(canvas, x, y, false);
+      }
+
+      // Update UI
+      this.updateUI();
+    }
+
+    private drawDifferenceMarker(
+      canvas: HTMLCanvasElement,
+      x: number,
+      y: number,
+      found: boolean
+    ): void {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const centerX = (x / 100) * canvas.width;
+      const centerY = (y / 100) * canvas.height;
+      const radius = 40;
+
+      // Draw green circle
+      ctx.strokeStyle = found ? '#4caf50' : '#e57373';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Draw checkmark
+      if (found) {
+        ctx.strokeStyle = '#4caf50';
+        ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(centerX - 15, centerY);
+        ctx.lineTo(centerX - 5, centerY + 10);
+        ctx.lineTo(centerX + 15, centerY - 10);
+        ctx.stroke();
+      }
+    }
+
+    private drawClickMarker(
+      canvas: HTMLCanvasElement,
+      x: number,
+      y: number,
+      correct: boolean
+    ): void {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const centerX = (x / 100) * canvas.width;
+      const centerY = (y / 100) * canvas.height;
+
+      // Draw X for wrong click
+      ctx.strokeStyle = '#e57373';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(centerX - 15, centerY - 15);
+      ctx.lineTo(centerX + 15, centerY + 15);
+      ctx.moveTo(centerX + 15, centerY - 15);
+      ctx.lineTo(centerX - 15, centerY + 15);
+      ctx.stroke();
+
+      // Fade out the X
+      setTimeout(() => {
+        ctx.clearRect(centerX - 20, centerY - 20, 40, 40);
+      }, 1000);
+    }
+
+    private showFeedback(message: string, correct: boolean): void {
+      const feedbackArea = document.getElementById('feedback-area');
+      if (!feedbackArea) return;
+
+      feedbackArea.innerHTML = `
+        <div class="feedback-message ${correct ? 'correct' : 'wrong'}">
+          ${correct ? '✓' : '✗'} ${message}
+        </div>
+      `;
+
+      setTimeout(() => {
+        feedbackArea.innerHTML = '';
+      }, 2000);
+    }
+
+    private updateUI(): void {
+      const state = spotDifferenceGame.getState();
+
+      // Update stats
+      document.getElementById('found-count')!.textContent = `${state.foundCount}/${state.totalDifferences}`;
+      document.getElementById('score')!.textContent = state.score.toString();
+      document.getElementById('hint-count')!.textContent = `${state.maxHints - state.hintsUsed}`;
+
+      // Update progress
+      const progress = (state.foundCount / state.totalDifferences) * 100;
+      document.getElementById('progress-fill')!.style.width = `${progress}%`;
+      document.getElementById('progress-text')!.textContent = `${Math.round(progress)}% abgeschlossen`;
+
+      // Update hint button state
+      const hintBtn = document.getElementById('hint-btn') as HTMLButtonElement;
+      if (hintBtn) {
+        hintBtn.disabled = state.hintsUsed >= state.maxHints || state.isComplete;
+      }
+    }
+
+    private useHint(): void {
+      const result = spotDifferenceGame.useHint();
+      this.showFeedback(result.message, result.success);
+
+      if (result.success && result.zone) {
+        this.showHintZone(result.zone);
+      }
+
+      this.updateUI();
+    }
+
+    private showHintZone(zone: number): void {
+      const overlay = document.getElementById('hint-overlay');
+      if (!overlay) return;
+
+      overlay.style.display = 'block';
+      const zoneEl = overlay.querySelector(`.zone-${zone}`) as HTMLElement;
+      if (zoneEl) {
+        zoneEl.style.display = 'block';
+      }
+
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        if (zoneEl) zoneEl.style.display = 'none';
+      }, 3000);
+    }
+
+    private togglePause(): void {
+      spotDifferenceGame.togglePause();
+      const state = spotDifferenceGame.getState();
+
+      const pauseBtn = document.getElementById('pause-btn');
+      if (pauseBtn) {
+        pauseBtn.textContent = state.isPaused ? '▶️' : '⏸️';
+      }
+
+      if (state.isPaused && this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      } else if (!state.isPaused && this.mode === 'timed') {
+        this.startTimer();
+      }
+    }
+
+    private resetGame(): void {
+      // Clear canvases
+      const leftCtx = this.leftCanvas.getContext('2d');
+      const rightCtx = this.rightCanvas.getContext('2d');
+      if (leftCtx) leftCtx.clearRect(0, 0, this.leftCanvas.width, this.leftCanvas.height);
+      if (rightCtx) rightCtx.clearRect(0, 0, this.rightCanvas.width, this.rightCanvas.height);
+
+      // Reset game
+      spotDifferenceGame.resetGame();
+      this.updateUI();
+
+      // Restart timer if needed
+      if (this.mode === 'timed') {
+        this.startTimer();
+      }
+    }
+
+    private startTimer(): void {
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+      }
+
+      const timerDisplay = document.getElementById('timer-display');
+      if (timerDisplay) timerDisplay.style.display = 'flex';
+
+      this.timerInterval = window.setInterval(() => {
+        const remaining = spotDifferenceGame.getRemainingTime();
+        if (remaining !== null) {
+          const minutes = Math.floor(remaining / 60);
+          const seconds = Math.floor(remaining % 60);
+          document.getElementById('timer')!.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+          if (remaining <= 0) {
+            clearInterval(this.timerInterval!);
+            this.timerInterval = null;
+          }
+        }
+      }, 100);
+    }
+
+    private onGameComplete(detail: any): void {
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
+
+      // Show completion modal
+      const modal = document.getElementById('completion-modal');
+      if (!modal) return;
+
+      modal.style.display = 'flex';
+
+      // Update stars
+      const starsDisplay = document.getElementById('stars-display');
+      if (starsDisplay) {
+        starsDisplay.innerHTML = '⭐'.repeat(detail.stars) + '☆'.repeat(3 - detail.stars);
+      }
+
+      // Update stats
+      document.getElementById('final-time')!.textContent = this.formatTime(detail.duration);
+      document.getElementById('final-score')!.textContent = detail.score.toString();
+      document.getElementById('final-wrong')!.textContent = detail.wrongClicks.toString();
+      document.getElementById('final-hints')!.textContent = detail.hintsUsed.toString();
+
+      // Update reward
+      const reward = detail.stars * 5;
+      document.getElementById('reward-stars')!.textContent = `+${reward} ⭐`;
+    }
+
+    private onGameFailed(detail: any): void {
+      this.showFeedback('Spiel beendet!', false);
+
+      setTimeout(() => {
+        this.resetGame();
+      }, 2000);
+    }
+
+    private formatTime(seconds: number): string {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    private playAgain(): void {
+      document.getElementById('completion-modal')!.style.display = 'none';
+      this.resetGame();
+    }
+
+    private backToMenu(): void {
+      window.location.href = '/spot-difference';
+    }
+  }
+
+  // Initialize game when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new SpotDifferenceUI());
+  } else {
+    new SpotDifferenceUI();
+  }
+</script>

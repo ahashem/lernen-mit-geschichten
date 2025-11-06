@@ -1,0 +1,916 @@
+---
+/**
+ * Story Sequencing Game Component
+ * Main interactive game interface for arranging story events
+ */
+
+import EventCard from './EventCard.astro';
+import Timeline from './Timeline.astro';
+import type { Locale } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
+
+interface StoryEvent {
+  id: string;
+  text: string;
+  order: number;
+  act: 'beginning' | 'middle' | 'end';
+  characterEmoji?: string;
+  hint?: string;
+}
+
+interface Props {
+  storyId: string;
+  events: StoryEvent[];
+  difficulty: 'easy' | 'medium' | 'hard';
+  language: Locale;
+  timeLimit?: number;
+  maxAttempts?: number;
+}
+
+const {
+  storyId,
+  events,
+  difficulty,
+  language,
+  timeLimit = 0,
+  maxAttempts = 3,
+} = Astro.props;
+
+const t = (key: string) => getTranslation(language, key as any);
+---
+
+<div
+  class="sequencing-game"
+  data-story-id={storyId}
+  data-difficulty={difficulty}
+  data-time-limit={timeLimit}
+  data-max-attempts={maxAttempts}
+>
+  <!-- Game Header -->
+  <div class="game-header">
+    <div class="game-info">
+      <h2 class="game-title">{t('sequenceGame') || 'Geschichten-Reihenfolge'}</h2>
+      <p class="game-instructions">
+        {difficulty === 'easy' && 'Ziehe die Karten in die richtige Reihenfolge!'}
+        {difficulty === 'medium' && 'Bringe die Ereignisse in die richtige Reihenfolge!'}
+        {difficulty === 'hard' && 'Ordne die Geschichte chronologisch - eine echte Herausforderung!'}
+      </p>
+    </div>
+
+    <div class="game-stats">
+      <div class="stat-item">
+        <span class="stat-icon">❤️</span>
+        <span class="stat-value lives-count">{maxAttempts}</span>
+        <span class="stat-label">Leben</span>
+      </div>
+
+      {
+        timeLimit > 0 && (
+          <div class="stat-item">
+            <span class="stat-icon">⏱️</span>
+            <span class="stat-value timer-count">{timeLimit}</span>
+            <span class="stat-label">Sek.</span>
+          </div>
+        )
+      }
+
+      <div class="stat-item">
+        <span class="stat-icon">💡</span>
+        <span class="stat-value hints-count">3</span>
+        <span class="stat-label">Hinweise</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <Timeline totalEvents={events.length} language={language} />
+
+  <!-- Drop Zone (Sorted Events) -->
+  <div class="drop-zone" data-zone="sorted" role="list" aria-label="Sortierte Ereignisse">
+    <div class="zone-label">
+      <span class="zone-icon">✓</span>
+      Deine Reihenfolge
+    </div>
+    <div class="cards-container sorted-cards" id="sorted-container"></div>
+  </div>
+
+  <!-- Available Events Pool -->
+  <div class="events-pool" data-zone="pool" role="list" aria-label="Verfügbare Ereignisse">
+    <div class="zone-label">
+      <span class="zone-icon">📚</span>
+      Verfügbare Ereignisse
+    </div>
+    <div class="cards-container pool-cards" id="pool-container">
+      {
+        events.map((event) => (
+          <EventCard
+            eventId={event.id}
+            text={event.text}
+            order={event.order}
+            act={event.act}
+            characterEmoji={event.characterEmoji}
+            revealed={false}
+          />
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Control Buttons -->
+  <div class="game-controls">
+    <button class="control-btn hint-btn" data-action="hint">
+      <span class="btn-icon">💡</span>
+      <span class="btn-text">Hinweis</span>
+    </button>
+
+    <button class="control-btn check-btn" data-action="check" disabled>
+      <span class="btn-icon">✓</span>
+      <span class="btn-text">Überprüfen</span>
+    </button>
+
+    <button class="control-btn reset-btn" data-action="reset">
+      <span class="btn-icon">↺</span>
+      <span class="btn-text">Zurücksetzen</span>
+    </button>
+  </div>
+
+  <!-- Feedback Modal -->
+  <div class="feedback-modal" data-visible="false" role="dialog" aria-labelledby="feedback-title">
+    <div class="modal-content">
+      <div class="modal-icon feedback-icon"></div>
+      <h3 class="modal-title" id="feedback-title"></h3>
+      <p class="modal-message"></p>
+      <div class="modal-actions">
+        <button class="modal-btn continue-btn" data-action="continue">Weiter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Completion Modal -->
+  <div class="completion-modal" data-visible="false" role="dialog" aria-labelledby="completion-title">
+    <div class="modal-content">
+      <div class="confetti-container"></div>
+      <div class="stars-display"></div>
+      <h2 class="modal-title" id="completion-title">🎉 Geschafft!</h2>
+      <div class="completion-stats">
+        <div class="stat-row">
+          <span class="stat-name">Zeit:</span>
+          <span class="stat-value completion-time"></span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-name">Versuche:</span>
+          <span class="stat-value completion-attempts"></span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-name">Hinweise:</span>
+          <span class="stat-value completion-hints"></span>
+        </div>
+        <div class="stat-row highlight">
+          <span class="stat-name">Punkte:</span>
+          <span class="stat-value completion-score"></span>
+        </div>
+        <div class="stat-row highlight">
+          <span class="stat-name">Sterne verdient:</span>
+          <span class="stat-value completion-stars"></span>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn back-btn" data-action="back-to-stories">
+          {t('backToStories')}
+        </button>
+        <button class="modal-btn replay-btn" data-action="replay">Nochmal spielen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .sequencing-game {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  /* Game Header */
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    gap: 20px;
+  }
+
+  .game-info {
+    flex: 1;
+  }
+
+  .game-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 8px 0;
+  }
+
+  .game-instructions {
+    font-size: 18px;
+    color: #666;
+    margin: 0;
+  }
+
+  .game-stats {
+    display: flex;
+    gap: 16px;
+  }
+
+  .stat-item {
+    background: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 80px;
+  }
+
+  .stat-icon {
+    font-size: 24px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ff9f40;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Zones */
+  .drop-zone,
+  .events-pool {
+    margin: 24px 0;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 16px;
+    border: 3px dashed #d0d0d0;
+    min-height: 180px;
+  }
+
+  .drop-zone {
+    border-color: #4caf50;
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+  }
+
+  .zone-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 16px;
+  }
+
+  .zone-icon {
+    font-size: 24px;
+  }
+
+  .cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  /* Control Buttons */
+  .game-controls {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin: 32px 0;
+  }
+
+  .control-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .control-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .hint-btn {
+    background: linear-gradient(135deg, #ffd93d, #ffc107);
+    color: #333;
+  }
+
+  .check-btn {
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+    color: white;
+  }
+
+  .reset-btn {
+    background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
+    color: #333;
+  }
+
+  .btn-icon {
+    font-size: 20px;
+  }
+
+  /* Modals */
+  .feedback-modal,
+  .completion-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .feedback-modal[data-visible='true'],
+  .completion-modal[data-visible='true'] {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+  }
+
+  .modal-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+  }
+
+  .modal-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 16px 0;
+  }
+
+  .modal-message {
+    font-size: 18px;
+    color: #666;
+    margin: 0 0 24px 0;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .modal-btn {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .continue-btn,
+  .replay-btn {
+    background: #4caf50;
+    color: white;
+  }
+
+  .back-btn {
+    background: #e0e0e0;
+    color: #333;
+  }
+
+  .modal-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Completion Stats */
+  .completion-stats {
+    margin: 24px 0;
+    text-align: left;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .stat-row.highlight {
+    background: #fff9e6;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: none;
+    margin-top: 8px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .stat-name {
+    color: #666;
+  }
+
+  .stat-row.highlight .stat-name,
+  .stat-row.highlight .stat-value {
+    color: #ff9f40;
+  }
+
+  .stars-display {
+    font-size: 48px;
+    margin: 20px 0;
+  }
+
+  /* Confetti animation */
+  .confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .game-header {
+      flex-direction: column;
+    }
+
+    .game-title {
+      font-size: 24px;
+    }
+
+    .game-instructions {
+      font-size: 16px;
+    }
+
+    .game-stats {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .stat-item {
+      flex: 1;
+      min-width: 0;
+      padding: 8px 12px;
+    }
+
+    .cards-container {
+      grid-template-columns: 1fr;
+    }
+
+    .game-controls {
+      flex-direction: column;
+    }
+
+    .control-btn {
+      width: 100%;
+    }
+
+    .modal-content {
+      padding: 24px;
+    }
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .game-header {
+    direction: rtl;
+  }
+
+  [dir='rtl'] .stat-row {
+    flex-direction: row-reverse;
+  }
+</style>
+
+<script>
+  import {
+    shuffleEvents,
+    validateSequence,
+    calculateScore,
+    saveProgress,
+    updateGameStats,
+    awardStars,
+    getHintForPosition,
+  } from '../utils/story-sequencing';
+
+  // Initialize game
+  document.addEventListener('DOMContentLoaded', () => {
+    const gameContainer = document.querySelector('.sequencing-game') as HTMLElement;
+    if (!gameContainer) return;
+
+    const storyId = gameContainer.dataset.storyId!;
+    const difficulty = gameContainer.dataset.difficulty as 'easy' | 'medium' | 'hard';
+    const timeLimit = parseInt(gameContainer.dataset.timeLimit || '0', 10);
+    const maxAttempts = parseInt(gameContainer.dataset.maxAttempts || '3', 10);
+
+    // Game state
+    let attempts = 0;
+    let hintsUsed = 0;
+    let startTime = Date.now();
+    let timerInterval: number | null = null;
+
+    // Get all event cards
+    const poolContainer = gameContainer.querySelector('#pool-container') as HTMLElement;
+    const sortedContainer = gameContainer.querySelector('#sorted-container') as HTMLElement;
+    const eventCards = Array.from(poolContainer.querySelectorAll('.event-card')) as HTMLElement[];
+
+    // Shuffle cards initially
+    const shuffled = eventCards.sort(() => Math.random() - 0.5);
+    shuffled.forEach((card) => poolContainer.appendChild(card));
+
+    // Setup drag and drop
+    setupDragAndDrop();
+
+    // Setup controls
+    setupControls();
+
+    // Start timer if enabled
+    if (timeLimit > 0) {
+      startTimer();
+    }
+
+    function setupDragAndDrop() {
+      eventCards.forEach((card) => {
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragend', handleDragEnd);
+      });
+
+      [poolContainer, sortedContainer].forEach((container) => {
+        container.addEventListener('dragover', handleDragOver);
+        container.addEventListener('drop', handleDrop);
+        container.addEventListener('dragleave', handleDragLeave);
+      });
+
+      // Keyboard support
+      eventCards.forEach((card, index) => {
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleCardClick(card);
+          }
+        });
+      });
+    }
+
+    let draggedCard: HTMLElement | null = null;
+
+    function handleDragStart(e: DragEvent) {
+      draggedCard = e.currentTarget as HTMLElement;
+      draggedCard.classList.add('dragging');
+      e.dataTransfer!.effectAllowed = 'move';
+    }
+
+    function handleDragEnd(e: DragEvent) {
+      const card = e.currentTarget as HTMLElement;
+      card.classList.remove('dragging');
+    }
+
+    function handleDragOver(e: DragEvent) {
+      e.preventDefault();
+      const container = e.currentTarget as HTMLElement;
+      container.classList.add('drag-over');
+    }
+
+    function handleDragLeave(e: DragEvent) {
+      const container = e.currentTarget as HTMLElement;
+      container.classList.remove('drag-over');
+    }
+
+    function handleDrop(e: DragEvent) {
+      e.preventDefault();
+      const container = e.currentTarget as HTMLElement;
+      container.classList.remove('drag-over');
+
+      if (draggedCard && container) {
+        container.appendChild(draggedCard);
+        updateUI();
+      }
+    }
+
+    function handleCardClick(card: HTMLElement) {
+      // Toggle between pool and sorted
+      const currentParent = card.parentElement;
+      const targetContainer =
+        currentParent === poolContainer ? sortedContainer : poolContainer;
+      targetContainer.appendChild(card);
+      updateUI();
+    }
+
+    function setupControls() {
+      const hintBtn = gameContainer.querySelector('.hint-btn');
+      const checkBtn = gameContainer.querySelector('.check-btn');
+      const resetBtn = gameContainer.querySelector('.reset-btn');
+
+      hintBtn?.addEventListener('click', showHint);
+      checkBtn?.addEventListener('click', checkSequence);
+      resetBtn?.addEventListener('click', resetGame);
+
+      // Modal actions
+      const continueBtn = gameContainer.querySelector('.continue-btn');
+      const replayBtn = gameContainer.querySelector('.replay-btn');
+      const backBtn = gameContainer.querySelector('.back-btn');
+
+      continueBtn?.addEventListener('click', closeModal);
+      replayBtn?.addEventListener('click', resetGame);
+      backBtn?.addEventListener('click', () => {
+        window.location.href = '/de/stories';
+      });
+    }
+
+    function updateUI() {
+      const sortedCards = Array.from(sortedContainer.querySelectorAll('.event-card'));
+      const checkBtn = gameContainer.querySelector('.check-btn') as HTMLButtonElement;
+
+      // Enable check button if all cards are sorted
+      checkBtn.disabled = sortedCards.length !== eventCards.length;
+
+      // Update timeline progress
+      updateTimeline(sortedCards.length);
+    }
+
+    function updateTimeline(filledCount: number) {
+      const nodes = gameContainer.querySelectorAll('.timeline-node');
+      const progressText = gameContainer.querySelector('.progress-text');
+
+      nodes.forEach((node, i) => {
+        const filled = i < filledCount;
+        node.setAttribute('data-filled', String(filled));
+
+        const connector = node.querySelector('.node-connector');
+        if (connector) {
+          connector.setAttribute('data-filled', String(filled));
+        }
+      });
+
+      if (progressText) {
+        progressText.textContent = `${filledCount} / ${eventCards.length}`;
+      }
+    }
+
+    function showHint() {
+      const hintsCount = gameContainer.querySelector('.hints-count');
+      const currentHints = parseInt(hintsCount?.textContent || '0', 10);
+
+      if (currentHints <= 0) {
+        showFeedback('Keine Hinweise mehr!', '💡', false);
+        return;
+      }
+
+      hintsUsed++;
+      hintsCount!.textContent = String(currentHints - 1);
+
+      // Get sorted cards
+      const sortedCards = Array.from(sortedContainer.querySelectorAll('.event-card'));
+
+      // Find first incorrect position
+      let hintText = 'Alle aktuellen Positionen sind korrekt!';
+      for (let i = 0; i < sortedCards.length; i++) {
+        const card = sortedCards[i] as HTMLElement;
+        const correctOrder = parseInt(card.dataset.order || '0', 10);
+        if (correctOrder !== i + 1) {
+          const act = card.dataset.act;
+          hintText = `Tipp: Karte ${i + 1} gehört zum ${act === 'beginning' ? 'Anfang' : act === 'middle' ? 'Mittelteil' : 'Ende'} der Geschichte.`;
+          card.style.border = '3px solid #ffc107';
+          setTimeout(() => {
+            card.style.border = '';
+          }, 2000);
+          break;
+        }
+      }
+
+      showFeedback(hintText, '💡', true);
+    }
+
+    function checkSequence() {
+      attempts++;
+
+      const sortedCards = Array.from(sortedContainer.querySelectorAll('.event-card')) as HTMLElement[];
+      const events = sortedCards.map((card) => ({
+        id: card.dataset.eventId!,
+        order: parseInt(card.dataset.order!, 10),
+      }));
+
+      let isCorrect = true;
+      events.forEach((event, index) => {
+        const card = sortedCards[index];
+        if (event.order === index + 1) {
+          card.setAttribute('data-correct', 'true');
+          card.setAttribute('data-incorrect', 'false');
+        } else {
+          card.setAttribute('data-correct', 'false');
+          card.setAttribute('data-incorrect', 'true');
+          isCorrect = false;
+        }
+      });
+
+      setTimeout(() => {
+        sortedCards.forEach((card) => {
+          card.setAttribute('data-correct', 'false');
+          card.setAttribute('data-incorrect', 'false');
+        });
+      }, 2000);
+
+      if (isCorrect) {
+        handleCompletion();
+      } else {
+        const livesCount = gameContainer.querySelector('.lives-count');
+        const remaining = maxAttempts - attempts;
+        livesCount!.textContent = String(remaining);
+
+        if (remaining <= 0) {
+          showFeedback('Keine Leben mehr! Spiel zu Ende.', '❌', false);
+          setTimeout(() => resetGame(), 3000);
+        } else {
+          showFeedback(
+            `Noch nicht ganz richtig! Du hast noch ${remaining} ${remaining === 1 ? 'Versuch' : 'Versuche'}.`,
+            '🤔',
+            false
+          );
+        }
+      }
+    }
+
+    function handleCompletion() {
+      const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+      const { score, stars } = calculateScore(attempts, hintsUsed, elapsedSeconds, timeLimit);
+
+      // Update stats
+      updateGameStats(true, stars, elapsedSeconds, attempts === 1 && hintsUsed === 0);
+      awardStars(stars);
+
+      // Show completion modal
+      showCompletionModal(elapsedSeconds, attempts, hintsUsed, score, stars);
+
+      // Stop timer
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+    }
+
+    function showFeedback(message: string, icon: string, isPositive: boolean) {
+      const modal = gameContainer.querySelector('.feedback-modal') as HTMLElement;
+      const iconEl = modal.querySelector('.modal-icon') as HTMLElement;
+      const messageEl = modal.querySelector('.modal-message') as HTMLElement;
+
+      iconEl.textContent = icon;
+      messageEl.textContent = message;
+      modal.setAttribute('data-visible', 'true');
+    }
+
+    function closeModal() {
+      const modal = gameContainer.querySelector('.feedback-modal') as HTMLElement;
+      modal.setAttribute('data-visible', 'false');
+    }
+
+    function showCompletionModal(
+      time: number,
+      attempts: number,
+      hints: number,
+      score: number,
+      stars: number
+    ) {
+      const modal = gameContainer.querySelector('.completion-modal') as HTMLElement;
+      const starsDisplay = modal.querySelector('.stars-display') as HTMLElement;
+      const timeEl = modal.querySelector('.completion-time') as HTMLElement;
+      const attemptsEl = modal.querySelector('.completion-attempts') as HTMLElement;
+      const hintsEl = modal.querySelector('.completion-hints') as HTMLElement;
+      const scoreEl = modal.querySelector('.completion-score') as HTMLElement;
+      const starsEl = modal.querySelector('.completion-stars') as HTMLElement;
+
+      const starRewards = { 1: 10, 2: 15, 3: 20 };
+      const earnedStars = starRewards[stars as keyof typeof starRewards];
+
+      starsDisplay.textContent = '⭐'.repeat(stars);
+      timeEl.textContent = `${time} Sek.`;
+      attemptsEl.textContent = String(attempts);
+      hintsEl.textContent = String(hints);
+      scoreEl.textContent = String(score);
+      starsEl.textContent = `${earnedStars} ⭐`;
+
+      modal.setAttribute('data-visible', 'true');
+
+      // Confetti animation
+      createConfetti();
+    }
+
+    function createConfetti() {
+      const container = gameContainer.querySelector('.confetti-container') as HTMLElement;
+      if (!container) return;
+
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.position = 'absolute';
+        confetti.style.width = '10px';
+        confetti.style.height = '10px';
+        confetti.style.backgroundColor = ['#FFD93D', '#FF9F40', '#6BCF7F', '#4CAF50'][
+          Math.floor(Math.random() * 4)
+        ];
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.top = '-10px';
+        confetti.style.opacity = '1';
+        confetti.style.transition = 'all 3s ease-out';
+        container.appendChild(confetti);
+
+        setTimeout(() => {
+          confetti.style.top = '100%';
+          confetti.style.opacity = '0';
+        }, 50);
+
+        setTimeout(() => confetti.remove(), 3000);
+      }
+    }
+
+    function resetGame() {
+      attempts = 0;
+      hintsUsed = 0;
+      startTime = Date.now();
+
+      // Reset UI
+      gameContainer.querySelector('.lives-count')!.textContent = String(maxAttempts);
+      gameContainer.querySelector('.hints-count')!.textContent = '3';
+
+      // Move all cards back to pool
+      eventCards.forEach((card) => {
+        card.setAttribute('data-correct', 'false');
+        card.setAttribute('data-incorrect', 'false');
+        poolContainer.appendChild(card);
+      });
+
+      // Shuffle
+      const shuffled = eventCards.sort(() => Math.random() - 0.5);
+      shuffled.forEach((card) => poolContainer.appendChild(card));
+
+      // Close modals
+      gameContainer.querySelector('.feedback-modal')?.setAttribute('data-visible', 'false');
+      gameContainer.querySelector('.completion-modal')?.setAttribute('data-visible', 'false');
+
+      // Reset timeline
+      updateTimeline(0);
+
+      // Restart timer
+      if (timeLimit > 0) {
+        if (timerInterval) clearInterval(timerInterval);
+        startTimer();
+      }
+
+      updateUI();
+    }
+
+    function startTimer() {
+      const timerCount = gameContainer.querySelector('.timer-count');
+      let remaining = timeLimit;
+
+      timerInterval = window.setInterval(() => {
+        remaining--;
+        timerCount!.textContent = String(remaining);
+
+        if (remaining <= 0) {
+          clearInterval(timerInterval!);
+          showFeedback('Zeit abgelaufen!', '⏱️', false);
+          setTimeout(() => resetGame(), 3000);
+        }
+      }, 1000);
+    }
+  });
+</script>

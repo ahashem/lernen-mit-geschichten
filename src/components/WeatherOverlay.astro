@@ -1,0 +1,414 @@
+---
+/**
+ * Weather Overlay Component
+ * Renders visual weather effects using Canvas API
+ */
+---
+
+<div id="weather-overlay" aria-hidden="true">
+  <canvas id="weather-canvas"></canvas>
+</div>
+
+<style>
+  #weather-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9998; /* Below modals but above content */
+    overflow: hidden;
+  }
+
+  #weather-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    #weather-overlay {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { weatherSystem, type WeatherType } from '@utils/weather-system';
+  import { weatherSounds } from '@utils/weather-sounds';
+
+  interface Particle {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    size: number;
+    opacity: number;
+    life?: number;
+    maxLife?: number;
+  }
+
+  class WeatherRenderer {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private particles: Particle[] = [];
+    private animationFrame: number | null = null;
+    private lastWeather: WeatherType | null = null;
+    private isVisible: boolean = true;
+
+    constructor(canvas: HTMLCanvasElement) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d')!;
+      this.resize();
+      window.addEventListener('resize', () => this.resize());
+
+      // Check if page is visible
+      document.addEventListener('visibilitychange', () => {
+        this.isVisible = !document.hidden;
+        if (this.isVisible && this.lastWeather) {
+          this.render();
+        }
+      });
+    }
+
+    private resize() {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+    }
+
+    /**
+     * Generate rain particles
+     */
+    private generateRain(count: number) {
+      for (let i = 0; i < count; i++) {
+        this.particles.push({
+          x: Math.random() * this.canvas.width,
+          y: Math.random() * this.canvas.height - this.canvas.height,
+          vx: -2,
+          vy: 15 + Math.random() * 10,
+          size: 1 + Math.random() * 2,
+          opacity: 0.3 + Math.random() * 0.4
+        });
+      }
+    }
+
+    /**
+     * Generate snow particles
+     */
+    private generateSnow(count: number) {
+      for (let i = 0; i < count; i++) {
+        this.particles.push({
+          x: Math.random() * this.canvas.width,
+          y: Math.random() * this.canvas.height - this.canvas.height,
+          vx: -1 + Math.random() * 2,
+          vy: 2 + Math.random() * 3,
+          size: 2 + Math.random() * 4,
+          opacity: 0.6 + Math.random() * 0.4
+        });
+      }
+    }
+
+    /**
+     * Generate fog particles
+     */
+    private generateFog(count: number) {
+      for (let i = 0; i < count; i++) {
+        this.particles.push({
+          x: Math.random() * this.canvas.width,
+          y: Math.random() * this.canvas.height,
+          vx: 0.5 + Math.random() * 1,
+          vy: -0.2 + Math.random() * 0.4,
+          size: 50 + Math.random() * 100,
+          opacity: 0.1 + Math.random() * 0.15
+        });
+      }
+    }
+
+    /**
+     * Generate wind particles (leaves/debris)
+     */
+    private generateWind(count: number) {
+      for (let i = 0; i < count; i++) {
+        this.particles.push({
+          x: -50,
+          y: Math.random() * this.canvas.height,
+          vx: 5 + Math.random() * 5,
+          vy: -2 + Math.random() * 4,
+          size: 3 + Math.random() * 5,
+          opacity: 0.4 + Math.random() * 0.3
+        });
+      }
+    }
+
+    /**
+     * Generate stars
+     */
+    private generateStars(count: number) {
+      for (let i = 0; i < count; i++) {
+        this.particles.push({
+          x: Math.random() * this.canvas.width,
+          y: Math.random() * this.canvas.height * 0.6, // Top 60% of screen
+          vx: 0,
+          vy: 0,
+          size: 1 + Math.random() * 2,
+          opacity: 0.3 + Math.random() * 0.7,
+          life: Math.random() * 100,
+          maxLife: 100
+        });
+      }
+    }
+
+    /**
+     * Generate lightning flash
+     */
+    private flashLightning() {
+      // Full screen white flash (epilepsy-safe: very brief and subtle)
+      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+      setTimeout(() => {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      }, 100);
+    }
+
+    /**
+     * Update rain particles
+     */
+    private updateRain(particle: Particle) {
+      particle.x += particle.vx;
+      particle.y += particle.vy;
+
+      // Reset if off screen
+      if (particle.y > this.canvas.height) {
+        particle.x = Math.random() * this.canvas.width;
+        particle.y = -10;
+      }
+
+      // Draw rain drop
+      this.ctx.strokeStyle = `rgba(174, 194, 224, ${particle.opacity})`;
+      this.ctx.lineWidth = particle.size;
+      this.ctx.beginPath();
+      this.ctx.moveTo(particle.x, particle.y);
+      this.ctx.lineTo(particle.x + particle.vx, particle.y + particle.vy * 0.5);
+      this.ctx.stroke();
+    }
+
+    /**
+     * Update snow particles
+     */
+    private updateSnow(particle: Particle) {
+      particle.x += particle.vx;
+      particle.y += particle.vy;
+
+      // Gentle sway
+      particle.x += Math.sin(particle.y * 0.01) * 0.5;
+
+      // Reset if off screen
+      if (particle.y > this.canvas.height) {
+        particle.x = Math.random() * this.canvas.width;
+        particle.y = -10;
+      }
+
+      // Draw snowflake
+      this.ctx.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
+      this.ctx.beginPath();
+      this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
+
+    /**
+     * Update fog particles
+     */
+    private updateFog(particle: Particle) {
+      particle.x += particle.vx;
+      particle.y += particle.vy;
+
+      // Wrap around
+      if (particle.x > this.canvas.width + 100) {
+        particle.x = -100;
+      }
+
+      // Draw fog cloud
+      const gradient = this.ctx.createRadialGradient(
+        particle.x, particle.y, 0,
+        particle.x, particle.y, particle.size
+      );
+      gradient.addColorStop(0, `rgba(200, 200, 200, ${particle.opacity})`);
+      gradient.addColorStop(1, 'rgba(200, 200, 200, 0)');
+
+      this.ctx.fillStyle = gradient;
+      this.ctx.beginPath();
+      this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
+
+    /**
+     * Update wind particles
+     */
+    private updateWind(particle: Particle) {
+      particle.x += particle.vx;
+      particle.y += particle.vy;
+
+      // Reset if off screen
+      if (particle.x > this.canvas.width) {
+        particle.x = -50;
+        particle.y = Math.random() * this.canvas.height;
+      }
+
+      // Draw leaf/debris
+      this.ctx.fillStyle = `rgba(139, 69, 19, ${particle.opacity})`;
+      this.ctx.beginPath();
+      this.ctx.ellipse(particle.x, particle.y, particle.size, particle.size * 0.6, Math.PI / 4, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
+
+    /**
+     * Update stars (twinkling)
+     */
+    private updateStars(particle: Particle) {
+      if (particle.life !== undefined && particle.maxLife !== undefined) {
+        particle.life += 2;
+        if (particle.life > particle.maxLife) {
+          particle.life = 0;
+        }
+
+        // Twinkling effect
+        const twinkle = Math.sin((particle.life / particle.maxLife) * Math.PI * 2);
+        const opacity = particle.opacity * (0.5 + twinkle * 0.5);
+
+        this.ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+        this.ctx.beginPath();
+        this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+    }
+
+    /**
+     * Start rendering weather
+     */
+    start(weather: WeatherType, intensity: string) {
+      this.stop();
+      this.lastWeather = weather;
+
+      const state = weatherSystem.getState();
+      const particleDensity = state.particleDensity / 100;
+      const reducedMotion = state.reducedMotion;
+
+      if (reducedMotion) {
+        return; // Don't animate if reduced motion is enabled
+      }
+
+      // Generate initial particles
+      const baseCount = 100;
+      const count = Math.floor(baseCount * particleDensity);
+
+      switch (weather) {
+        case 'rainy':
+          this.generateRain(count);
+          break;
+        case 'stormy':
+          this.generateRain(count * 1.5);
+          // Occasional lightning
+          setInterval(() => {
+            if (Math.random() > 0.95) {
+              this.flashLightning();
+              weatherSounds.playThunder();
+            }
+          }, 3000);
+          break;
+        case 'snowy':
+          this.generateSnow(count * 0.7);
+          break;
+        case 'foggy':
+          this.generateFog(count * 0.3);
+          break;
+        case 'windy':
+          this.generateWind(count * 0.4);
+          break;
+        case 'night-clear':
+        case 'night-cloudy':
+          this.generateStars(weather === 'night-clear' ? 100 : 50);
+          break;
+        default:
+          // No particles for sunny, cloudy, rainbow
+          return;
+      }
+
+      this.render();
+
+      // Start weather sounds
+      if (state.soundEnabled) {
+        weatherSounds.playWeather(weather, intensity as any);
+      }
+    }
+
+    /**
+     * Animation loop
+     */
+    private render() {
+      if (!this.isVisible) return;
+
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      const weather = this.lastWeather;
+
+      this.particles.forEach(particle => {
+        switch (weather) {
+          case 'rainy':
+          case 'stormy':
+            this.updateRain(particle);
+            break;
+          case 'snowy':
+            this.updateSnow(particle);
+            break;
+          case 'foggy':
+            this.updateFog(particle);
+            break;
+          case 'windy':
+            this.updateWind(particle);
+            break;
+          case 'night-clear':
+          case 'night-cloudy':
+            this.updateStars(particle);
+            break;
+        }
+      });
+
+      this.animationFrame = requestAnimationFrame(() => this.render());
+    }
+
+    /**
+     * Stop rendering
+     */
+    stop() {
+      if (this.animationFrame) {
+        cancelAnimationFrame(this.animationFrame);
+        this.animationFrame = null;
+      }
+      this.particles = [];
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      weatherSounds.stopAll();
+    }
+  }
+
+  // Initialize weather overlay
+  const canvas = document.getElementById('weather-canvas') as HTMLCanvasElement;
+  if (canvas) {
+    const renderer = new WeatherRenderer(canvas);
+
+    // Start with current weather
+    const state = weatherSystem.getState();
+    renderer.start(state.current.type, state.current.intensity);
+
+    // Listen for weather changes
+    window.addEventListener('weather-changed', ((event: CustomEvent) => {
+      const { type, intensity } = event.detail;
+      renderer.start(type, intensity);
+    }) as EventListener);
+
+    // Expose globally for controls
+    (window as any).weatherRenderer = renderer;
+  }
+</script>

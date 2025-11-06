@@ -1,0 +1,549 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getTranslation, type Locale } from '../utils/i18n';
+import { getCollection } from 'astro:content';
+
+const url = new URL(Astro.request.url);
+const language = (url.searchParams.get('lang') || 'de') as Locale;
+
+const allStories = await getCollection('stories');
+const storiesWithQuestions = allStories.filter(s => s.data.questions && s.data.questions.length > 0);
+---
+
+<BaseLayout
+  title={getTranslation(language, 'balloonHighScores')}
+  description={getTranslation(language, 'balloonHighScoresDescription')}
+  language={language}
+>
+  <div class="leaderboard-container">
+    <header class="leaderboard-header">
+      <h1>{getTranslation(language, 'balloonHighScores')}</h1>
+      <p class="subtitle">{getTranslation(language, 'balloonHighScoresSubtitle')}</p>
+    </header>
+
+    <div class="filter-tabs">
+      <button class="tab-btn active" data-mode="practice">
+        🎯 {getTranslation(language, 'practiceMode')}
+      </button>
+      <button class="tab-btn" data-mode="timed">
+        ⏱️ {getTranslation(language, 'timedMode')}
+      </button>
+      <button class="tab-btn" data-mode="survival">
+        ❤️ {getTranslation(language, 'survivalMode')}
+      </button>
+      <button class="tab-btn" data-mode="speed">
+        ⚡ {getTranslation(language, 'speedMode')}
+      </button>
+    </div>
+
+    <div class="difficulty-tabs">
+      <button class="difficulty-tab active" data-difficulty="slow">
+        🐢 {getTranslation(language, 'slow')}
+      </button>
+      <button class="difficulty-tab" data-difficulty="medium">
+        🐇 {getTranslation(language, 'medium')}
+      </button>
+      <button class="difficulty-tab" data-difficulty="fast">
+        🚀 {getTranslation(language, 'fast')}
+      </button>
+    </div>
+
+    <div class="leaderboard-content">
+      <div class="global-high-score">
+        <h2>{getTranslation(language, 'yourHighScore')}</h2>
+        <div class="high-score-display">
+          <span class="high-score-value" id="high-score-value">0</span>
+          <span class="high-score-label">{getTranslation(language, 'points')}</span>
+        </div>
+      </div>
+
+      <div class="stories-list">
+        <h3>{getTranslation(language, 'playByStory')}</h3>
+        <div class="story-cards">
+          {storiesWithQuestions.map(story => {
+            const titleMap = {
+              de: story.data.title,
+              ar: story.data.titleAr || story.data.title,
+              en: story.data.titleEn || story.data.title,
+              tr: story.data.titleTr || story.data.title,
+              ur: story.data.titleUr || story.data.title,
+            };
+            const storyTitle = titleMap[language] || story.data.title;
+
+            return (
+              <div class="story-card" data-story-id={story.data.storyId}>
+                <div class="story-card-header">
+                  <span class="story-emoji">{story.data.emoji}</span>
+                  <h4>{storyTitle}</h4>
+                </div>
+                <div class="story-card-stats">
+                  <div class="stat">
+                    <span class="stat-label">{getTranslation(language, 'questions')}:</span>
+                    <span class="stat-value">{story.data.questions?.length || 0}</span>
+                  </div>
+                  <div class="stat">
+                    <span class="stat-label">{getTranslation(language, 'bestScore')}:</span>
+                    <span class="stat-value story-high-score" data-story-id={story.data.storyId}>--</span>
+                  </div>
+                </div>
+                <a
+                  href={`/balloon-pop?story=${story.data.storyId}&lang=${language}`}
+                  class="btn-play"
+                >
+                  {getTranslation(language, 'playNow')}
+                </a>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div class="achievements-section">
+        <h3>{getTranslation(language, 'balloonAchievements')}</h3>
+        <div class="achievements-grid" id="achievements-grid">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import { BalloonPopGame } from '../utils/balloon-pop';
+  import type { GameMode, DifficultyLevel } from '../utils/balloon-pop';
+
+  let currentMode: GameMode = 'practice';
+  let currentDifficulty: DifficultyLevel = 'slow';
+
+  // UI Elements
+  const highScoreValue = document.getElementById('high-score-value') as HTMLElement;
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const difficultyTabs = document.querySelectorAll('.difficulty-tab');
+  const achievementsGrid = document.getElementById('achievements-grid') as HTMLElement;
+
+  // Tab switching
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentMode = btn.getAttribute('data-mode') as GameMode;
+      updateHighScores();
+    });
+  });
+
+  difficultyTabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      difficultyTabs.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentDifficulty = btn.getAttribute('data-difficulty') as DifficultyLevel;
+      updateHighScores();
+    });
+  });
+
+  /**
+   * Update high scores display
+   */
+  function updateHighScores() {
+    // Get global high score
+    const globalHighScore = BalloonPopGame.getHighScore(currentMode, currentDifficulty);
+    highScoreValue.textContent = globalHighScore.toString();
+
+    // Update story-specific high scores
+    document.querySelectorAll('.story-high-score').forEach(el => {
+      const storyId = el.getAttribute('data-story-id');
+      if (storyId) {
+        const storyHighScore = getStoryHighScore(storyId, currentMode, currentDifficulty);
+        el.textContent = storyHighScore > 0 ? storyHighScore.toString() : '--';
+      }
+    });
+  }
+
+  /**
+   * Get story-specific high score
+   */
+  function getStoryHighScore(storyId: string, mode: GameMode, difficulty: DifficultyLevel): number {
+    const key = `balloon-pop-highscore-${storyId}-${mode}-${difficulty}`;
+    return parseInt(localStorage.getItem(key) || '0', 10);
+  }
+
+  /**
+   * Load achievements
+   */
+  function loadAchievements() {
+    const achievements = [
+      {
+        id: 'first-game',
+        name: 'First Game',
+        nameDE: 'Erstes Spiel',
+        icon: '🎮',
+        condition: 'Play your first balloon pop game',
+        conditionDE: 'Spiele dein erstes Ballon-Pop-Spiel',
+      },
+      {
+        id: 'perfect-game',
+        name: 'Perfect Game',
+        nameDE: 'Perfektes Spiel',
+        icon: '🏆',
+        condition: 'Complete a game with no mistakes',
+        conditionDE: 'Schließe ein Spiel ohne Fehler ab',
+      },
+      {
+        id: 'combo-master',
+        name: 'Combo Master',
+        nameDE: 'Combo-Meister',
+        icon: '🔥',
+        condition: 'Achieve a 5x combo',
+        conditionDE: 'Erreiche einen 5x Combo',
+      },
+      {
+        id: 'speed-demon',
+        name: 'Speed Demon',
+        nameDE: 'Geschwindigkeitsteufel',
+        icon: '⚡',
+        condition: 'Complete speed mode',
+        conditionDE: 'Schließe den Geschwindigkeitsmodus ab',
+      },
+      {
+        id: 'survivor',
+        name: 'Survivor',
+        nameDE: 'Überlebender',
+        icon: '❤️',
+        condition: 'Complete survival mode',
+        conditionDE: 'Schließe den Überlebensmodus ab',
+      },
+      {
+        id: '1000-points',
+        name: '1000 Points',
+        nameDE: '1000 Punkte',
+        icon: '🌟',
+        condition: 'Score 1000 points in a single game',
+        conditionDE: 'Erreiche 1000 Punkte in einem Spiel',
+      },
+    ];
+
+    achievementsGrid.innerHTML = achievements
+      .map(achievement => {
+        const unlocked = checkAchievementUnlocked(achievement.id);
+        return `
+          <div class="achievement-card ${unlocked ? 'unlocked' : 'locked'}">
+            <div class="achievement-icon">${achievement.icon}</div>
+            <div class="achievement-info">
+              <h4>${achievement.nameDE}</h4>
+              <p>${achievement.conditionDE}</p>
+            </div>
+            ${unlocked ? '<div class="achievement-check">✓</div>' : ''}
+          </div>
+        `;
+      })
+      .join('');
+  }
+
+  /**
+   * Check if achievement is unlocked
+   */
+  function checkAchievementUnlocked(achievementId: string): boolean {
+    const key = `balloon-pop-achievement-${achievementId}`;
+    return localStorage.getItem(key) === 'true';
+  }
+
+  // Initialize
+  updateHighScores();
+  loadAchievements();
+</script>
+
+<style>
+  .leaderboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .leaderboard-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .leaderboard-header h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: #666;
+  }
+
+  .filter-tabs {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .tab-btn:hover {
+    border-color: #4ECDC4;
+    transform: translateY(-2px);
+  }
+
+  .tab-btn.active {
+    background: linear-gradient(135deg, #4ECDC4, #44A08D);
+    color: white;
+    border-color: #4ECDC4;
+  }
+
+  .difficulty-tabs {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+  }
+
+  .difficulty-tab {
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+
+  .difficulty-tab:hover {
+    border-color: #FFA07A;
+  }
+
+  .difficulty-tab.active {
+    background: #FFA07A;
+    color: white;
+    border-color: #FFA07A;
+  }
+
+  .leaderboard-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .global-high-score {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2.5rem;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+  }
+
+  .global-high-score h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .high-score-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .high-score-value {
+    font-size: 4rem;
+    font-weight: bold;
+  }
+
+  .high-score-label {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+
+  .stories-list h3,
+  .achievements-section h3 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+  }
+
+  .story-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .story-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+  }
+
+  .story-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .story-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .story-emoji {
+    font-size: 2.5rem;
+  }
+
+  .story-card h4 {
+    font-size: 1.2rem;
+    color: #333;
+    margin: 0;
+  }
+
+  .story-card-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: #f9f9f9;
+    border-radius: 10px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #4ECDC4;
+  }
+
+  .btn-play {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #4ECDC4, #44A08D);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .btn-play:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
+  }
+
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  .achievement-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: all 0.2s;
+  }
+
+  .achievement-card.locked {
+    opacity: 0.5;
+    filter: grayscale(1);
+  }
+
+  .achievement-card.unlocked {
+    border: 2px solid #4ECDC4;
+  }
+
+  .achievement-icon {
+    font-size: 2.5rem;
+  }
+
+  .achievement-info h4 {
+    font-size: 1rem;
+    color: #333;
+    margin: 0 0 0.25rem;
+  }
+
+  .achievement-info p {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+  }
+
+  .achievement-check {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #4ECDC4;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .leaderboard-container {
+    direction: rtl;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .leaderboard-container {
+      padding: 1rem;
+    }
+
+    .leaderboard-header h1 {
+      font-size: 1.8rem;
+    }
+
+    .filter-tabs {
+      gap: 0.5rem;
+    }
+
+    .tab-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    .story-cards {
+      grid-template-columns: 1fr;
+    }
+
+    .high-score-value {
+      font-size: 3rem;
+    }
+  }
+</style>

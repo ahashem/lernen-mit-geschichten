@@ -1,0 +1,325 @@
+---
+/**
+ * Weather System Demo Page
+ * Showcases all weather types and seasonal features
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+
+const locale = 'de';
+const title = 'Wetter & Jahreszeiten Demo';
+---
+
+<BaseLayout title={title} locale={locale}>
+  <div class="container demo-page">
+    <h1>🌦️ Wetter & Jahreszeiten System Demo</h1>
+    <p class="subtitle">Erlebe alle Wettereffekte und saisonalen Veränderungen!</p>
+
+    <section class="demo-section">
+      <h2>Schnell-Wetter</h2>
+      <div class="weather-quick-buttons">
+        <button class="demo-btn" data-weather="sunny">☀️ Sonnig</button>
+        <button class="demo-btn" data-weather="rainy">🌧️ Regen</button>
+        <button class="demo-btn" data-weather="snowy">🌨️ Schnee</button>
+        <button class="demo-btn" data-weather="stormy">⛈️ Sturm</button>
+        <button class="demo-btn" data-weather="night-clear">🌙 Sternenhimmel</button>
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2>Aktuelle Wetter-Info</h2>
+      <div class="current-info">
+        <div class="info-card">
+          <h3>Wetter</h3>
+          <p class="info-value" id="current-weather">Sunny</p>
+        </div>
+        <div class="info-card">
+          <h3>Jahreszeit</h3>
+          <p class="info-value" id="current-season">Spring</p>
+        </div>
+        <div class="info-card">
+          <h3>Temperatur</h3>
+          <p class="info-value" id="current-temp">24°C</p>
+        </div>
+        <div class="info-card">
+          <h3>Mondphase</h3>
+          <p class="info-value" id="moon-phase">🌕 Full</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2>Empfohlene Geschichten</h2>
+      <div id="story-themes" class="story-themes">
+        <!-- Filled by JavaScript -->
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2>Wettervorhersage</h2>
+      <div id="forecast-display" class="forecast-display">
+        <!-- Filled by JavaScript -->
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2>System-Features</h2>
+      <ul class="feature-list">
+        <li>✅ 10 verschiedene Wettertypen</li>
+        <li>✅ 4 Jahreszeiten mit automatischem Wechsel</li>
+        <li>✅ Canvas-basierte Partikeleffekte</li>
+        <li>✅ Wetter-Soundeffekte (Web Audio API)</li>
+        <li>✅ Mondphasen-Berechnung</li>
+        <li>✅ Saisonale Farbthemen</li>
+        <li>✅ Geschichten-Empfehlungen basierend auf Wetter</li>
+        <li>✅ Volle Barrierefreiheit (Reduced Motion, Sound Toggle)</li>
+        <li>✅ 5-sprachig (DE, EN, AR, TR, UR)</li>
+      </ul>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .demo-page {
+    padding: 2rem 0;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+
+  .demo-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .demo-section h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-primary);
+  }
+
+  .weather-quick-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .demo-btn {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+    font-weight: 500;
+  }
+
+  .demo-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .demo-btn:active {
+    transform: translateY(-1px);
+  }
+
+  .current-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .info-card {
+    background: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .info-card h3 {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+  }
+
+  .info-value {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    margin: 0;
+  }
+
+  .story-themes {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .theme-tag {
+    background: var(--color-primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+  }
+
+  .forecast-display {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .forecast-card {
+    background: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .forecast-day {
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+  }
+
+  .forecast-icon {
+    font-size: 3rem;
+    margin: 0.5rem 0;
+  }
+
+  .forecast-temp {
+    font-size: 1.25rem;
+    color: var(--color-primary);
+  }
+
+  .feature-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  .feature-list li {
+    padding: 0.75rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2rem;
+    }
+
+    .weather-quick-buttons {
+      flex-direction: column;
+    }
+
+    .demo-btn {
+      width: 100%;
+    }
+
+    .current-info {
+      grid-template-columns: 1fr;
+    }
+
+    .feature-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { weatherSystem, WEATHER_ICONS, SEASON_ICONS } from '@utils/weather-system';
+
+  // Quick weather buttons
+  document.querySelectorAll('.demo-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const weatherType = btn.getAttribute('data-weather');
+      if (weatherType) {
+        weatherSystem.setWeather(weatherType as any, 'medium');
+        updateDisplay();
+
+        // Dispatch event for overlay
+        window.dispatchEvent(new CustomEvent('weather-changed', {
+          detail: { type: weatherType, intensity: 'medium' }
+        }));
+      }
+    });
+  });
+
+  function updateDisplay() {
+    const state = weatherSystem.getState();
+
+    // Current weather
+    const weatherEl = document.getElementById('current-weather');
+    if (weatherEl) {
+      weatherEl.textContent = `${WEATHER_ICONS[state.current.type]} ${state.current.type}`;
+    }
+
+    // Current season
+    const seasonEl = document.getElementById('current-season');
+    if (seasonEl) {
+      seasonEl.textContent = `${SEASON_ICONS[state.seasonal.season]} ${state.seasonal.season}`;
+    }
+
+    // Temperature
+    const tempEl = document.getElementById('current-temp');
+    if (tempEl) {
+      tempEl.textContent = `${Math.round(state.current.temperature)}°C`;
+    }
+
+    // Moon phase
+    const moonEl = document.getElementById('moon-phase');
+    if (moonEl) {
+      const moon = weatherSystem.getMoonPhase();
+      moonEl.textContent = `${moon.emoji} ${moon.name}`;
+    }
+
+    // Story themes
+    const themesEl = document.getElementById('story-themes');
+    if (themesEl) {
+      const themes = weatherSystem.getWeatherStoryThemes();
+      themesEl.innerHTML = themes.map(theme =>
+        `<span class="theme-tag">${theme}</span>`
+      ).join('');
+    }
+
+    // Forecast
+    const forecastEl = document.getElementById('forecast-display');
+    if (forecastEl) {
+      const forecast = weatherSystem.getForecast();
+      forecastEl.innerHTML = forecast.map(day => `
+        <div class="forecast-card">
+          <div class="forecast-day">${day.day}</div>
+          <div class="forecast-icon">${WEATHER_ICONS[day.weather]}</div>
+          <div class="forecast-temp">${Math.round(day.temperature)}°C</div>
+        </div>
+      `).join('');
+    }
+  }
+
+  // Initial display
+  updateDisplay();
+
+  // Update every second to catch changes
+  setInterval(updateDisplay, 1000);
+</script>

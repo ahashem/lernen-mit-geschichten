@@ -1,0 +1,23 @@
+---
+/**
+ * Spot the Difference - Active Game Page
+ * Displays the selected scene and game interface
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SpotDifference from '../components/SpotDifference.astro';
+
+const sceneId = Astro.url.searchParams.get('scene') || 'bruno-forest-1';
+const mode = (Astro.url.searchParams.get('mode') || 'practice') as
+  | 'practice'
+  | 'timed'
+  | 'oneshot'
+  | 'speedrun';
+
+const title = 'Finde die Unterschiede - Spiel';
+const description = 'Finde alle Unterschiede zwischen den beiden Bildern!';
+---
+
+<BaseLayout title={title} description={description}>
+  <SpotDifference sceneId={sceneId} mode={mode} />
+</BaseLayout>

@@ -1,0 +1,453 @@
+---
+/**
+ * Weather Widget Component
+ * Shows current weather and allows manual changes
+ */
+import { getTranslation, type Locale } from '@utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<div id="weather-widget" class="weather-widget">
+  <button class="weather-widget-toggle" aria-label={getTranslation(locale, 'weatherWidget')}>
+    <span class="weather-icon">☀️</span>
+    <span class="weather-temp">24°C</span>
+  </button>
+
+  <div class="weather-widget-panel" hidden>
+    <div class="weather-current">
+      <div class="weather-display">
+        <span class="weather-emoji">☀️</span>
+        <div class="weather-info">
+          <span class="weather-type">Sunny</span>
+          <span class="weather-details">24°C • 40% humidity</span>
+        </div>
+      </div>
+      <div class="season-display">
+        <span class="season-emoji">🌸</span>
+        <span class="season-name">Spring</span>
+      </div>
+    </div>
+
+    <div class="weather-forecast">
+      <h4>{getTranslation(locale, 'forecast')}</h4>
+      <div class="forecast-days">
+        <!-- Filled by JavaScript -->
+      </div>
+    </div>
+
+    <div class="weather-controls">
+      <button class="weather-change-btn" data-weather="sunny">
+        <span>☀️</span> {getTranslation(locale, 'weatherSunny')}
+      </button>
+      <button class="weather-change-btn" data-weather="cloudy">
+        <span>☁️</span> {getTranslation(locale, 'weatherCloudy')}
+      </button>
+      <button class="weather-change-btn" data-weather="rainy">
+        <span>🌧️</span> {getTranslation(locale, 'weatherRainy')}
+      </button>
+      <button class="weather-change-btn" data-weather="snowy">
+        <span>🌨️</span> {getTranslation(locale, 'weatherSnowy')}
+      </button>
+      <button class="weather-change-btn" data-weather="windy">
+        <span>🌬️</span> {getTranslation(locale, 'weatherWindy')}
+      </button>
+      <button class="weather-change-btn" data-weather="stormy">
+        <span>⛈️</span> {getTranslation(locale, 'weatherStormy')}
+      </button>
+    </div>
+
+    <div class="weather-settings">
+      <label class="weather-setting">
+        <input type="checkbox" id="auto-weather" />
+        <span>{getTranslation(locale, 'autoWeather')}</span>
+      </label>
+      <label class="weather-setting">
+        <input type="checkbox" id="weather-sounds" checked />
+        <span>{getTranslation(locale, 'weatherSounds')}</span>
+      </label>
+      <label class="weather-setting">
+        <input type="checkbox" id="always-sunny" />
+        <span>{getTranslation(locale, 'alwaysSunny')}</span>
+      </label>
+    </div>
+  </div>
+</div>
+
+<style>
+  .weather-widget {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+  }
+
+  .weather-widget-toggle {
+    background: linear-gradient(135deg, #87CEEB, #4FC3F7);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+    font-family: inherit;
+    font-size: 1rem;
+  }
+
+  .weather-widget-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .weather-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .weather-temp {
+    font-weight: bold;
+  }
+
+  .weather-widget-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    min-width: 320px;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .weather-widget-panel[hidden] {
+    display: none;
+  }
+
+  .weather-current {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
+  }
+
+  .weather-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .weather-emoji {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .weather-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .weather-type {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--color-text);
+  }
+
+  .weather-details {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+  }
+
+  .season-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #FFE5F1, #FFD1E8);
+    border-radius: 50px;
+    width: fit-content;
+  }
+
+  .season-emoji {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .season-name {
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .weather-forecast {
+    margin-bottom: 1.5rem;
+  }
+
+  .weather-forecast h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+    color: var(--color-text-light);
+  }
+
+  .forecast-days {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .forecast-day {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+  }
+
+  .forecast-day-name {
+    font-weight: 500;
+  }
+
+  .forecast-day-weather {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .forecast-day-icon {
+    font-size: 1.25rem;
+  }
+
+  .weather-controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .weather-change-btn {
+    background: #f5f5f5;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .weather-change-btn:hover {
+    background: #e0e0e0;
+    border-color: var(--color-primary);
+  }
+
+  .weather-change-btn.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+
+  .weather-change-btn span {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .weather-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .weather-setting {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  .weather-setting input[type="checkbox"] {
+    cursor: pointer;
+  }
+
+  .weather-setting span {
+    font-size: 0.9rem;
+  }
+
+  /* RTL support */
+  [dir="rtl"] .weather-widget {
+    right: auto;
+    left: 20px;
+  }
+
+  [dir="rtl"] .weather-widget-panel {
+    right: auto;
+    left: 0;
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .weather-widget {
+      top: auto;
+      bottom: 80px;
+      right: 10px;
+    }
+
+    [dir="rtl"] .weather-widget {
+      right: auto;
+      left: 10px;
+    }
+
+    .weather-widget-panel {
+      min-width: 280px;
+      max-width: calc(100vw - 40px);
+    }
+
+    .weather-controls {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { weatherSystem, WEATHER_ICONS, SEASON_ICONS } from '@utils/weather-system';
+
+  const widget = document.getElementById('weather-widget');
+  const toggle = widget?.querySelector('.weather-widget-toggle');
+  const panel = widget?.querySelector('.weather-widget-panel');
+
+  if (toggle && panel) {
+    // Toggle panel
+    toggle.addEventListener('click', () => {
+      const isHidden = panel.hasAttribute('hidden');
+      if (isHidden) {
+        panel.removeAttribute('hidden');
+        updateWeatherDisplay();
+      } else {
+        panel.setAttribute('hidden', '');
+      }
+    });
+
+    // Close panel when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!widget?.contains(e.target as Node)) {
+        panel.setAttribute('hidden', '');
+      }
+    });
+
+    // Update weather display
+    function updateWeatherDisplay() {
+      const state = weatherSystem.getState();
+      const weather = state.current;
+      const seasonal = state.seasonal;
+
+      // Update toggle button
+      const toggleIcon = toggle.querySelector('.weather-icon');
+      const toggleTemp = toggle.querySelector('.weather-temp');
+      if (toggleIcon && toggleTemp) {
+        toggleIcon.textContent = WEATHER_ICONS[weather.type];
+        toggleTemp.textContent = `${Math.round(weather.temperature)}°C`;
+      }
+
+      // Update panel current weather
+      const weatherEmoji = panel.querySelector('.weather-emoji');
+      const weatherType = panel.querySelector('.weather-type');
+      const weatherDetails = panel.querySelector('.weather-details');
+      if (weatherEmoji && weatherType && weatherDetails) {
+        weatherEmoji.textContent = WEATHER_ICONS[weather.type];
+        weatherType.textContent = weather.type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+        weatherDetails.textContent = `${Math.round(weather.temperature)}°C • ${weather.humidity}% humidity`;
+      }
+
+      // Update season
+      const seasonEmoji = panel.querySelector('.season-emoji');
+      const seasonName = panel.querySelector('.season-name');
+      if (seasonEmoji && seasonName) {
+        seasonEmoji.textContent = SEASON_ICONS[seasonal.season];
+        seasonName.textContent = seasonal.season.charAt(0).toUpperCase() + seasonal.season.slice(1);
+      }
+
+      // Update forecast
+      const forecastContainer = panel.querySelector('.forecast-days');
+      if (forecastContainer) {
+        const forecast = weatherSystem.getForecast();
+        forecastContainer.innerHTML = forecast.map(day => `
+          <div class="forecast-day">
+            <span class="forecast-day-name">${day.day}</span>
+            <div class="forecast-day-weather">
+              <span class="forecast-day-icon">${WEATHER_ICONS[day.weather]}</span>
+              <span>${Math.round(day.temperature)}°C</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Update active weather button
+      panel.querySelectorAll('.weather-change-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-weather') === weather.type);
+      });
+
+      // Update settings checkboxes
+      const autoWeatherCheckbox = panel.querySelector('#auto-weather') as HTMLInputElement;
+      const weatherSoundsCheckbox = panel.querySelector('#weather-sounds') as HTMLInputElement;
+      const alwaysSunnyCheckbox = panel.querySelector('#always-sunny') as HTMLInputElement;
+
+      if (autoWeatherCheckbox) autoWeatherCheckbox.checked = state.autoChange;
+      if (weatherSoundsCheckbox) weatherSoundsCheckbox.checked = state.soundEnabled;
+      if (alwaysSunnyCheckbox) alwaysSunnyCheckbox.checked = state.alwaysSunny;
+    }
+
+    // Weather change buttons
+    panel.querySelectorAll('.weather-change-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const weatherType = btn.getAttribute('data-weather');
+        if (weatherType) {
+          weatherSystem.setWeather(weatherType as any);
+          updateWeatherDisplay();
+
+          // Dispatch event for overlay
+          window.dispatchEvent(new CustomEvent('weather-changed', {
+            detail: { type: weatherType, intensity: 'medium' }
+          }));
+        }
+      });
+    });
+
+    // Settings checkboxes
+    const autoWeatherCheckbox = panel.querySelector('#auto-weather') as HTMLInputElement;
+    const weatherSoundsCheckbox = panel.querySelector('#weather-sounds') as HTMLInputElement;
+    const alwaysSunnyCheckbox = panel.querySelector('#always-sunny') as HTMLInputElement;
+
+    autoWeatherCheckbox?.addEventListener('change', () => {
+      weatherSystem.toggleAutoChange();
+    });
+
+    weatherSoundsCheckbox?.addEventListener('change', () => {
+      weatherSystem.toggleSound();
+    });
+
+    alwaysSunnyCheckbox?.addEventListener('change', () => {
+      weatherSystem.toggleAlwaysSunny();
+      updateWeatherDisplay();
+      const state = weatherSystem.getState();
+      window.dispatchEvent(new CustomEvent('weather-changed', {
+        detail: { type: state.current.type, intensity: state.current.intensity }
+      }));
+    });
+
+    // Initial display
+    updateWeatherDisplay();
+  }
+</script>

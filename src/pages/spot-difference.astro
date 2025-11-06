@@ -1,0 +1,798 @@
+---
+/**
+ * Spot the Difference - Game Selection Page
+ * Browse and select scenes to play
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SCENE_LIBRARY, spotDifferenceGame } from '../utils/spot-difference';
+
+const title = 'Finde die Unterschiede - Spiele';
+const description =
+  'Entwickle deine visuelle Aufmerksamkeit mit unterhaltsamen Suchbildern!';
+
+// Group scenes by difficulty
+const easyScenes = SCENE_LIBRARY.filter((s) => s.difficulty === 'easy');
+const mediumScenes = SCENE_LIBRARY.filter((s) => s.difficulty === 'medium');
+const hardScenes = SCENE_LIBRARY.filter((s) => s.difficulty === 'hard');
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="spot-difference-page">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <span class="emoji">🔍</span>
+          Finde die Unterschiede
+        </h1>
+        <p class="hero-description">
+          Trainiere deine Beobachtungsgabe und entdecke versteckte Unterschiede in
+          wunderschönen Geschichten-Szenen!
+        </p>
+
+        <div class="game-modes">
+          <div class="mode-card" data-mode="practice">
+            <div class="mode-icon">🎯</div>
+            <h3>Übungsmodus</h3>
+            <p>Keine Zeitbeschränkung, unbegrenzte Fehler erlaubt</p>
+          </div>
+          <div class="mode-card" data-mode="timed">
+            <div class="mode-icon">⏱️</div>
+            <h3>Zeitrennen</h3>
+            <p>2 Minuten, um alle Unterschiede zu finden</p>
+          </div>
+          <div class="mode-card" data-mode="oneshot">
+            <div class="mode-icon">🎯</div>
+            <h3>Perfektionist</h3>
+            <p>Keine Fehler erlaubt - jeder Klick zählt!</p>
+          </div>
+          <div class="mode-card" data-mode="speedrun">
+            <div class="mode-icon">⚡</div>
+            <h3>Speed-Run</h3>
+            <p>Wie schnell kannst du alle finden?</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="stats-section">
+      <h2>Deine Statistiken</h2>
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="total-games">0</div>
+          <div class="stat-label">Gespielte Spiele</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="games-completed">0</div>
+          <div class="stat-label">Abgeschlossen</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="perfect-games">0</div>
+          <div class="stat-label">Perfekte Spiele</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="total-differences">0</div>
+          <div class="stat-label">Unterschiede gefunden</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stars-earned">0</div>
+          <div class="stat-label">⭐ Verdient</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="avg-accuracy">0%</div>
+          <div class="stat-label">Genauigkeit</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Easy Scenes -->
+    <section class="scenes-section">
+      <div class="section-header">
+        <h2>
+          <span class="difficulty-badge easy">Einfach</span>
+          Einsteiger-Szenen
+        </h2>
+        <p>5 Unterschiede pro Bild - Perfekt zum Warmwerden!</p>
+      </div>
+
+      <div class="scenes-grid">
+        {
+          easyScenes.map((scene) => (
+            <div
+              class="scene-card"
+              data-scene-id={scene.id}
+              data-unlocked={scene.unlocked ? 'true' : 'false'}
+            >
+              <div class="scene-image-preview">
+                <img
+                  src={scene.leftImageUrl}
+                  alt={scene.name}
+                  loading="lazy"
+                  onerror="this.src='/images/placeholder.jpg'"
+                />
+                <div class="scene-overlay">
+                  <span class="play-icon">▶</span>
+                </div>
+              </div>
+              <div class="scene-info">
+                <h3 class="scene-name">{scene.name}</h3>
+                <div class="scene-meta">
+                  <span class="scene-category">{scene.category}</span>
+                  <span class="scene-differences">
+                    {scene.differences.length} Unterschiede
+                  </span>
+                </div>
+                {!scene.unlocked && scene.requiredCompletions && (
+                  <div class="scene-locked">
+                    🔒 Schließe {scene.requiredCompletions} Spiele ab
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Medium Scenes -->
+    <section class="scenes-section">
+      <div class="section-header">
+        <h2>
+          <span class="difficulty-badge medium">Mittel</span>
+          Fortgeschrittene Szenen
+        </h2>
+        <p>7 Unterschiede - Für geübte Detektive!</p>
+      </div>
+
+      <div class="scenes-grid">
+        {
+          mediumScenes.map((scene) => (
+            <div
+              class="scene-card"
+              data-scene-id={scene.id}
+              data-unlocked={scene.unlocked ? 'true' : 'false'}
+            >
+              <div class="scene-image-preview">
+                <img
+                  src={scene.leftImageUrl}
+                  alt={scene.name}
+                  loading="lazy"
+                  onerror="this.src='/images/placeholder.jpg'"
+                />
+                <div class="scene-overlay">
+                  <span class="play-icon">▶</span>
+                </div>
+              </div>
+              <div class="scene-info">
+                <h3 class="scene-name">{scene.name}</h3>
+                <div class="scene-meta">
+                  <span class="scene-category">{scene.category}</span>
+                  <span class="scene-differences">
+                    {scene.differences.length} Unterschiede
+                  </span>
+                </div>
+                {!scene.unlocked && scene.requiredCompletions && (
+                  <div class="scene-locked">
+                    🔒 Schließe {scene.requiredCompletions} Spiele ab
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Hard Scenes -->
+    <section class="scenes-section">
+      <div class="section-header">
+        <h2>
+          <span class="difficulty-badge hard">Schwer</span>
+          Experten-Szenen
+        </h2>
+        <p>10 Unterschiede - Nur für Meister-Detektive!</p>
+      </div>
+
+      <div class="scenes-grid">
+        {
+          hardScenes.map((scene) => (
+            <div
+              class="scene-card"
+              data-scene-id={scene.id}
+              data-unlocked={scene.unlocked ? 'true' : 'false'}
+            >
+              <div class="scene-image-preview">
+                <img
+                  src={scene.leftImageUrl}
+                  alt={scene.name}
+                  loading="lazy"
+                  onerror="this.src='/images/placeholder.jpg'"
+                />
+                <div class="scene-overlay">
+                  <span class="play-icon">▶</span>
+                </div>
+              </div>
+              <div class="scene-info">
+                <h3 class="scene-name">{scene.name}</h3>
+                <div class="scene-meta">
+                  <span class="scene-category">{scene.category}</span>
+                  <span class="scene-differences">
+                    {scene.differences.length} Unterschiede
+                  </span>
+                </div>
+                {!scene.unlocked && scene.requiredCompletions && (
+                  <div class="scene-locked">
+                    🔒 Schließe {scene.requiredCompletions} Spiele ab
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Daily Challenge -->
+    <section class="daily-challenge-section">
+      <div class="daily-challenge-card">
+        <div class="challenge-header">
+          <h2>🌟 Tägliche Herausforderung</h2>
+          <p>Komm jeden Tag zurück für eine neue Szene!</p>
+        </div>
+        <div class="challenge-content" id="daily-challenge">
+          <div class="challenge-scene">
+            <img src="/images/spot-difference/daily-challenge.jpg" alt="Tägliche Herausforderung" />
+          </div>
+          <div class="challenge-info">
+            <h3>Heute: Picknick im Park</h3>
+            <p>7 Unterschiede • Mittlere Schwierigkeit</p>
+            <button class="btn-challenge">Herausforderung annehmen</button>
+            <div class="challenge-reward">Bonus: +20 ⭐</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Mode Selection Modal -->
+  <div id="mode-modal" class="mode-modal" style="display: none;">
+    <div class="modal-content">
+      <h3>Spielmodus wählen</h3>
+      <div class="mode-selection">
+        <button class="mode-btn" data-mode="practice">
+          🎯 Übungsmodus
+          <small>Keine Zeitbeschränkung</small>
+        </button>
+        <button class="mode-btn" data-mode="timed">
+          ⏱️ Zeitrennen
+          <small>2 Minuten</small>
+        </button>
+        <button class="mode-btn" data-mode="oneshot">
+          🎯 Perfektionist
+          <small>Keine Fehler erlaubt</small>
+        </button>
+        <button class="mode-btn" data-mode="speedrun">
+          ⚡ Speed-Run
+          <small>Wie schnell?</small>
+        </button>
+      </div>
+      <button class="btn-cancel" id="cancel-modal">Abbrechen</button>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .spot-difference-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .hero-section {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    color: white;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .hero-title .emoji {
+    font-size: 3.5rem;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .hero-description {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+  }
+
+  .game-modes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .mode-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .mode-card:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .mode-icon {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .mode-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+  }
+
+  .mode-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  .stats-section {
+    margin-bottom: 4rem;
+  }
+
+  .stats-section h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    color: #333;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.95rem;
+    color: #666;
+  }
+
+  .scenes-section {
+    margin-bottom: 4rem;
+  }
+
+  .section-header {
+    margin-bottom: 2rem;
+  }
+
+  .section-header h2 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .difficulty-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .difficulty-badge.easy {
+    background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+    color: white;
+  }
+
+  .difficulty-badge.medium {
+    background: linear-gradient(135deg, #ff9f40 0%, #ffd93d 100%);
+    color: #333;
+  }
+
+  .difficulty-badge.hard {
+    background: linear-gradient(135deg, #e57373 0%, #ef5350 100%);
+    color: white;
+  }
+
+  .section-header p {
+    margin: 0;
+    color: #666;
+    font-size: 1.1rem;
+  }
+
+  .scenes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .scene-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .scene-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .scene-card[data-unlocked='false'] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .scene-card[data-unlocked='false']:hover {
+    transform: none;
+  }
+
+  .scene-image-preview {
+    position: relative;
+    width: 100%;
+    padding-top: 75%; /* 4:3 aspect ratio */
+    background: #f5f5f5;
+    overflow: hidden;
+  }
+
+  .scene-image-preview img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .scene-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .scene-card:hover .scene-overlay {
+    opacity: 1;
+  }
+
+  .play-icon {
+    font-size: 4rem;
+    color: white;
+  }
+
+  .scene-info {
+    padding: 1.25rem;
+  }
+
+  .scene-name {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.25rem;
+    color: #333;
+  }
+
+  .scene-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .scene-locked {
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    background: #fff3cd;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #856404;
+    text-align: center;
+  }
+
+  .daily-challenge-section {
+    margin-bottom: 4rem;
+  }
+
+  .daily-challenge-card {
+    background: linear-gradient(135deg, #ffd93d 0%, #ff9f40 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 24px rgba(255, 159, 64, 0.3);
+  }
+
+  .challenge-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+  }
+
+  .challenge-header h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+  }
+
+  .challenge-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .challenge-scene img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .challenge-info {
+    text-align: center;
+  }
+
+  .challenge-info h3 {
+    font-size: 1.75rem;
+    margin: 0 0 0.5rem 0;
+    color: #333;
+  }
+
+  .challenge-info p {
+    margin: 0 0 1.5rem 0;
+    color: #666;
+  }
+
+  .btn-challenge {
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+  }
+
+  .btn-challenge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .challenge-reward {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .mode-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .mode-modal .modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+  }
+
+  .mode-modal h3 {
+    text-align: center;
+    margin: 0 0 1.5rem 0;
+    font-size: 1.75rem;
+    color: #333;
+  }
+
+  .mode-selection {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .mode-btn {
+    padding: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mode-btn small {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-top: 0.25rem;
+  }
+
+  .mode-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-cancel {
+    width: 100%;
+    padding: 0.75rem;
+    background: #e0e0e0;
+    border: none;
+    border-radius: 12px;
+    color: #333;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .btn-cancel:hover {
+    background: #d0d0d0;
+  }
+
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2rem;
+    }
+
+    .game-modes {
+      grid-template-columns: 1fr;
+    }
+
+    .challenge-content {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { spotDifferenceGame } from '../utils/spot-difference';
+
+  class SpotDifferenceSelection {
+    private selectedSceneId: string = '';
+
+    constructor() {
+      this.init();
+    }
+
+    private init(): void {
+      // Load and display statistics
+      this.updateStats();
+
+      // Setup scene card click handlers
+      document.querySelectorAll('.scene-card').forEach((card) => {
+        card.addEventListener('click', () => this.selectScene(card as HTMLElement));
+      });
+
+      // Setup modal handlers
+      document.getElementById('cancel-modal')?.addEventListener('click', () => this.closeModal());
+      document.querySelectorAll('.mode-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) =>
+          this.startGame((e.currentTarget as HTMLElement).dataset.mode!)
+        );
+      });
+
+      // Check unlocked scenes
+      this.updateUnlockedScenes();
+    }
+
+    private updateStats(): void {
+      const stats = spotDifferenceGame.loadGameStats();
+
+      document.getElementById('total-games')!.textContent = stats.totalGames.toString();
+      document.getElementById('games-completed')!.textContent = stats.gamesCompleted.toString();
+      document.getElementById('perfect-games')!.textContent = stats.perfectGames.toString();
+      document.getElementById('total-differences')!.textContent =
+        stats.totalDifferencesFound.toString();
+      document.getElementById('stars-earned')!.textContent = stats.starsEarned.toString();
+      document.getElementById('avg-accuracy')!.textContent =
+        Math.round(stats.averageAccuracy) + '%';
+    }
+
+    private updateUnlockedScenes(): void {
+      document.querySelectorAll('.scene-card').forEach((card) => {
+        const sceneId = (card as HTMLElement).dataset.sceneId!;
+        const isUnlocked = spotDifferenceGame.isSceneUnlocked(sceneId);
+        (card as HTMLElement).dataset.unlocked = isUnlocked ? 'true' : 'false';
+      });
+    }
+
+    private selectScene(card: HTMLElement): void {
+      const sceneId = card.dataset.sceneId!;
+      const isUnlocked = card.dataset.unlocked === 'true';
+
+      if (!isUnlocked) {
+        alert('Diese Szene ist noch gesperrt. Schließe mehr Spiele ab, um sie freizuschalten!');
+        return;
+      }
+
+      this.selectedSceneId = sceneId;
+      this.showModeModal();
+    }
+
+    private showModeModal(): void {
+      document.getElementById('mode-modal')!.style.display = 'flex';
+    }
+
+    private closeModal(): void {
+      document.getElementById('mode-modal')!.style.display = 'none';
+    }
+
+    private startGame(mode: string): void {
+      window.location.href = `/difference-game?scene=${this.selectedSceneId}&mode=${mode}`;
+    }
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new SpotDifferenceSelection());
+  } else {
+    new SpotDifferenceSelection();
+  }
+</script>

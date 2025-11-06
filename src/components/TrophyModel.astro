@@ -1,0 +1,642 @@
+---
+/**
+ * 3D Trophy Model Component
+ * Renders a single trophy with CSS 3D transforms
+ * Supports different materials, sizes, and shapes
+ */
+import type { Trophy } from '../utils/trophy-cabinet';
+import { MATERIAL_COLORS } from '../utils/trophy-cabinet';
+
+interface Props {
+  trophy: Trophy;
+  isEarned?: boolean;
+  scale?: number;
+  interactive?: boolean;
+  showNameplate?: boolean;
+}
+
+const {
+  trophy,
+  isEarned = false,
+  scale = 1,
+  interactive = false,
+  showNameplate = true,
+} = Astro.props;
+
+const locale = (Astro.currentLocale as 'de' | 'ar' | 'en' | 'tr' | 'ur') || 'de';
+const colors = MATERIAL_COLORS[trophy.material];
+
+// Size multipliers
+const sizeMultiplier = {
+  small: 0.8,
+  medium: 1.0,
+  large: 1.3,
+  mega: 1.8,
+};
+
+const actualScale = scale * sizeMultiplier[trophy.size];
+---
+
+<div
+  class={`trophy-model ${trophy.shape} ${trophy.material} ${trophy.size} ${isEarned ? 'earned' : 'locked'} ${interactive ? 'interactive' : ''}`}
+  style={`--scale: ${actualScale}; --primary: ${colors.primary}; --secondary: ${colors.secondary}; --glow: ${colors.glow}; --reflection: ${colors.reflection}; --shine: ${colors.shine};`}
+  data-trophy-id={trophy.id}
+>
+  <!-- Trophy Base -->
+  <div class="trophy-base">
+    <div class="base-platform"></div>
+    {showNameplate && (
+      <div class="nameplate">
+        <span class="trophy-name">{trophy.name[locale]}</span>
+        {trophy.earnedAt && (
+          <span class="earned-date">
+            {new Date(trophy.earnedAt).toLocaleDateString(locale)}
+          </span>
+        )}
+      </div>
+    )}
+  </div>
+
+  <!-- Trophy Body (varies by shape) -->
+  <div class="trophy-body">
+    {trophy.shape === 'cup' && (
+      <div class="cup-trophy">
+        <div class="cup-top">
+          <div class="cup-rim"></div>
+          <div class="cup-bowl">
+            <div class="cup-front"></div>
+            <div class="cup-back"></div>
+            <div class="cup-left"></div>
+            <div class="cup-right"></div>
+          </div>
+        </div>
+        <div class="cup-handles">
+          <div class="handle handle-left"></div>
+          <div class="handle handle-right"></div>
+        </div>
+        <div class="cup-stem"></div>
+      </div>
+    )}
+
+    {trophy.shape === 'star' && (
+      <div class="star-trophy">
+        <div class="star-outer">
+          {[...Array(5)].map((_, i) => (
+            <div class={`star-point point-${i}`} key={i}></div>
+          ))}
+        </div>
+        <div class="star-center">
+          <div class="star-icon">{trophy.icon}</div>
+        </div>
+      </div>
+    )}
+
+    {trophy.shape === 'medal' && (
+      <div class="medal-trophy">
+        <div class="medal-ribbon">
+          <div class="ribbon-left"></div>
+          <div class="ribbon-right"></div>
+        </div>
+        <div class="medal-circle">
+          <div class="medal-outer-ring"></div>
+          <div class="medal-inner-ring"></div>
+          <div class="medal-center">
+            <div class="medal-icon">{trophy.icon}</div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {trophy.shape === 'statue' && (
+      <div class="statue-trophy">
+        <div class="statue-figure">
+          <div class="statue-icon">{trophy.icon}</div>
+        </div>
+        <div class="statue-pedestal">
+          <div class="pedestal-top"></div>
+          <div class="pedestal-middle"></div>
+          <div class="pedestal-bottom"></div>
+        </div>
+      </div>
+    )}
+
+    {trophy.shape === 'special' && (
+      <div class="special-trophy">
+        <div class="special-container">
+          <div class="special-icon">{trophy.icon}</div>
+        </div>
+        <div class="special-effects">
+          {trophy.isHolographic && (
+            <div class="holographic-overlay"></div>
+          )}
+        </div>
+      </div>
+    )}
+  </div>
+
+  <!-- Trophy Effects -->
+  {isEarned && (
+    <div class="trophy-effects">
+      {trophy.isAnimated && (
+        <div class="animated-glow"></div>
+      )}
+      {trophy.isHolographic && (
+        <div class="holographic-sparkles">
+          {[...Array(8)].map((_, i) => (
+            <div class={`sparkle sparkle-${i}`} key={i}>✨</div>
+          ))}
+        </div>
+      )}
+    </div>
+  )}
+
+  <!-- Lock Overlay (for unearned trophies) -->
+  {!isEarned && (
+    <div class="lock-overlay">
+      <div class="lock-icon">🔒</div>
+    </div>
+  )}
+</div>
+
+<style>
+  .trophy-model {
+    position: relative;
+    width: calc(100px * var(--scale));
+    height: calc(120px * var(--scale));
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease;
+  }
+
+  .trophy-model.interactive:hover {
+    transform: scale(1.1) rotateY(15deg);
+    cursor: pointer;
+  }
+
+  .trophy-model.locked {
+    opacity: 0.5;
+    filter: grayscale(1);
+  }
+
+  .trophy-model.earned {
+    animation: trophy-shine 3s ease-in-out infinite;
+  }
+
+  @keyframes trophy-shine {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(calc(1 + var(--shine) * 0.3)); }
+  }
+
+  /* Trophy Base */
+  .trophy-base {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    z-index: 1;
+  }
+
+  .base-platform {
+    width: 100%;
+    height: calc(10px * var(--scale));
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transform: rotateX(60deg);
+  }
+
+  .nameplate {
+    margin-top: 4px;
+    padding: 4px 8px;
+    background: #2c2c2c;
+    border-radius: 4px;
+    text-align: center;
+  }
+
+  .trophy-name {
+    display: block;
+    font-size: calc(10px * var(--scale));
+    font-weight: bold;
+    color: var(--primary);
+    text-shadow: 0 0 4px var(--glow);
+  }
+
+  .earned-date {
+    display: block;
+    font-size: calc(8px * var(--scale));
+    color: #888;
+  }
+
+  /* Trophy Body */
+  .trophy-body {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: calc(100% - 20px * var(--scale));
+    transform-style: preserve-3d;
+  }
+
+  /* Cup Trophy */
+  .cup-trophy {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+  }
+
+  .cup-bowl {
+    position: relative;
+    width: calc(60px * var(--scale));
+    height: calc(50px * var(--scale));
+    margin: 0 auto;
+    transform-style: preserve-3d;
+  }
+
+  .cup-front,
+  .cup-back,
+  .cup-left,
+  .cup-right {
+    position: absolute;
+    background: linear-gradient(180deg, var(--primary), var(--secondary));
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, var(--reflection));
+  }
+
+  .cup-front,
+  .cup-back {
+    width: 100%;
+    height: 100%;
+    border-radius: 0 0 30px 30px;
+  }
+
+  .cup-front {
+    transform: translateZ(calc(20px * var(--scale)));
+  }
+
+  .cup-back {
+    transform: translateZ(calc(-20px * var(--scale))) rotateY(180deg);
+  }
+
+  .cup-rim {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(70px * var(--scale));
+    height: calc(10px * var(--scale));
+    background: var(--primary);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--glow);
+  }
+
+  .cup-handles {
+    position: absolute;
+    top: calc(10px * var(--scale));
+    width: 100%;
+  }
+
+  .handle {
+    position: absolute;
+    width: calc(15px * var(--scale));
+    height: calc(30px * var(--scale));
+    border: calc(3px * var(--scale)) solid var(--primary);
+    border-radius: 50%;
+    background: transparent;
+  }
+
+  .handle-left {
+    left: calc(-10px * var(--scale));
+    transform: rotateY(-20deg);
+  }
+
+  .handle-right {
+    right: calc(-10px * var(--scale));
+    transform: rotateY(20deg);
+  }
+
+  .cup-stem {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(15px * var(--scale));
+    height: calc(20px * var(--scale));
+    background: linear-gradient(180deg, var(--secondary), var(--primary));
+    border-radius: 4px;
+  }
+
+  /* Star Trophy */
+  .star-trophy {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .star-outer {
+    position: relative;
+    width: calc(80px * var(--scale));
+    height: calc(80px * var(--scale));
+  }
+
+  .star-point {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(40px * var(--scale));
+    height: calc(40px * var(--scale));
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    transform-origin: center;
+  }
+
+  .star-point.point-0 { transform: translate(-50%, -50%) rotate(0deg); }
+  .star-point.point-1 { transform: translate(-50%, -50%) rotate(72deg); }
+  .star-point.point-2 { transform: translate(-50%, -50%) rotate(144deg); }
+  .star-point.point-3 { transform: translate(-50%, -50%) rotate(216deg); }
+  .star-point.point-4 { transform: translate(-50%, -50%) rotate(288deg); }
+
+  .star-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(40px * var(--scale));
+    height: calc(40px * var(--scale));
+    background: radial-gradient(circle, var(--glow), var(--primary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px var(--glow);
+  }
+
+  .star-icon {
+    font-size: calc(24px * var(--scale));
+  }
+
+  /* Medal Trophy */
+  .medal-trophy {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .medal-ribbon {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(40px * var(--scale));
+    height: calc(40px * var(--scale));
+  }
+
+  .ribbon-left,
+  .ribbon-right {
+    position: absolute;
+    top: 0;
+    width: calc(20px * var(--scale));
+    height: 100%;
+    background: linear-gradient(180deg, #e74c3c, #c0392b);
+  }
+
+  .ribbon-left {
+    left: 0;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+  }
+
+  .ribbon-right {
+    right: 0;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+  }
+
+  .medal-circle {
+    position: absolute;
+    top: calc(30px * var(--scale));
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(70px * var(--scale));
+    height: calc(70px * var(--scale));
+  }
+
+  .medal-outer-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .medal-inner-ring {
+    position: absolute;
+    inset: calc(8px * var(--scale));
+    border-radius: 50%;
+    background: linear-gradient(225deg, var(--secondary), var(--primary));
+  }
+
+  .medal-center {
+    position: absolute;
+    inset: calc(12px * var(--scale));
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--glow), var(--primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .medal-icon {
+    font-size: calc(28px * var(--scale));
+  }
+
+  /* Statue Trophy */
+  .statue-trophy {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .statue-figure {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(60px * var(--scale));
+    height: calc(60px * var(--scale));
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .statue-icon {
+    font-size: calc(36px * var(--scale));
+  }
+
+  .statue-pedestal {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(50px * var(--scale));
+  }
+
+  .pedestal-top,
+  .pedestal-middle,
+  .pedestal-bottom {
+    background: linear-gradient(180deg, var(--primary), var(--secondary));
+    margin-bottom: calc(2px * var(--scale));
+  }
+
+  .pedestal-top {
+    height: calc(8px * var(--scale));
+    width: 100%;
+  }
+
+  .pedestal-middle {
+    height: calc(15px * var(--scale));
+    width: 90%;
+    margin: 0 auto calc(2px * var(--scale));
+  }
+
+  .pedestal-bottom {
+    height: calc(8px * var(--scale));
+    width: 100%;
+  }
+
+  /* Special Trophy */
+  .special-trophy {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .special-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(80px * var(--scale));
+    height: calc(80px * var(--scale));
+    background: linear-gradient(135deg, var(--primary), var(--secondary), var(--glow));
+    border-radius: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px var(--glow);
+    animation: special-float 4s ease-in-out infinite;
+  }
+
+  @keyframes special-float {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+    50% { transform: translate(-50%, -50%) translateY(-10px); }
+  }
+
+  .special-icon {
+    font-size: calc(48px * var(--scale));
+  }
+
+  /* Trophy Effects */
+  .trophy-effects {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .animated-glow {
+    position: absolute;
+    inset: -20%;
+    background: radial-gradient(circle, var(--glow), transparent);
+    opacity: 0.3;
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.2); }
+  }
+
+  .holographic-sparkles {
+    position: absolute;
+    inset: 0;
+  }
+
+  .sparkle {
+    position: absolute;
+    font-size: calc(16px * var(--scale));
+    animation: sparkle-twinkle 2s ease-in-out infinite;
+  }
+
+  .sparkle-0 { top: 10%; left: 10%; animation-delay: 0s; }
+  .sparkle-1 { top: 10%; right: 10%; animation-delay: 0.25s; }
+  .sparkle-2 { top: 50%; left: 5%; animation-delay: 0.5s; }
+  .sparkle-3 { top: 50%; right: 5%; animation-delay: 0.75s; }
+  .sparkle-4 { bottom: 10%; left: 10%; animation-delay: 1s; }
+  .sparkle-5 { bottom: 10%; right: 10%; animation-delay: 1.25s; }
+  .sparkle-6 { top: 30%; left: 50%; animation-delay: 1.5s; }
+  .sparkle-7 { bottom: 30%; left: 50%; animation-delay: 1.75s; }
+
+  @keyframes sparkle-twinkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  .holographic-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      45deg,
+      rgba(255, 0, 255, 0.2),
+      rgba(0, 255, 255, 0.2),
+      rgba(255, 255, 0, 0.2)
+    );
+    background-size: 200% 200%;
+    animation: holographic-shift 3s ease-in-out infinite;
+  }
+
+  @keyframes holographic-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* Lock Overlay */
+  .lock-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+  }
+
+  .lock-icon {
+    font-size: calc(40px * var(--scale));
+    opacity: 0.8;
+  }
+
+  /* Material-specific adjustments */
+  .trophy-model.diamond .trophy-body,
+  .trophy-model.crystal .trophy-body {
+    animation: diamond-rotate 8s linear infinite;
+  }
+
+  @keyframes diamond-rotate {
+    0% { transform: translateX(-50%) rotateY(0deg); }
+    100% { transform: translateX(-50%) rotateY(360deg); }
+  }
+
+  /* RTL Support */
+  [dir='rtl'] .trophy-model {
+    transform: scaleX(-1);
+  }
+
+  [dir='rtl'] .trophy-name,
+  [dir='rtl'] .earned-date {
+    transform: scaleX(-1);
+  }
+</style>

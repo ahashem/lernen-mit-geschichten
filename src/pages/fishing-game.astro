@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FishingGame from '../components/FishingGame.astro';
+import { getTranslation } from '../utils/i18n';
+
+const locale = 'de'; // Default locale, can be made dynamic
+const title = getTranslation(locale, 'fishingGameTitle');
+const description = getTranslation(locale, 'fishingGameDescription');
+---
+
+<BaseLayout title={title} description={description} lang={locale}>
+  <main class="fishing-game-page">
+    <div class="page-header">
+      <h1>{title}</h1>
+      <p class="page-description">{description}</p>
+    </div>
+
+    <FishingGame locale={locale} />
+
+    <div class="game-info-section">
+      <h2 data-i18n="howToPlay">{getTranslation(locale, 'howToPlay')}</h2>
+      <div class="info-cards">
+        <div class="info-card">
+          <span class="info-emoji">🎣</span>
+          <h3 data-i18n="castYourLine">{getTranslation(locale, 'castYourLine')}</h3>
+          <p data-i18n="castInstructions">{getTranslation(locale, 'castInstructions')}</p>
+        </div>
+        <div class="info-card">
+          <span class="info-emoji">🐟</span>
+          <h3 data-i18n="catchCorrectFish">{getTranslation(locale, 'catchCorrectFish')}</h3>
+          <p data-i18n="catchInstructions">{getTranslation(locale, 'catchInstructions')}</p>
+        </div>
+        <div class="info-card">
+          <span class="info-emoji">⭐</span>
+          <h3 data-i18n="earnRewards">{getTranslation(locale, 'earnRewards')}</h3>
+          <p data-i18n="rewardsInstructions">{getTranslation(locale, 'rewardsInstructions')}</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .fishing-game-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-header h1 {
+    font-size: 3rem;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+
+  .page-description {
+    font-size: 1.3rem;
+    color: #666;
+  }
+
+  .game-info-section {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 2px solid #e0e0e0;
+  }
+
+  .game-info-section h2 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+  }
+
+  .info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .info-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+
+  .info-card:hover {
+    transform: translateY(-8px);
+  }
+
+  .info-emoji {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .info-card h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 0.75rem;
+  }
+
+  .info-card p {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .fishing-game-page {
+      padding: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .info-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

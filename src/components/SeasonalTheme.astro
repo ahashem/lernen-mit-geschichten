@@ -1,0 +1,170 @@
+---
+/**
+ * Seasonal Theme Component
+ * Applies season-based styling to the entire site
+ */
+---
+
+<style is:global id="seasonal-theme">
+  /* Default Spring Theme */
+  :root {
+    --season-primary: #FFB3D9;
+    --season-secondary: #B4E7CE;
+    --season-accent: #FFE66D;
+    --season-bg: #FFF8F3;
+    --season-text: #2D3748;
+  }
+
+  /* Summer Theme */
+  body.theme-summer {
+    --season-primary: #FFD93D;
+    --season-secondary: #FF9F40;
+    --season-accent: #6BCF7F;
+    --season-bg: #FFFBF0;
+    --season-text: #2D3748;
+  }
+
+  /* Autumn Theme */
+  body.theme-autumn {
+    --season-primary: #FF9F40;
+    --season-secondary: #E57373;
+    --season-accent: #8B4513;
+    --season-bg: #FFF5E6;
+    --season-text: #2D3748;
+  }
+
+  /* Winter Theme */
+  body.theme-winter {
+    --season-primary: #87CEEB;
+    --season-secondary: #B0E0E6;
+    --season-accent: #FFFFFF;
+    --season-bg: #F0F8FF;
+    --season-text: #2D3748;
+  }
+
+  /* Seasonal decorations */
+  .seasonal-decoration {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9997;
+    opacity: 0.6;
+    font-size: 2rem;
+  }
+
+  /* Spring decorations: flowers */
+  body.theme-spring .seasonal-decoration::before {
+    content: '🌸';
+  }
+
+  body.theme-spring .seasonal-decoration:nth-child(2)::before {
+    content: '🌼';
+  }
+
+  body.theme-spring .seasonal-decoration:nth-child(3)::before {
+    content: '🌷';
+  }
+
+  /* Summer decorations: sun */
+  body.theme-summer .seasonal-decoration::before {
+    content: '☀️';
+  }
+
+  body.theme-summer .seasonal-decoration:nth-child(2)::before {
+    content: '🌻';
+  }
+
+  body.theme-summer .seasonal-decoration:nth-child(3)::before {
+    content: '🦋';
+  }
+
+  /* Autumn decorations: leaves */
+  body.theme-autumn .seasonal-decoration::before {
+    content: '🍂';
+  }
+
+  body.theme-autumn .seasonal-decoration:nth-child(2)::before {
+    content: '🍁';
+  }
+
+  body.theme-autumn .seasonal-decoration:nth-child(3)::before {
+    content: '🍄';
+  }
+
+  /* Winter decorations: snowflakes */
+  body.theme-winter .seasonal-decoration::before {
+    content: '❄️';
+  }
+
+  body.theme-winter .seasonal-decoration:nth-child(2)::before {
+    content: '⛄';
+  }
+
+  body.theme-winter .seasonal-decoration:nth-child(3)::before {
+    content: '🎄';
+  }
+</style>
+
+<!-- Seasonal decorations -->
+<div class="seasonal-decorations" aria-hidden="true">
+  <div class="seasonal-decoration" style="top: 10%; left: 5%;"></div>
+  <div class="seasonal-decoration" style="top: 15%; right: 8%;"></div>
+  <div class="seasonal-decoration" style="bottom: 20%; left: 10%;"></div>
+  <div class="seasonal-decoration" style="bottom: 15%; right: 5%;"></div>
+</div>
+
+<script>
+  import { weatherSystem } from '@utils/weather-system';
+
+  function updateSeasonalTheme() {
+    const state = weatherSystem.getState();
+    const season = state.seasonal.season;
+
+    // Remove all season classes
+    document.body.classList.remove('theme-spring', 'theme-summer', 'theme-autumn', 'theme-winter');
+
+    // Add current season class
+    document.body.classList.add(`theme-${season}`);
+
+    // Special event decorations
+    if (state.seasonal.specialEvent === 'christmas') {
+      addChristmasDecorations();
+    } else if (state.seasonal.specialEvent === 'halloween') {
+      addHalloweenDecorations();
+    } else if (state.seasonal.specialEvent === 'easter') {
+      addEasterDecorations();
+    }
+  }
+
+  function addChristmasDecorations() {
+    const decorations = document.querySelectorAll('.seasonal-decoration');
+    decorations.forEach((dec, i) => {
+      const emoji = ['🎄', '🎅', '⛄', '🎁'][i % 4];
+      (dec as HTMLElement).textContent = emoji;
+    });
+  }
+
+  function addHalloweenDecorations() {
+    const decorations = document.querySelectorAll('.seasonal-decoration');
+    decorations.forEach((dec, i) => {
+      const emoji = ['🎃', '👻', '🦇', '🕷️'][i % 4];
+      (dec as HTMLElement).textContent = emoji;
+    });
+  }
+
+  function addEasterDecorations() {
+    const decorations = document.querySelectorAll('.seasonal-decoration');
+    decorations.forEach((dec, i) => {
+      const emoji = ['🐰', '🥚', '🐣', '🌷'][i % 4];
+      (dec as HTMLElement).textContent = emoji;
+    });
+  }
+
+  // Initialize theme
+  updateSeasonalTheme();
+
+  // Update season daily (check every hour)
+  setInterval(() => {
+    weatherSystem.updateSeason();
+    updateSeasonalTheme();
+  }, 3600000); // 1 hour
+</script>
