@@ -408,6 +408,9 @@ const t = messages[locale];
 <script>
   import { trophyCabinet, type Trophy } from '../utils/trophy-cabinet';
 
+  // Get base path for correct navigation
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
   // Open trophy details
   window.addEventListener('showTrophyDetails', ((e: CustomEvent) => {
     const { trophy } = e.detail;
@@ -514,6 +517,6 @@ const t = messages[locale];
   // View badge
   document.getElementById('view-badge-btn')?.addEventListener('click', () => {
     // Navigate to badge collection
-    window.location.href = '/badge-collection';
+    window.location.href = `${base}/badge-collection`;
   });
 </script>

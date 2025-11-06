@@ -608,6 +608,9 @@ const locale = (Astro.currentLocale as 'de' | 'ar' | 'en' | 'tr' | 'ur') || 'de'
 <script>
   import { trophyCabinet } from '../utils/trophy-cabinet';
 
+  // Get base path for correct navigation
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
   // Initialize cabinet
   function initCabinet() {
     const cabinet = document.getElementById('trophy-cabinet-3d');
@@ -756,7 +759,7 @@ const locale = (Astro.currentLocale as 'de' | 'ar' | 'en' | 'tr' | 'ur') || 'de'
 
       if (view === 'list') {
         // Redirect to list view page
-        window.location.href = '/trophy-list';
+        window.location.href = `${base}/trophy-list`;
       }
     });
   });

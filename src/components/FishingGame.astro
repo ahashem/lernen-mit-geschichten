@@ -641,6 +641,9 @@ const { locale = 'de' } = Astro.props;
 
 <script>
   import { fishingGame } from '../utils/fishing-game';
+
+  // Get base path for correct navigation
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   import type { DifficultyLevel, GameMode, QuizQuestion } from '../utils/fishing-game';
 
   // Game state
@@ -775,7 +778,7 @@ const { locale = 'de' } = Astro.props;
 
   // View collection button
   document.getElementById('view-collection-btn')?.addEventListener('click', () => {
-    window.location.href = '/fish-collection';
+    window.location.href = `${base}/fish-collection`;
   });
 
   // Change settings button

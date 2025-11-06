@@ -704,7 +704,7 @@ const { lang } = Astro.props;
     document.getElementById('play-again-btn')?.addEventListener('click', playAgain);
     document.getElementById('change-settings-btn')?.addEventListener('click', changeSettings);
     document.getElementById('back-to-party-btn')?.addEventListener('click', () => {
-      window.location.href = '/dance-party';
+      window.location.href = `${base}/dance-party`;
     });
 
     // Keyboard controls

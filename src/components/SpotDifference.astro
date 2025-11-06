@@ -614,6 +614,9 @@ const { sceneId, mode = 'practice', locale = 'de' } = Astro.props;
 <script>
   import { spotDifferenceGame, type ScenePair, SCENE_LIBRARY } from '../utils/spot-difference';
 
+  // Get base path for correct navigation
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
   class SpotDifferenceUI {
     private gameContainer: HTMLElement;
     private sceneId: string;
@@ -979,7 +982,7 @@ const { sceneId, mode = 'practice', locale = 'de' } = Astro.props;
     }
 
     private backToMenu(): void {
-      window.location.href = '/spot-difference';
+      window.location.href = `${base}/spot-difference`;
     }
   }
 
