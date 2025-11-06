@@ -1,0 +1,350 @@
+---
+/**
+ * Shadow Matching Game Page
+ * Entry point for the shadow matching game
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ShadowMatching from '../components/ShadowMatching.astro';
+
+const locale = 'de';
+const title = 'Schatten zuordnen';
+const description = 'Finde den passenden Schatten für jeden Charakter';
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <main class="shadow-matching-page">
+    <div class="page-header">
+      <h1>{title}</h1>
+      <p class="page-description">{description}</p>
+    </div>
+
+    <!-- Game Instructions -->
+    <section class="instructions-section">
+      <h2>{t(locale, 'howToPlay')}</h2>
+      <div class="instructions-grid">
+        <div class="instruction-card">
+          <div class="instruction-icon">👀</div>
+          <h3>{t(locale, 'step')} 1: {t(locale, 'lookAtShadows')}</h3>
+          <p>{t(locale, 'lookAtShadowsDesc')}</p>
+        </div>
+        <div class="instruction-card">
+          <div class="instruction-icon">🖱️</div>
+          <h3>{t(locale, 'step')} 2: {t(locale, 'dragCharacter')}</h3>
+          <p>{t(locale, 'dragCharacterDesc')}</p>
+        </div>
+        <div class="instruction-card">
+          <div class="instruction-icon">✨</div>
+          <h3>{t(locale, 'step')} 3: {t(locale, 'matchAndEarn')}</h3>
+          <p>{t(locale, 'matchAndEarnDesc')}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Game Component -->
+    <section class="game-section">
+      <ShadowMatching locale={locale} />
+    </section>
+
+    <!-- Best Scores Section -->
+    <section class="scores-section">
+      <h2>{t(locale, 'bestScores')}</h2>
+      <div class="scores-container" id="scores-container">
+        <div class="score-card">
+          <h3>{t(locale, 'easy')}</h3>
+          <div class="score-value" id="best-easy">--:--</div>
+        </div>
+        <div class="score-card">
+          <h3>{t(locale, 'medium')}</h3>
+          <div class="score-value" id="best-medium">--:--</div>
+        </div>
+        <div class="score-card">
+          <h3>{t(locale, 'hard')}</h3>
+          <div class="score-value" id="best-hard">--:--</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Achievements Section -->
+    <section class="achievements-section">
+      <h2>{t(locale, 'achievements')}</h2>
+      <div class="achievements-grid" id="achievements-grid">
+        <!-- Achievements will be loaded dynamically -->
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .shadow-matching-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-header h1 {
+    font-size: 2.5rem;
+    color: #667eea;
+    margin-bottom: 1rem;
+  }
+
+  .page-description {
+    font-size: 1.2rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Instructions Section */
+  .instructions-section {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 16px;
+  }
+
+  .instructions-section h2 {
+    text-align: center;
+    color: #667eea;
+    margin-bottom: 2rem;
+  }
+
+  .instructions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .instruction-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .instruction-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .instruction-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .instruction-card h3 {
+    color: #667eea;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .instruction-card p {
+    color: #666;
+    line-height: 1.6;
+  }
+
+  /* Game Section */
+  .game-section {
+    margin-bottom: 3rem;
+  }
+
+  /* Scores Section */
+  .scores-section {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .scores-section h2 {
+    text-align: center;
+    color: #667eea;
+    margin-bottom: 2rem;
+  }
+
+  .scores-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+  }
+
+  .score-card {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    color: white;
+  }
+
+  .score-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+  }
+
+  .score-value {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  /* Achievements Section */
+  .achievements-section {
+    padding: 2rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .achievements-section h2 {
+    text-align: center;
+    color: #667eea;
+    margin-bottom: 2rem;
+  }
+
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .achievement-card {
+    padding: 1.5rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .achievement-card.unlocked {
+    border-color: #4CAF50;
+    background: #e8f5e9;
+  }
+
+  .achievement-card.locked {
+    opacity: 0.5;
+  }
+
+  .achievement-icon {
+    font-size: 2.5rem;
+  }
+
+  .achievement-info {
+    flex: 1;
+  }
+
+  .achievement-title {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.25rem;
+  }
+
+  .achievement-desc {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .shadow-matching-page {
+      padding: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .instructions-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .scores-container {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .achievements-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { loadGameStats } from '../utils/shadow-matching';
+
+  // Load and display best scores
+  document.addEventListener('DOMContentLoaded', () => {
+    const stats = loadGameStats();
+
+    // Display best times
+    const bestEasy = document.getElementById('best-easy');
+    const bestMedium = document.getElementById('best-medium');
+    const bestHard = document.getElementById('best-hard');
+
+    if (stats.bestTimes.easy) {
+      const minutes = Math.floor(stats.bestTimes.easy / 60);
+      const seconds = stats.bestTimes.easy % 60;
+      bestEasy!.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    if (stats.bestTimes.medium) {
+      const minutes = Math.floor(stats.bestTimes.medium / 60);
+      const seconds = stats.bestTimes.medium % 60;
+      bestMedium!.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    if (stats.bestTimes.hard) {
+      const minutes = Math.floor(stats.bestTimes.hard / 60);
+      const seconds = stats.bestTimes.hard % 60;
+      bestHard!.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    // Display achievements
+    const achievementsGrid = document.getElementById('achievements-grid');
+    const achievements = [
+      {
+        id: 'first-shadow-match',
+        icon: '🎯',
+        title: 'First Match',
+        description: 'Complete your first shadow match game',
+        unlocked: stats.achievementsUnlocked.includes('first-shadow-match'),
+      },
+      {
+        id: 'shadow-master',
+        icon: '👑',
+        title: 'Shadow Master',
+        description: 'Complete 5 perfect games',
+        unlocked: stats.achievementsUnlocked.includes('shadow-master'),
+      },
+      {
+        id: 'difficulty-conqueror',
+        icon: '🏆',
+        title: 'Difficulty Conqueror',
+        description: 'Complete all difficulty levels',
+        unlocked: stats.achievementsUnlocked.includes('difficulty-conqueror'),
+      },
+    ];
+
+    achievements.forEach((achievement) => {
+      const card = document.createElement('div');
+      card.className = `achievement-card ${achievement.unlocked ? 'unlocked' : 'locked'}`;
+      card.innerHTML = `
+        <div class="achievement-icon">${achievement.icon}</div>
+        <div class="achievement-info">
+          <div class="achievement-title">${achievement.title}</div>
+          <div class="achievement-desc">${achievement.description}</div>
+        </div>
+      `;
+      achievementsGrid!.appendChild(card);
+    });
+  });
+</script>

@@ -1,77 +1,401 @@
 ---
+/**
+ * Comprehensive Games Hub - All 25+ Games Organized by Category
+ * UX Redesign Phase 1: Feature Discovery
+ */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getTranslation } from '../../utils/i18n';
 
 const locale = 'de';
 const title = 'Spiele & Aktivitäten';
-const description = 'Lerne durch Spielen - Memory, Puzzles, Malen und mehr!';
+const description = 'Entdecke über 25 lustige Lernspiele!';
 
-const games = [
-  {
-    id: 'sequencing',
-    title: 'Geschichten-Reihenfolge',
-    emoji: '📖',
-    description: 'Ordne Ereignisse in die richtige Reihenfolge',
-    url: '/sequencing-game',
-    difficulty: 'medium',
-    stars: 5,
-  },
+// ALL GAMES - Organized by Category
+const allGames = [
+  // PUZZLE GAMES (9 games)
   {
     id: 'memory',
     title: 'Gedächtnisspiel',
     emoji: '🎴',
     description: 'Finde die passenden Kartenpaare',
     url: '/games/memory',
+    category: 'puzzle',
     difficulty: 'easy',
+    time: '3-5 min',
     stars: 3,
+    isNew: false,
   },
   {
-    id: 'puzzle',
+    id: 'jigsaw',
     title: 'Puzzle',
     emoji: '🧩',
     description: 'Setze die Bilder zusammen',
     url: '/games/puzzle',
+    category: 'puzzle',
     difficulty: 'medium',
-    stars: 5,
+    time: '5-10 min',
+    stars: 4,
+    isNew: false,
   },
   {
-    id: 'coloring',
-    title: 'Malbuch',
-    emoji: '🎨',
-    description: 'Male deine Lieblingscharaktere',
-    url: '/games/coloring',
+    id: 'sliding-puzzles',
+    title: 'Schiebepuzzle',
+    emoji: '🔢',
+    description: 'Schiebe die Teile an die richtige Stelle',
+    url: '/sliding-puzzles',
+    category: 'puzzle',
+    difficulty: 'medium',
+    time: '5-10 min',
+    stars: 4,
+    isNew: true,
+  },
+  {
+    id: 'spot-difference',
+    title: 'Finde den Unterschied',
+    emoji: '🔍',
+    description: 'Entdecke die Unterschiede in den Bildern',
+    url: '/spot-difference',
+    category: 'puzzle',
+    difficulty: 'medium',
+    time: '5-10 min',
+    stars: 4,
+    isNew: true,
+  },
+  {
+    id: 'connect-dots',
+    title: 'Punkte verbinden',
+    emoji: '⭕',
+    description: 'Verbinde die Punkte und enthülle das Bild',
+    url: '/connect-dots',
+    category: 'puzzle',
     difficulty: 'easy',
+    time: '3-5 min',
     stars: 2,
+    isNew: true,
+  },
+  {
+    id: 'shadow-matching',
+    title: 'Schatten zuordnen',
+    emoji: '🌑',
+    description: 'Finde den passenden Schatten',
+    url: '/shadow-matching',
+    category: 'puzzle',
+    difficulty: 'easy',
+    time: '3-5 min',
+    stars: 2,
+    isNew: true,
+  },
+  {
+    id: 'sequencing',
+    title: 'Geschichten-Reihenfolge',
+    emoji: '📖',
+    description: 'Ordne Ereignisse in die richtige Reihenfolge',
+    url: '/sequencing-game',
+    category: 'puzzle',
+    difficulty: 'medium',
+    time: '5-10 min',
+    stars: 4,
+    isNew: true,
+  },
+  {
+    id: 'building-blocks',
+    title: 'Bausteine stapeln',
+    emoji: '🧱',
+    description: 'Baue hohe Türme mit richtigen Antworten',
+    url: '/building-blocks',
+    category: 'puzzle',
+    difficulty: 'medium',
+    time: '5-10 min',
+    stars: 4,
+    isNew: true,
+  },
+  {
+    id: 'emotion-matching',
+    title: 'Gefühle zuordnen',
+    emoji: '😊',
+    description: 'Lerne Gefühle zu erkennen',
+    url: '/emotion-matching',
+    category: 'puzzle',
+    difficulty: 'easy',
+    time: '3-5 min',
+    stars: 3,
+    isNew: true,
+  },
+
+  // ACTION GAMES (7 games)
+  {
+    id: 'balloon-pop',
+    title: 'Ballon platzen',
+    emoji: '🎈',
+    description: 'Platze die Ballons mit richtigen Antworten',
+    url: '/balloon-pop',
+    category: 'action',
+    difficulty: 'easy',
+    time: '3-5 min',
+    stars: 3,
+    isNew: true,
+  },
+  {
+    id: 'whack-a-mole',
+    title: 'Maulwurf Jagd',
+    emoji: '🔨',
+    description: 'Fange den Maulwurf mit der richtigen Antwort',
+    url: '/whack-a-mole',
+    category: 'action',
+    difficulty: 'medium',
+    time: '5 min',
+    stars: 4,
+    isNew: true,
+  },
+  {
+    id: 'fruit-slicer',
+    title: 'Frucht-Schneider',
+    emoji: '🍉',
+    description: 'Schneide die richtigen Früchte',
+    url: '/fruit-slicer',
+    category: 'action',
+    difficulty: 'medium',
+    time: '3-5 min',
+    stars: 4,
+    isNew: true,
+  },
+  {
+    id: 'fishing',
+    title: 'Angel-Spiel',
+    emoji: '🎣',
+    description: 'Fange Fische mit richtigen Antworten',
+    url: '/fishing-game',
+    category: 'action',
+    difficulty: 'medium',
+    time: '5-10 min',
+    stars: 4,
+    isNew: true,
+  },
+  {
+    id: 'dance-party',
+    title: 'Tanz-Party',
+    emoji: '💃',
+    description: 'Tanze zu den Rhythmen',
+    url: '/dance-party',
+    category: 'action',
+    difficulty: 'easy',
+    time: '5 min',
+    stars: 3,
+    isNew: false,
+  },
+  {
+    id: 'cooking',
+    title: 'Koch-Spiel',
+    emoji: '👨‍🍳',
+    description: 'Folge dem Rezept Schritt für Schritt',
+    url: '/cooking-game',
+    category: 'action',
+    difficulty: 'medium',
+    time: '10 min',
+    stars: 4,
+    isNew: true,
+  },
+  {
+    id: 'card-battle',
+    title: 'Karten-Schlacht',
+    emoji: '🃏',
+    description: 'Spiele Karten-Duelle',
+    url: '/card-battle',
+    category: 'action',
+    difficulty: 'hard',
+    time: '10-15 min',
+    stars: 5,
+    isNew: false,
+  },
+
+  // WORD GAMES (3 games)
+  {
+    id: 'word-search',
+    title: 'Wörter suchen',
+    emoji: '🔤',
+    description: 'Finde versteckte Wörter im Gitter',
+    url: '/word-search',
+    category: 'word',
+    difficulty: 'medium',
+    time: '5-10 min',
+    stars: 4,
+    isNew: true,
+  },
+  {
+    id: 'rhyme-time',
+    title: 'Reim-Zeit',
+    emoji: '🎵',
+    description: 'Finde Wörter die sich reimen',
+    url: '/rhyme-time',
+    category: 'word',
+    difficulty: 'medium',
+    time: '5 min',
+    stars: 3,
+    isNew: true,
   },
   {
     id: 'quiz',
     title: 'Quiz-Meister',
     emoji: '❓',
     description: 'Teste dein Wissen',
-    url: '/achievements',
+    url: '/challenges',
+    category: 'word',
     difficulty: 'medium',
+    time: '5-10 min',
     stars: 4,
+    isNew: false,
+  },
+
+  // ADVENTURE GAMES (3 games)
+  {
+    id: 'mazes',
+    title: 'Labyrinthe',
+    emoji: '🌀',
+    description: 'Finde den Weg durch das Labyrinth',
+    url: '/maze-game',
+    category: 'adventure',
+    difficulty: 'medium',
+    time: '5-10 min',
+    stars: 4,
+    isNew: false,
+  },
+  {
+    id: 'adventure-quests',
+    title: 'Abenteuer-Quests',
+    emoji: '⚔️',
+    description: 'Erfülle spannende Quests',
+    url: '/adventure-quests',
+    category: 'adventure',
+    difficulty: 'hard',
+    time: '15-20 min',
+    stars: 5,
+    isNew: false,
+  },
+  {
+    id: 'story-map',
+    title: 'Geschichten-Karte',
+    emoji: '🗺️',
+    description: 'Erkunde die Welt der Geschichten',
+    url: '/story-map',
+    category: 'adventure',
+    difficulty: 'easy',
+    time: '10 min',
+    stars: 3,
+    isNew: false,
+  },
+
+  // CREATIVE GAMES (3 games)
+  {
+    id: 'coloring',
+    title: 'Malbuch',
+    emoji: '🎨',
+    description: 'Male deine Lieblingscharaktere aus',
+    url: '/games/coloring',
+    category: 'creative',
+    difficulty: 'easy',
+    time: '10-20 min',
+    stars: 2,
+    isNew: false,
+  },
+  {
+    id: 'character-designer',
+    title: 'Charakter-Designer',
+    emoji: '🎭',
+    description: 'Gestalte deine eigenen Charaktere',
+    url: '/character-designer',
+    category: 'creative',
+    difficulty: 'medium',
+    time: '10-15 min',
+    stars: 4,
+    isNew: false,
+  },
+  {
+    id: 'dress-up',
+    title: 'Anzieh-Spiel',
+    emoji: '👗',
+    description: 'Ziehe die Charaktere an',
+    url: '/dress-up',
+    category: 'creative',
+    difficulty: 'easy',
+    time: '5-10 min',
+    stars: 3,
+    isNew: true,
   },
 ];
+
+// Category definitions
+const categories = [
+  { id: 'all', name: 'Alle', emoji: '🎮', color: '#667eea' },
+  { id: 'puzzle', name: 'Puzzle', emoji: '🧩', color: '#4CAF50' },
+  { id: 'action', name: 'Action', emoji: '⚡', color: '#FF6B6B' },
+  { id: 'word', name: 'Wörter', emoji: '🔤', color: '#FFD93D' },
+  { id: 'adventure', name: 'Abenteuer', emoji: '🗺️', color: '#764ba2' },
+  { id: 'creative', name: 'Kreativ', emoji: '🎨', color: '#FF9F40' },
+];
+
+// Difficulty translations
+const difficultyLabels = {
+  easy: 'Leicht',
+  medium: 'Mittel',
+  hard: 'Schwer',
+};
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
   <div class="games-hub">
     <div class="container">
+      <!-- Header -->
       <header class="page-header">
         <h1 class="page-title">🎮 {title}</h1>
         <p class="page-description">{description}</p>
+        <p class="game-count">✨ {allGames.length} Spiele verfügbar</p>
       </header>
 
-      <div class="games-grid">
-        {games.map(game => (
-          <a href={game.url} class="game-card">
+      <!-- Category Tabs -->
+      <div class="category-tabs" role="tablist">
+        {categories.map(cat => (
+          <button
+            class="category-tab"
+            data-category={cat.id}
+            role="tab"
+            aria-selected={cat.id === 'all' ? 'true' : 'false'}
+            style={`--cat-color: ${cat.color}`}
+          >
+            <span class="cat-emoji">{cat.emoji}</span>
+            <span class="cat-name">{cat.name}</span>
+            <span class="cat-count">
+              {cat.id === 'all' ? allGames.length : allGames.filter(g => g.category === cat.id).length}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <!-- Games Grid -->
+      <div class="games-grid" role="region" aria-label="Spiele">
+        {allGames.map(game => (
+          <a
+            href={game.url}
+            class="game-card"
+            data-category={game.category}
+            data-difficulty={game.difficulty}
+          >
+            {game.isNew && <span class="new-badge">NEU!</span>}
+
             <div class="game-icon">{game.emoji}</div>
+
             <h3 class="game-title">{game.title}</h3>
+
             <p class="game-description">{game.description}</p>
+
             <div class="game-meta">
-              <span class={`difficulty ${game.difficulty}`}>{game.difficulty}</span>
-              <span class="stars">{'⭐'.repeat(game.stars)}</span>
+              <span class={`difficulty ${game.difficulty}`}>
+                {difficultyLabels[game.difficulty]}
+              </span>
+              <span class="time">⏱️ {game.time}</span>
+            </div>
+
+            <div class="game-stars">
+              {'⭐'.repeat(game.stars)}
             </div>
           </a>
         ))}
@@ -82,27 +406,87 @@ const games = [
 
 <style>
   .games-hub {
-    min-height: 80vh;
-    padding: 2rem 0;
+    min-height: 100vh;
+    padding: 2rem 0 4rem;
     background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
   }
 
   .page-header {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
   }
 
   .page-title {
-    font-size: 3rem;
+    font-size: clamp(2rem, 5vw, 3rem);
     color: #333;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
   }
 
   .page-description {
-    font-size: 1.3rem;
+    font-size: clamp(1rem, 3vw, 1.3rem);
     color: #666;
+    margin-bottom: 0.5rem;
   }
 
+  .game-count {
+    font-size: 1.1rem;
+    color: #764ba2;
+    font-weight: 600;
+  }
+
+  /* Category Tabs */
+  .category-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    padding: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .category-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 3px solid transparent;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    color: #333;
+  }
+
+  .category-tab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .category-tab[aria-selected="true"] {
+    background: var(--cat-color, #667eea);
+    color: white;
+    border-color: var(--cat-color, #667eea);
+  }
+
+  .cat-emoji {
+    font-size: 1.5rem;
+  }
+
+  .cat-count {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+  }
+
+  .category-tab[aria-selected="true"] .cat-count {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Games Grid */
   .games-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -110,68 +494,200 @@ const games = [
   }
 
   .game-card {
+    position: relative;
     background: white;
     border-radius: 20px;
-    padding: 2.5rem;
+    padding: 2rem;
     text-decoration: none;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
+    display: flex;
+    flex-direction: column;
   }
 
   .game-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-8px) scale(1.02);
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+  }
+
+  .game-card:active {
+    transform: translateY(-4px) scale(1.01);
+  }
+
+  .new-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: linear-gradient(135deg, #FF6B6B, #FF9F40);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
   }
 
   .game-icon {
     font-size: 5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+    animation: bounce 1s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  .game-card:hover .game-icon {
+    animation: bounce 0.5s ease-in-out infinite;
   }
 
   .game-title {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     color: #333;
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
   }
 
   .game-description {
     color: #666;
-    margin-bottom: 1.5rem;
+    margin-bottom: auto;
+    flex-grow: 1;
+    line-height: 1.5;
   }
 
   .game-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
     padding-top: 1rem;
     border-top: 2px solid #f0f0f0;
   }
 
   .difficulty {
-    padding: 0.3rem 1rem;
+    padding: 0.4rem 1rem;
     border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .difficulty.easy {
-    background: #4caf50;
+    background: #4CAF50;
     color: white;
   }
 
   .difficulty.medium {
-    background: #ff9800;
+    background: #FF9800;
     color: white;
   }
 
   .difficulty.hard {
-    background: #f44336;
+    background: #F44336;
     color: white;
   }
 
-  .stars {
-    font-size: 1.2rem;
+  .time {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+  }
+
+  .game-stars {
+    font-size: 1.3rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Filtering */
+  .game-card[data-hidden="true"] {
+    display: none;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .games-hub {
+      padding: 1rem 0 2rem;
+    }
+
+    .games-grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .game-card {
+      padding: 1.5rem;
+    }
+
+    .game-icon {
+      font-size: 4rem;
+    }
+
+    .game-title {
+      font-size: 1.3rem;
+    }
+
+    .category-tabs {
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+    }
+
+    .category-tab {
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .cat-emoji {
+      font-size: 1.3rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .games-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
+
+<script>
+  // Category filtering
+  function initCategoryFilters() {
+    const tabs = document.querySelectorAll('.category-tab');
+    const cards = document.querySelectorAll('.game-card');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const category = tab.dataset.category;
+
+        // Update active tab
+        tabs.forEach(t => t.setAttribute('aria-selected', 'false'));
+        tab.setAttribute('aria-selected', 'true');
+
+        // Filter cards
+        cards.forEach(card => {
+          const cardCategory = card.dataset.category;
+          if (category === 'all' || cardCategory === category) {
+            card.dataset.hidden = 'false';
+            card.style.display = '';
+          } else {
+            card.dataset.hidden = 'true';
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  }
+
+  // Initialize on page load
+  if (typeof window !== 'undefined') {
+    initCategoryFilters();
+  }
+</script>
