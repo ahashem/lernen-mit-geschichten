@@ -4,35 +4,38 @@
  * Where children can adopt story characters as pets
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getTranslation } from '../utils/i18n';
 
 const locale = 'de'; // Can be dynamic
+const t = (key: string) => getTranslation(locale, key);
 ---
 
 <BaseLayout
-  title="Pet Adoption Center"
-  description="Adopt your favorite story character as a virtual pet!"
+  title={t('petAdoptionCenterTitle')}
+  description={t('petAdoptionCenterDesc')}
+  locale={locale}
 >
   <main class="adoption-center">
     <div class="page-header">
-      <h1 data-i18n="adoptionCenter">Adoption Center</h1>
-      <p data-i18n="availableForAdoption">Choose a character to adopt as your virtual pet!</p>
+      <h1>{t('adoptionCenter')}</h1>
+      <p>{t('chooseCharacterToAdopt')}</p>
     </div>
 
     <div class="adoption-info">
       <div class="info-card">
         <span class="info-icon">🏠</span>
-        <h3>Maximum 3 Pets</h3>
-        <p>You can have up to 3 active pets at once</p>
+        <h3>{t('maximum3Pets')}</h3>
+        <p>{t('upTo3Pets')}</p>
       </div>
       <div class="info-card">
         <span class="info-icon">⭐</span>
-        <h3>Free to Adopt</h3>
-        <p>All characters are free to adopt!</p>
+        <h3>{t('freeToAdopt')}</h3>
+        <p>{t('allCharactersFree')}</p>
       </div>
       <div class="info-card">
         <span class="info-icon">💕</span>
-        <h3>Daily Care</h3>
-        <p>Feed, play, and care for your pets every day</p>
+        <h3>{t('dailyCare')}</h3>
+        <p>{t('dailyCareDesc')}</p>
       </div>
     </div>
 
@@ -47,28 +50,27 @@ const locale = 'de'; // Can be dynamic
           <div class="preview-character" id="previewCharacter"></div>
           <div class="preview-info">
             <h2 id="characterName">Bruno</h2>
-            <p id="characterType">Bear</p>
+            <p id="characterType">{t('characterTypeBear')}</p>
 
             <div class="personality-badge">
-              <strong data-i18n="petPersonality">Personality</strong>:
-              <span id="personalityType">Playful</span>
+              <strong>{t('petPersonality')}</strong>:
+              <span id="personalityType">{t('personalityPlayful')}</span>
             </div>
 
             <div class="name-input">
               <label for="petNameInput">
-                <strong data-i18n="petName">Pet Name</strong>
+                <strong>{t('petName')}</strong>
               </label>
               <input
                 type="text"
                 id="petNameInput"
-                placeholder="Give your pet a name"
-                data-i18n-placeholder="enterPetName"
+                placeholder={t('giveNamePlaceholder')}
                 maxlength="20"
               />
             </div>
 
-            <button class="adopt-btn" id="confirmAdoptBtn" data-i18n="adoptNow">
-              Adopt Now
+            <button class="adopt-btn" id="confirmAdoptBtn">
+              {t('adoptNow')}
             </button>
           </div>
         </div>
@@ -79,9 +81,9 @@ const locale = 'de'; // Can be dynamic
     <div class="modal" id="successModal">
       <div class="modal-content success-content">
         <div class="success-animation">🎉</div>
-        <h2 data-i18n="petAdopted">Pet Adopted!</h2>
-        <p>Congratulations on your new pet!</p>
-        <a href="/virtual-pets" class="success-btn" data-i18n="myPets">Go to My Pets</a>
+        <h2>{t('petAdopted')}</h2>
+        <p>{t('congratsPetAdopted')}</p>
+        <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/virtual-pets`} class="success-btn">{t('myPets')}</a>
       </div>
     </div>
   </main>
@@ -424,7 +426,10 @@ const locale = 'de'; // Can be dynamic
 
 <script>
   import { getAvailableCharacters, createPet, loadPets, savePets } from '../utils/virtual-pets';
+  import { getTranslation } from '../utils/i18n';
   import type { Pet } from '../utils/virtual-pets';
+
+  const locale = 'de';
 
   // Get base path for correct navigation
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -450,7 +455,7 @@ const locale = 'de'; // Can be dynamic
           <span class="character-emoji">${character.emoji}</span>
           <div class="character-name">${character.name}</div>
           <div class="character-type">${character.type}</div>
-          <button class="adopt-character-btn" data-i18n="adoptNow">Adopt</button>
+          <button class="adopt-character-btn">${getTranslation(locale, 'adoptNow')}</button>
         `;
 
         card.querySelector('.adopt-character-btn')?.addEventListener('click', (e) => {
@@ -481,7 +486,7 @@ const locale = 'de'; // Can be dynamic
       // Check if max pets reached
       const pets = loadPets();
       if (pets.length >= 3) {
-        alert('Maximum 3 pets reached!');
+        alert(getTranslation(locale, 'maxPetsReachedAlert'));
         return;
       }
 
@@ -499,9 +504,9 @@ const locale = 'de'; // Can be dynamic
       if (characterType) characterType.textContent = character.type;
 
       // Random personality
-      const personalities = ['Playful', 'Calm', 'Energetic', 'Shy', 'Brave', 'Curious'];
-      const randomPersonality = personalities[Math.floor(Math.random() * personalities.length)];
-      if (personalityType) personalityType.textContent = randomPersonality;
+      const personalityKeys = ['personalityPlayful', 'personalityCalm', 'personalityEnergetic', 'personalityShy', 'personalityBrave', 'personalityCurious'];
+      const randomPersonalityKey = personalityKeys[Math.floor(Math.random() * personalityKeys.length)];
+      if (personalityType) personalityType.textContent = getTranslation(locale, randomPersonalityKey);
 
       // Set default name
       if (nameInput) {
