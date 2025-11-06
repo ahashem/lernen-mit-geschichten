@@ -1,586 +1,667 @@
 /**
- * Maze Generation Algorithms
- * Procedural maze generation using Recursive Backtracking and Prim's algorithm
+ * Maze Generator
+ * Procedural maze generation using Recursive Backtracking algorithm
+ * Supports multiple themes, difficulty levels, and collectibles
  */
 
-export type MazeSize = 'small' | 'medium' | 'large';
+export interface MazeCell {
+  row: number;
+  col: number;
+  walls: {
+    top: boolean;
+    right: boolean;
+    bottom: boolean;
+    left: boolean;
+  };
+  visited: boolean;
+  isStart?: boolean;
+  isEnd?: boolean;
+  hasCollectible?: boolean;
+  collectibleType?: 'star' | 'key' | 'gem' | 'coin';
+  isPath?: boolean;
+}
+
+export interface MazeConfig {
+  rows: number;
+  cols: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  theme: MazeTheme;
+  collectiblesCount: number;
+  keysCount?: number;
+}
+
 export type MazeTheme =
   | 'forest'
   | 'city'
   | 'beach'
   | 'space'
   | 'underwater'
-  | 'mountain';
-export type MazeDifficulty = 'easy' | 'medium' | 'hard' | 'expert';
+  | 'mountain'
+  | 'desert'
+  | 'castle';
 
-export interface Position {
-  x: number;
-  y: number;
+export interface MazeThemeConfig {
+  id: MazeTheme;
+  name: string;
+  emoji: string;
+  wallColor: string;
+  pathColor: string;
+  backgroundColor: string;
+  collectibleEmoji: string;
+  characterEmoji: string;
+  goalEmoji: string;
+  wallStyle: 'solid' | 'hedges' | 'buildings' | 'rocks' | 'coral' | 'ice' | 'sand' | 'stone';
 }
 
-export enum CellType {
-  WALL = 0,
-  PATH = 1,
-  START = 2,
-  END = 3,
-  CHECKPOINT = 4,
-  COLLECTIBLE = 5,
-  ENEMY = 6,
-  POWERUP = 7,
-  DOOR = 8,
-  KEY = 9,
-  TELEPORTER = 10,
+export interface MazeState {
+  currentRow: number;
+  currentCol: number;
+  visitedCells: Set<string>;
+  collectedItems: string[];
+  keysCollected: number;
+  moves: number;
+  timeElapsed: number;
+  completed: boolean;
+  solution?: MazeCell[];
 }
 
-export interface MazeCell {
-  type: CellType;
-  visited: boolean;
-  revealed: boolean;
-  data?: any; // Extra data (quiz questions, collectible info, etc.)
-}
-
-export interface MazeCollectible {
-  id: string;
-  type: 'star' | 'character' | 'item' | 'gem';
-  position: Position;
-  collected: boolean;
-  value: number;
-  storyElement?: string;
-}
-
-export interface MazeCheckpoint {
-  id: string;
-  position: Position;
-  unlocked: boolean;
-  quizQuestion?: {
-    id: string;
-    text: string;
-    type: 'truefalse' | 'multiplechoice';
-    correctAnswer: string;
-    options?: string[];
-  };
-  storyEvent: string;
-}
-
-export interface MazeConfig {
-  size: MazeSize;
-  theme: MazeTheme;
-  difficulty: MazeDifficulty;
-  storyId: string;
-  seed?: number;
-}
-
-export interface MazeData {
+export interface MazeGenerationResult {
   grid: MazeCell[][];
-  width: number;
-  height: number;
-  start: Position;
-  end: Position;
-  checkpoints: MazeCheckpoint[];
-  collectibles: MazeCollectible[];
-  doors: Position[];
-  keys: Position[];
-  teleporters: [Position, Position][];
-  theme: MazeTheme;
-  storyId: string;
+  startCell: { row: number; col: number };
+  endCell: { row: number; col: number };
+  solution: MazeCell[];
+  collectibles: Array<{ row: number; col: number; type: string }>;
+  config: MazeConfig;
 }
 
-// Seeded random number generator for reproducible mazes
-class SeededRandom {
-  private seed: number;
+/**
+ * Maze Theme Configurations
+ */
+export const MAZE_THEMES: Record<MazeTheme, MazeThemeConfig> = {
+  forest: {
+    id: 'forest',
+    name: 'Forest',
+    emoji: '🌲',
+    wallColor: '#2d5016',
+    pathColor: '#8bc34a',
+    backgroundColor: '#c8e6c9',
+    collectibleEmoji: '🍄',
+    characterEmoji: '🦊',
+    goalEmoji: '🏠',
+    wallStyle: 'hedges'
+  },
+  city: {
+    id: 'city',
+    name: 'City',
+    emoji: '🏙️',
+    wallColor: '#424242',
+    pathColor: '#9e9e9e',
+    backgroundColor: '#e0e0e0',
+    collectibleEmoji: '🚗',
+    characterEmoji: '🚶',
+    goalEmoji: '🏢',
+    wallStyle: 'buildings'
+  },
+  beach: {
+    id: 'beach',
+    name: 'Beach',
+    emoji: '🏖️',
+    wallColor: '#8d6e63',
+    pathColor: '#ffe082',
+    backgroundColor: '#b3e5fc',
+    collectibleEmoji: '🐚',
+    characterEmoji: '🏄',
+    goalEmoji: '🏝️',
+    wallStyle: 'sand'
+  },
+  space: {
+    id: 'space',
+    name: 'Space',
+    emoji: '🚀',
+    wallColor: '#1a237e',
+    pathColor: '#3f51b5',
+    backgroundColor: '#0d1b2a',
+    collectibleEmoji: '⭐',
+    characterEmoji: '🧑‍🚀',
+    goalEmoji: '🌍',
+    wallStyle: 'solid'
+  },
+  underwater: {
+    id: 'underwater',
+    name: 'Underwater',
+    emoji: '🌊',
+    wallColor: '#004d40',
+    pathColor: '#26a69a',
+    backgroundColor: '#80deea',
+    collectibleEmoji: '🐠',
+    characterEmoji: '🤿',
+    goalEmoji: '🐚',
+    wallStyle: 'coral'
+  },
+  mountain: {
+    id: 'mountain',
+    name: 'Mountain',
+    emoji: '⛰️',
+    wallColor: '#4e342e',
+    pathColor: '#bcaaa4',
+    backgroundColor: '#d7ccc8',
+    collectibleEmoji: '💎',
+    characterEmoji: '🧗',
+    goalEmoji: '⛺',
+    wallStyle: 'rocks'
+  },
+  desert: {
+    id: 'desert',
+    name: 'Desert',
+    emoji: '🏜️',
+    wallColor: '#d4a574',
+    pathColor: '#f4e4c1',
+    backgroundColor: '#ffe4b5',
+    collectibleEmoji: '🌵',
+    characterEmoji: '🐪',
+    goalEmoji: '🕌',
+    wallStyle: 'sand'
+  },
+  castle: {
+    id: 'castle',
+    name: 'Castle',
+    emoji: '🏰',
+    wallColor: '#5d4037',
+    pathColor: '#a1887f',
+    backgroundColor: '#d7ccc8',
+    collectibleEmoji: '👑',
+    characterEmoji: '🤴',
+    goalEmoji: '🏰',
+    wallStyle: 'stone'
+  }
+};
 
-  constructor(seed: number) {
-    this.seed = seed;
+/**
+ * Maze Generator Class
+ */
+export class MazeGenerator {
+  private grid: MazeCell[][];
+  private rows: number;
+  private cols: number;
+  private config: MazeConfig;
+
+  constructor(config: MazeConfig) {
+    this.config = config;
+    this.rows = config.rows;
+    this.cols = config.cols;
+    this.grid = [];
   }
 
-  next(): number {
-    this.seed = (this.seed * 9301 + 49297) % 233280;
-    return this.seed / 233280;
+  /**
+   * Generate a new maze using Recursive Backtracking algorithm
+   */
+  generate(): MazeGenerationResult {
+    // Initialize grid with all walls
+    this.initializeGrid();
+
+    // Generate maze paths using Recursive Backtracking
+    const startCell = { row: 0, col: 0 };
+    this.recursiveBacktracking(startCell.row, startCell.col);
+
+    // Define start and end positions
+    const endCell = { row: this.rows - 1, col: this.cols - 1 };
+    this.grid[startCell.row][startCell.col].isStart = true;
+    this.grid[endCell.row][endCell.col].isEnd = true;
+
+    // Calculate solution path
+    const solution = this.findSolution(startCell, endCell);
+
+    // Place collectibles
+    const collectibles = this.placeCollectibles(solution);
+
+    return {
+      grid: this.grid,
+      startCell,
+      endCell,
+      solution,
+      collectibles,
+      config: this.config
+    };
   }
 
-  nextInt(min: number, max: number): number {
-    return Math.floor(this.next() * (max - min + 1)) + min;
+  /**
+   * Initialize empty grid with all walls intact
+   */
+  private initializeGrid(): void {
+    this.grid = [];
+    for (let row = 0; row < this.rows; row++) {
+      const gridRow: MazeCell[] = [];
+      for (let col = 0; col < this.cols; col++) {
+        gridRow.push({
+          row,
+          col,
+          walls: {
+            top: true,
+            right: true,
+            bottom: true,
+            left: true
+          },
+          visited: false
+        });
+      }
+      this.grid.push(gridRow);
+    }
   }
 
-  shuffle<T>(array: T[]): T[] {
+  /**
+   * Recursive Backtracking algorithm to generate maze
+   */
+  private recursiveBacktracking(row: number, col: number): void {
+    const current = this.grid[row][col];
+    current.visited = true;
+
+    // Get unvisited neighbors in random order
+    const neighbors = this.getUnvisitedNeighbors(row, col);
+    this.shuffleArray(neighbors);
+
+    for (const neighbor of neighbors) {
+      if (!neighbor.visited) {
+        // Remove wall between current and neighbor
+        this.removeWall(current, neighbor);
+
+        // Recursively visit neighbor
+        this.recursiveBacktracking(neighbor.row, neighbor.col);
+      }
+    }
+  }
+
+  /**
+   * Get unvisited neighboring cells
+   */
+  private getUnvisitedNeighbors(row: number, col: number): MazeCell[] {
+    const neighbors: MazeCell[] = [];
+
+    // Top
+    if (row > 0) {
+      neighbors.push(this.grid[row - 1][col]);
+    }
+
+    // Right
+    if (col < this.cols - 1) {
+      neighbors.push(this.grid[row][col + 1]);
+    }
+
+    // Bottom
+    if (row < this.rows - 1) {
+      neighbors.push(this.grid[row + 1][col]);
+    }
+
+    // Left
+    if (col > 0) {
+      neighbors.push(this.grid[row][col - 1]);
+    }
+
+    return neighbors.filter(n => !n.visited);
+  }
+
+  /**
+   * Remove wall between two adjacent cells
+   */
+  private removeWall(current: MazeCell, neighbor: MazeCell): void {
+    const rowDiff = neighbor.row - current.row;
+    const colDiff = neighbor.col - current.col;
+
+    if (rowDiff === 1) {
+      // Neighbor is below
+      current.walls.bottom = false;
+      neighbor.walls.top = false;
+    } else if (rowDiff === -1) {
+      // Neighbor is above
+      current.walls.top = false;
+      neighbor.walls.bottom = false;
+    } else if (colDiff === 1) {
+      // Neighbor is to the right
+      current.walls.right = false;
+      neighbor.walls.left = false;
+    } else if (colDiff === -1) {
+      // Neighbor is to the left
+      current.walls.left = false;
+      neighbor.walls.right = false;
+    }
+  }
+
+  /**
+   * Find solution path using BFS (Breadth-First Search)
+   */
+  private findSolution(start: { row: number; col: number }, end: { row: number; col: number }): MazeCell[] {
+    const queue: Array<{ cell: MazeCell; path: MazeCell[] }> = [];
+    const visited = new Set<string>();
+
+    const startCell = this.grid[start.row][start.col];
+    queue.push({ cell: startCell, path: [startCell] });
+    visited.add(`${start.row},${start.col}`);
+
+    while (queue.length > 0) {
+      const { cell, path } = queue.shift()!;
+
+      // Check if we reached the end
+      if (cell.row === end.row && cell.col === end.col) {
+        // Mark solution path
+        path.forEach(c => {
+          this.grid[c.row][c.col].isPath = true;
+        });
+        return path;
+      }
+
+      // Explore accessible neighbors
+      const neighbors = this.getAccessibleNeighbors(cell);
+      for (const neighbor of neighbors) {
+        const key = `${neighbor.row},${neighbor.col}`;
+        if (!visited.has(key)) {
+          visited.add(key);
+          queue.push({
+            cell: neighbor,
+            path: [...path, neighbor]
+          });
+        }
+      }
+    }
+
+    return [];
+  }
+
+  /**
+   * Get accessible neighbors (no wall between)
+   */
+  private getAccessibleNeighbors(cell: MazeCell): MazeCell[] {
+    const neighbors: MazeCell[] = [];
+    const { row, col, walls } = cell;
+
+    if (!walls.top && row > 0) {
+      neighbors.push(this.grid[row - 1][col]);
+    }
+    if (!walls.right && col < this.cols - 1) {
+      neighbors.push(this.grid[row][col + 1]);
+    }
+    if (!walls.bottom && row < this.rows - 1) {
+      neighbors.push(this.grid[row + 1][col]);
+    }
+    if (!walls.left && col > 0) {
+      neighbors.push(this.grid[row][col - 1]);
+    }
+
+    return neighbors;
+  }
+
+  /**
+   * Place collectibles along solution path and some detours
+   */
+  private placeCollectibles(solution: MazeCell[]): Array<{ row: number; col: number; type: string }> {
+    const collectibles: Array<{ row: number; col: number; type: string }> = [];
+    const { collectiblesCount } = this.config;
+
+    // Place collectibles along solution path
+    const solutionIndices = this.generateRandomIndices(solution.length - 2, Math.floor(collectiblesCount * 0.6));
+
+    for (const index of solutionIndices) {
+      const cell = solution[index + 1]; // Skip start cell
+      if (!cell.isStart && !cell.isEnd) {
+        cell.hasCollectible = true;
+        cell.collectibleType = 'star';
+        collectibles.push({
+          row: cell.row,
+          col: cell.col,
+          type: 'star'
+        });
+      }
+    }
+
+    // Place remaining collectibles in random accessible cells
+    const remainingCount = collectiblesCount - collectibles.length;
+    const allCells = this.grid.flat().filter(c => !c.isStart && !c.isEnd && !c.hasCollectible);
+    const randomCells = this.shuffleArray([...allCells]).slice(0, remainingCount);
+
+    for (const cell of randomCells) {
+      cell.hasCollectible = true;
+      cell.collectibleType = this.getRandomCollectibleType();
+      collectibles.push({
+        row: cell.row,
+        col: cell.col,
+        type: cell.collectibleType
+      });
+    }
+
+    return collectibles;
+  }
+
+  /**
+   * Generate random indices for collectible placement
+   */
+  private generateRandomIndices(max: number, count: number): number[] {
+    const indices = new Set<number>();
+    while (indices.size < count && indices.size < max) {
+      indices.add(Math.floor(Math.random() * max));
+    }
+    return Array.from(indices);
+  }
+
+  /**
+   * Get random collectible type
+   */
+  private getRandomCollectibleType(): 'star' | 'key' | 'gem' | 'coin' {
+    const types: Array<'star' | 'key' | 'gem' | 'coin'> = ['star', 'star', 'gem', 'coin'];
+    return types[Math.floor(Math.random() * types.length)];
+  }
+
+  /**
+   * Shuffle array using Fisher-Yates algorithm
+   */
+  private shuffleArray<T>(array: T[]): T[] {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = this.nextInt(0, i);
+      const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled;
   }
-}
 
-// Get maze dimensions based on size
-function getMazeDimensions(size: MazeSize): { width: number; height: number } {
-  switch (size) {
-    case 'small':
-      return { width: 10, height: 10 };
-    case 'medium':
-      return { width: 20, height: 20 };
-    case 'large':
-      return { width: 30, height: 30 };
-  }
-}
+  /**
+   * Get hint: highlight next correct move
+   */
+  static getHint(grid: MazeCell[][], currentPos: { row: number; col: number }, endPos: { row: number; col: number }): { row: number; col: number } | null {
+    // Use BFS to find next step on shortest path
+    const queue: Array<{ cell: MazeCell; path: MazeCell[] }> = [];
+    const visited = new Set<string>();
 
-// Initialize empty maze grid
-function initializeGrid(
-  width: number,
-  height: number
-): MazeCell[][] {
-  const grid: MazeCell[][] = [];
-  for (let y = 0; y < height; y++) {
-    grid[y] = [];
-    for (let x = 0; x < width; x++) {
-      grid[y][x] = {
-        type: CellType.WALL,
-        visited: false,
-        revealed: false,
-      };
-    }
-  }
-  return grid;
-}
+    const startCell = grid[currentPos.row][currentPos.col];
+    queue.push({ cell: startCell, path: [startCell] });
+    visited.add(`${currentPos.row},${currentPos.col}`);
 
-// Get neighboring cells (up, down, left, right)
-function getNeighbors(
-  pos: Position,
-  width: number,
-  height: number
-): Position[] {
-  const neighbors: Position[] = [];
-  const directions = [
-    { x: 0, y: -2 }, // Up
-    { x: 2, y: 0 }, // Right
-    { x: 0, y: 2 }, // Down
-    { x: -2, y: 0 }, // Left
-  ];
+    while (queue.length > 0) {
+      const { cell, path } = queue.shift()!;
 
-  for (const dir of directions) {
-    const newX = pos.x + dir.x;
-    const newY = pos.y + dir.y;
-    if (newX >= 0 && newX < width && newY >= 0 && newY < height) {
-      neighbors.push({ x: newX, y: newY });
-    }
-  }
+      if (cell.row === endPos.row && cell.col === endPos.col) {
+        // Return next step (index 1 in path)
+        if (path.length > 1) {
+          return { row: path[1].row, col: path[1].col };
+        }
+        return null;
+      }
 
-  return neighbors;
-}
-
-// Recursive Backtracking algorithm for maze generation
-function recursiveBacktracking(
-  grid: MazeCell[][],
-  current: Position,
-  width: number,
-  height: number,
-  random: SeededRandom
-): void {
-  grid[current.y][current.x].type = CellType.PATH;
-  grid[current.y][current.x].visited = true;
-
-  const neighbors = getNeighbors(current, width, height);
-  const shuffledNeighbors = random.shuffle(neighbors);
-
-  for (const neighbor of shuffledNeighbors) {
-    if (!grid[neighbor.y][neighbor.x].visited) {
-      // Remove wall between current and neighbor
-      const wallX = current.x + (neighbor.x - current.x) / 2;
-      const wallY = current.y + (neighbor.y - current.y) / 2;
-      grid[wallY][wallX].type = CellType.PATH;
-      grid[wallY][wallX].visited = true;
-
-      // Recursively visit neighbor
-      recursiveBacktracking(grid, neighbor, width, height, random);
-    }
-  }
-}
-
-// Find longest path in maze (for optimal start/end placement)
-function findLongestPath(
-  grid: MazeCell[][],
-  width: number,
-  height: number
-): { start: Position; end: Position; distance: number } {
-  let maxDistance = 0;
-  let bestStart: Position = { x: 0, y: 0 };
-  let bestEnd: Position = { x: 0, y: 0 };
-
-  // BFS to find longest path
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      if (grid[y][x].type === CellType.PATH) {
-        const distances = bfsDistances(grid, { x, y }, width, height);
-        for (let ey = 0; ey < height; ey++) {
-          for (let ex = 0; ex < width; ex++) {
-            if (distances[ey][ex] > maxDistance) {
-              maxDistance = distances[ey][ex];
-              bestStart = { x, y };
-              bestEnd = { x: ex, y: ey };
-            }
-          }
+      const neighbors = MazeGenerator.getAccessibleNeighborsStatic(grid, cell);
+      for (const neighbor of neighbors) {
+        const key = `${neighbor.row},${neighbor.col}`;
+        if (!visited.has(key)) {
+          visited.add(key);
+          queue.push({
+            cell: neighbor,
+            path: [...path, neighbor]
+          });
         }
       }
     }
+
+    return null;
   }
 
-  return { start: bestStart, end: bestEnd, distance: maxDistance };
-}
+  /**
+   * Static version of getAccessibleNeighbors
+   */
+  private static getAccessibleNeighborsStatic(grid: MazeCell[][], cell: MazeCell): MazeCell[] {
+    const neighbors: MazeCell[] = [];
+    const { row, col, walls } = cell;
+    const rows = grid.length;
+    const cols = grid[0].length;
 
-// BFS to calculate distances from start position
-function bfsDistances(
-  grid: MazeCell[][],
-  start: Position,
-  width: number,
-  height: number
-): number[][] {
-  const distances: number[][] = Array(height)
-    .fill(null)
-    .map(() => Array(width).fill(-1));
-  const queue: Position[] = [start];
-  distances[start.y][start.x] = 0;
-
-  const directions = [
-    { x: 0, y: -1 },
-    { x: 1, y: 0 },
-    { x: 0, y: 1 },
-    { x: -1, y: 0 },
-  ];
-
-  while (queue.length > 0) {
-    const current = queue.shift()!;
-
-    for (const dir of directions) {
-      const newX = current.x + dir.x;
-      const newY = current.y + dir.y;
-
-      if (
-        newX >= 0 &&
-        newX < width &&
-        newY >= 0 &&
-        newY < height &&
-        grid[newY][newX].type !== CellType.WALL &&
-        distances[newY][newX] === -1
-      ) {
-        distances[newY][newX] = distances[current.y][current.x] + 1;
-        queue.push({ x: newX, y: newY });
-      }
+    if (!walls.top && row > 0) {
+      neighbors.push(grid[row - 1][col]);
     }
+    if (!walls.right && col < cols - 1) {
+      neighbors.push(grid[row][col + 1]);
+    }
+    if (!walls.bottom && row < rows - 1) {
+      neighbors.push(grid[row + 1][col]);
+    }
+    if (!walls.left && col > 0) {
+      neighbors.push(grid[row][col - 1]);
+    }
+
+    return neighbors;
   }
 
-  return distances;
-}
+  /**
+   * Check if move is valid (no wall blocking)
+   */
+  static isValidMove(
+    grid: MazeCell[][],
+    currentRow: number,
+    currentCol: number,
+    direction: 'up' | 'down' | 'left' | 'right'
+  ): boolean {
+    const cell = grid[currentRow][currentCol];
+    const rows = grid.length;
+    const cols = grid[0].length;
 
-// A* pathfinding algorithm (for hints)
-export function findPath(
-  grid: MazeCell[][],
-  start: Position,
-  end: Position,
-  width: number,
-  height: number
-): Position[] {
-  const openSet: Position[] = [start];
-  const cameFrom = new Map<string, Position>();
-  const gScore = new Map<string, number>();
-  const fScore = new Map<string, number>();
-
-  const posKey = (pos: Position) => `${pos.x},${pos.y}`;
-  const heuristic = (a: Position, b: Position) =>
-    Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-
-  gScore.set(posKey(start), 0);
-  fScore.set(posKey(start), heuristic(start, end));
-
-  while (openSet.length > 0) {
-    // Find node with lowest fScore
-    let currentIdx = 0;
-    for (let i = 1; i < openSet.length; i++) {
-      if (
-        (fScore.get(posKey(openSet[i])) || Infinity) <
-        (fScore.get(posKey(openSet[currentIdx])) || Infinity)
-      ) {
-        currentIdx = i;
-      }
-    }
-
-    const current = openSet[currentIdx];
-
-    if (current.x === end.x && current.y === end.y) {
-      // Reconstruct path
-      const path: Position[] = [current];
-      let temp = current;
-      while (cameFrom.has(posKey(temp))) {
-        temp = cameFrom.get(posKey(temp))!;
-        path.unshift(temp);
-      }
-      return path;
-    }
-
-    openSet.splice(currentIdx, 1);
-
-    const directions = [
-      { x: 0, y: -1 },
-      { x: 1, y: 0 },
-      { x: 0, y: 1 },
-      { x: -1, y: 0 },
-    ];
-
-    for (const dir of directions) {
-      const neighbor = { x: current.x + dir.x, y: current.y + dir.y };
-
-      if (
-        neighbor.x < 0 ||
-        neighbor.x >= width ||
-        neighbor.y < 0 ||
-        neighbor.y >= height ||
-        grid[neighbor.y][neighbor.x].type === CellType.WALL
-      ) {
-        continue;
-      }
-
-      const tentativeGScore = (gScore.get(posKey(current)) || 0) + 1;
-
-      if (
-        !gScore.has(posKey(neighbor)) ||
-        tentativeGScore < gScore.get(posKey(neighbor))!
-      ) {
-        cameFrom.set(posKey(neighbor), current);
-        gScore.set(posKey(neighbor), tentativeGScore);
-        fScore.set(
-          posKey(neighbor),
-          tentativeGScore + heuristic(neighbor, end)
-        );
-
-        if (!openSet.find((p) => p.x === neighbor.x && p.y === neighbor.y)) {
-          openSet.push(neighbor);
-        }
-      }
+    switch (direction) {
+      case 'up':
+        return !cell.walls.top && currentRow > 0;
+      case 'down':
+        return !cell.walls.bottom && currentRow < rows - 1;
+      case 'left':
+        return !cell.walls.left && currentCol > 0;
+      case 'right':
+        return !cell.walls.right && currentCol < cols - 1;
+      default:
+        return false;
     }
   }
-
-  return []; // No path found
 }
 
-// Place checkpoints along the optimal path
-function placeCheckpoints(
-  grid: MazeCell[][],
-  path: Position[],
-  count: number,
-  storyEvents: string[],
-  random: SeededRandom
-): MazeCheckpoint[] {
-  const checkpoints: MazeCheckpoint[] = [];
-  const step = Math.floor(path.length / (count + 1));
+/**
+ * Maze Progress Tracker
+ */
+export class MazeProgressTracker {
+  private static STORAGE_KEY = 'maze_progress';
 
-  for (let i = 1; i <= count && i * step < path.length; i++) {
-    const pos = path[i * step];
-    const checkpoint: MazeCheckpoint = {
-      id: `checkpoint-${i}`,
-      position: pos,
-      unlocked: false,
-      storyEvent: storyEvents[i - 1] || `Ereignis ${i}`,
-    };
-    checkpoints.push(checkpoint);
-    grid[pos.y][pos.x].type = CellType.CHECKPOINT;
-    grid[pos.y][pos.x].data = checkpoint;
-  }
+  static saveMazeCompletion(mazeId: string, stats: {
+    difficulty: string;
+    theme: string;
+    time: number;
+    moves: number;
+    collectibles: number;
+    totalCollectibles: number;
+  }): void {
+    const progress = this.getProgress();
 
-  return checkpoints;
-}
-
-// Place collectibles randomly in the maze
-function placeCollectibles(
-  grid: MazeCell[][],
-  width: number,
-  height: number,
-  count: number,
-  random: SeededRandom
-): MazeCollectible[] {
-  const collectibles: MazeCollectible[] = [];
-  const types: Array<MazeCollectible['type']> = [
-    'star',
-    'character',
-    'item',
-    'gem',
-  ];
-  const values = { star: 5, character: 10, item: 15, gem: 20 };
-
-  let attempts = 0;
-  const maxAttempts = count * 10;
-
-  while (collectibles.length < count && attempts < maxAttempts) {
-    const x = random.nextInt(0, width - 1);
-    const y = random.nextInt(0, height - 1);
-    attempts++;
-
-    if (
-      grid[y][x].type === CellType.PATH &&
-      !grid[y][x].data
-    ) {
-      const type = types[random.nextInt(0, types.length - 1)];
-      const collectible: MazeCollectible = {
-        id: `collectible-${collectibles.length}`,
-        type,
-        position: { x, y },
-        collected: false,
-        value: values[type],
+    if (!progress[mazeId]) {
+      progress[mazeId] = {
+        completions: 0,
+        bestTime: Infinity,
+        bestMoves: Infinity,
+        totalStars: 0
       };
-      collectibles.push(collectible);
-      grid[y][x].type = CellType.COLLECTIBLE;
-      grid[y][x].data = collectible;
     }
+
+    const maze = progress[mazeId];
+    maze.completions += 1;
+    maze.bestTime = Math.min(maze.bestTime, stats.time);
+    maze.bestMoves = Math.min(maze.bestMoves, stats.moves);
+
+    // Calculate stars earned (1-3 based on performance)
+    const stars = this.calculateStars(stats);
+    maze.totalStars += stars;
+
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(progress));
   }
 
-  return collectibles;
-}
-
-// Place doors and keys
-function placeDoorsAndKeys(
-  grid: MazeCell[][],
-  path: Position[],
-  count: number,
-  random: SeededRandom
-): { doors: Position[]; keys: Position[] } {
-  const doors: Position[] = [];
-  const keys: Position[] = [];
-
-  if (path.length < 10) return { doors, keys };
-
-  const step = Math.floor(path.length / (count + 1));
-
-  for (let i = 0; i < count && (i + 1) * step < path.length; i++) {
-    // Place door
-    const doorPos = path[(i + 1) * step];
-    doors.push(doorPos);
-    grid[doorPos.y][doorPos.x].type = CellType.DOOR;
-    grid[doorPos.y][doorPos.x].data = { keyId: i };
-
-    // Place key before door
-    const keyPos = path[Math.max(0, (i + 1) * step - random.nextInt(2, 5))];
-    if (grid[keyPos.y][keyPos.x].type === CellType.PATH) {
-      keys.push(keyPos);
-      grid[keyPos.y][keyPos.x].type = CellType.KEY;
-      grid[keyPos.y][keyPos.x].data = { keyId: i };
-    }
+  static getProgress(): Record<string, {
+    completions: number;
+    bestTime: number;
+    bestMoves: number;
+    totalStars: number;
+  }> {
+    const stored = localStorage.getItem(this.STORAGE_KEY);
+    return stored ? JSON.parse(stored) : {};
   }
 
-  return { doors, keys };
+  static getMazeStats(mazeId: string) {
+    const progress = this.getProgress();
+    return progress[mazeId] || null;
+  }
+
+  static getTotalCompletions(): number {
+    const progress = this.getProgress();
+    return Object.values(progress).reduce((sum, maze) => sum + maze.completions, 0);
+  }
+
+  static calculateStars(stats: {
+    time: number;
+    moves: number;
+    collectibles: number;
+    totalCollectibles: number;
+  }): number {
+    let stars = 1; // Base star for completion
+
+    // Bonus star for collecting all items
+    if (stats.collectibles === stats.totalCollectibles) {
+      stars += 1;
+    }
+
+    // Bonus star for efficiency (low moves relative to optimal)
+    const optimalMoves = Math.sqrt(stats.totalCollectibles) * 20; // Rough estimate
+    if (stats.moves < optimalMoves * 1.5) {
+      stars += 1;
+    }
+
+    return Math.min(stars, 3);
+  }
 }
 
-// Generate a complete maze
-export function generateMaze(config: MazeConfig): MazeData {
-  const { size, theme, difficulty, storyId, seed = Date.now() } = config;
-  const { width, height } = getMazeDimensions(size);
-  const random = new SeededRandom(seed);
-
-  // Initialize grid with walls
-  const grid = initializeGrid(width, height);
-
-  // Generate maze using Recursive Backtracking
-  // Start from odd coordinates to ensure proper maze structure
-  const startX = random.nextInt(0, Math.floor((width - 1) / 2)) * 2;
-  const startY = random.nextInt(0, Math.floor((height - 1) / 2)) * 2;
-  recursiveBacktracking(grid, { x: startX, y: startY }, width, height, random);
-
-  // Find optimal start and end points
-  const { start, end } = findLongestPath(grid, width, height);
-  grid[start.y][start.x].type = CellType.START;
-  grid[end.y][end.x].type = CellType.END;
-
-  // Find path from start to end
-  const path = findPath(grid, start, end, width, height);
-
-  // Determine number of features based on difficulty
-  const featureCounts = {
-    easy: { checkpoints: 3, collectibles: 5, doors: 0 },
-    medium: { checkpoints: 4, collectibles: 10, doors: 1 },
-    hard: { checkpoints: 5, collectibles: 15, doors: 2 },
-    expert: { checkpoints: 5, collectibles: 20, doors: 3 },
+/**
+ * Create maze configuration based on difficulty
+ */
+export function createMazeConfig(difficulty: 'easy' | 'medium' | 'hard', theme: MazeTheme): MazeConfig {
+  const configs = {
+    easy: { rows: 10, cols: 10, collectiblesCount: 5 },
+    medium: { rows: 15, cols: 15, collectiblesCount: 10 },
+    hard: { rows: 20, cols: 20, collectiblesCount: 15 }
   };
 
-  const counts = featureCounts[difficulty];
-
-  // Story events for checkpoints
-  const storyEvents = [
-    'Beginn der Reise',
-    'Erste Herausforderung',
-    'Treffen mit Freunden',
-    'Wichtige Entscheidung',
-    'Finale Prüfung',
-  ];
-
-  // Place checkpoints along the path
-  const checkpoints = placeCheckpoints(
-    grid,
-    path,
-    counts.checkpoints,
-    storyEvents,
-    random
-  );
-
-  // Place collectibles
-  const collectibles = placeCollectibles(
-    grid,
-    width,
-    height,
-    counts.collectibles,
-    random
-  );
-
-  // Place doors and keys
-  const { doors, keys } = placeDoorsAndKeys(grid, path, counts.doors, random);
-
-  // Place teleporters for expert difficulty
-  const teleporters: [Position, Position][] = [];
-  if (difficulty === 'expert' && path.length > 20) {
-    const teleporter1 = path[Math.floor(path.length * 0.3)];
-    const teleporter2 = path[Math.floor(path.length * 0.7)];
-    grid[teleporter1.y][teleporter1.x].type = CellType.TELEPORTER;
-    grid[teleporter2.y][teleporter2.x].type = CellType.TELEPORTER;
-    teleporters.push([teleporter1, teleporter2]);
-  }
-
+  const config = configs[difficulty];
   return {
-    grid,
-    width,
-    height,
-    start,
-    end,
-    checkpoints,
-    collectibles,
-    doors,
-    keys,
-    teleporters,
-    theme,
-    storyId,
+    ...config,
+    difficulty,
+    theme
   };
 }
 
-// Get string hash for seed generation
-export function hashString(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-  return Math.abs(hash);
-}
+/**
+ * Generate a random daily maze (same for all users on same day)
+ */
+export function generateDailyMaze(theme: MazeTheme): MazeGenerationResult {
+  const today = new Date();
+  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
 
-// Generate maze from story ID
-export function generateMazeFromStory(
-  storyId: string,
-  difficulty: MazeDifficulty = 'medium',
-  theme: MazeTheme = 'forest'
-): MazeData {
-  const seed = hashString(storyId);
-  const size: MazeSize = difficulty === 'easy' ? 'small' : difficulty === 'hard' || difficulty === 'expert' ? 'large' : 'medium';
+  // Use seed to determine difficulty (cycles through difficulties)
+  const difficulties: Array<'easy' | 'medium' | 'hard'> = ['easy', 'medium', 'hard'];
+  const difficulty = difficulties[seed % 3];
 
-  return generateMaze({
-    size,
-    theme,
-    difficulty,
-    storyId,
-    seed,
-  });
+  const config = createMazeConfig(difficulty, theme);
+  const generator = new MazeGenerator(config);
+  return generator.generate();
 }
