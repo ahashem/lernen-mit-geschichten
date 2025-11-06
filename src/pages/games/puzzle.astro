@@ -1,11 +1,13 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import JigsawPuzzle from '../../components/JigsawPuzzle.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { getTranslation } from '../../utils/i18n';
 
 const locale = 'de';
 const title = getTranslation(locale, 'puzzleGame') || 'Puzzle-Spiel';
 const description = getTranslation(locale, 'puzzleGameDescription') || 'Setze die Bildteile zusammen!';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 // Available puzzle images (character emojis and story illustrations)
 const puzzleImages = [
@@ -23,6 +25,13 @@ const puzzleImages = [
 <BaseLayout title={title} description={description} locale={locale}>
   <div class="puzzle-page">
     <div class="container">
+      <!-- Breadcrumbs -->
+      <Breadcrumbs
+        locale={locale}
+        items={[{ label: getTranslation(locale, 'gamesHub'), url: `${base}/games` }]}
+        currentPage={title}
+      />
+
       <!-- Puzzle Selection -->
       <div class="puzzle-selector" id="puzzle-selector">
         <h1 class="page-title">{title}</h1>
