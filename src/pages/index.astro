@@ -80,7 +80,7 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
 <!-- Pass stories data to client-side scripts -->
 <script is:inline define:vars={{ stories: stories.map(s => ({
   id: s.id,
-  slug: s.slug,
+  slug: s.id,
   data: {
     title: s.data.title,
     emoji: s.data.emoji,

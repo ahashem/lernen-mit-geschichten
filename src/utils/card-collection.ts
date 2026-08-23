@@ -1,7 +1,8 @@
 // Card Collection Management
 // LocalStorage-based card collection, deck building, and progression
 
-import { Card, CARD_DATABASE, createCard, Rarity } from './card-battle';
+import { CARD_DATABASE, createCard } from './card-battle';
+import type { Card, Rarity } from './card-battle';
 
 // Re-export CARD_DATABASE for convenience
 export { CARD_DATABASE };
