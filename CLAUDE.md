@@ -1,463 +1,271 @@
-# Lernen mit Geschichten - Project Guidelines
+# CLAUDE.md
 
-## Project Context
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-This is a multilingual, non-profit educational microwebsite teaching children (ages 3-7) values and behavioral skills through interactive stories. Target users: parents, teachers, and KiTA caretakers in Germany. Languages: German (primary), Arabic, English, Turkish, and Urdu.
+## Project Overview
+
+**Lernen mit Geschichten** is a non-profit educational platform teaching children ages 3-7 values and behavioral skills through interactive multilingual stories. The site supports 5 languages (German, Arabic, English, Turkish, Urdu) with RTL layout support for Arabic/Urdu.
+
+### Key Principles
+- **Content-first**: Stories are the primary feature; all other functionality is secondary
+- **Static-first**: Astro static site generation; minimal JavaScript
+- **Accessibility-first**: WCAG 2.1 AA compliance mandatory
+- **Privacy-first**: No authentication, no data collection, GDPR-friendly
 
 ## Tech Stack
 
-- **Framework**: Astro (static site generation, content collections)
-- **Hosting**: Netlify (free tier)
-- **Content**: Markdown with YAML frontmatter
-- **Styling**: Scoped CSS with RTL support for Arabic/Urdu
-- **Interactivity**: Vanilla JavaScript (no heavy frameworks)
-- **Deployment**: GitHub → Netlify auto-deploy
-
-## Core Principles
-
-### Mission: "Lernen mit Geschichten" (Learning with Stories)
-The primary purpose of this site is teaching children values and behavioral skills through **interactive stories**. All other features are secondary enhancements.
-
-### Content-First Approach
-- Stories are the primary content type
-- Each story maps to 1-3 skills from 58-skill taxonomy
-- Consistent structure: narrative + key message + 3 activity types (true/false, multiple choice, fill-in-blank)
-- All content in `/src/content/stories/{lang}/` as markdown files
-
-### Multilingual Requirements
-- All UI text must support 5 languages
-- RTL layout support for Arabic and Urdu
-- Use Noto Sans font family for comprehensive language coverage
-- Language switcher persistent on all pages
-- i18n routing: `/de/stories/bruno`, `/ar/stories/bruno`, etc.
-
-### Accessibility Standards
-- WCAG 2.1 AA compliance mandatory
-- Keyboard navigation for all interactive elements
-- Screen reader friendly
-- Color contrast ratio ≥ 4.5:1
-- Mobile-first responsive design
-- Touch targets ≥ 44x44px on mobile
-
-### Performance & Simplicity
-- Static site generation (no server-side rendering)
-- Minimal JavaScript (component islands only)
-- Fast page loads (target: < 2s)
-- No authentication or backend needed
-- Client-side only interactivity (localStorage for progress)
-
-### Privacy-First
-- No user accounts or personal data collection
-- GDPR-friendly analytics only (Plausible)
-- No third-party tracking
-- All interactive features work offline (client-side)
-
-## File Structure Conventions
-
-```
-src/
-├── components/           # Reusable Astro components
-│   ├── QuizInteractive.astro        # Main interactive quiz component
-│   ├── StoryCard.astro              # Story preview cards (with interactive badges)
-│   ├── InteractiveStorybook.astro   # Swiper + TTS narration
-│   ├── LanguageSelector.astro       # Language switcher (dropdown)
-│   ├── FilterSidebar.astro          # Filter by skill/language
-│   └── SearchBar.astro              # Search functionality
-├── content/
-│   ├── config.ts                    # Content collections schema (supports interactive format)
-│   └── stories/
-│       ├── de/                      # German stories
-│       ├── ar/                      # Arabic stories
-│       ├── en/                      # English stories
-│       ├── tr/                      # Turkish stories
-│       └── ur/                      # Urdu stories
-├── layouts/
-│   ├── BaseLayout.astro             # Base template with nav
-│   └── StoryLayout.astro            # Story detail page template
-├── locales/                         # Modular i18n JSON files (split by category)
-│   ├── de-core.json                 # German: Navigation, UI, common (~56%)
-│   ├── de-stories.json              # German: Story features (~11%)
-│   ├── de-games.json                # German: Generic games (~12%)
-│   ├── de-create.json               # German: Creation tools (~7%)
-│   ├── de-features.json             # German: Pets, quests, collections (~11%)
-│   └── (same pattern for ar, en, tr, ur)
-├── pages/
-│   ├── index.astro                  # Homepage (DE)
-│   ├── [locale]/index.astro         # Localized homepages
-│   ├── about.astro                  # About page (DE)
-│   ├── [locale]/about.astro         # Localized about pages
-│   └── stories/
-│       └── [...slug].astro          # Dynamic story pages
-├── styles/
-│   ├── global.css                   # Global styles
-│   └── rtl.css                      # RTL overrides for AR/UR
-└── utils/
-    ├── i18n.ts                      # Translation utilities (loads JSON files)
-    ├── skills-taxonomy.ts           # 58 skills definitions
-    ├── text-to-speech.ts            # StoryNarrator class for TTS
-    └── search.ts                    # Search logic
-```
-
-## Architecture: Core vs Secondary Features
-
-### Feature Categorization
-
-The site follows a clear hierarchy: **Stories First**, with supplementary features for engagement.
-
-#### **CORE FEATURES (Story-Focused):**
-These are the primary features directly supporting the mission of learning through stories:
-
-- **Story Reading** (`src/pages/stories/`, `src/pages/[locale]/stories/`)
-  - Interactive storybook with TTS narration
-  - Page flipping and read-aloud functionality
-  - Story detail pages with key messages
-
-- **Story Discovery** (`src/pages/story-map.astro`, `src/components/StoryCard.astro`)
-  - Visual story map explorer
-  - Story browser with skill-based filtering
-  - Story recommendations based on reading history
-
-- **Story Creation** (`src/pages/story-builder.astro`, `src/pages/character-designer.astro`)
-  - Story builder tool for creating custom stories
-  - Character designer for story characters
-
-- **Story-Based Activities**
-  - Balloon Pop Quiz (`src/pages/balloon-pop.astro`) - Story comprehension
-  - Sequencing Game (`src/pages/sequencing-game.astro`) - Story order
-  - Story-specific quizzes (true/false, multiple choice, fill-in-blank)
-
-- **Reading Progress** (`src/pages/progress.astro`, `src/pages/reading-progress.astro`)
-  - Reading streaks and progress tracking
-  - Reading goals and achievements
-  - Print studio for offline story reading
-
-#### **SECONDARY FEATURES (Games - Not Story-Specific):**
-These are generic educational games that could exist independently:
-
-**Location:** `/games/` pages
-
-- Memory Match, Jigsaw Puzzles, Sliding Puzzles
-- Maze Explorer, Spot the Difference, Connect Dots
-- Whack-a-Mole, Fruit Slicer, Fishing Game
-- Word Search, Rhyme Time, Shadow Matching
-- Emotion Matching, Dance Party, Coloring Book
-
-**Note:** These games are marked as "Bonus: Lernspiele" in the navigation to indicate they're supplementary.
-
-#### **SECONDARY FEATURES (Creation Tools - Generic):**
-General creativity tools not tied to story creation:
-
-**Location:** `/create/` pages
-
-- Animation Studio, Comic Maker, Music Composer
-- Puppet Theater, Recording Studio, Building Blocks
-- Dress-up Game
-
-**Note:** These are general creativity tools, distinct from story-specific creation features.
-
-#### **SECONDARY FEATURES (Gamification):**
-Engagement features that enhance motivation but aren't core to learning:
-
-**Location:** `/pets/`, `/collections/`, `/tools/` pages
-
-- Virtual Pets & Pet Adoption
-- Magic Garden
-- Quest System, Trophy Cabinet, Card Collection
-- Weather Effects, Fortune Teller, Daily Surprise
-
-**Note:** These reward engagement and provide fun incentives for continued use.
-
-### Translation Organization
-
-To support this architecture, translations are split by feature category:
-
-- `*-core.json` - Navigation, common UI, error messages (~56% of keys)
-- `*-stories.json` - Story reading, building, story-based features (~11%)
-- `*-games.json` - Generic game translations (~12%)
-- `*-create.json` - Creation tool translations (~7%)
-- `*-features.json` - Pets, quests, collections, etc. (~11%)
-
-All files are merged at runtime in `src/utils/i18n.ts` for backward compatibility.
-
-### Future Architecture Considerations
-
-**Current Decision:** Keep everything in one codebase with clear separation of concerns.
-
-**Potential Phase 2 Extraction:**
-If the site grows significantly, consider extracting secondary features:
-- Games → Separate "Lernspiele" app (subdomain: `games.lernen-mit-geschichten.de`)
-- Creation Tools → Separate "Kreativ-Werkstatt" app
-- Keep only story-focused features in main app
-
-**Benefits of Extraction:**
-- Clearer mission focus
-- Better performance (smaller bundles per app)
-- Reusable games across projects
-- Independent deployment and scaling
-
-**Current Benefits of Monolith:**
-- Simpler deployment (single build)
-- Shared components and utilities
-- Unified user experience
-- Lower maintenance overhead
-
-## Content Format
-
-### Story Markdown Structure
-
-#### Standard Format
-```markdown
----
-title: "Brunos bunte Gefühle"
-titleAr: "مشاعر برونو الملونة"
-titleEn: "Bruno's Colorful Feelings"
-titleTr: "Bruno'nun Renkli Duyguları"
-titleUr: "برونو کے رنگین جذبات"
-emoji: "🐻"
-skills: ["self-awareness", "emotional-regulation"]
-ageGroup: "3-7"
-languages: ["de"]
-storyId: "001-bruno"
-characterType: "bear"
-difficulty: "beginner"
-estimatedReadTime: 3
-publishDate: 2024-01-15
-storyFormat: "standard"  # default
----
-
-## Story Content
-[Narrative text in selected language]
-
-## Key Message
-- Bullet point 1
-- Bullet point 2
-
-## Interactive Activities
-### True/False Questions
-[questions data structure]
-
-### Multiple Choice
-[questions data structure]
-
-### Fill-in-the-Blank
-[questions data structure]
-```
-
-#### Interactive Format (with TTS & Page Flipping)
-```markdown
----
-title: "Brunos bunte Gefühle"
-# ... other frontmatter
-storyFormat: "interactive"
-pages:
-  - text: "Es war einmal ein kleiner Bär namens Bruno..."
-    image: "https://via.placeholder.com/800x600"
-  - text: "Eines Tages wollte Bruno..."
-    image: "https://via.placeholder.com/800x600"
----
-
-## Key Message
-[Text after all interactive pages]
-```
-
-**Interactive Features:**
-- Swiper.js page flipping with creative 3D transitions
-- Web Speech API (TTS) narration with word-by-word highlighting
-- Floating control island (sticky, glassmorphic design)
-- Expandable settings panel (volume, speed)
-- Auto-play mode for continuous reading
-- Progress tracking via localStorage
-
-## Development Guidelines
-
-### When Creating Components
-- Use scoped styles within .astro files
-- Support RTL with `[dir="rtl"]` CSS selectors
-- Make all interactive elements keyboard accessible
-- Include ARIA labels for screen readers
-- Test on mobile viewport first
-- Ensure emoji rendering is consistent
-
-### When Converting Stories
-- Convert .docx files from `/content/` directory
-- Extract: title, narrative, key message, all 3 activity types
-- Use emoji from original story (if present)
-- Map to skills from taxonomy
-- Add metadata: storyId, characterType, estimatedReadTime
-- Place in appropriate language folder
-
-### When Adding Translations
-- Never use machine translation without review
-- Mark stories with available languages in frontmatter
-- Update language availability filters
-- Ensure RTL text direction for Arabic/Urdu
-- Test special characters and diacritics
-
-### When Implementing Interactivity
-- Use vanilla JavaScript in Astro `<script>` tags
-- Store quiz progress in localStorage (key: `quiz-progress-{storyId}`)
-- Provide immediate feedback (correct/incorrect)
-- Allow multiple attempts for learning
-- Include "Show all answers" option for teachers
-
-## Skills Taxonomy (58 Skills)
-
-Organized into 4 categories:
-
-### Emotional Skills
-- self-awareness, emotional-regulation, empathy, patience, impulse-control
-
-### Social Skills
-- effective-communication, cooperation, conflict-resolution, leadership, respect
-
-### Cognitive Skills
-- problem-solving, decision-making, critical-thinking, adaptability, goal-setting
-
-### Behavioral Skills
-- responsibility, honesty, persistence, self-discipline, time-management
-
-Full list in `/src/utils/skills-taxonomy.ts`
-
-## Design System
-
-### Color Palette
-- Primary: Warm oranges (#FF9F40), soft yellows (#FFD93D), light blues (#6BCF7F)
-- Background: Off-white (#F9F9F9)
-- Text: Dark gray (#333333)
-- Success: Green (#4CAF50)
-- Error: Red (#E57373)
-
-### Typography
-- Font: Noto Sans (supports all 5 languages)
-- Base size: 18px (larger for child readability)
-- Line height: 1.6
-- Headings: Bold, clear hierarchy
-
-### Layout
-- Max content width: 1200px
-- Mobile breakpoint: 768px
-- Card border radius: 12px
-- Generous padding: 2rem
-- Whitespace-heavy design
-
-## Testing Requirements
-
-### Before Every Commit
-- Test in both LTR (German, English, Turkish) and RTL (Arabic, Urdu) modes
-- Verify keyboard navigation
-- Check mobile responsive layout
-- Validate contrast ratios
-
-### Before Deployment
-- Cross-browser testing (Chrome, Firefox, Safari)
-- Mobile device testing (iOS, Android)
-- Screen reader testing (NVDA minimum)
-- Print CSS validation
-- Lighthouse audit (aim for 90+ accessibility score)
-
-## Content Management Workflow
-
-1. **Story Creation/Edit**
-   - Write/edit in Google Docs
-   - Review and finalize
-   - Convert to markdown
-   - Add frontmatter metadata
-   - Commit to repository
-
-2. **Translation Process**
-   - Identify priority stories
-   - Professional translation or community contribution
-   - Human review required
-   - Update frontmatter with new language
-   - Test RTL layout (if Arabic/Urdu)
-
-3. **Deployment**
-   - Push to GitHub main branch
-   - Netlify auto-builds and deploys
-   - Verify live site
-   - Test all languages
-
-## SEO & Metadata
-
-### Required Meta Tags Per Page
-- Title (in page language)
-- Description (in page language)
-- Open Graph tags (og:title, og:description, og:image)
-- Language tag (`lang="de"`, `lang="ar"`, etc.)
-- Canonical URL for language variants
-
-### Story Pages
-- H1: Story title with emoji
-- Meta description: First 150 characters of story + skill tags
-- Alt text: Descriptive text for character illustrations
-- Structured data: Educational content schema
-
-## Common Commands
+- **Framework**: Astro 5.x with MDX integration
+- **Styling**: Scoped CSS (no CSS-in-JS framework)
+- **Interactivity**: Vanilla JavaScript + Astro islands with React components
+- **Content**: Markdown + YAML frontmatter in Astro content collections
+- **i18n**: Modular JSON files (split by feature category for Crowdin integration)
+- **Testing**: Vitest with unit tests
+- **Quality**: ESLint, Prettier, TypeScript strict mode
+- **Deployment**: GitHub Pages via GitHub Actions (auto-deploy on main push)
+
+## Development Workflow
+
+### Prerequisites
+- Node.js 22.x or higher
+- npm or yarn
+
+### Common Commands
 
 ```bash
-npm run dev          # Start dev server
-npm run build        # Build for production
-npm run preview      # Preview production build
-npm run astro add    # Add Astro integrations
+npm run dev              # Start dev server (http://localhost:4321)
+npm run build            # Build for production (runs tests first via prebuild)
+npm run preview          # Preview production build locally
+
+npm run test             # Run tests once
+npm run test:watch       # Run tests in watch mode
+npm run test:coverage    # Generate test coverage report
+
+npm run lint             # Check linting issues
+npm run lint:fix         # Auto-fix linting issues
+npm run format           # Format code with Prettier
+npm run format:check     # Check formatting without changing files
+
+npm run quality          # Run full quality check (format:check + lint + test)
 ```
 
-## Prohibited Actions
+### Key Development Principles
 
-- Do not create user authentication systems (not needed)
-- Do not add backend databases (static only)
-- Do not use heavy JS frameworks (React, Vue, etc.)
-- Do not collect personal data
-- Do not add complex build processes
-- Do not ignore accessibility requirements
-- Do not use auto-generated translations without review
+1. **Path Aliases**: Use TypeScript path aliases (`@/*`, `@components/*`, `@utils/*`, `@layouts/*`, `@styles/*`) for imports
+2. **Content Collections**: All stories must be in `src/content/stories/{locale}/` as markdown files
+3. **Multilingual Content**: Each story has translated titles (titleDe, titleAr, etc.) and language availability tracking
+4. **Test Before Build**: The build process runs `npm run test` first; tests must pass before deployment
 
-## Priority Features (MVP)
+## Architecture
 
-### ✅ Completed
-1. Homepage with story grid and filters
-2. Story detail pages with interactive quizzes
-3. Language selector working on all pages (dropdown)
-4. Search by keyword/skill
-5. 5 German stories fully converted (1 interactive format)
-6. Mobile-responsive design
-7. RTL support for Arabic/Urdu
-8. Interactive storytelling with TTS and page flipping
-9. Floating control island for audio controls
-10. Separate i18n JSON files for Crowdin integration
-11. Enhanced About page with usage guides (all languages)
-12. Interactive story badges on cards
+### High-Level Structure
 
-### 🚧 In Progress
-- Print-friendly CSS
-- SEO (sitemap.xml, robots.txt, meta tags)
+The codebase is organized into three major feature tiers:
 
-### 📋 Pending
-- Story format selector (toggle between standard/interactive)
-- Deployment to Netlify
+#### Tier 1: Core Story Features (Primary Mission)
+- **Story Reading**: Interactive storybook with TTS narration, page-flipping, progress tracking
+- **Story Discovery**: Story map, browser with skill-based filtering, recommendations
+- **Story-Based Activities**: Quizzes (true/false, multiple choice, fill-in-blank), sequencing games
+- **Reading Progress**: Streaks, achievements, print studio for offline reading
+- **Story Creation**: Story builder and character designer tools
 
-## Phase 2 Features
+**Files**: `src/pages/stories/`, `src/components/InteractiveStorybook.astro`, `src/components/StoryCard.astro`, `src/pages/story-builder.astro`
 
-- Google Drive integration for additional stories
-- PDF generation per story
-- Teacher resource section
-- Progress tracking (localStorage)
-- Audio narrations
-- 10+ stories with full translations
+#### Tier 2: Generic Educational Games (Secondary)
+Located in `src/pages/` and `src/components/`: Memory Match, Jigsaw Puzzles, Sliding Puzzles, Maze Explorer, Spot the Difference, Whack-a-Mole, Fruit Slicer, Word Search, Rhyme Time, Shadow Matching, Emotion Matching, etc.
 
-## Reference Documents
+These games exist independently of stories and could theoretically be extracted into a separate "Lernspiele" app in Phase 2.
 
-- **Master Prompt**: `/CLAUDE-assets/prompts/website-generation-prompt.md`
-- **Project Plan**: `/TODO.md`
-- **Skills List**: `/content/stories-index.md` (Arabic section)
-- **Example Stories**: `/content/*.docx` (40+ German stories)
+#### Tier 3: Creation Tools & Gamification (Tertiary)
+- **Creation Tools**: Animation Studio, Comic Maker, Music Composer, Puppet Theater, Building Blocks
+- **Gamification**: Virtual Pets, Quest System, Trophy Cabinet, Badge Collection, Daily Challenges, Shop System
 
-## Contact & Support
+### Key Utilities
 
-- GitHub Issues for bug reports
-- Community contributions welcome (translations, stories)
-- Open source: MIT (code) + CC BY-NC-SA 4.0 (content)
+**i18n System** (`src/utils/i18n.ts`)
+- Modular translation files split by feature: `*-core.json`, `*-stories.json`, `*-games.json`, `*-create.json`, `*-features.json`
+- All 5 language JSON files are merged at runtime for backward compatibility
+- Use `getTranslation(locale, key)` function to access translations
+- RTL detection via `isRTL(locale)` for Arabic/Urdu
+
+**Story Filtering** (`src/utils/filter-stories.ts`)
+- Core filtering logic: `matchesFilter(story, criteria)` with AND logic between filters and OR logic within filter types
+- Used across story browser, recommendations, and search features
+
+**Skills Taxonomy** (`src/utils/skills-taxonomy.ts`)
+- 58 skills across 4 categories: emotional, social, cognitive, behavioral
+- Each skill has multilingual labels; stories map to 1-3 skills
+- Skills are used for story classification, filtering, and progress tracking
+
+**Content Configuration** (`src/content/config.ts`)
+- Zod schema for story frontmatter validation
+- Supports both standard and interactive story formats
+- Optional fields: mood, ambientSound, musicIntensity for atmosphere
+- Required fields: title (with translations), emoji, skills, storyId, languages
+
+### Story Format
+
+Stories support two formats via `storyFormat` field:
+
+**Standard Format** (default)
+```yaml
+title: Story Title
+skills: ["self-awareness", "emotional-regulation"]
+storyFormat: "standard"
+```
+Renders as traditional text narrative with separate quiz section.
+
+**Interactive Format**
+```yaml
+storyFormat: "interactive"
+pages:
+  - text: "Page 1 narration..."
+    image: "url"
+  - text: "Page 2 narration..."
+    image: "url"
+```
+Uses Swiper.js for page-flipping, Web Speech API for TTS with word highlighting, floating control island.
+
+### Component Patterns
+
+- **Astro Components** (`*.astro`): Static templates with scoped CSS; for static content or simple interactivity
+- **React Island Components** (`*.astro` with React `client:` directives): For complex state management (games, builders, interactive features)
+- **No Vue/Svelte**: Project uses Astro + React only for interactivity
+
+**RTL Support**: Use `[dir="rtl"]` CSS selectors for Arabic/Urdu overrides. Import `isRTL()` from i18n utility.
+
+### Routing & Localization
+
+- **Default Locale**: German (de)
+- **Routing**: Astro's built-in i18n routing with `prefixDefaultLocale: false` (German URLs have no `/de` prefix)
+- **Localized Routes**: `/stories/bruno` (German), `/ar/stories/bruno` (Arabic), `/en/stories/bruno` (English), etc.
+- **Language Switcher**: Persistent on all pages; updates localStorage and redirects to current page in new language
+
+## Content Workflow
+
+### Adding a New Story
+
+1. Create markdown file in `src/content/stories/{locale}/filename.md`
+2. Required frontmatter fields:
+   - `title`, `titleAr`, `titleEn`, `titleTr`, `titleUr` (all language titles)
+   - `emoji` (character emoji)
+   - `skills` (array of 1-3 skill IDs from taxonomy)
+   - `storyId` (unique identifier, format: `nnn-name`)
+   - `languages` (array of available languages)
+   - `ageGroup`, `difficulty`, `estimatedReadTime` (optional metadata)
+
+3. Choose format:
+   - **Standard**: Write narrative, key messages, and quiz questions
+   - **Interactive**: Use `storyFormat: "interactive"` with `pages` array containing text and image URLs
+
+### Translations
+
+- All UI text must be in `src/locales/{locale}-{category}.json`
+- Categories: core, stories, games, create, features
+- Files are merged at runtime; organize keys by category to avoid conflicts
+- Professional human translation required; no machine translation without review
+- RTL testing mandatory for Arabic/Urdu
+
+## Testing
+
+### Test Structure
+- Tests colocate with source files: `filename.test.ts` or `filename.test.astro`
+- Main test utility: `src/utils/filter-stories.test.ts` (filter logic)
+- Run tests with `npm run test` or `npm run test:watch`
+
+### Before Committing
+- Run `npm run quality` to check formatting, linting, and tests
+- All tests must pass before build succeeds (prebuild hook enforces this)
+
+## Accessibility Requirements
+
+### Mandatory Checks
+- **Keyboard Navigation**: All interactive elements must be keyboard accessible (Tab, Enter, Arrow keys)
+- **ARIA Labels**: Use `aria-label`, `aria-describedby` for interactive components
+- **Color Contrast**: Minimum 4.5:1 for text; 3:1 for graphics
+- **Mobile Touch Targets**: Minimum 44x44px
+- **Screen Reader Testing**: Test with NVDA (Windows) or VoiceOver (macOS)
+- **WCAG 2.1 AA Target**: Aim for high Lighthouse accessibility score (90+)
+
+### RTL Testing
+- Always test layout in both LTR (German, English, Turkish) and RTL (Arabic, Urdu) modes
+- Use CSS `[dir="rtl"]` selectors for directional overrides
+- Test text directionality, alignment, and margin/padding flips
+
+## Deployment
+
+### GitHub Pages (Automatic)
+1. Push to `main` branch
+2. GitHub Actions workflow triggers `npm run build`
+3. Build artifacts deploy to `https://ahashem.github.io/lernen-mit-geschichten/`
+
+### Base Path
+- Site is deployed to subdirectory `/lernen-mit-geschichten/`
+- All asset paths and links must account for this base path
+- Astro automatically handles base path for internal links
+
+## Constraints & Considerations
+
+### Do NOT
+- Add user authentication systems (not needed for non-profit)
+- Create backend databases (static site only)
+- Use heavy JS frameworks beyond React for islands
+- Collect personal user data
+- Use auto-generated translations
+- Add complexity beyond current requirements (avoid premature abstraction)
+
+### High-Priority Issues to Prevent
+- **Missing Translations**: Every new UI key must be translated to all 5 languages
+- **RTL Breakage**: Always test Arabic/Urdu after CSS changes
+- **Accessibility Regression**: Test keyboard navigation and screen reader support before committing
+- **Test Failure in Build**: Build will fail if tests don't pass; fix tests, don't skip them
+- **Story Content Quality**: All story content must be age-appropriate (3-7), educationally sound, and professionally translated
+
+## File Organization Guide
+
+### When to Create New Files
+- **New Story**: Create in `src/content/stories/{locale}/filename.md`
+- **New Page**: Create in `src/pages/{route}.astro` or `src/pages/[locale]/{route}.astro`
+- **New Component**: Create in `src/components/ComponentName.astro` or `.tsx`
+- **New Utility**: Create in `src/utils/utility-name.ts`
+- **New Translations**: Add to `src/locales/{locale}-{category}.json`
+
+### Existing Files to Modify
+- **i18n Strings**: Modify `src/locales/{locale}-{category}.json` (never hardcode UI text)
+- **Story Metadata**: Update `src/content/config.ts` only if schema changes needed
+- **Skills**: Update `src/utils/skills-taxonomy.ts` (rarely; validate with team first)
+- **Styling Defaults**: Modify `src/styles/global.css` for site-wide changes
+
+## Reference Commands for Common Tasks
+
+```bash
+# Run tests and rebuild after changes
+npm run test:watch
+
+# Check all quality criteria before committing
+npm run quality
+
+# Format code to match project style
+npm run format
+
+# Preview production build locally (useful for debugging build issues)
+npm run preview
+
+# Run specific test file
+npm run test -- src/utils/filter-stories.test.ts
+
+# Check test coverage
+npm run test:coverage
+```
+
+## GitHub Workflow
+
+- **Main Branch**: Production-ready code; every push auto-deploys
+- **Feature Branches**: For new features and bug fixes
+- **Pull Request**: Required before merging to main
+- **Tests**: Must pass in CI before merge allowed
 
 ---
 
-**Last Updated**: 2025-09-30
-**Current Phase**: Phase 1 (MVP Development)
+**Last Updated**: 2026-01-21
+**Deployment**: GitHub Pages (auto-deploy on main push)
+**Contact**: GitHub Issues for bug reports and discussions
