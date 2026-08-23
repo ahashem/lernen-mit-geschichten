@@ -91,7 +91,7 @@ const description = hero.text;
                   storyId={story.data.storyId}
                   estimatedReadTime={story.data.estimatedReadTime}
                   locale={locale}
-                  slug={story.slug.replace(`${locale}/`, '')}
+                  slug={story.id.replace(`${locale}/`, '')}
                   isInteractive={story.data.storyFormat === 'interactive'}
                   provider={story.data.provider}
                   providerUrl={story.data.providerUrl}

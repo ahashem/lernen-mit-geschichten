@@ -1,4 +1,5 @@
 import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 const storyPageSchema = z.object({
   text: z.string(),
@@ -14,7 +15,7 @@ const quizQuestionSchema = z.object({
 });
 
 const storiesCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/stories' }),
   schema: z.object({
     title: z.string(),
     titleAr: z.string().optional(),

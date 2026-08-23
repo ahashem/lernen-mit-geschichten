@@ -10,8 +10,8 @@ export const GET: APIRoute = async () => {
   const storyMap = new Map<string, Set<string>>();
 
   stories.forEach(story => {
-    const slug = story.slug.replace(/^[a-z]{2}\//, '');
-    const lang = story.slug.split('/')[0];
+    const slug = story.id.replace(/^[a-z]{2}\//, '');
+    const lang = story.id.split('/')[0];
 
     if (!storyMap.has(slug)) {
       storyMap.set(slug, new Set());
