@@ -1,0 +1,387 @@
+---
+/**
+ * Reading Streak Hero Section
+ * Displays streak, today's stats, and motivational message
+ */
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'de' } = Astro.props;
+---
+
+<div class="reading-streak-hero">
+  <div class="hero-content">
+    <div class="greeting-section">
+      <h1 class="hero-greeting">
+        <span class="wave-emoji">👋</span>
+        <span class="greeting-text">Hallo! Lass uns lesen!</span>
+      </h1>
+      <p class="hero-subtitle" data-total-stories>
+        <span class="stories-count">25</span> spannende Geschichten warten auf dich!
+      </p>
+    </div>
+
+    <div class="stats-row">
+      <!-- Reading Streak -->
+      <div class="stat-card streak-card">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-content">
+          <div class="stat-value" data-streak-count>0</div>
+          <div class="stat-label">Tage Lese-Serie!</div>
+        </div>
+      </div>
+
+      <!-- Stories Read Today -->
+      <div class="stat-card">
+        <div class="stat-icon">📚</div>
+        <div class="stat-content">
+          <div class="stat-value" data-today-stories>0</div>
+          <div class="stat-label">Heute gelesen</div>
+        </div>
+      </div>
+
+      <!-- Stars Earned Today -->
+      <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-content">
+          <div class="stat-value" data-today-stars>0</div>
+          <div class="stat-label">Sterne heute</div>
+        </div>
+      </div>
+
+      <!-- Total Stars -->
+      <div class="stat-card">
+        <div class="stat-icon">🌟</div>
+        <div class="stat-content">
+          <div class="stat-value" data-total-stars>0</div>
+          <div class="stat-label">Gesamt Sterne</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="motivational-message">
+      <p class="motivation-text" data-motivation>
+        Jede Geschichte macht dich schlauer! 🧠
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .reading-streak-hero {
+    width: 100%;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 24px;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+  }
+
+  .hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .greeting-section {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .hero-greeting {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .wave-emoji {
+    font-size: 3.5rem;
+    display: inline-block;
+    animation: wave 2s ease-in-out infinite;
+    transform-origin: 70% 70%;
+  }
+
+  @keyframes wave {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    10%,
+    30% {
+      transform: rotate(14deg);
+    }
+    20%,
+    40% {
+      transform: rotate(-8deg);
+    }
+    50% {
+      transform: rotate(14deg);
+    }
+    60% {
+      transform: rotate(0deg);
+    }
+  }
+
+  .greeting-text {
+    background: linear-gradient(to right, #fff 0%, #FFD93D 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-subtitle {
+    font-size: 1.5rem;
+    opacity: 0.95;
+    margin: 0;
+  }
+
+  .stories-count {
+    font-weight: 800;
+    font-size: 2rem;
+    color: #FFD93D;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-4px);
+  }
+
+  .streak-card {
+    border-color: #FF6B35;
+    background: rgba(255, 107, 53, 0.2);
+  }
+
+  .stat-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+
+  .stat-content {
+    flex: 1;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    font-weight: 500;
+  }
+
+  .motivational-message {
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .motivation-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.95;
+      transform: scale(1.02);
+    }
+  }
+
+  /* Tablet */
+  @media (max-width: 1024px) {
+    .hero-greeting {
+      font-size: 2.5rem;
+    }
+
+    .wave-emoji {
+      font-size: 3rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+    }
+
+    .stories-count {
+      font-size: 1.75rem;
+    }
+
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .reading-streak-hero {
+      padding: 2rem 1rem;
+      border-radius: 16px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-greeting {
+      font-size: 2rem;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .wave-emoji {
+      font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+    }
+
+    .stories-count {
+      font-size: 1.5rem;
+    }
+
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+
+    .stat-card {
+      padding: 1rem;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+    }
+
+    .motivational-message {
+      padding: 1rem;
+    }
+
+    .motivation-text {
+      font-size: 1rem;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .wave-emoji,
+    .motivation-text {
+      animation: none;
+    }
+
+    .stat-card:hover {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  import { ReadingTrackerUtil } from '../utils/reading-tracker';
+
+  function updateHeroStats() {
+    const stats = ReadingTrackerUtil.getDashboardStats();
+
+    // Update streak
+    const streakEl = document.querySelector('[data-streak-count]');
+    if (streakEl) {
+      streakEl.textContent = stats.readingStreak.toString();
+    }
+
+    // Update today's stories
+    const todayStoriesEl = document.querySelector('[data-today-stories]');
+    if (todayStoriesEl) {
+      todayStoriesEl.textContent = stats.todayStoriesRead.toString();
+    }
+
+    // Update today's stars
+    const todayStarsEl = document.querySelector('[data-today-stars]');
+    if (todayStarsEl) {
+      todayStarsEl.textContent = stats.todayStarsEarned.toString();
+    }
+
+    // Update total stars
+    const totalStarsEl = document.querySelector('[data-total-stars]');
+    if (totalStarsEl) {
+      totalStarsEl.textContent = stats.totalStars.toString();
+    }
+
+    // Rotate motivational messages
+    rotateMotivation();
+  }
+
+  function rotateMotivation() {
+    const messages = [
+      'Jede Geschichte macht dich schlauer! 🧠',
+      'Lesen macht Spaß und hilft dir lernen! 📖',
+      'Welches Abenteuer erlebst du heute? 🗺️',
+      'Deine Freunde warten in den Geschichten! 🐻🦩',
+      'Du bist ein toller Leser! 🌟',
+      'Noch eine Geschichte? Los gehts! 🚀',
+    ];
+
+    const motivationEl = document.querySelector('[data-motivation]');
+    if (motivationEl) {
+      const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+      motivationEl.textContent = randomMessage;
+    }
+  }
+
+  // Update on load
+  if (typeof window !== 'undefined') {
+    updateHeroStats();
+
+    // Listen for events
+    window.addEventListener('story-completed', updateHeroStats);
+    window.addEventListener('quiz-completed', updateHeroStats);
+    window.addEventListener('storage', updateHeroStats);
+
+    // Rotate motivation every 10 seconds
+    setInterval(rotateMotivation, 10000);
+  }
+</script>

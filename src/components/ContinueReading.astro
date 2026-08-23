@@ -1,0 +1,307 @@
+---
+/**
+ * Continue Reading Section
+ * Shows stories in progress with completion status
+ */
+import type { Locale } from '../utils/i18n';
+import StoryCard from './StoryCard.astro';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'de' } = Astro.props;
+---
+
+<section class="continue-reading" id="continue-reading">
+  <div class="section-header">
+    <h2 class="section-title">📖 Weiter lesen</h2>
+    <p class="section-subtitle">Mache deine Geschichten fertig</p>
+  </div>
+
+  <div class="stories-container" data-in-progress-stories>
+    <!-- Populated by client-side script -->
+    <div class="empty-state">
+      <div class="empty-icon">📚</div>
+      <h3 class="empty-title">Keine Geschichten in Arbeit</h3>
+      <p class="empty-text">Starte deine erste Geschichte unten!</p>
+      <a href="#stories-section" class="start-button">
+        Geschichten entdecken
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .continue-reading {
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #333;
+    margin: 0 0 0.5rem;
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0;
+  }
+
+  .stories-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 20px;
+    border: 3px dashed #667eea;
+  }
+
+  .empty-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .empty-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 0.5rem;
+  }
+
+  .empty-text {
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0 0 1.5rem;
+  }
+
+  .start-button {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  .start-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+  }
+
+  .start-button:active {
+    transform: translateY(0);
+  }
+
+  .in-progress-card {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+  }
+
+  .in-progress-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-emoji {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    color: #333;
+  }
+
+  .progress-bar-container {
+    margin: 1rem 0;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: #666;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #e0e0e0;
+    border-radius: 50px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%);
+    border-radius: 50px;
+    transition: width 0.5s ease;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  }
+
+  .continue-button {
+    display: block;
+    width: 100%;
+    padding: 0.875rem;
+    background: linear-gradient(135deg, #FF9F40 0%, #FF6B35 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+  }
+
+  .continue-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(255, 159, 64, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 1.75rem;
+    }
+
+    .section-subtitle {
+      font-size: 1rem;
+    }
+
+    .stories-container {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding: 0 1rem;
+    }
+
+    .empty-state {
+      padding: 3rem 1.5rem;
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+    }
+
+    .empty-title {
+      font-size: 1.25rem;
+    }
+
+    .empty-text {
+      font-size: 1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .empty-icon {
+      animation: none;
+    }
+
+    .in-progress-card:hover,
+    .continue-button:hover {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  import { ReadingTrackerUtil } from '../utils/reading-tracker';
+
+  async function loadInProgressStories() {
+    const container = document.querySelector('[data-in-progress-stories]');
+    if (!container) return;
+
+    const inProgress = ReadingTrackerUtil.getInProgressStories();
+
+    if (inProgress.length === 0) {
+      // Show empty state (already in HTML)
+      return;
+    }
+
+    // Hide empty state
+    const emptyState = container.querySelector('.empty-state');
+    if (emptyState) {
+      emptyState.remove();
+    }
+
+    // Create cards for in-progress stories
+    inProgress.forEach((story) => {
+      const card = document.createElement('div');
+      card.className = 'in-progress-card';
+
+      const progressPercent = Math.round(story.progress);
+
+      card.innerHTML = `
+        <div class="card-emoji">📖</div>
+        <h3 class="card-title">Geschichte ${story.storyId}</h3>
+        <div class="progress-bar-container">
+          <div class="progress-label">
+            <span>Fortschritt</span>
+            <span>${progressPercent}% gelesen</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${progressPercent}%"></div>
+          </div>
+        </div>
+        <button class="continue-button" data-story-id="${story.storyId}">
+          Weiterlesen
+        </button>
+      `;
+
+      container.appendChild(card);
+
+      // Add click handler
+      const button = card.querySelector('.continue-button');
+      button?.addEventListener('click', () => {
+        window.location.href = `/stories/${story.storyId}`;
+      });
+    });
+  }
+
+  // Load on page load
+  if (typeof window !== 'undefined') {
+    loadInProgressStories();
+  }
+</script>

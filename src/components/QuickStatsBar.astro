@@ -1,0 +1,308 @@
+---
+/**
+ * Quick Stats Bar - Floating stats card at top
+ * Shows stars, stories read, level, and today's progress
+ */
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'de' } = Astro.props;
+---
+
+<div class="quick-stats-bar">
+  <div class="stats-container">
+    <div class="stat-item">
+      <span class="stat-icon">⭐</span>
+      <div class="stat-content">
+        <span class="stat-value" data-total-stars>0</span>
+        <span class="stat-label">Sterne</span>
+      </div>
+    </div>
+
+    <div class="stat-divider"></div>
+
+    <div class="stat-item">
+      <span class="stat-icon">📚</span>
+      <div class="stat-content">
+        <span class="stat-value" data-stories-read>0</span>
+        <span class="stat-label">Gelesen</span>
+      </div>
+    </div>
+
+    <div class="stat-divider"></div>
+
+    <div class="stat-item">
+      <span class="stat-icon">🎖️</span>
+      <div class="stat-content">
+        <span class="stat-value" data-user-level>1</span>
+        <span class="stat-label">Level</span>
+      </div>
+    </div>
+
+    <div class="stat-divider"></div>
+
+    <div class="stat-item highlight">
+      <span class="stat-icon">🌟</span>
+      <div class="stat-content">
+        <span class="stat-value" data-today-progress>+0</span>
+        <span class="stat-label">Heute</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .quick-stats-bar {
+    position: sticky;
+    top: 80px;
+    z-index: 100;
+    margin: 1rem auto 2rem;
+    max-width: 800px;
+    padding: 0 1rem;
+  }
+
+  .stats-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: white;
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: transform 0.2s ease;
+  }
+
+  .stat-item:hover {
+    transform: scale(1.05);
+  }
+
+  .stat-item.highlight {
+    background: linear-gradient(135deg, #FFD93D 0%, #FFAA00 100%);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    color: #333;
+  }
+
+  .stat-icon {
+    font-size: 1.75rem;
+    line-height: 1;
+  }
+
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #333;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #666;
+    line-height: 1;
+  }
+
+  .stat-item.highlight .stat-label {
+    color: #555;
+  }
+
+  .stat-divider {
+    width: 2px;
+    height: 40px;
+    background: linear-gradient(to bottom, transparent 0%, #e0e0e0 50%, transparent 100%);
+  }
+
+  /* Tablet */
+  @media (max-width: 1024px) {
+    .quick-stats-bar {
+      top: 70px;
+    }
+
+    .stats-container {
+      padding: 0.875rem 1.5rem;
+    }
+
+    .stat-icon {
+      font-size: 1.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.1rem;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .quick-stats-bar {
+      top: 60px;
+      margin: 0.5rem auto 1.5rem;
+      padding: 0 0.5rem;
+    }
+
+    .stats-container {
+      padding: 0.75rem 1rem;
+      border-radius: 40px;
+    }
+
+    .stat-item {
+      gap: 0.5rem;
+    }
+
+    .stat-icon {
+      font-size: 1.25rem;
+    }
+
+    .stat-content {
+      gap: 0.1rem;
+    }
+
+    .stat-value {
+      font-size: 1rem;
+    }
+
+    .stat-label {
+      font-size: 0.625rem;
+    }
+
+    .stat-divider {
+      height: 30px;
+    }
+
+    .stat-item.highlight {
+      padding: 0.375rem 0.75rem;
+    }
+  }
+
+  /* Very small mobile */
+  @media (max-width: 480px) {
+    .stats-container {
+      gap: 0.25rem;
+      padding: 0.625rem 0.75rem;
+    }
+
+    .stat-item {
+      flex-direction: column;
+      gap: 0.25rem;
+      text-align: center;
+    }
+
+    .stat-divider {
+      display: none;
+    }
+
+    .stat-label {
+      display: none;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .stat-item:hover {
+      transform: none;
+    }
+  }
+
+  /* High contrast */
+  @media (prefers-contrast: high) {
+    .stats-container {
+      border: 3px solid #333;
+    }
+
+    .stat-divider {
+      background: #333;
+    }
+  }
+</style>
+
+<script>
+  import { ReadingTrackerUtil } from '../utils/reading-tracker';
+
+  function updateQuickStats() {
+    const stats = ReadingTrackerUtil.getDashboardStats();
+
+    // Update total stars
+    const totalStarsEl = document.querySelector('[data-total-stars]');
+    if (totalStarsEl) {
+      totalStarsEl.textContent = stats.totalStars.toString();
+    }
+
+    // Update stories read
+    const storiesReadEl = document.querySelector('[data-stories-read]');
+    if (storiesReadEl) {
+      const total = stats.completedStories;
+      const totalStories = stats.totalStories;
+      storiesReadEl.textContent = `${total}/${totalStories}`;
+    }
+
+    // Calculate level based on stars (100 stars = 1 level)
+    const userLevelEl = document.querySelector('[data-user-level]');
+    if (userLevelEl) {
+      const level = Math.floor(stats.totalStars / 100) + 1;
+      userLevelEl.textContent = level.toString();
+    }
+
+    // Update today's progress
+    const todayProgressEl = document.querySelector('[data-today-progress]');
+    if (todayProgressEl) {
+      const progress = stats.todayStarsEarned;
+      todayProgressEl.textContent = `+${progress}`;
+
+      // Add pulse animation if progress > 0
+      if (progress > 0) {
+        todayProgressEl.parentElement?.classList.add('pulse-animation');
+      }
+    }
+  }
+
+  // Update on load
+  if (typeof window !== 'undefined') {
+    updateQuickStats();
+
+    // Listen for updates
+    window.addEventListener('story-completed', updateQuickStats);
+    window.addEventListener('quiz-completed', updateQuickStats);
+    window.addEventListener('storage', updateQuickStats);
+
+    // Refresh every 30 seconds
+    setInterval(updateQuickStats, 30000);
+  }
+</script>
+
+<style is:global>
+  .pulse-animation {
+    animation: pulse-glow 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%,
+    100% {
+      box-shadow: 0 0 10px rgba(255, 217, 61, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(255, 217, 61, 0.8);
+    }
+  }
+</style>

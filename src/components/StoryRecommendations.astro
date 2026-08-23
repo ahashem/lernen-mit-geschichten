@@ -1,0 +1,378 @@
+---
+/**
+ * Story Recommendations Engine
+ * Smart recommendations based on reading history
+ */
+import type { Locale } from '../utils/i18n';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'de' } = Astro.props;
+
+// Get all German stories for recommendations
+const allStories = await getCollection('stories', ({ id }) => id.startsWith('de/'));
+---
+
+<section class="story-recommendations" id="recommendations">
+  <div class="section-header">
+    <h2 class="section-title">✨ Für dich empfohlen</h2>
+    <p class="section-subtitle">Geschichten, die dir gefallen könnten</p>
+  </div>
+
+  <div class="recommendations-grid" data-recommendations-grid>
+    <!-- Populated by client-side script -->
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Empfehlungen werden geladen...</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .story-recommendations {
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #333;
+    margin: 0 0 0.5rem;
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0;
+  }
+
+  .recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .loading-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+  }
+
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .recommendation-card {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+    border: 3px solid transparent;
+  }
+
+  .recommendation-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    border-color: #667eea;
+  }
+
+  .recommendation-badge {
+    position: absolute;
+    top: -12px;
+    right: 1rem;
+    background: linear-gradient(135deg, #FFD93D 0%, #FFAA00 100%);
+    color: #333;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(255, 217, 61, 0.4);
+  }
+
+  .card-emoji {
+    font-size: 4rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    color: #333;
+    text-align: center;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    color: #666;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .reason-box {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e3e7f0 100%);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    border-left: 4px solid #667eea;
+  }
+
+  .reason-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #667eea;
+    margin: 0 0 0.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .reason-text {
+    font-size: 0.875rem;
+    color: #555;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .read-button {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .read-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 1.75rem;
+    }
+
+    .recommendations-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding: 0 1rem;
+    }
+
+    .card-emoji {
+      font-size: 3rem;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .loading-spinner {
+      animation: none;
+    }
+
+    .recommendation-card:hover,
+    .read-button:hover {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  import { ReadingTrackerUtil } from '../utils/reading-tracker';
+  import { ProgressTracker } from '../utils/progress-tracker';
+
+  interface Story {
+    id: string;
+    slug: string;
+    data: {
+      title: string;
+      emoji: string;
+      storyId: string;
+      skills: string[];
+      characterType: string;
+      difficulty: string;
+      estimatedReadTime: number;
+    };
+  }
+
+  function getRecommendations(allStories: Story[]): { story: Story; reason: string }[] {
+    const stats = ProgressTracker.getProgressStats();
+    const readStoryIds = new Set(stats.recentStories.map((s) => s.storyId));
+
+    // Get unread stories
+    const unreadStories = allStories.filter(
+      (story) => !readStoryIds.has(story.data.storyId)
+    );
+
+    if (unreadStories.length === 0) {
+      return allStories.slice(0, 3).map((story) => ({
+        story,
+        reason: 'Eine tolle Geschichte zum Wiederlesen!',
+      }));
+    }
+
+    const recommendations: { story: Story; reason: string; score: number }[] = [];
+
+    unreadStories.forEach((story) => {
+      let score = 0;
+      let reason = '';
+
+      // Favorite character match (highest weight)
+      if (story.data.characterType === stats.favoriteCharacter) {
+        score += 10;
+        reason = `Weil du ${stats.favoriteCharacter}-Geschichten magst!`;
+      }
+
+      // Skill match (medium weight)
+      const matchingSkills = story.data.skills.filter((skill) =>
+        stats.skillsEncountered.has(skill)
+      );
+      if (matchingSkills.length > 0) {
+        score += matchingSkills.length * 3;
+        if (!reason) reason = 'Perfekt für deine Fähigkeiten!';
+      }
+
+      // Reading time match (prefer similar to average)
+      const avgReadTime =
+        stats.totalReadingTime / Math.max(1, stats.totalStoriesRead);
+      const timeDiff = Math.abs(story.data.estimatedReadTime - avgReadTime);
+      if (timeDiff < 2) {
+        score += 5;
+        if (!reason) reason = 'Genau die richtige Länge für dich!';
+      }
+
+      // New skills to explore
+      const newSkills = story.data.skills.filter(
+        (skill) => !stats.skillsEncountered.has(skill)
+      );
+      if (newSkills.length > 0) {
+        score += 2;
+        if (!reason) reason = 'Lerne etwas Neues!';
+      }
+
+      // Time of day recommendation
+      const hour = new Date().getHours();
+      if (hour < 12 && story.data.difficulty === 'beginner') {
+        score += 3;
+        if (!reason) reason = 'Perfekt für den Morgen!';
+      } else if (hour >= 18 && story.data.estimatedReadTime <= 3) {
+        score += 3;
+        if (!reason) reason = 'Ideal als Gute-Nacht-Geschichte!';
+      }
+
+      // Random element
+      score += Math.random() * 5;
+
+      // Default reason
+      if (!reason) reason = 'Eine spannende neue Geschichte!';
+
+      recommendations.push({ story, reason, score });
+    });
+
+    // Sort by score and take top 3
+    return recommendations
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map(({ story, reason }) => ({ story, reason }));
+  }
+
+  async function loadRecommendations() {
+    const grid = document.querySelector('[data-recommendations-grid]');
+    if (!grid) return;
+
+    try {
+      // Get stories from data attribute (passed from server)
+      const storiesData = (window as any).__STORIES_DATA__;
+      if (!storiesData) return;
+
+      const recommendations = getRecommendations(storiesData);
+
+      // Clear loading state
+      grid.innerHTML = '';
+
+      // Create recommendation cards
+      recommendations.forEach(({ story, reason }) => {
+        const card = document.createElement('a');
+        card.className = 'recommendation-card';
+        card.href = `/stories/${story.data.storyId}`;
+
+        const badges = [];
+        if (story.data.difficulty === 'beginner') badges.push('Leicht');
+        if (story.data.estimatedReadTime <= 3) badges.push('Kurz');
+
+        card.innerHTML = `
+          ${badges.length > 0 ? `<div class="recommendation-badge">${badges.join(' • ')}</div>` : ''}
+          <div class="card-emoji">${story.data.emoji}</div>
+          <h3 class="card-title">${story.data.title}</h3>
+          <div class="card-meta">
+            <span class="meta-item">⏱️ ${story.data.estimatedReadTime} Min</span>
+            <span class="meta-item">🎯 ${story.data.skills.length} Skills</span>
+          </div>
+          <div class="reason-box">
+            <div class="reason-title">Warum diese Geschichte?</div>
+            <p class="reason-text">${reason}</p>
+          </div>
+          <button class="read-button">Geschichte lesen</button>
+        `;
+
+        grid.appendChild(card);
+      });
+    } catch (error) {
+      console.error('Error loading recommendations:', error);
+      grid.innerHTML = '<p class="loading-state">Empfehlungen konnten nicht geladen werden.</p>';
+    }
+  }
+
+  // Load on page load
+  if (typeof window !== 'undefined') {
+    loadRecommendations();
+  }
+</script>

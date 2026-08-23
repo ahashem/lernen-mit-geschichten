@@ -1,0 +1,1139 @@
+---
+/**
+ * Shadow Matching Game Component
+ * Drag-and-drop interface for matching characters to their shadows
+ */
+
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  locale: Locale;
+  storyId?: string;
+}
+
+const { locale = 'de', storyId } = Astro.props;
+---
+
+<div class="shadow-matching-game" data-locale={locale} data-story-id={storyId}>
+  <!-- Game Header -->
+  <div class="game-header">
+    <div class="game-info">
+      <div class="timer" id="timer" style="display: none;">
+        <span class="timer-icon">⏱️</span>
+        <span class="timer-value">00:00</span>
+      </div>
+      <div class="score-info">
+        <div class="matched-count">
+          <span class="label" data-i18n="matches">Pairs</span>:
+          <span class="value" id="matched-count">0</span>/<span id="total-pairs">0</span>
+        </div>
+        <div class="attempts-count">
+          <span class="label" data-i18n="attempts">Attempts</span>:
+          <span class="value" id="attempts-count">0</span>
+        </div>
+      </div>
+    </div>
+    <div class="game-controls">
+      <button class="btn-icon" id="hint-btn" title="Hint">
+        💡 <span data-i18n="hint">Hint</span>
+      </button>
+      <button class="btn-icon" id="settings-btn" title="Settings">
+        ⚙️
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings Panel -->
+  <div class="settings-panel" id="settings-panel" style="display: none;">
+    <h3 data-i18n="settings">Settings</h3>
+    <div class="setting-item">
+      <label>
+        <input type="checkbox" id="timer-toggle" checked />
+        <span data-i18n="timerEnabled">Enable Timer</span>
+      </label>
+    </div>
+    <div class="setting-item">
+      <label>
+        <input type="checkbox" id="sound-toggle" checked />
+        <span data-i18n="soundEffectsEnabled">Sound Effects</span>
+      </label>
+    </div>
+    <div class="setting-item">
+      <label for="difficulty-select" data-i18n="selectDifficulty">Difficulty</label>
+      <select id="difficulty-select">
+        <option value="easy" data-i18n="easy">Easy (2 pairs)</option>
+        <option value="medium" selected data-i18n="medium">Medium (4 pairs)</option>
+        <option value="hard" data-i18n="hard">Hard (6 pairs)</option>
+      </select>
+    </div>
+    <button class="btn-primary" id="new-game-btn" data-i18n="startNewGame">New Game</button>
+  </div>
+
+  <!-- Game Board -->
+  <div class="game-board">
+    <!-- Shadows Column (Left) -->
+    <div class="shadows-column">
+      <h3 class="column-title" data-i18n="shadows">Shadows</h3>
+      <div class="shadows-container" id="shadows-container">
+        <!-- Shadows will be dynamically inserted -->
+      </div>
+    </div>
+
+    <!-- Characters Column (Right) -->
+    <div class="characters-column">
+      <h3 class="column-title" data-i18n="characters">Characters</h3>
+      <div class="characters-container" id="characters-container">
+        <!-- Characters will be dynamically inserted -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Completion Modal -->
+  <div class="modal" id="completion-modal" style="display: none;">
+    <div class="modal-content celebration">
+      <div class="confetti-container" id="confetti-container"></div>
+      <h2 data-i18n="congratulations">Congratulations!</h2>
+      <div class="stars-display" id="stars-display">
+        ⭐⭐⭐
+      </div>
+      <div class="result-stats">
+        <div class="stat">
+          <span class="stat-label" data-i18n="time">Time</span>:
+          <span class="stat-value" id="result-time">00:00</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label" data-i18n="attempts">Attempts</span>:
+          <span class="stat-value" id="result-attempts">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label" data-i18n="hintsUsed">Hints</span>:
+          <span class="stat-value" id="result-hints">0</span>
+        </div>
+      </div>
+      <div class="xp-earned">
+        <span data-i18n="xpEarned">XP Earned</span>: <strong id="xp-value">0</strong> XP
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" id="play-again-btn" data-i18n="playAgain">Play Again</button>
+        <button class="btn-secondary" id="close-modal-btn" data-i18n="close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hint Tooltip -->
+  <div class="hint-tooltip" id="hint-tooltip" style="display: none;">
+    <span data-i18n="hintMessage">This character goes here!</span>
+  </div>
+</div>
+
+<style>
+  .shadow-matching-game {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Noto Sans', sans-serif;
+  }
+
+  /* Header */
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    color: white;
+  }
+
+  .game-info {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .timer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .score-info {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 1.1rem;
+  }
+
+  .matched-count,
+  .attempts-count {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .value {
+    font-weight: bold;
+    color: #FFD93D;
+  }
+
+  .game-controls {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .btn-icon {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-icon:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+
+  /* Settings Panel */
+  .settings-panel {
+    background: white;
+    border: 2px solid #667eea;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .settings-panel h3 {
+    margin-top: 0;
+    color: #667eea;
+  }
+
+  .setting-item {
+    margin-bottom: 1rem;
+  }
+
+  .setting-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .setting-item select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Game Board */
+  .game-board {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    min-height: 600px;
+  }
+
+  .column-title {
+    text-align: center;
+    color: #667eea;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+
+  .shadows-container,
+  .characters-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: #f9f9f9;
+    border-radius: 12px;
+    min-height: 500px;
+  }
+
+  /* Shadow Item */
+  .shadow-item {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    background: white;
+    border: 3px dashed #ddd;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .shadow-item.drop-target {
+    border-color: #667eea;
+    background: #f0f4ff;
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+  }
+
+  .shadow-item.matched {
+    border-color: #4CAF50;
+    background: #e8f5e9;
+  }
+
+  .shadow-svg {
+    width: 100px;
+    height: 100px;
+    opacity: 0.6;
+  }
+
+  /* Character Item */
+  .character-item {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    background: white;
+    border: 3px solid #667eea;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    transition: all 0.3s ease;
+    touch-action: none;
+  }
+
+  .character-item:active {
+    cursor: grabbing;
+  }
+
+  .character-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+  }
+
+  .character-item.matched {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: #ccc;
+  }
+
+  .character-emoji {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .character-name {
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+  }
+
+  /* Drag Preview */
+  .drag-preview {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+
+  /* Buttons */
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-secondary {
+    background: #e0e0e0;
+    color: #333;
+  }
+
+  .btn-secondary:hover {
+    background: #d0d0d0;
+  }
+
+  /* Modal */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 3rem;
+    border-radius: 20px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-content.celebration {
+    animation: celebrate 0.6s ease-out;
+  }
+
+  @keyframes celebrate {
+    0% {
+      transform: scale(0.5) rotate(-10deg);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1) rotate(5deg);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+
+  .stars-display {
+    font-size: 3rem;
+    margin: 1.5rem 0;
+    animation: starPulse 1s infinite alternate;
+  }
+
+  @keyframes starPulse {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.1);
+    }
+  }
+
+  .result-stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 2rem 0;
+    gap: 1rem;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #667eea;
+  }
+
+  .xp-earned {
+    font-size: 1.2rem;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: linear-gradient(135deg, #FFD93D 0%, #FF9F40 100%);
+    border-radius: 8px;
+    color: #333;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  /* Hint Tooltip */
+  .hint-tooltip {
+    position: absolute;
+    background: #FFD93D;
+    color: #333;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 1500;
+    animation: hintBounce 0.6s ease-out;
+  }
+
+  @keyframes hintBounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Confetti */
+  .confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #FFD93D;
+    animation: confettiFall 3s linear infinite;
+  }
+
+  @keyframes confettiFall {
+    to {
+      transform: translateY(100vh) rotate(360deg);
+      opacity: 0;
+    }
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .shadow-matching-game {
+      padding: 1rem;
+    }
+
+    .game-board {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .game-header {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .game-info {
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .shadows-container,
+    .characters-container {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .shadow-item,
+    .character-item {
+      width: 100%;
+      height: 120px;
+    }
+
+    .character-emoji {
+      font-size: 3rem;
+    }
+  }
+
+  /* Accessibility */
+  .character-item:focus,
+  .shadow-item:focus {
+    outline: 3px solid #667eea;
+    outline-offset: 2px;
+  }
+
+  /* Animations */
+  .pulse {
+    animation: pulse 0.6s ease-in-out;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+  }
+
+  .shake {
+    animation: shake 0.4s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-10px);
+    }
+    75% {
+      transform: translateX(10px);
+    }
+  }
+</style>
+
+<script>
+  import {
+    type GameState,
+    type Character,
+    initializeGame,
+    attemptMatch,
+    calculateResult,
+    updateStats,
+    generateShadow,
+    showHint as showHintUtil,
+    shuffleArray,
+    type Difficulty,
+  } from '../utils/shadow-matching';
+
+  // Game state
+  let gameState: GameState | null = null;
+  let timerInterval: number | null = null;
+  let draggedCharacterId: string | null = null;
+
+  // DOM elements
+  const shadowsContainer = document.getElementById('shadows-container')!;
+  const charactersContainer = document.getElementById('characters-container')!;
+  const matchedCountEl = document.getElementById('matched-count')!;
+  const totalPairsEl = document.getElementById('total-pairs')!;
+  const attemptsCountEl = document.getElementById('attempts-count')!;
+  const timerEl = document.getElementById('timer')!;
+  const timerValueEl = timerEl.querySelector('.timer-value')!;
+  const settingsPanel = document.getElementById('settings-panel')!;
+  const completionModal = document.getElementById('completion-modal')!;
+  const hintTooltip = document.getElementById('hint-tooltip')!;
+
+  // Buttons
+  const settingsBtn = document.getElementById('settings-btn')!;
+  const hintBtn = document.getElementById('hint-btn')!;
+  const newGameBtn = document.getElementById('new-game-btn')!;
+  const playAgainBtn = document.getElementById('play-again-btn')!;
+  const closeModalBtn = document.getElementById('close-modal-btn')!;
+
+  // Settings
+  const timerToggle = document.getElementById('timer-toggle') as HTMLInputElement;
+  const soundToggle = document.getElementById('sound-toggle') as HTMLInputElement;
+  const difficultySelect = document.getElementById('difficulty-select') as HTMLSelectElement;
+
+  /**
+   * Initialize new game
+   */
+  function startNewGame() {
+    const difficulty = difficultySelect.value as Difficulty;
+    const timerEnabled = timerToggle.checked;
+    const soundEnabled = soundToggle.checked;
+
+    gameState = initializeGame(difficulty, timerEnabled, soundEnabled);
+
+    renderGame();
+    updateUI();
+
+    if (timerEnabled) {
+      startTimer();
+      timerEl.style.display = 'flex';
+    } else {
+      timerEl.style.display = 'none';
+    }
+
+    settingsPanel.style.display = 'none';
+  }
+
+  /**
+   * Render game board
+   */
+  function renderGame() {
+    if (!gameState) return;
+
+    // Clear containers
+    shadowsContainer.innerHTML = '';
+    charactersContainer.innerHTML = '';
+
+    // Render shadows (in order)
+    gameState.pairs.forEach((pair, index) => {
+      const shadowEl = createShadowElement(pair.shadowId, pair.character, index);
+      shadowsContainer.appendChild(shadowEl);
+    });
+
+    // Render characters (shuffled)
+    const shuffledPairs = shuffleArray([...gameState.pairs]);
+    shuffledPairs.forEach((pair) => {
+      const characterEl = createCharacterElement(pair.character);
+      charactersContainer.appendChild(characterEl);
+    });
+  }
+
+  /**
+   * Create shadow element
+   */
+  function createShadowElement(
+    shadowId: string,
+    character: Character,
+    index: number
+  ): HTMLElement {
+    const div = document.createElement('div');
+    div.className = 'shadow-item';
+    div.dataset.shadowId = shadowId;
+    div.dataset.characterId = character.id;
+    div.dataset.index = String(index);
+
+    const svg = generateShadow(character);
+    div.innerHTML = svg;
+
+    // Drag and drop events
+    div.addEventListener('dragover', handleDragOver);
+    div.addEventListener('drop', handleDrop);
+    div.addEventListener('dragleave', handleDragLeave);
+
+    // Touch events for mobile
+    div.addEventListener('touchmove', handleTouchMove);
+    div.addEventListener('touchend', handleTouchEnd);
+
+    return div;
+  }
+
+  /**
+   * Create character element
+   */
+  function createCharacterElement(character: Character): HTMLElement {
+    const div = document.createElement('div');
+    div.className = 'character-item';
+    div.draggable = true;
+    div.dataset.characterId = character.id;
+    div.tabIndex = 0;
+
+    div.innerHTML = `
+      <div class="character-emoji">${character.emoji}</div>
+      <div class="character-name">${character.name.de}</div>
+    `;
+
+    // Drag events
+    div.addEventListener('dragstart', handleDragStart);
+    div.addEventListener('dragend', handleDragEnd);
+
+    // Touch events for mobile
+    div.addEventListener('touchstart', handleTouchStart);
+
+    // Keyboard support
+    div.addEventListener('keydown', handleKeyDown);
+
+    return div;
+  }
+
+  /**
+   * Drag start handler
+   */
+  function handleDragStart(e: DragEvent) {
+    const target = e.currentTarget as HTMLElement;
+    draggedCharacterId = target.dataset.characterId || null;
+    target.classList.add('dragging');
+
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move';
+    }
+  }
+
+  /**
+   * Drag end handler
+   */
+  function handleDragEnd(e: DragEvent) {
+    const target = e.currentTarget as HTMLElement;
+    target.classList.remove('dragging');
+    draggedCharacterId = null;
+
+    // Remove drop target highlights
+    document.querySelectorAll('.shadow-item.drop-target').forEach((el) => {
+      el.classList.remove('drop-target');
+    });
+  }
+
+  /**
+   * Drag over handler
+   */
+  function handleDragOver(e: DragEvent) {
+    e.preventDefault();
+    const target = e.currentTarget as HTMLElement;
+
+    if (!target.classList.contains('matched')) {
+      target.classList.add('drop-target');
+    }
+  }
+
+  /**
+   * Drag leave handler
+   */
+  function handleDragLeave(e: DragEvent) {
+    const target = e.currentTarget as HTMLElement;
+    target.classList.remove('drop-target');
+  }
+
+  /**
+   * Drop handler
+   */
+  function handleDrop(e: DragEvent) {
+    e.preventDefault();
+    const shadowEl = e.currentTarget as HTMLElement;
+    shadowEl.classList.remove('drop-target');
+
+    if (!gameState || !draggedCharacterId) return;
+
+    const shadowId = shadowEl.dataset.shadowId!;
+    const result = attemptMatch(gameState, draggedCharacterId, shadowId);
+
+    if (result.success) {
+      handleSuccessfulMatch(shadowEl, draggedCharacterId);
+    } else {
+      handleFailedMatch(shadowEl);
+    }
+
+    updateUI();
+    checkGameCompletion();
+  }
+
+  /**
+   * Handle successful match
+   */
+  function handleSuccessfulMatch(shadowEl: HTMLElement, characterId: string) {
+    shadowEl.classList.add('matched', 'pulse');
+
+    // Find and mark character as matched
+    const characterEl = document.querySelector(
+      `.character-item[data-character-id="${characterId}"]`
+    ) as HTMLElement;
+    if (characterEl) {
+      characterEl.classList.add('matched');
+      characterEl.draggable = false;
+    }
+
+    // Play success sound
+    if (gameState?.soundEnabled) {
+      playSound('success');
+    }
+
+    // Remove animation class after animation
+    setTimeout(() => {
+      shadowEl.classList.remove('pulse');
+    }, 600);
+  }
+
+  /**
+   * Handle failed match
+   */
+  function handleFailedMatch(shadowEl: HTMLElement) {
+    shadowEl.classList.add('shake');
+
+    // Play error sound
+    if (gameState?.soundEnabled) {
+      playSound('error');
+    }
+
+    setTimeout(() => {
+      shadowEl.classList.remove('shake');
+    }, 400);
+  }
+
+  /**
+   * Touch event handlers for mobile
+   */
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  function handleTouchStart(e: TouchEvent) {
+    const target = e.currentTarget as HTMLElement;
+    draggedCharacterId = target.dataset.characterId || null;
+
+    const touch = e.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+  }
+
+  function handleTouchMove(e: TouchEvent) {
+    e.preventDefault();
+    // Could add visual drag preview here
+  }
+
+  function handleTouchEnd(e: TouchEvent) {
+    if (!draggedCharacterId) return;
+
+    const touch = e.changedTouches[0];
+    const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+
+    if (dropTarget && dropTarget.classList.contains('shadow-item')) {
+      const shadowEl = dropTarget as HTMLElement;
+      const shadowId = shadowEl.dataset.shadowId!;
+
+      if (!gameState) return;
+
+      const result = attemptMatch(gameState, draggedCharacterId, shadowId);
+
+      if (result.success) {
+        handleSuccessfulMatch(shadowEl, draggedCharacterId);
+      } else {
+        handleFailedMatch(shadowEl);
+      }
+
+      updateUI();
+      checkGameCompletion();
+    }
+
+    draggedCharacterId = null;
+  }
+
+  /**
+   * Keyboard navigation support
+   */
+  function handleKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      // Toggle selection or perform action
+      e.preventDefault();
+    }
+  }
+
+  /**
+   * Update UI
+   */
+  function updateUI() {
+    if (!gameState) return;
+
+    matchedCountEl.textContent = String(gameState.matched);
+    totalPairsEl.textContent = String(gameState.pairs.length);
+    attemptsCountEl.textContent = String(gameState.totalAttempts);
+  }
+
+  /**
+   * Start timer
+   */
+  function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+
+    timerInterval = window.setInterval(() => {
+      if (!gameState) return;
+
+      const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+
+      timerValueEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }, 1000);
+  }
+
+  /**
+   * Stop timer
+   */
+  function stopTimer() {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  }
+
+  /**
+   * Check if game is complete
+   */
+  function checkGameCompletion() {
+    if (!gameState) return;
+
+    if (gameState.matched === gameState.pairs.length) {
+      completeGame();
+    }
+  }
+
+  /**
+   * Complete game
+   */
+  function completeGame() {
+    if (!gameState) return;
+
+    stopTimer();
+    gameState.endTime = Date.now();
+
+    const result = calculateResult(gameState);
+    const stats = updateStats(result);
+
+    // Show completion modal
+    showCompletionModal(result);
+
+    // Award stars (integrate with star-wallet if available)
+    if (typeof window !== 'undefined' && (window as any).starWallet) {
+      (window as any).starWallet.earn(result.xpEarned / 10, 'shadow-match-completion');
+    }
+  }
+
+  /**
+   * Show completion modal
+   */
+  function showCompletionModal(result: any) {
+    const starsDisplay = document.getElementById('stars-display')!;
+    const resultTime = document.getElementById('result-time')!;
+    const resultAttempts = document.getElementById('result-attempts')!;
+    const resultHints = document.getElementById('result-hints')!;
+    const xpValue = document.getElementById('xp-value')!;
+
+    // Update stars
+    const starEmoji = '⭐';
+    starsDisplay.textContent = starEmoji.repeat(result.stars);
+
+    // Update stats
+    const minutes = Math.floor(result.timeSeconds / 60);
+    const seconds = result.timeSeconds % 60;
+    resultTime.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    resultAttempts.textContent = String(result.totalAttempts);
+    resultHints.textContent = String(result.hintsUsed);
+    xpValue.textContent = String(result.xpEarned);
+
+    // Show modal with confetti
+    completionModal.style.display = 'flex';
+    createConfetti();
+
+    // Play celebration sound
+    if (gameState?.soundEnabled) {
+      playSound('celebration');
+    }
+  }
+
+  /**
+   * Create confetti effect
+   */
+  function createConfetti() {
+    const container = document.getElementById('confetti-container')!;
+    container.innerHTML = '';
+
+    const colors = ['#FFD93D', '#FF9F40', '#6BCF7F', '#667eea', '#FF6B9D'];
+
+    for (let i = 0; i < 50; i++) {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = Math.random() * 100 + '%';
+      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.animationDelay = Math.random() * 3 + 's';
+      confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      container.appendChild(confetti);
+    }
+  }
+
+  /**
+   * Show hint
+   */
+  function showHint() {
+    if (!gameState) return;
+
+    // Find first unmatched pair
+    const unmatchedIndex = gameState.pairs.findIndex((p) => !p.matched);
+    if (unmatchedIndex === -1) return;
+
+    showHintUtil(gameState, unmatchedIndex);
+
+    const pair = gameState.pairs[unmatchedIndex];
+    const shadowEl = document.querySelector(
+      `.shadow-item[data-character-id="${pair.character.id}"]`
+    ) as HTMLElement;
+    const characterEl = document.querySelector(
+      `.character-item[data-character-id="${pair.character.id}"]`
+    ) as HTMLElement;
+
+    if (shadowEl && characterEl) {
+      // Highlight both elements
+      shadowEl.classList.add('pulse');
+      characterEl.classList.add('pulse');
+
+      // Show tooltip near shadow
+      const rect = shadowEl.getBoundingClientRect();
+      hintTooltip.style.display = 'block';
+      hintTooltip.style.top = rect.top + 'px';
+      hintTooltip.style.left = (rect.right + 10) + 'px';
+
+      setTimeout(() => {
+        shadowEl.classList.remove('pulse');
+        characterEl.classList.remove('pulse');
+        hintTooltip.style.display = 'none';
+      }, 2000);
+    }
+
+    updateUI();
+  }
+
+  /**
+   * Play sound effect
+   */
+  function playSound(type: 'success' | 'error' | 'celebration') {
+    // Use Web Audio API for sound effects
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    if (type === 'success') {
+      oscillator.frequency.value = 800;
+      gainNode.gain.value = 0.3;
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.1);
+    } else if (type === 'error') {
+      oscillator.frequency.value = 200;
+      gainNode.gain.value = 0.3;
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.2);
+    } else if (type === 'celebration') {
+      // Play a sequence of notes
+      const notes = [523, 659, 784, 1047];
+      notes.forEach((freq, i) => {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.frequency.value = freq;
+        gain.gain.value = 0.2;
+        osc.start(audioContext.currentTime + i * 0.15);
+        osc.stop(audioContext.currentTime + i * 0.15 + 0.2);
+      });
+    }
+  }
+
+  /**
+   * Event listeners
+   */
+  settingsBtn.addEventListener('click', () => {
+    settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
+  });
+
+  hintBtn.addEventListener('click', showHint);
+  newGameBtn.addEventListener('click', startNewGame);
+  playAgainBtn.addEventListener('click', () => {
+    completionModal.style.display = 'none';
+    startNewGame();
+  });
+  closeModalBtn.addEventListener('click', () => {
+    completionModal.style.display = 'none';
+  });
+
+  // Initialize game on load
+  document.addEventListener('DOMContentLoaded', () => {
+    startNewGame();
+  });
+</script>

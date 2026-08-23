@@ -1,0 +1,913 @@
+---
+/**
+ * Fruit Slicer Quiz Game Component
+ * Interactive educational game with physics-based fruit slicing
+ */
+import type { Locale } from '../utils/i18n';
+
+interface Props {
+  storyId: string;
+  questions: Array<{
+    id: string;
+    text: string;
+    type: 'truefalse' | 'multiplechoice' | 'fillinblank';
+    correctAnswer: string | string[];
+    options?: string[];
+  }>;
+  locale: Locale;
+}
+
+const { storyId, questions, locale } = Astro.props;
+---
+
+<div class="fruit-slicer-container" data-story-id={storyId} data-locale={locale}>
+  <!-- Mode Selection Screen -->
+  <div class="mode-selection-screen" id="modeSelectionScreen">
+    <div class="mode-selection-content">
+      <h2 class="game-title">🍎 Fruit Slicer Quiz 🍌</h2>
+      <p class="game-subtitle">Slice fruits with correct answers!</p>
+
+      <div class="mode-cards">
+        <button class="mode-card" data-mode="practice">
+          <span class="mode-icon">🎯</span>
+          <h3 class="mode-title">Practice</h3>
+          <p class="mode-description">No time limit, 3 lives</p>
+          <span class="mode-badge">Beginner Friendly</span>
+        </button>
+
+        <button class="mode-card" data-mode="timed">
+          <span class="mode-icon">⏱️</span>
+          <h3 class="mode-title">Timed Challenge</h3>
+          <p class="mode-description">2 minutes, score as much as you can!</p>
+          <span class="mode-badge">Competitive</span>
+        </button>
+
+        <button class="mode-card" data-mode="endless">
+          <span class="mode-icon">∞</span>
+          <h3 class="mode-title">Endless Mode</h3>
+          <p class="mode-description">Survive as long as possible</p>
+          <span class="mode-badge">Expert</span>
+        </button>
+      </div>
+
+      <div class="difficulty-selection">
+        <h3>Difficulty</h3>
+        <div class="difficulty-buttons">
+          <button class="difficulty-btn active" data-difficulty="easy">Easy</button>
+          <button class="difficulty-btn" data-difficulty="medium">Medium</button>
+          <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+        </div>
+      </div>
+
+      <div class="game-instructions">
+        <h3>How to Play</h3>
+        <ul>
+          <li>🖱️ <strong>Mouse:</strong> Click and drag to slice</li>
+          <li>👆 <strong>Touch:</strong> Swipe across fruits</li>
+          <li>⌨️ <strong>Keyboard:</strong> Arrow keys or WASD</li>
+          <li>✅ Slice fruits with <strong>correct</strong> answers</li>
+          <li>❌ Avoid slicing <strong>wrong</strong> answers</li>
+          <li>🔥 Build combos for bonus points!</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Screen -->
+  <div class="game-screen hidden" id="gameScreen">
+    <canvas id="fruitCanvas" width="800" height="600"></canvas>
+
+    <!-- Game UI Overlay -->
+    <div class="game-ui-overlay">
+      <!-- Top Bar -->
+      <div class="top-bar">
+        <button class="pause-btn" id="pauseBtn" aria-label="Pause">⏸️</button>
+        <div class="high-score" id="highScore">High Score: 0</div>
+      </div>
+
+      <!-- Power-ups Panel -->
+      <div class="powerups-panel">
+        <button class="powerup-btn" id="slowMotionBtn" data-powerup="slow-motion" title="Slow Motion (5s)">
+          ⏱️
+        </button>
+        <button class="powerup-btn" id="doublePointsBtn" data-powerup="double-points" title="Double Points (10s)">
+          ⭐
+        </button>
+        <button class="powerup-btn" id="shieldBtn" data-powerup="shield" title="Shield (1 free mistake)">
+          🛡️
+        </button>
+      </div>
+    </div>
+
+    <!-- Pause Menu -->
+    <div class="pause-menu hidden" id="pauseMenu">
+      <div class="pause-content">
+        <h2>⏸️ Game Paused</h2>
+        <button class="menu-btn" id="resumeBtn">Resume</button>
+        <button class="menu-btn" id="restartBtn">Restart</button>
+        <button class="menu-btn secondary" id="quitBtn">Quit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Over Screen -->
+  <div class="game-over-screen hidden" id="gameOverScreen">
+    <div class="game-over-content">
+      <h2 class="game-over-title">🎉 Game Complete!</h2>
+
+      <div class="final-stats">
+        <div class="stat-card">
+          <span class="stat-icon">🏆</span>
+          <span class="stat-value" id="finalScore">0</span>
+          <span class="stat-label">Final Score</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">🔥</span>
+          <span class="stat-value" id="maxComboDisplay">0</span>
+          <span class="stat-label">Max Combo</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">🎯</span>
+          <span class="stat-value" id="accuracyDisplay">0%</span>
+          <span class="stat-label">Accuracy</span>
+        </div>
+      </div>
+
+      <div class="detailed-stats">
+        <p>✅ Correct Slices: <strong id="correctSlicesDisplay">0</strong></p>
+        <p>❌ Wrong Slices: <strong id="wrongSlicesDisplay">0</strong></p>
+        <p>⭐ Stars Earned: <strong id="starsEarnedDisplay">0</strong></p>
+        <p>💎 XP Earned: <strong id="xpEarnedDisplay">0</strong></p>
+      </div>
+
+      <div class="achievements-unlocked" id="achievementsUnlocked"></div>
+
+      <div class="game-over-actions">
+        <button class="menu-btn" id="playAgainBtn">Play Again</button>
+        <button class="menu-btn secondary" id="backToStoriesBtn">Back to Stories</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tutorial Overlay (First Time) -->
+  <div class="tutorial-overlay hidden" id="tutorialOverlay">
+    <div class="tutorial-content">
+      <h2>🎓 Quick Tutorial</h2>
+      <div class="tutorial-steps">
+        <div class="tutorial-step">
+          <span class="tutorial-emoji">📖</span>
+          <p>Read the question at the top</p>
+        </div>
+        <div class="tutorial-step">
+          <span class="tutorial-emoji">🍎</span>
+          <p>Fruits will fly up with answers</p>
+        </div>
+        <div class="tutorial-step">
+          <span class="tutorial-emoji">✂️</span>
+          <p>Swipe to slice correct answers</p>
+        </div>
+        <div class="tutorial-step">
+          <span class="tutorial-emoji">❌</span>
+          <p>Avoid wrong answers or lose lives</p>
+        </div>
+        <div class="tutorial-step">
+          <span class="tutorial-emoji">🔥</span>
+          <p>Build combos for bonus points!</p>
+        </div>
+      </div>
+      <button class="menu-btn" id="startTutorialBtn">Got It!</button>
+      <label class="checkbox-label">
+        <input type="checkbox" id="dontShowAgain" />
+        Don't show this again
+      </label>
+    </div>
+  </div>
+</div>
+
+<style>
+  .fruit-slicer-container {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem;
+    font-family: 'Noto Sans', sans-serif;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* Mode Selection Screen */
+  .mode-selection-screen {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    color: white;
+  }
+
+  .mode-selection-content {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .game-title {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .game-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+  }
+
+  .mode-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .mode-card {
+    background: white;
+    color: #333;
+    border: none;
+    border-radius: 15px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-align: center;
+  }
+
+  .mode-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .mode-card:active {
+    transform: translateY(-2px);
+  }
+
+  .mode-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .mode-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: #667eea;
+  }
+
+  .mode-description {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  .mode-badge {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+  }
+
+  .difficulty-selection {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .difficulty-selection h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .difficulty-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .difficulty-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid transparent;
+    color: white;
+    padding: 0.7rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+  }
+
+  .difficulty-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .difficulty-btn.active {
+    background: white;
+    color: #667eea;
+    border-color: white;
+  }
+
+  .game-instructions {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1.5rem;
+  }
+
+  .game-instructions h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .game-instructions ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .game-instructions li {
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
+  }
+
+  /* Game Screen */
+  .game-screen {
+    position: relative;
+    background: #f0f0f0;
+    border-radius: 15px;
+    overflow: hidden;
+  }
+
+  #fruitCanvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 600px;
+    border-radius: 15px;
+  }
+
+  .game-ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    pointer-events: auto;
+  }
+
+  .pause-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+  }
+
+  .pause-btn:hover {
+    transform: scale(1.1);
+  }
+
+  .high-score {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .powerups-panel {
+    position: absolute;
+    top: 80px;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    pointer-events: auto;
+  }
+
+  .powerup-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: 3px solid transparent;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .powerup-btn:hover:not(:disabled) {
+    transform: scale(1.1);
+    border-color: #FFD700;
+  }
+
+  .powerup-btn:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  .powerup-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .powerup-btn.active {
+    border-color: #4CAF50;
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  /* Pause Menu */
+  .pause-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .pause-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 400px;
+  }
+
+  .menu-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0.5rem;
+    transition: all 0.2s;
+    min-width: 150px;
+  }
+
+  .menu-btn:hover {
+    background: #764ba2;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  }
+
+  .menu-btn.secondary {
+    background: #6c757d;
+  }
+
+  .menu-btn.secondary:hover {
+    background: #5a6268;
+  }
+
+  /* Game Over Screen */
+  .game-over-screen {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    color: white;
+  }
+
+  .game-over-content {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .game-over-title {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .final-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stat-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  .detailed-stats {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+
+  .detailed-stats p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+  }
+
+  .achievements-unlocked {
+    margin-bottom: 2rem;
+  }
+
+  .game-over-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  /* Tutorial Overlay */
+  .tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .tutorial-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    max-width: 600px;
+    color: #333;
+  }
+
+  .tutorial-content h2 {
+    text-align: center;
+    color: #667eea;
+    margin-bottom: 1.5rem;
+  }
+
+  .tutorial-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .tutorial-step {
+    text-align: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+  }
+
+  .tutorial-emoji {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .tutorial-step p {
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .checkbox-label {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .game-title {
+      font-size: 2rem;
+    }
+
+    .mode-cards {
+      grid-template-columns: 1fr;
+    }
+
+    .final-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .tutorial-steps {
+      grid-template-columns: 1fr;
+    }
+
+    .powerups-panel {
+      flex-direction: row;
+      top: auto;
+      bottom: 1rem;
+      right: 50%;
+      transform: translateX(50%);
+    }
+
+    .powerup-btn {
+      width: 50px;
+      height: 50px;
+      font-size: 1.5rem;
+    }
+  }
+
+  /* Accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  /* High Contrast Mode */
+  @media (prefers-contrast: high) {
+    .mode-card,
+    .pause-content,
+    .tutorial-content {
+      border: 3px solid #000;
+    }
+
+    .menu-btn {
+      border: 2px solid #000;
+    }
+  }
+</style>
+
+<script>
+  import { fruitSlicerEngine } from '../utils/fruit-slicer';
+  import type { GameMode, DifficultyLevel, QuizQuestion } from '../utils/fruit-slicer';
+
+  // Get DOM elements
+  const container = document.querySelector('.fruit-slicer-container') as HTMLElement;
+  const modeSelectionScreen = document.getElementById('modeSelectionScreen') as HTMLElement;
+  const gameScreen = document.getElementById('gameScreen') as HTMLElement;
+  const gameOverScreen = document.getElementById('gameOverScreen') as HTMLElement;
+  const tutorialOverlay = document.getElementById('tutorialOverlay') as HTMLElement;
+  const canvas = document.getElementById('fruitCanvas') as HTMLCanvasElement;
+
+  const storyId = container.dataset.storyId!;
+  const locale = container.dataset.locale!;
+
+  // Get questions from props
+  const questionsData = (window as any).__FRUIT_SLICER_QUESTIONS__ || [];
+  const questions: QuizQuestion[] = questionsData;
+
+  let selectedMode: GameMode = 'practice';
+  let selectedDifficulty: DifficultyLevel = 'easy';
+
+  // Check if tutorial should be shown
+  const showTutorial = !localStorage.getItem('fruit-slicer-tutorial-seen');
+
+  if (showTutorial && tutorialOverlay) {
+    tutorialOverlay.classList.remove('hidden');
+  }
+
+  // Tutorial handlers
+  document.getElementById('startTutorialBtn')?.addEventListener('click', () => {
+    tutorialOverlay?.classList.add('hidden');
+    const dontShowAgain = (document.getElementById('dontShowAgain') as HTMLInputElement)?.checked;
+    if (dontShowAgain) {
+      localStorage.setItem('fruit-slicer-tutorial-seen', 'true');
+    }
+  });
+
+  // Mode selection handlers
+  document.querySelectorAll('.mode-card').forEach((card) => {
+    card.addEventListener('click', () => {
+      selectedMode = (card as HTMLElement).dataset.mode as GameMode;
+      startGame();
+    });
+  });
+
+  // Difficulty selection handlers
+  document.querySelectorAll('.difficulty-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.difficulty-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedDifficulty = (btn as HTMLElement).dataset.difficulty as DifficultyLevel;
+    });
+  });
+
+  // Start game
+  function startGame() {
+    modeSelectionScreen?.classList.add('hidden');
+    gameScreen?.classList.remove('hidden');
+
+    // Resize canvas
+    resizeCanvas();
+
+    // Load high score
+    const highScore = fruitSlicerEngine['loadHighScore'](selectedMode);
+    const highScoreEl = document.getElementById('highScore');
+    if (highScoreEl) {
+      highScoreEl.textContent = `High Score: ${highScore}`;
+    }
+
+    // Start game engine
+    fruitSlicerEngine.startGame(canvas, questions, selectedMode, selectedDifficulty);
+
+    // Set callbacks
+    fruitSlicerEngine.setCallbacks({
+      onScoreChange: handleScoreChange,
+      onComboChange: handleComboChange,
+      onGameOver: handleGameOver,
+    });
+  }
+
+  // Resize canvas to fit container
+  function resizeCanvas() {
+    const containerWidth = container.offsetWidth - 32; // minus padding
+    const aspectRatio = 4 / 3;
+    canvas.width = Math.min(800, containerWidth);
+    canvas.height = canvas.width / aspectRatio;
+  }
+
+  // Handle score change
+  function handleScoreChange(score: number) {
+    // Score is rendered on canvas
+  }
+
+  // Handle combo change
+  function handleComboChange(combo: number) {
+    // Combo is rendered on canvas
+  }
+
+  // Handle game over
+  function handleGameOver(finalScore: number, stats: any) {
+    gameScreen?.classList.add('hidden');
+    gameOverScreen?.classList.remove('hidden');
+
+    // Update stats display
+    document.getElementById('finalScore')!.textContent = finalScore.toString();
+    document.getElementById('maxComboDisplay')!.textContent = stats.maxCombo.toString();
+    document.getElementById('accuracyDisplay')!.textContent = `${stats.accuracy}%`;
+    document.getElementById('correctSlicesDisplay')!.textContent = stats.correctSlices.toString();
+    document.getElementById('wrongSlicesDisplay')!.textContent = stats.wrongSlices.toString();
+    document.getElementById('starsEarnedDisplay')!.textContent = stats.stars.toString();
+    document.getElementById('xpEarnedDisplay')!.textContent = stats.xp.toString();
+
+    // Save stats
+    saveGameStats(stats);
+
+    // Check achievements
+    checkAchievements(stats);
+  }
+
+  // Pause button
+  document.getElementById('pauseBtn')?.addEventListener('click', () => {
+    fruitSlicerEngine.togglePause();
+    document.getElementById('pauseMenu')?.classList.toggle('hidden');
+  });
+
+  // Resume button
+  document.getElementById('resumeBtn')?.addEventListener('click', () => {
+    fruitSlicerEngine.togglePause();
+    document.getElementById('pauseMenu')?.classList.add('hidden');
+  });
+
+  // Restart button
+  document.getElementById('restartBtn')?.addEventListener('click', () => {
+    fruitSlicerEngine.stopGame();
+    document.getElementById('pauseMenu')?.classList.add('hidden');
+    startGame();
+  });
+
+  // Quit button
+  document.getElementById('quitBtn')?.addEventListener('click', () => {
+    fruitSlicerEngine.stopGame();
+    gameScreen?.classList.add('hidden');
+    modeSelectionScreen?.classList.remove('hidden');
+  });
+
+  // Play again button
+  document.getElementById('playAgainBtn')?.addEventListener('click', () => {
+    gameOverScreen?.classList.add('hidden');
+    startGame();
+  });
+
+  // Back to stories button
+  document.getElementById('backToStoriesBtn')?.addEventListener('click', () => {
+    window.location.href = `/${locale}/stories/${storyId}`;
+  });
+
+  // Power-up buttons
+  document.getElementById('slowMotionBtn')?.addEventListener('click', () => {
+    fruitSlicerEngine.activatePowerUp('slow-motion');
+  });
+
+  document.getElementById('doublePointsBtn')?.addEventListener('click', () => {
+    fruitSlicerEngine.activatePowerUp('double-points');
+  });
+
+  document.getElementById('shieldBtn')?.addEventListener('click', () => {
+    fruitSlicerEngine.activatePowerUp('shield');
+  });
+
+  // Save game stats
+  function saveGameStats(stats: any) {
+    try {
+      const allStats = JSON.parse(localStorage.getItem('fruit-slicer-stats') || '[]');
+      allStats.push({
+        storyId,
+        mode: selectedMode,
+        difficulty: selectedDifficulty,
+        ...stats,
+        timestamp: Date.now(),
+      });
+      localStorage.setItem('fruit-slicer-stats', JSON.stringify(allStats));
+    } catch (e) {
+      console.error('Failed to save stats:', e);
+    }
+  }
+
+  // Check achievements
+  function checkAchievements(stats: any) {
+    const achievements: string[] = [];
+
+    if (stats.maxCombo >= 10) {
+      achievements.push('🏆 Combo King - 10x combo!');
+    }
+
+    if (stats.score >= 10000) {
+      achievements.push('🍎 Fruit Master - 10,000 points!');
+    }
+
+    if (stats.accuracy === 100) {
+      achievements.push('🎯 Perfect Slicer - 100% accuracy!');
+    }
+
+    const achievementsEl = document.getElementById('achievementsUnlocked');
+    if (achievementsEl && achievements.length > 0) {
+      achievementsEl.innerHTML = `
+        <h3>🎉 Achievements Unlocked!</h3>
+        ${achievements.map((a) => `<p>${a}</p>`).join('')}
+      `;
+    }
+  }
+
+  // Window resize handler
+  window.addEventListener('resize', () => {
+    if (!gameScreen?.classList.contains('hidden')) {
+      resizeCanvas();
+    }
+  });
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    fruitSlicerEngine.stopGame();
+  });
+</script>
+
+<script is:inline define:vars={{ questions }}>
+  // Pass questions to global scope for script access
+  window.__FRUIT_SLICER_QUESTIONS__ = questions;
+</script>

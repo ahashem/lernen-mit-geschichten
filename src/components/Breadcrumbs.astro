@@ -1,0 +1,181 @@
+---
+/**
+ * Breadcrumbs Navigation Component
+ * Shows path: Home > Category > Current Page
+ * Mobile: Shows only "← Back" button
+ * Minimum 44px touch targets for children
+ */
+import { getTranslation, type Locale } from '@utils/i18n';
+
+interface BreadcrumbItem {
+  label: string;
+  url: string;
+}
+
+interface Props {
+  locale?: Locale;
+  items: BreadcrumbItem[];
+  currentPage: string;
+}
+
+const { locale = 'de', items, currentPage } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const homeUrl = locale === 'de' ? `${base}/` : `${base}/${locale}`;
+const homeLabel = getTranslation(locale, 'home');
+---
+
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <!-- Mobile: Back Button Only -->
+  <div class="breadcrumbs-mobile">
+    <a href={items.length > 0 ? items[items.length - 1].url : homeUrl} class="back-btn-mobile">
+      <span class="arrow">←</span>
+      <span>{getTranslation(locale, 'back')}</span>
+    </a>
+  </div>
+
+  <!-- Desktop: Full Breadcrumb Trail -->
+  <ol class="breadcrumbs-desktop">
+    <!-- Home -->
+    <li>
+      <a href={homeUrl}>{homeLabel}</a>
+    </li>
+
+    <!-- Intermediate Items -->
+    {items.map((item) => (
+      <li>
+        <span class="separator" aria-hidden="true">›</span>
+        <a href={item.url}>{item.label}</a>
+      </li>
+    ))}
+
+    <!-- Current Page -->
+    <li>
+      <span class="separator" aria-hidden="true">›</span>
+      <span class="current" aria-current="page">{currentPage}</span>
+    </li>
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+  }
+
+  /* Mobile: Back Button */
+  .breadcrumbs-mobile {
+    display: block;
+  }
+
+  .back-btn-mobile {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    min-height: 48px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .back-btn-mobile:hover,
+  .back-btn-mobile:focus {
+    background: white;
+    transform: translateX(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .back-btn-mobile .arrow {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+  }
+
+  .back-btn-mobile:hover .arrow {
+    transform: translateX(-4px);
+  }
+
+  /* Desktop: Full Breadcrumb Trail */
+  .breadcrumbs-desktop {
+    display: none;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .breadcrumbs-desktop li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .breadcrumbs-desktop a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.5rem 0.75rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .breadcrumbs-desktop a:hover,
+  .breadcrumbs-desktop a:focus {
+    background: rgba(102, 126, 234, 0.1);
+    color: #764ba2;
+    transform: translateY(-1px);
+  }
+
+  .separator {
+    color: #999;
+    font-size: 1.2rem;
+    user-select: none;
+  }
+
+  .current {
+    color: #333;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.5rem 0.75rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Show desktop breadcrumbs on larger screens */
+  @media (min-width: 769px) {
+    .breadcrumbs-mobile {
+      display: none;
+    }
+
+    .breadcrumbs-desktop {
+      display: flex;
+    }
+  }
+
+  /* RTL Support */
+  :global([dir="rtl"]) .breadcrumbs-mobile .arrow {
+    transform: scaleX(-1);
+  }
+
+  :global([dir="rtl"]) .back-btn-mobile:hover .arrow {
+    transform: scaleX(-1) translateX(4px);
+  }
+
+  :global([dir="rtl"]) .separator {
+    transform: scaleX(-1);
+  }
+</style>
