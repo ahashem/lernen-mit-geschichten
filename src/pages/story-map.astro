@@ -6,6 +6,7 @@ import { getTranslation } from '@utils/i18n';
 const locale = 'de';
 const title = getTranslation(locale, 'storyMap');
 const description = getTranslation(locale, 'storyMapDescription');
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
@@ -89,7 +90,7 @@ const description = getTranslation(locale, 'storyMapDescription');
 
       <!-- Back to Stories Link -->
       <div class="back-link">
-        <a href={`${import.meta.env.BASE_URL}/`} class="btn-secondary">
+        <a href={`${base}/`} class="btn-secondary">
           ← {getTranslation(locale, 'backToStories')}
         </a>
       </div>

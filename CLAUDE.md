@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Tech Stack
 
-- **Framework**: Astro 5.x with MDX integration
+- **Framework**: Astro 7.x with MDX integration (content collections use the Content Layer API — `glob()` loader, `entry.id` not `entry.slug`, `render(entry)` not `entry.render()`)
 - **Styling**: Scoped CSS (no CSS-in-JS framework)
 - **Interactivity**: Vanilla JavaScript + Astro islands with React components
 - **Content**: Markdown + YAML frontmatter in Astro content collections
@@ -96,7 +96,7 @@ These games exist independently of stories and could theoretically be extracted 
 - Each skill has multilingual labels; stories map to 1-3 skills
 - Skills are used for story classification, filtering, and progress tracking
 
-**Content Configuration** (`src/content/config.ts`)
+**Content Configuration** (`src/content.config.ts`)
 - Zod schema for story frontmatter validation
 - Supports both standard and interactive story formats
 - Optional fields: mood, ambientSound, musicIntensity for atmosphere
@@ -139,6 +139,23 @@ Uses Swiper.js for page-flipping, Web Speech API for TTS with word highlighting,
 - **Routing**: Astro's built-in i18n routing with `prefixDefaultLocale: false` (German URLs have no `/de` prefix)
 - **Localized Routes**: `/stories/bruno` (German), `/ar/stories/bruno` (Arabic), `/en/stories/bruno` (English), etc.
 - **Language Switcher**: Persistent on all pages; updates localStorage and redirects to current page in new language
+
+#### Mandatory: every page ships in all 5 languages
+
+This is a hard requirement, not an aspiration — a page that only exists in German is an incomplete page, not a "German-only feature." The current routing convention (until it's replaced by something less repetitive) is two files per route:
+
+- `src/pages/{route}.astro` — the German version, unprefixed
+- `src/pages/[locale]/{route}.astro` — the `ar`/`en`/`tr`/`ur` versions, one `getStaticPaths` covering all three-plus locales
+
+See `about.astro`, `achievements.astro`, `progress.astro`, and `story-map.astro` for the pattern (both the top-level and `[locale]/` file exist for each). Any nav link built as `locale === 'de' ? path : `${locale}/${path}`` is a promise that the `[locale]/` file exists — don't write that ternary until it does.
+
+**Known gap (as of this writing):** roughly 40 pages under `src/pages/` — story-builder, my-stories, shop, games, character-designer, print-studio, challenges, adventure-quests, weather-settings, and most of the Tier 2/3 games and creation tools — only have the German file. Their nav links already point to `/{locale}/{route}` per the policy above, so today those links 404 in ar/en/tr/ur. `src/pages/404.astro` catches that and redirects to the visitor's locale homepage rather than a dead end — that's a stopgap, not a fix. Closing this gap means adding the `[locale]/` file for each one; do that before adding new German-only pages, not after.
+
+**Verifying page coverage without a browser**: `npm run build && node scripts/verify-build.mjs` walks every generated HTML file in `dist/`, resolves every internal `href`/`src` against the actual output, and cross-checks the sitemap. It reports broken links (which, right now, largely means "the known gap above") without failing the run — use it to see whether a specific change closed or reopened a locale gap, not as a pass/fail gate until the gap itself is closed.
+
+**Separate gap — dead routes with no page in any language:** the games hub (`src/pages/games/index.astro`) links to `sliding-puzzles`, `building-blocks`, `emotion-matching`, `whack-a-mole`, `cooking-game`, `word-search`, `rhyme-time`; `CategoryDashboard.astro` (homepage) links to `/create`, `/pets`, `/tools`; `my-comics.astro` links to `/comic-viewer`. None of these have a page file at all, so they 404 even in German. Not a base-path or locale issue — these routes were never built.
+
+**TODO**: redesign `src/pages/404.astro` using the concept in `CLAUDE-assets/ErrorPages.dc.html`.
 
 ## Content Workflow
 
@@ -214,6 +231,7 @@ Uses Swiper.js for page-flipping, Web Speech API for TTS with word highlighting,
 - Add complexity beyond current requirements (avoid premature abstraction)
 
 ### High-Priority Issues to Prevent
+- **German-only pages**: Every new page needs its `[locale]/` sibling in the same PR — see "Mandatory: every page ships in all 5 languages" above. This is distinct from missing translation strings; it's a missing route entirely.
 - **Missing Translations**: Every new UI key must be translated to all 5 languages
 - **RTL Breakage**: Always test Arabic/Urdu after CSS changes
 - **Accessibility Regression**: Test keyboard navigation and screen reader support before committing
@@ -231,7 +249,7 @@ Uses Swiper.js for page-flipping, Web Speech API for TTS with word highlighting,
 
 ### Existing Files to Modify
 - **i18n Strings**: Modify `src/locales/{locale}-{category}.json` (never hardcode UI text)
-- **Story Metadata**: Update `src/content/config.ts` only if schema changes needed
+- **Story Metadata**: Update `src/content.config.ts` only if schema changes needed
 - **Skills**: Update `src/utils/skills-taxonomy.ts` (rarely; validate with team first)
 - **Styling Defaults**: Modify `src/styles/global.css` for site-wide changes
 
@@ -255,6 +273,10 @@ npm run test -- src/utils/filter-stories.test.ts
 
 # Check test coverage
 npm run test:coverage
+
+# Verify the built site without opening a browser: broken internal links,
+# leaked runtime errors, sitemap coverage (see "Routing & Localization")
+npm run build && node scripts/verify-build.mjs
 ```
 
 ## GitHub Workflow

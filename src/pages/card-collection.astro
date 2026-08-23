@@ -4,6 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 const locale = 'de';
 const title = 'Karten-Sammlung';
 const description = 'Deine gesammelten Geschichtenkarten';
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
@@ -58,7 +59,7 @@ const description = 'Deine gesammelten Geschichtenkarten';
       <div class="card-grid" id="card-grid">
         <div class="empty-state" id="empty-state">
           <p>📭 Du hast noch keine Karten gesammelt!</p>
-          <a href="/print-studio" class="action-btn primary">
+          <a href={`${base}/print-studio`} class="action-btn primary">
             ✨ Erste Karte erstellen
           </a>
         </div>
@@ -370,6 +371,8 @@ const description = 'Deine gesammelten Geschichtenkarten';
     getCollectionStats,
     type StoryCardData,
   } from '../utils/print-cards';
+
+  import { BASE_PATH as base } from '@utils/site';
   import { getPrintStats } from '../utils/print-cards';
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -497,7 +500,7 @@ const description = 'Deine gesammelten Geschichtenkarten';
   }
 
   function viewCard(cardId: string) {
-    window.location.href = `/print-studio?view=${cardId}`;
+    window.location.href = `${base}/print-studio?view=${cardId}`;
   }
 
   function deleteCard(cardId: string) {

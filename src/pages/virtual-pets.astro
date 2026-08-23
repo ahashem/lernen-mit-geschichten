@@ -8,6 +8,7 @@ import VirtualPet from '../components/VirtualPet.astro';
 import PetCarePanel from '../components/PetCarePanel.astro';
 
 const locale = 'de'; // Can be dynamic based on URL params
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout
@@ -28,7 +29,7 @@ const locale = 'de'; // Can be dynamic based on URL params
           No pets yet! Visit the Adoption Center to adopt your first pet.
         </div>
       </div>
-      <a href="/pet-adoption" class="adopt-link" data-i18n="adoptionCenter">
+      <a href={`${base}/pet-adoption`} class="adopt-link" data-i18n="adoptionCenter">
         + Adoption Center
       </a>
     </div>

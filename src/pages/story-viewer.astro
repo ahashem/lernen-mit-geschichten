@@ -5,6 +5,7 @@ import { getTranslation } from '@utils/i18n';
 const locale = 'de';
 const title = getTranslation(locale, 'viewStory');
 const description = 'Deine selbst erstellte Geschichte';
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
@@ -26,7 +27,7 @@ const description = 'Deine selbst erstellte Geschichte';
         <div class="error-icon">😕</div>
         <h2>Geschichte nicht gefunden</h2>
         <p>Diese Geschichte existiert nicht oder konnte nicht geladen werden.</p>
-        <a href="/my-stories" class="btn-back">Zurück zu Meine Geschichten</a>
+        <a href={`${base}/my-stories`} class="btn-back">Zurück zu Meine Geschichten</a>
       </div>
     </div>
   </div>
@@ -341,6 +342,7 @@ const description = 'Deine selbst erstellte Geschichte';
     generateShareLink,
     type CreatedStory,
   } from '@utils/story-builder';
+  import { BASE_PATH as base } from '@utils/site';
 
   document.addEventListener('DOMContentLoaded', () => {
     loadAndDisplayStory();
@@ -409,9 +411,9 @@ const description = 'Deine selbst erstellte Geschichte';
       </div>
 
       <div class="story-actions">
-        <a href="/my-stories" class="btn-back">← Zurück</a>
-        ${story.id ? `<a href="/story-builder?edit=${story.id}" class="btn-edit">✏️ Bearbeiten</a>` : ''}
-        ${story.id ? `<a href="/qr-generator?id=${story.id}" class="btn-qr">📱 QR-Code</a>` : ''}
+        <a href="${base}/my-stories" class="btn-back">← Zurück</a>
+        ${story.id ? `<a href="${base}/story-builder?edit=${story.id}" class="btn-edit">✏️ Bearbeiten</a>` : ''}
+        ${story.id ? `<a href="${base}/qr-generator?id=${story.id}" class="btn-qr">📱 QR-Code</a>` : ''}
         <button class="btn-share" onclick="shareStory()">🔗 Teilen</button>
         <button class="btn-print" onclick="window.print()">🖨️ Drucken</button>
       </div>

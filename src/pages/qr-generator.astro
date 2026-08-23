@@ -6,6 +6,7 @@ import { getTranslation } from '@utils/i18n';
 const locale = 'de';
 const title = getTranslation(locale, 'generateQR');
 const description = getTranslation(locale, 'shareYourStory');
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
@@ -19,7 +20,7 @@ const description = getTranslation(locale, 'shareYourStory');
       <QRGenerator locale={locale} />
 
       <div class="back-link-container">
-        <a href="/my-stories" class="btn-back">
+        <a href={`${base}/my-stories`} class="btn-back">
           ← {getTranslation(locale, 'backToMyStories')}
         </a>
       </div>

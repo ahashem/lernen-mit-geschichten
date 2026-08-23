@@ -713,6 +713,7 @@ const hardScenes = SCENE_LIBRARY.filter((s) => s.difficulty === 'hard');
 
 <script>
   import { spotDifferenceGame } from '../utils/spot-difference';
+  import { BASE_PATH as base } from '@utils/site';
 
   class SpotDifferenceSelection {
     private selectedSceneId: string = '';
@@ -785,7 +786,7 @@ const hardScenes = SCENE_LIBRARY.filter((s) => s.difficulty === 'hard');
     }
 
     private startGame(mode: string): void {
-      window.location.href = `/difference-game?scene=${this.selectedSceneId}&mode=${mode}`;
+      window.location.href = `${base}/difference-game?scene=${this.selectedSceneId}&mode=${mode}`;
     }
   }
 

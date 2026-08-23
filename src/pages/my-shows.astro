@@ -9,6 +9,7 @@ import type { Locale } from '@utils/i18n';
 
 const locale = (Astro.url.searchParams.get('lang') || 'de') as Locale;
 const t = (key: string) => getTranslation(locale, key);
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout
@@ -27,7 +28,7 @@ const t = (key: string) => getTranslation(locale, key);
         <p class="page-description">{t('savedShowsDescription')}</p>
       </div>
       <div class="header-actions">
-        <a href={`/puppet-theater?lang=${locale}`} class="btn btn-primary">
+        <a href={`${base}/puppet-theater?lang=${locale}`} class="btn btn-primary">
           <span class="btn-icon">➕</span>
           <span class="btn-label">{t('createPuppetShow')}</span>
         </a>
@@ -65,7 +66,7 @@ const t = (key: string) => getTranslation(locale, key);
         <div class="empty-icon">🎭</div>
         <h2>{t('noShowsYet')}</h2>
         <p>{t('createFirstShow')}</p>
-        <a href={`/puppet-theater?lang=${locale}`} class="btn btn-primary btn-large">
+        <a href={`${base}/puppet-theater?lang=${locale}`} class="btn btn-primary btn-large">
           <span class="btn-icon">➕</span>
           <span class="btn-label">{t('createPuppetShow')}</span>
         </a>

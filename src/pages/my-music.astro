@@ -8,6 +8,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 const locale = 'de';
 const title = 'My Music - Lernen mit Geschichten';
 const description = 'View and manage your saved music compositions';
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
@@ -16,7 +17,7 @@ const description = 'View and manage your saved music compositions';
       <h1>🎵 My Music</h1>
       <p class="subtitle">Your saved compositions</p>
       <div class="header-actions">
-        <a href="/music-composer" class="btn-primary">
+        <a href={`${base}/music-composer`} class="btn-primary">
           + New Composition
         </a>
         <button id="sort-btn" class="btn-secondary">
@@ -52,7 +53,7 @@ const description = 'View and manage your saved music compositions';
       <div class="empty-icon">🎹</div>
       <h2>No compositions yet</h2>
       <p>Start creating your first musical masterpiece!</p>
-      <a href="/music-composer" class="btn-primary">
+      <a href={`${base}/music-composer`} class="btn-primary">
         Create First Composition
       </a>
     </div>
@@ -454,6 +455,8 @@ const description = 'View and manage your saved music compositions';
   import { starWallet } from '../utils/star-wallet';
   import type { Composition } from '../utils/music-composer';
 
+  import { BASE_PATH as base } from '@utils/site';
+
   let compositions: Composition[] = [];
   let deleteTargetId: string | null = null;
   let shareTargetId: string | null = null;
@@ -558,7 +561,7 @@ const description = 'View and manage your saved music compositions';
     document.querySelectorAll('.edit-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = (e.currentTarget as HTMLElement).dataset.id;
-        if (id) window.location.href = `/music-composer?id=${id}`;
+        if (id) window.location.href = `${base}/music-composer?id=${id}`;
       });
     });
 

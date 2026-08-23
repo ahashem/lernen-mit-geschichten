@@ -1,0 +1,84 @@
+---
+// Static site, no server — the redirect target is only knowable from the
+// visited URL, so it has to happen client-side (a <meta refresh> can't see
+// the request path). Stopgap until the missing `[locale]/` pages exist.
+import { BASE_PATH as base } from '@utils/site';
+const SUPPORTED_NON_DEFAULT_LOCALES = ['ar', 'en', 'tr', 'ur']; // 'de' has no URL prefix
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Seite nicht gefunden · Lernen mit Geschichten</title>
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #fff8ec;
+        color: #3a2e26;
+      }
+      .not-found {
+        text-align: center;
+        padding: 2rem;
+        max-width: 28rem;
+      }
+      .emoji {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin: 0 0 0.75rem;
+      }
+      p {
+        margin: 0;
+        color: #6b5c4f;
+      }
+      a {
+        color: #e8862e;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="not-found">
+      <div class="emoji">🧭</div>
+      <h1>Seite nicht gefunden</h1>
+      <p id="redirect-message">Wir leiten dich weiter …</p>
+      <noscript>
+        <p><a href={`${base}/`}>Zur Startseite</a></p>
+      </noscript>
+    </main>
+    <script define:vars={{ base, SUPPORTED_NON_DEFAULT_LOCALES }}>
+      const MESSAGES = {
+        de: 'Diese Seite existiert nicht. Weiterleitung zur Startseite …',
+        ar: 'هذه الصفحة غير موجودة. جارٍ إعادة التوجيه إلى الصفحة الرئيسية...',
+        en: 'This page does not exist. Redirecting to the homepage…',
+        tr: 'Bu sayfa mevcut değil. Ana sayfaya yönlendiriliyor…',
+        ur: 'یہ صفحہ موجود نہیں ہے۔ ہوم پیج پر بھیجا جا رہا ہے...',
+      };
+
+      const path = window.location.pathname;
+      const rel = path.startsWith(base) ? path.slice(base.length) : path;
+      const firstSegment = rel.split('/').filter(Boolean)[0];
+      const locale = SUPPORTED_NON_DEFAULT_LOCALES.includes(firstSegment) ? firstSegment : 'de';
+      const target = locale === 'de' ? `${base}/` : `${base}/${locale}/`;
+
+      const messageEl = document.getElementById('redirect-message');
+      if (messageEl) messageEl.textContent = MESSAGES[locale];
+
+      window.location.replace(target);
+    </script>
+  </body>
+</html>

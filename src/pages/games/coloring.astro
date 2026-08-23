@@ -7,7 +7,7 @@ import { COLORING_TEMPLATES, DEFAULT_PALETTE, SKIN_TONE_PALETTE } from '../../ut
 const locale = 'de';
 const title = 'Malbuch';
 const description = 'Male deine Lieblingscharaktere bunt aus!';
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+import { BASE_PATH as base } from '@utils/site';
 
 // Group templates by difficulty
 const simpleTemplates = COLORING_TEMPLATES.filter(t => t.difficulty === 'simple');

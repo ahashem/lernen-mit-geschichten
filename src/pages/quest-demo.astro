@@ -7,6 +7,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import LevelUpAnimation from '../components/LevelUpAnimation.astro';
 
 const locale = 'de';
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout title="Quest System Demo" locale={locale}>
@@ -193,9 +194,9 @@ window.addEventListener('quest-complete', (event) => {
     <div class="demo-section">
       <h2>Quick Links</h2>
       <div class="quick-links">
-        <a href="/adventure-quests" class="link-btn">⚔️ Go to Adventure Quests</a>
-        <a href="/progress" class="link-btn">📊 View Progress Dashboard</a>
-        <a href="/achievements" class="link-btn">🏆 View Achievements</a>
+        <a href={`${base}/adventure-quests`} class="link-btn">⚔️ Go to Adventure Quests</a>
+        <a href={`${base}/progress`} class="link-btn">📊 View Progress Dashboard</a>
+        <a href={`${base}/achievements`} class="link-btn">🏆 View Achievements</a>
       </div>
     </div>
   </div>

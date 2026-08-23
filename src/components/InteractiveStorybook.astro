@@ -1,6 +1,7 @@
 ---
 import type { Locale } from '../utils/i18n';
 import { getTranslation } from '../utils/i18n';
+import { BASE_PATH as base } from '@utils/site';
 
 export interface StoryPage {
   text: string;
@@ -36,7 +37,11 @@ const t = {
             <div class="story-page">
               {page.image && (
                 <div class="page-image">
-                  <img src={page.image} alt={`Page ${index + 1}`} loading="lazy" />
+                  <img
+                    src={page.image.startsWith('/') ? `${base}${page.image}` : page.image}
+                    alt={`Page ${index + 1}`}
+                    loading="lazy"
+                  />
                 </div>
               )}
               <div class="page-text" data-page={index}>

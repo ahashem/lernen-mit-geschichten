@@ -535,7 +535,7 @@ const t = (key: string) => getTranslation(language, key as any);
   } from '../utils/story-sequencing';
 
   // Get base path for correct navigation
-  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  import { BASE_PATH as base } from '@utils/site';
 
   // Initialize game
   document.addEventListener('DOMContentLoaded', () => {
@@ -657,7 +657,7 @@ const t = (key: string) => getTranslation(language, key as any);
       continueBtn?.addEventListener('click', closeModal);
       replayBtn?.addEventListener('click', resetGame);
       backBtn?.addEventListener('click', () => {
-        window.location.href = `${base}/de/stories`;
+        window.location.href = `${base}/`;
       });
     }
 

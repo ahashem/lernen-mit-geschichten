@@ -863,7 +863,7 @@ const { locale, mode = 'quiz', challengeId, questions = [] } = Astro.props;
   import { confetti } from '../utils/confetti';
 
   // Get base path for correct navigation
-  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  import { BASE_PATH as base } from '@utils/site';
 
   // Initialize game
   document.addEventListener('DOMContentLoaded', () => {

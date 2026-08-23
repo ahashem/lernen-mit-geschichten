@@ -5,6 +5,7 @@ import { getTranslation } from '../utils/i18n';
 const locale = 'de'; // Default locale, can be made dynamic
 const title = getTranslation(locale, 'fishCollection');
 const description = getTranslation(locale, 'fishCollectionDescription');
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout title={title} description={description} lang={locale}>
@@ -25,7 +26,7 @@ const description = getTranslation(locale, 'fishCollectionDescription');
     </div>
 
     <div class="collection-actions">
-      <a href="/fishing-game" class="action-btn primary">
+      <a href={`${base}/fishing-game`} class="action-btn primary">
         <span data-i18n="backToGame">{getTranslation(locale, 'backToGame')}</span>
       </a>
       <button class="action-btn secondary" id="reset-collection-btn">

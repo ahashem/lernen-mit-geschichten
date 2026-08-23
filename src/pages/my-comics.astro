@@ -8,6 +8,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 const locale = 'de';
 const title = 'My Comics';
 const description = 'Your comic collection';
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
@@ -19,7 +20,7 @@ const description = 'Your comic collection';
           <span data-i18n="myComics">My Comics</span>
         </h1>
         <div class="header-actions">
-          <a href="/comic-maker" class="btn btn-primary">
+          <a href={`${base}/comic-maker`} class="btn btn-primary">
             + <span data-i18n="createComic">Create Comic</span>
           </a>
         </div>
@@ -55,7 +56,7 @@ const description = 'Your comic collection';
       <div class="empty-icon">📖</div>
       <h2 data-i18n="noComicsYet">No comics yet</h2>
       <p data-i18n="createFirstComic">Create your first comic masterpiece!</p>
-      <a href="/comic-maker" class="btn btn-primary btn-lg">
+      <a href={`${base}/comic-maker`} class="btn btn-primary btn-lg">
         <span data-i18n="createComic">Create Comic</span>
       </a>
     </div>
@@ -410,6 +411,8 @@ const description = 'Your comic collection';
     type ComicProject,
   } from '../utils/comic-maker';
 
+  import { BASE_PATH as base } from '@utils/site';
+
   let comics: ComicProject[] = [];
   let comicToDelete: string | null = null;
 
@@ -498,11 +501,12 @@ const description = 'Your comic collection';
   }
 
   function viewComic(id: string) {
-    window.location.href = `/comic-viewer?id=${id}`;
+    // /comic-viewer doesn't exist yet — 404s regardless of base path.
+    window.location.href = `${base}/comic-viewer?id=${id}`;
   }
 
   function editComic(id: string) {
-    window.location.href = `/comic-maker?edit=${id}`;
+    window.location.href = `${base}/comic-maker?edit=${id}`;
   }
 
   function showDeleteModal(id: string) {

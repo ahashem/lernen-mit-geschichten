@@ -6,6 +6,7 @@ import { getTranslation } from '@utils/i18n';
 const locale = 'de';
 const title = getTranslation(locale, 'scanQR');
 const description = getTranslation(locale, 'scanQRDescription');
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
@@ -36,7 +37,7 @@ const description = getTranslation(locale, 'scanQRDescription');
       </div>
 
       <div class="back-link-container">
-        <a href="/my-stories" class="btn-back">
+        <a href={`${base}/my-stories`} class="btn-back">
           ← {getTranslation(locale, 'backToMyStories')}
         </a>
       </div>
@@ -183,6 +184,8 @@ const description = getTranslation(locale, 'scanQRDescription');
   import { decompressStoryData, isValidQRData } from '@utils/qr-code';
   import { saveStory, generateId, type CreatedStory } from '@utils/story-builder';
 
+  import { BASE_PATH as base } from '@utils/site';
+
   document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('manual-entry-form') as HTMLFormElement;
     const input = document.getElementById('manual-url') as HTMLInputElement;
@@ -241,7 +244,7 @@ const description = getTranslation(locale, 'scanQRDescription');
       saveStory(story);
 
       // Redirect to story viewer
-      window.location.href = `/story-viewer?id=${story.id}`;
+      window.location.href = `${base}/story-viewer?id=${story.id}`;
     }
   });
 </script>

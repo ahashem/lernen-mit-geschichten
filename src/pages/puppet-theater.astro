@@ -12,6 +12,7 @@ import type { Locale } from '@utils/i18n';
 
 const locale = (Astro.url.searchParams.get('lang') || 'de') as Locale;
 const t = (key: string) => getTranslation(locale, key);
+import { BASE_PATH as base } from '@utils/site';
 
 const showId = Astro.url.searchParams.get('show');
 ---
@@ -32,7 +33,7 @@ const showId = Astro.url.searchParams.get('show');
         <p class="page-description">{t('puppetTheaterDescription')}</p>
       </div>
       <div class="header-actions">
-        <a href={`/my-shows?lang=${locale}`} class="btn btn-secondary">
+        <a href={`${base}/my-shows?lang=${locale}`} class="btn btn-secondary">
           <span class="btn-icon">📚</span>
           <span class="btn-label">{t('myShows')}</span>
         </a>

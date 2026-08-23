@@ -5,6 +5,7 @@ import { getTranslation } from '@utils/i18n';
 const locale = 'de';
 const title = getTranslation(locale, 'myStories');
 const description = getTranslation(locale, 'createdStories');
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
@@ -13,7 +14,7 @@ const description = getTranslation(locale, 'createdStories');
       <header class="page-header">
         <div class="header-content">
           <h1 class="page-title">📚 {title}</h1>
-          <a href="/story-builder" class="btn-create-new">
+          <a href={`${base}/story-builder`} class="btn-create-new">
             + {getTranslation(locale, 'createYourStory')}
           </a>
         </div>
@@ -49,7 +50,7 @@ const description = getTranslation(locale, 'createdStories');
           <div class="empty-icon">📝</div>
           <h2>{getTranslation(locale, 'noStoriesYet')}</h2>
           <p>{getTranslation(locale, 'createFirstStory')}</p>
-          <a href="/story-builder" class="btn-primary">
+          <a href={`${base}/story-builder`} class="btn-primary">
             {getTranslation(locale, 'createYourStory')}
           </a>
         </div>
@@ -398,6 +399,7 @@ const description = getTranslation(locale, 'createdStories');
 
 <script>
   import { getStoredStories, deleteStory, getUnlocks } from '@utils/story-builder';
+  import { BASE_PATH as base } from '@utils/site';
 
   let storyToDelete: string | null = null;
 
@@ -443,9 +445,9 @@ const description = getTranslation(locale, 'createdStories');
           <div>📅 ${formatDate(story.lastModified)}</div>
         </div>
         <div class="story-actions">
-          <a href="/story-viewer?id=${story.id}" class="btn-view">👁️ Ansehen</a>
-          <a href="/qr-generator?id=${story.id}" class="btn-qr">📱 Teilen</a>
-          <a href="/story-builder?edit=${story.id}" class="btn-edit">✏️ Bearbeiten</a>
+          <a href="${base}/story-viewer?id=${story.id}" class="btn-view">👁️ Ansehen</a>
+          <a href="${base}/qr-generator?id=${story.id}" class="btn-qr">📱 Teilen</a>
+          <a href="${base}/story-builder?edit=${story.id}" class="btn-edit">✏️ Bearbeiten</a>
           <button class="btn-delete" data-id="${story.id}">🗑️ Löschen</button>
         </div>
       </div>

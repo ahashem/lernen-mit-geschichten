@@ -9,13 +9,14 @@ import { getTranslation } from '../utils/i18n';
 const url = new URL(Astro.request.url);
 const language = (url.searchParams.get('lang') || 'de') as Locale;
 const storyId = url.searchParams.get('story') || '';
+import { BASE_PATH as base } from '@utils/site';
 
 // Fetch the story
 const allStories = await getCollection('stories');
 const story = allStories.find(s => s.data.storyId === storyId);
 
 if (!story || !story.data.questions || story.data.questions.length === 0) {
-  return Astro.redirect(`/${language}/stories`);
+  return Astro.redirect(language === 'de' ? `${base}/` : `${base}/${language}`);
 }
 
 // Get localized title

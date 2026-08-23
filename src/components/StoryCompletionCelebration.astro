@@ -510,7 +510,7 @@ const { locale = 'de', storyId, storyTitle, rewards = [] } = Astro.props;
   import { soundEffects } from '../utils/sound-effects';
 
   // Get base path for correct navigation
-  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  import { BASE_PATH as base } from '@utils/site';
 
   function initCelebration() {
     const overlay = document.getElementById('celebration-overlay');

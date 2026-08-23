@@ -4,6 +4,7 @@ import { getTranslation } from '../utils/i18n';
 
 const locale = 'de';
 const t = (key: string) => getTranslation(locale as any, key as any);
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout title="Kampfkarten-Sammlung" locale={locale}>
@@ -77,7 +78,7 @@ const t = (key: string) => getTranslation(locale as any, key as any);
       </div>
 
       <div class="actions">
-        <a href="/card-battle" class="action-btn">⚔️ Schlacht</a>
+        <a href={`${base}/card-battle`} class="action-btn">⚔️ Schlacht</a>
       </div>
     </div>
 

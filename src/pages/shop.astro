@@ -4,6 +4,7 @@ import { getTranslation } from '../utils/i18n';
 import type { Locale } from '../utils/i18n';
 
 const locale: Locale = 'de';
+import { BASE_PATH as base } from '@utils/site';
 
 const pageTitle = {
   de: 'Sternenladen',
@@ -95,7 +96,7 @@ const pageDescription = {
 
     <!-- Inventory Link -->
     <div class="inventory-link-section">
-      <a href={`${import.meta.env.BASE_URL}/inventory`} class="btn-inventory">
+      <a href={`${base}/inventory`} class="btn-inventory">
         <span class="icon">📦</span>
         <span>{getTranslation(locale, 'myItems')}</span>
       </a>

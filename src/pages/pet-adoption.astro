@@ -8,6 +8,7 @@ import { getTranslation } from '../utils/i18n';
 
 const locale = 'de'; // Can be dynamic
 const t = (key: string) => getTranslation(locale, key);
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout
@@ -83,7 +84,7 @@ const t = (key: string) => getTranslation(locale, key);
         <div class="success-animation">🎉</div>
         <h2>{t('petAdopted')}</h2>
         <p>{t('congratsPetAdopted')}</p>
-        <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/virtual-pets`} class="success-btn">{t('myPets')}</a>
+        <a href={`${base}/virtual-pets`} class="success-btn">{t('myPets')}</a>
       </div>
     </div>
   </main>
@@ -432,7 +433,7 @@ const t = (key: string) => getTranslation(locale, key);
   const locale = 'de';
 
   // Get base path for correct navigation
-  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  import { BASE_PATH as base } from '@utils/site';
 
   class AdoptionCenter {
     private selectedCharacter: { id: string; type: string; emoji: string; name: string } | null = null;

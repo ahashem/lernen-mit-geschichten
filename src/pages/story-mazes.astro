@@ -6,6 +6,7 @@ import { getTranslation } from '@utils/i18n';
 const locale = 'de';
 const title = getTranslation(locale, 'storyMazes');
 const description = getTranslation(locale, 'storyMazesDescription');
+import { BASE_PATH as base } from '@utils/site';
 
 // Get all stories
 const allStories = await getCollection('stories', ({ data }) => {
@@ -147,7 +148,7 @@ const storiesByDifficulty = {
                   </div>
                   <div class="maze-card-footer">
                     <a
-                      href={`/maze-game?story=${story.data.storyId}&difficulty=easy`}
+                      href={`${base}/maze-game?story=${story.data.storyId}&difficulty=easy`}
                       class="btn-play"
                     >
                       <span data-i18n="playMaze">Spielen</span>
@@ -206,7 +207,7 @@ const storiesByDifficulty = {
                   </div>
                   <div class="maze-card-footer">
                     <a
-                      href={`/maze-game?story=${story.data.storyId}&difficulty=medium`}
+                      href={`${base}/maze-game?story=${story.data.storyId}&difficulty=medium`}
                       class="btn-play"
                     >
                       <span data-i18n="playMaze">Spielen</span>
@@ -309,7 +310,7 @@ const storiesByDifficulty = {
 
       <!-- Back Link -->
       <div class="back-link">
-        <a href="/" class="btn-back">
+        <a href={`${base}/`} class="btn-back">
           <span>←</span>
           <span data-i18n="backToStories">Zurück zu Geschichten</span>
         </a>
@@ -762,6 +763,8 @@ const storiesByDifficulty = {
 </style>
 
 <script>
+  import { BASE_PATH as base } from '@utils/site';
+
   // Load maze progress from localStorage
   function loadMazeProgress() {
     const progress = JSON.parse(
@@ -863,7 +866,7 @@ const storiesByDifficulty = {
 
     // Setup button
     document.getElementById('start-daily-btn')!.onclick = () => {
-      window.location.href = `/maze-game?story=${storyId}&difficulty=medium&daily=true`;
+      window.location.href = `${base}/maze-game?story=${storyId}&difficulty=medium&daily=true`;
     };
 
     // Update countdown timer

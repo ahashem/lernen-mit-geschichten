@@ -8,6 +8,7 @@ const language = (url.searchParams.get('lang') || 'de') as Locale;
 
 const allStories = await getCollection('stories');
 const storiesWithQuestions = allStories.filter(s => s.data.questions && s.data.questions.length > 0);
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout
@@ -87,7 +88,7 @@ const storiesWithQuestions = allStories.filter(s => s.data.questions && s.data.q
                   </div>
                 </div>
                 <a
-                  href={`/balloon-pop?story=${story.data.storyId}&lang=${language}`}
+                  href={`${base}/balloon-pop?story=${story.data.storyId}&lang=${language}`}
                   class="btn-play"
                 >
                   {getTranslation(language, 'playNow')}

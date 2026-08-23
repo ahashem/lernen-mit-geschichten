@@ -5,6 +5,7 @@ import { getCollection } from 'astro:content';
 import { getTranslation } from '@utils/i18n';
 
 const locale = 'de';
+import { BASE_PATH as base } from '@utils/site';
 
 // Get story ID from query params (will be handled client-side)
 const storyId = Astro.url.searchParams.get('story') || '001-bruno';
@@ -52,7 +53,7 @@ for (const [theme, characters] of Object.entries(themeMap)) {
     <!-- Story Context Banner -->
     <div class="story-banner">
       <div class="banner-content">
-        <a href="/story-mazes" class="back-btn">
+        <a href={`${base}/story-mazes`} class="back-btn">
           <span>←</span>
           <span data-i18n="backToMazes">Zurück zu Labyrinthen</span>
         </a>
@@ -147,7 +148,7 @@ for (const [theme, characters] of Object.entries(themeMap)) {
                 .slice(0, 3)
                 .map((relatedStory) => (
                   <a
-                    href={`/maze-game?story=${relatedStory.data.storyId}&difficulty=${difficulty}`}
+                    href={`${base}/maze-game?story=${relatedStory.data.storyId}&difficulty=${difficulty}`}
                     class="related-card"
                   >
                     <div class="related-emoji">

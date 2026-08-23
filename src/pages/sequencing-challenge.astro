@@ -10,13 +10,14 @@ import { getCollection } from 'astro:content';
 import { extractEventsFromStory, shuffleEvents } from '../utils/story-sequencing';
 
 const locale = 'de';
+import { BASE_PATH as base } from '@utils/site';
 
 // Get query parameters
 const storyId = Astro.url.searchParams.get('story');
 const difficulty = (Astro.url.searchParams.get('difficulty') as 'easy' | 'medium' | 'hard') || 'easy';
 
 if (!storyId) {
-  return Astro.redirect('/sequencing-game');
+  return Astro.redirect(`${base}/sequencing-game`);
 }
 
 // Get the story
@@ -24,7 +25,7 @@ const allStories = await getCollection('stories');
 const story = allStories.find((s) => s.data.storyId === storyId);
 
 if (!story) {
-  return Astro.redirect('/sequencing-game');
+  return Astro.redirect(`${base}/sequencing-game`);
 }
 
 // Extract events from story content
@@ -48,7 +49,7 @@ const description = 'Ordne die Ereignisse dieser Geschichte in der richtigen Rei
 <BaseLayout title={title} description={description} locale={locale}>
   <div class="challenge-page">
     <div class="challenge-header">
-      <a href="/sequencing-game" class="back-btn">← Zurück zur Auswahl</a>
+      <a href={`${base}/sequencing-game`} class="back-btn">← Zurück zur Auswahl</a>
 
       <div class="story-info">
         <span class="story-emoji">{story.data.emoji}</span>

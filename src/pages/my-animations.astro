@@ -8,6 +8,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 const locale = 'de';
 const title = 'Meine Animationen';
 const description = 'Verwalte und teile deine erstellten Animationen';
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
@@ -15,7 +16,7 @@ const description = 'Verwalte und teile deine erstellten Animationen';
     <header class="gallery-header">
       <h1>🎬 Meine Animationen</h1>
       <div class="header-actions">
-        <a href="/animation-studio" class="create-btn">
+        <a href={`${base}/animation-studio`} class="create-btn">
           ➕ Neue Animation erstellen
         </a>
         <button id="sort-btn" class="sort-btn">
@@ -51,7 +52,7 @@ const description = 'Verwalte und teile deine erstellten Animationen';
       <div class="empty-icon">🎬</div>
       <h2>Noch keine Animationen</h2>
       <p>Erstelle deine erste Animation im Animations-Studio!</p>
-      <a href="/animation-studio" class="primary-btn">
+      <a href={`${base}/animation-studio`} class="primary-btn">
         ➕ Animation erstellen
       </a>
     </div>
@@ -112,7 +113,7 @@ const description = 'Verwalte und teile deine erstellten Animationen';
   import { AnimationEngine } from '@utils/animation-studio';
 
   // Get base path for correct navigation
-  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  import { BASE_PATH as base } from '@utils/site';
 
   const PROJECTS_STORAGE_KEY = 'animation-studio-projects';
   let animations: AnimationProject[] = [];

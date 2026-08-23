@@ -10,6 +10,7 @@ import { getTranslation } from '../../utils/i18n';
 const locale = 'de';
 const title = 'Spiele & Aktivitäten';
 const description = 'Zusätzliche Lernspiele zur Ergänzung der Geschichten';
+import { BASE_PATH as base } from '@utils/site';
 
 // ALL GAMES - Organized by Category
 const allGames = [
@@ -355,7 +356,7 @@ const difficultyLabels = {
         <p class="page-description">{description}</p>
         <p class="game-count">✨ {allGames.length} Spiele verfügbar</p>
         <p class="supplementary-note">
-          💡 Diese Spiele ergänzen unsere <a href="/stories">interaktiven Geschichten</a>
+          💡 Diese Spiele ergänzen unsere <a href={`${base}/`}>interaktiven Geschichten</a>
         </p>
       </header>
 
@@ -382,7 +383,7 @@ const difficultyLabels = {
       <div class="games-grid" role="region" aria-label="Spiele">
         {allGames.map(game => (
           <a
-            href={game.url}
+            href={`${base}${game.url}`}
             class="game-card"
             data-category={game.category}
             data-difficulty={game.difficulty}

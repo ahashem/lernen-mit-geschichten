@@ -4,6 +4,7 @@ import { getTranslation } from '../utils/i18n';
 
 const locale = 'de';
 const t = (key: string) => getTranslation(locale as any, key as any);
+import { BASE_PATH as base } from '@utils/site';
 ---
 
 <BaseLayout title={t('cardBattle')} locale={locale}>
@@ -86,7 +87,7 @@ const t = (key: string) => getTranslation(locale as any, key as any);
           <span class="mode-badge">Hohe Strategie</span>
         </button>
 
-        <a href="/card-collection" class="mode-card collection-link">
+        <a href={`${base}/card-collection`} class="mode-card collection-link">
           <span class="mode-icon">📚</span>
           <h3>{t('cardCollection')}</h3>
           <p>Verwalte deine Karten, baue Decks und werte Karten auf</p>
@@ -364,7 +365,7 @@ const t = (key: string) => getTranslation(locale as any, key as any);
   import { loadCollection, checkDailyBattle } from '../utils/card-collection';
 
   // Get base path for correct navigation
-  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  import { BASE_PATH as base } from '@utils/site';
 
   // Load player stats
   function loadStats() {
@@ -416,7 +417,7 @@ const t = (key: string) => getTranslation(locale as any, key as any);
       const collection = loadCollection();
       if (collection.cards.length === 0) {
         alert('Du hast noch keine Karten! Lies Geschichten, um Karten freizuschalten.');
-        window.location.href = `${base}/de/stories`;
+        window.location.href = `${base}/`;
         return;
       }
 
