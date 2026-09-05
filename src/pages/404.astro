@@ -1,0 +1,380 @@
+---
+// The whole 404, in one file. The host has exactly one error document — Apache's
+// ErrorDocument and GitHub Pages both serve /404.html — so a per-locale page
+// would be unreachable. Instead the page is German (the default locale, served
+// from the root) and each other language gets a labelled link to its own
+// homepage, which is the way out for a visitor who cannot read the headline.
+//
+// Standalone rather than BaseLayout: the host serves this for any URL it cannot
+// match, so there is no canonical path to declare, nothing to rank for, and no
+// "you are here" for a nav to express. The links below are the site's top level.
+import '@styles/global.css';
+import type { Locale } from '@utils/i18n';
+import { getTranslation, isRTL } from '@utils/i18n';
+import { BASE_PATH as base } from '@utils/site';
+
+const locale: Locale = 'de';
+
+// Endonyms, not translatable UI strings — each language names itself the same
+// way whatever page it appears on.
+const languages: { code: Locale; name: string; dot: string }[] = [
+  { code: 'en', name: 'English', dot: '#2E9E8F' },
+  { code: 'ar', name: 'العربية', dot: '#A83C63' },
+  { code: 'ur', name: 'اردو', dot: '#7B5CB8' },
+  { code: 'tr', name: 'Türkçe', dot: '#C77D2A' },
+];
+---
+
+<!doctype html>
+<html lang="de" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {`${getTranslation(locale, 'pageNotFound')} | ${getTranslation(locale, 'siteName')}`}
+    </title>
+    <meta name="robots" content="noindex, follow" />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+  </head>
+  <body>
+    <main class="nf">
+      <div class="nf-shelf" aria-hidden="true">
+        <div class="nf-spines">
+          <span class="nf-spine nf-spine-a"></span>
+          <span class="nf-spine nf-spine-b"></span>
+          <span class="nf-spine nf-spine-c"></span>
+          <span class="nf-slot"><span class="nf-slot-mark">?</span></span>
+          <span class="nf-spine nf-spine-d"></span>
+          <span class="nf-spine nf-spine-e"></span>
+        </div>
+        <div class="nf-plank"></div>
+        <div class="nf-floor"><span class="nf-fallen-book"></span></div>
+      </div>
+
+      <p class="nf-code" aria-hidden="true">404</p>
+
+      <h1 class="nf-heading">{getTranslation(locale, 'notFoundHeading')}</h1>
+      <p class="nf-hint">{getTranslation(locale, 'notFoundHint')}</p>
+
+      <ul class="nf-langs">
+        {
+          languages.map(({ code, name, dot }) => (
+            <li>
+              <a class="nf-lang" href={`${base}/${code}`}>
+                <span class="nf-dot" style={`background:${dot}`} aria-hidden="true" />
+                <span
+                  class:list={['nf-lang-text', { 'nf-lang-rtl': isRTL(code) }]}
+                  lang={code}
+                  dir={isRTL(code) ? 'rtl' : 'ltr'}
+                >
+                  {getTranslation(code, 'notFoundHeading')}
+                </span>
+                <span class="nf-lang-name" lang={code} dir={isRTL(code) ? 'rtl' : 'ltr'}>
+                  {name}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="nf-actions">
+        <a class="nf-btn nf-btn-primary" href={`${base}/`}>
+          <span class="nf-book-icon" aria-hidden="true"></span>
+          {getTranslation(locale, 'notFoundBackToStories')}
+        </a>
+        <a class="nf-btn nf-btn-secondary" href={`${base}/about`}
+          >{getTranslation(locale, 'about')}</a
+        >
+      </div>
+    </main>
+  </body>
+</html>
+
+<style>
+  .nf {
+    /* Paper palette local to this page; the site tokens are the app chrome. */
+    --nf-paper: #faf5ea;
+    --nf-ink: #2b2a33;
+    /* The design's #9A8F78 / #8A8270 greys clear only 2.9:1 and 3.5:1 on the
+       paper. These are the same hues carried down to 4.84:1 and 5.38:1. */
+    --nf-ink-soft: #746b59;
+    --nf-ink-softer: #6c6454;
+    --nf-ghost: #e3d5b8;
+    --nf-ghost-deep: #d9ccae;
+    /* #3E7CB1 from the design reaches only 4.38:1 behind 15px semibold cream. */
+    --nf-blue: #37709f;
+    --nf-blue-shadow: #2a5a85;
+    --nf-cream: #fffdf8;
+    --nf-amber: #f4b23e;
+
+    /* One knob for the whole shelf: everything below is a ratio of it. */
+    --nf-spine: clamp(24px, 6.5vw, 34px);
+    --nf-shelf: clamp(78px, 22vw, 110px);
+
+    min-height: 100vh;
+    padding: 3rem 1.5rem 4rem;
+    background: var(--nf-paper);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .nf-shelf {
+    /* Sized off the spine knob so the plank keeps a constant overhang past the
+       books at every width. The design's fixed 440px left-pads the spine row;
+       centring it here means the overhang has to be symmetric. */
+    width: min(100%, calc(var(--nf-spine) * 9.8));
+  }
+
+  .nf-spines {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: clamp(8px, 2.4vw, 12px);
+    height: var(--nf-shelf);
+  }
+
+  .nf-spine {
+    flex: none;
+    width: var(--nf-spine);
+    border-radius: 6px 6px 3px 3px;
+    /* The highlight reads as the page block catching the light. */
+    box-shadow: inset -6px 0 0 rgba(255, 255, 255, 0.18);
+    transform-origin: bottom;
+  }
+
+  .nf-spine-a {
+    height: 87%;
+    background: #3e7cb1;
+  }
+  .nf-spine-b {
+    height: 95%;
+    background: #2e9e8f;
+    transform: rotate(-2deg);
+  }
+  .nf-spine-c {
+    height: 82%;
+    background: #a83c63;
+  }
+  .nf-spine-d {
+    height: 91%;
+    background: #7b5cb8;
+    transform: rotate(3deg);
+  }
+  .nf-spine-e {
+    height: 85%;
+    background: #c77d2a;
+  }
+
+  /* The missing book. */
+  .nf-slot {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(var(--nf-spine) * 1.35);
+    height: 91%;
+  }
+
+  .nf-slot-mark {
+    font-size: clamp(1.25rem, 5vw, 1.75rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--nf-ghost-deep);
+  }
+
+  .nf-plank {
+    height: clamp(12px, 3.5vw, 16px);
+    border-radius: 5px;
+    background: #b08d57;
+    box-shadow: 0 4px 0 #96733f;
+  }
+
+  .nf-floor {
+    position: relative;
+    height: clamp(60px, 18vw, 86px);
+  }
+
+  .nf-fallen-book {
+    position: absolute;
+    top: 44%;
+    inset-inline-start: 44%;
+    width: clamp(70px, 22vw, 96px);
+    height: clamp(24px, 7vw, 32px);
+    border-radius: 3px 7px 7px 3px;
+    background: var(--nf-amber);
+    transform: rotate(-8deg);
+    box-shadow:
+      inset 0 6px 0 rgba(255, 255, 255, 0.25),
+      0 3px 8px rgba(43, 42, 51, 0.18);
+  }
+
+  .nf-code {
+    margin: 0;
+    font-size: clamp(3rem, 13vw, 5.35rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--nf-ghost);
+  }
+
+  .nf-heading {
+    margin: 1.25rem 0 0.5rem;
+    font-size: clamp(1.5rem, 5vw, 2.125rem);
+    color: var(--nf-ink);
+  }
+
+  .nf-hint {
+    margin: 0 0 1.75rem;
+    font-size: 0.95rem;
+    color: var(--nf-ink-soft);
+  }
+
+  .nf-langs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem;
+    margin: 0 0 1.75rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nf-lang {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    /* A row is the way out for a visitor who cannot read the headline, so it is
+       a real control: 44px tall and hit-testable across its whole width. */
+    min-height: 44px;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    text-align: start;
+    text-decoration: none;
+    transition: background 0.14s ease;
+  }
+
+  /* Lightens rather than darkens: a darker fill drops the language name below
+     4.5:1, and a row lifting off the paper reads correctly anyway. */
+  .nf-lang:hover {
+    background: var(--nf-cream);
+  }
+
+  .nf-lang:focus-visible {
+    outline: 3px solid var(--nf-blue);
+    outline-offset: 2px;
+  }
+
+  .nf-lang-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--nf-blue);
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nf-lang {
+      transition: none;
+    }
+  }
+
+  .nf-dot {
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 3px;
+  }
+
+  .nf-lang-text {
+    font-size: 0.8rem;
+    color: var(--nf-ink-softer);
+  }
+
+  .nf-lang-rtl {
+    /* Naskh and Nastaliq need more vertical room than the Latin lines. */
+    font-family: var(--font-arabic);
+    font-size: 0.875rem;
+    line-height: 1.9;
+  }
+
+  .nf-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.875rem;
+  }
+
+  .nf-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    min-height: 48px;
+    padding: 0.75rem 1.75rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.14s ease;
+  }
+
+  .nf-btn-primary {
+    background: var(--nf-blue);
+    color: var(--nf-cream);
+    box-shadow: 0 4px 0 var(--nf-blue-shadow);
+  }
+
+  .nf-btn-secondary {
+    border: 2px solid var(--nf-blue);
+    /* Pull the border out of the box so both buttons end up the same height. */
+    padding: calc(0.75rem - 2px) calc(1.75rem - 2px);
+    color: var(--nf-blue);
+    font-weight: 500;
+  }
+
+  .nf-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .nf-btn:focus-visible {
+    outline: 3px solid var(--nf-blue);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nf-btn {
+      transition: none;
+    }
+    .nf-btn:hover {
+      transform: none;
+    }
+  }
+
+  .nf-book-icon {
+    display: block;
+    flex: none;
+    width: 14px;
+    height: 18px;
+    border-radius: 2px 4px 4px 2px;
+    background: var(--nf-cream);
+    box-shadow: inset 3px 0 0 var(--nf-amber);
+  }
+
+  @media (max-width: 600px) {
+    .nf {
+      padding: 2.5rem 1rem 3rem;
+    }
+
+    .nf-actions {
+      flex-direction: column;
+      align-self: stretch;
+    }
+
+    .nf-btn {
+      width: 100%;
+    }
+  }
+</style>

@@ -39,5 +39,6 @@
   "bilingualMode": "Bilingual Mode",
   "fontSize": "Font Size",
   "textToSpeech": "Read Aloud",
-  "settings": "Settings"
+  "settings": "Settings",
+  "notFoundHeading": "Oops! This book is missing from the shelf."
 }

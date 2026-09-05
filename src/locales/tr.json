@@ -39,5 +39,6 @@
   "bilingualMode": "İki Dilli Mod",
   "fontSize": "Yazı Boyutu",
   "textToSpeech": "Sesli Oku",
-  "settings": "Ayarlar"
+  "settings": "Ayarlar",
+  "notFoundHeading": "Hoppala! Bu kitap rafta yok."
 }
