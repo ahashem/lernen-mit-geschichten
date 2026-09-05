@@ -77,6 +77,11 @@ export default defineConfig({
   vite: {
     define: { 'import.meta.env.NOINDEX': JSON.stringify(NOINDEX) },
   },
+  // Astro applies base to a redirect's source but not its destination, so a bare
+  // '/' would send a subpath deploy off the site.
+  redirects: {
+    '/de': `${BASE_PATH === '/' ? '' : BASE_PATH}/`,
+  },
   output: 'static',
   site: SITE_URL,
   base: BASE_PATH,
