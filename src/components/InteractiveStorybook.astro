@@ -1,6 +1,11 @@
 ---
 import type { Locale } from '../utils/i18n';
 import { getTranslation } from '../utils/i18n';
+import { BASE_PATH } from '../utils/site';
+
+// Page images may be root-relative (served from public/) or absolute URLs.
+// Only the former need the deploy's base path; Astro does not rewrite these.
+const withBase = (src: string) => (src.startsWith('/') ? `${BASE_PATH}${src}` : src);
 
 export interface StoryPage {
   text: string;
@@ -36,7 +41,7 @@ const t = {
             <div class="story-page">
               {page.image && (
                 <div class="page-image">
-                  <img src={page.image} alt={`Page ${index + 1}`} loading="lazy" />
+                  <img src={withBase(page.image)} alt={`Page ${index + 1}`} loading="lazy" />
                 </div>
               )}
               <div class="page-text" data-page={index}>

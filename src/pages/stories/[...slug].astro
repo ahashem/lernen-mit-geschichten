@@ -162,8 +162,8 @@ const quizQuestions: QuizQuestion[] = story.data.questions || [];
               <a
                 href={
                   story.data.storyFormat === 'interactive'
-                    ? `/stories/${baseStoryId}`
-                    : `/stories/${baseStoryId}-interactive`
+                    ? `${BASE_PATH}/stories/${baseStoryId}`
+                    : `${BASE_PATH}/stories/${baseStoryId}-interactive`
                 }
                 class={`format-option ${story.data.storyFormat === 'standard' ? 'active' : ''}`}
               >
@@ -175,8 +175,8 @@ const quizQuestions: QuizQuestion[] = story.data.questions || [];
               <a
                 href={
                   story.data.storyFormat === 'standard'
-                    ? `/stories/${baseStoryId}-interactive`
-                    : `/stories/${baseStoryId}`
+                    ? `${BASE_PATH}/stories/${baseStoryId}-interactive`
+                    : `${BASE_PATH}/stories/${baseStoryId}`
                 }
                 class={`format-option ${story.data.storyFormat === 'interactive' ? 'active' : ''}`}
               >
