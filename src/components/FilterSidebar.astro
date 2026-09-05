@@ -7,10 +7,9 @@ interface Props {
   locale: Locale;
   currentSkills?: string[];
   currentLanguages?: string[];
-  autoSelectLocale?: boolean;
 }
 
-const { locale, currentSkills = [], currentLanguages = [], autoSelectLocale = true } = Astro.props;
+const { locale, currentSkills = [], currentLanguages = [] } = Astro.props;
 
 const languages = [
   { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
@@ -21,7 +20,7 @@ const languages = [
 ];
 ---
 
-<aside class="filter-sidebar" data-locale={locale} data-auto-select={autoSelectLocale}>
+<aside class="filter-sidebar" data-locale={locale}>
   <h3>{getTranslation(locale, 'filterBySkill')}</h3>
 
   <div class="filter-section">
@@ -90,6 +89,7 @@ const languages = [
       // Store in localStorage
       localStorage.setItem('filters-skills', JSON.stringify(selectedSkills));
       localStorage.setItem('filters-languages', JSON.stringify(selectedLanguages));
+      localStorage.setItem('filters-locale', sidebar.getAttribute('data-locale') ?? '');
 
       // Update URL params
       const url = new URL(window.location.href);
@@ -139,16 +139,24 @@ const languages = [
       });
     }
 
-    // Load filters: URL params > localStorage > auto-select locale
+    // Load filters: URL params > localStorage
     const currentLocale = sidebar.getAttribute('data-locale');
-    const shouldAutoSelect = sidebar.getAttribute('data-auto-select') === 'true';
+
+    // Every story declares exactly one language — its own locale — and each
+    // homepage already renders only that locale. A language selection carried
+    // over from another locale therefore matches nothing and blanks the grid,
+    // so it does not survive a locale change. Skills are locale-independent.
+    if (localStorage.getItem('filters-locale') !== currentLocale) {
+      localStorage.removeItem('filters-languages');
+      localStorage.setItem('filters-locale', currentLocale ?? '');
+    }
 
     // Get URL params (client-side only, since we're using SSG)
     const urlParams = new URLSearchParams(window.location.search);
     const urlSkills = urlParams.get('skills')?.split(',').filter(Boolean) || [];
     const urlLanguages = urlParams.get('languages')?.split(',').filter(Boolean) || [];
 
-    // Priority: URL params, then localStorage, then auto-select
+    // Priority: URL params, then localStorage
     const hasUrlParams = urlSkills.length > 0 || urlLanguages.length > 0;
 
     if (hasUrlParams) {
@@ -195,19 +203,6 @@ const languages = [
           ) as HTMLInputElement;
           if (cb) cb.checked = true;
         });
-      } else if (shouldAutoSelect && currentLocale) {
-        // Auto-select current locale if no saved languages and auto-select is enabled
-        const cb = sidebar.querySelector(
-          `input[name="language"][value="${currentLocale}"]`
-        ) as HTMLInputElement;
-        if (cb) {
-          cb.checked = true;
-          // Save to localStorage and update URL
-          localStorage.setItem('filters-languages', JSON.stringify([currentLocale]));
-          const url = new URL(window.location.href);
-          url.searchParams.set('languages', currentLocale);
-          window.history.replaceState({}, '', url);
-        }
       }
     }
   });

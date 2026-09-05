@@ -9,6 +9,7 @@
   "filterBySkill": "Filter by Skill",
   "filterByLanguage": "Filter by Language",
   "allStories": "All Stories",
+  "noMatchingStories": "No stories match your filters.",
   "readStory": "Read Story",
   "keyMessage": "Key Message",
   "activities": "Interactive Activities",

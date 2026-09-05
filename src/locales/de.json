@@ -9,6 +9,7 @@
   "filterBySkill": "Nach Fähigkeit filtern",
   "filterByLanguage": "Nach Sprache filtern",
   "allStories": "Alle Geschichten",
+  "noMatchingStories": "Keine Geschichten passen zu deinen Filtern.",
   "readStory": "Geschichte lesen",
   "keyMessage": "Die Botschaft",
   "activities": "Interaktive Aktivitäten",

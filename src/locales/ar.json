@@ -9,6 +9,7 @@
   "filterBySkill": "تصفية حسب المهارة",
   "filterByLanguage": "تصفية حسب اللغة",
   "allStories": "جميع القصص",
+  "noMatchingStories": "لا توجد قصص تطابق عوامل التصفية.",
   "readStory": "اقرأ القصة",
   "keyMessage": "الرسالة",
   "activities": "أنشطة تفاعلية",

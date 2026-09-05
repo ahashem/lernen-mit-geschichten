@@ -101,6 +101,10 @@ const description = hero.text;
             </div>
           )
         }
+
+        <div class="no-stories no-results" hidden>
+          <p>{getTranslation(locale, 'noMatchingStories')}</p>
+        </div>
       </section>
     </div>
   </div>
@@ -138,6 +142,12 @@ const description = hero.text;
           cardEl.style.display = 'none';
         }
       });
+
+      // Filtering everything away used to leave a silent blank column.
+      const visible = storyCards.some(card => (card as HTMLElement).style.display !== 'none');
+      const noResults = document.querySelector('.no-results') as HTMLElement | null;
+      if (noResults) noResults.hidden = visible;
+      (storiesGrid as HTMLElement).hidden = !visible;
     };
 
     window.addEventListener('searchChanged', filterStories);
@@ -186,6 +196,11 @@ const description = hero.text;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
+  }
+
+  /* `display: grid` outranks the UA rule behind the hidden attribute. */
+  .stories-grid[hidden] {
+    display: none;
   }
 
   .no-stories {

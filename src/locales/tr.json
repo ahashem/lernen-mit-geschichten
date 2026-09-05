@@ -9,6 +9,7 @@
   "filterBySkill": "Beceriye Göre Filtrele",
   "filterByLanguage": "Dile Göre Filtrele",
   "allStories": "Tüm Hikayeler",
+  "noMatchingStories": "Filtrelerinize uyan hikaye yok.",
   "readStory": "Hikayeyi Oku",
   "keyMessage": "Ana Mesaj",
   "activities": "Etkileşimli Etkinlikler",

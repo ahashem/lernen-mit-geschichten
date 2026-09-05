@@ -4,6 +4,7 @@ import StoryCard from '../components/StoryCard.astro';
 import SearchBar from '../components/SearchBar.astro';
 import FilterSidebar from '../components/FilterSidebar.astro';
 import { getPublishedStories } from '@utils/stories';
+import { getTranslation } from '@utils/i18n';
 
 const locale = 'de';
 const stories = await getPublishedStories(({ id }) => id.startsWith('de/'));
@@ -59,6 +60,10 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
             </div>
           )
         }
+
+        <div class="no-stories no-results" hidden>
+          <p>{getTranslation(locale, 'noMatchingStories')}</p>
+        </div>
       </section>
     </div>
   </div>
@@ -103,6 +108,12 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
           cardEl.style.display = 'none';
         }
       });
+
+      // Filtering everything away used to leave a silent blank column.
+      const visible = storyCards.some(card => (card as HTMLElement).style.display !== 'none');
+      const noResults = document.querySelector('.no-results') as HTMLElement | null;
+      if (noResults) noResults.hidden = visible;
+      (storiesGrid as HTMLElement).hidden = !visible;
     };
 
     window.addEventListener('searchChanged', filterStories);
@@ -153,6 +164,11 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
+  }
+
+  /* `display: grid` outranks the UA rule behind the hidden attribute. */
+  .stories-grid[hidden] {
+    display: none;
   }
 
   .no-stories {
