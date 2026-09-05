@@ -47,6 +47,8 @@ export default [
       '.astro/',
       '.github/',
       'public/',
+      // Read-only reference exports live here; linting them floods the report.
+      'tmp/',
       '*.config.js',
       '*.config.mjs',
     ],
