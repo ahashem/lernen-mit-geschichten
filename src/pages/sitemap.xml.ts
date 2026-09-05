@@ -1,17 +1,19 @@
 import { getCollection } from 'astro:content';
 import type { APIRoute } from 'astro';
 
-const SITE_URL = 'https://lernen-mit-geschichten.de';
+import { BASE_PATH } from '@utils/site';
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ site }) => {
+  const SITE_URL = `${site?.origin ?? ''}${BASE_PATH}`;
+
   const stories = await getCollection('stories');
 
   // Group stories by slug (without language prefix)
   const storyMap = new Map<string, Set<string>>();
 
   stories.forEach(story => {
-    const slug = story.slug.replace(/^[a-z]{2}\//, '');
-    const lang = story.slug.split('/')[0];
+    const slug = story.id.replace(/^[a-z]{2}\//, '');
+    const lang = story.id.split('/')[0];
 
     if (!storyMap.has(slug)) {
       storyMap.set(slug, new Set());

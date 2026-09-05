@@ -3,7 +3,7 @@
 [![Deploy to GitHub Pages](https://github.com/ahashem/lernen-mit-geschichten/actions/workflows/deploy.yml/badge.svg)](https://github.com/ahashem/lernen-mit-geschichten/actions/workflows/deploy.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Content License: CC BY-NC-SA 4.0](https://img.shields.io/badge/Content%20License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D22.0.0-brightgreen)](https://nodejs.org/)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D24.0.0-brightgreen)](https://nodejs.org/)
 [![Built with Astro](https://img.shields.io/badge/Built%20with-Astro-FF5D01?logo=astro)](https://astro.build)
 [![Multilingual](https://img.shields.io/badge/Languages-5-blue)](https://github.com/ahashem/lernen-mit-geschichten)
 
@@ -46,7 +46,7 @@ A non-profit educational microwebsite designed for children ages 3-7, helping th
 
 ### Prerequisites
 
-- Node.js 22.x or higher
+- Node.js 24.x or higher
 - npm or yarn
 
 ### Installation

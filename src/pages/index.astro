@@ -49,7 +49,7 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
                   storyId={story.data.storyId}
                   estimatedReadTime={story.data.estimatedReadTime}
                   locale={locale}
-                  slug={story.slug.replace('de/', '')}
+                  slug={story.id.replace('de/', '')}
                   isInteractive={story.data.storyFormat === 'interactive'}
                   provider={story.data.provider}
                   providerUrl={story.data.providerUrl}

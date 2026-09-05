@@ -1,8 +1,0 @@
-# Lernen mit Geschichten - Robots.txt
-
-User-agent: *
-Allow: /
-
-# Sitemaps
-Sitemap: https://ahashem.github.io/lernen-mit-geschichten/sitemap-index.xml
-

@@ -1,5 +1,5 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import QuizInteractive, { type QuizQuestion } from '../../components/QuizInteractive.astro';
 import InteractiveStorybook from '../../components/InteractiveStorybook.astro';
@@ -9,6 +9,7 @@ import ReadingControls from '../../components/ReadingControls.astro';
 import type { Locale } from '../../utils/i18n';
 import { getTranslation } from '../../utils/i18n';
 import { getSkillsByIds } from '../../utils/skills-taxonomy';
+import { BASE_PATH } from '../../utils/site';
 
 export async function getStaticPaths() {
   const stories = await getCollection('stories');
@@ -16,9 +17,9 @@ export async function getStaticPaths() {
 
   // Generate regular story pages (German only - others handled by [locale]/stories/[...slug].astro)
   stories
-    .filter(story => story.slug.startsWith('de/'))
+    .filter(story => story.id.startsWith('de/'))
     .forEach(story => {
-      const slug = story.slug.replace(/^de\//, '');
+      const slug = story.id.replace(/^de\//, '');
       paths.push({
         params: { slug },
         props: { story, storyLocale: 'de', bilingualSecondLang: null },
@@ -29,17 +30,17 @@ export async function getStaticPaths() {
   const commonPairs = ['ar-de', 'en-de', 'tr-de', 'ur-de', 'de-en', 'de-ar'];
 
   stories.forEach(primaryStory => {
-    const primarySlug = primaryStory.slug.replace(/^[a-z]{2}\//, '');
-    const primaryLang = primaryStory.slug.match(/^([a-z]{2})\//)?.[1] || 'de';
+    const primarySlug = primaryStory.id.replace(/^[a-z]{2}\//, '');
+    const primaryLang = primaryStory.id.match(/^([a-z]{2})\//)?.[1] || 'de';
     const storyId = primaryStory.data.storyId;
 
     // Find all other language versions of this story
     const otherVersions = stories.filter(
-      s => s.data.storyId === storyId && s.slug.replace(/^[a-z]{2}\//, '') === primarySlug
+      s => s.data.storyId === storyId && s.id.replace(/^[a-z]{2}\//, '') === primarySlug
     );
 
     otherVersions.forEach(secondaryStory => {
-      const secondaryLang = secondaryStory.slug.match(/^([a-z]{2})\//)?.[1] || 'de';
+      const secondaryLang = secondaryStory.id.match(/^([a-z]{2})\//)?.[1] || 'de';
       const pairKey = `${primaryLang}-${secondaryLang}`;
 
       // Only generate routes for common pairs and avoid same-language pairs
@@ -66,7 +67,7 @@ interface Props {
 }
 
 const { story, storyLocale, bilingualSecondLang } = Astro.props;
-const { Content } = await story.render();
+const { Content } = await render(story);
 
 // Get UI language from URL or use story locale as fallback
 const uiLocale: Locale = (Astro.url.searchParams.get('ui') || storyLocale) as Locale;
@@ -95,13 +96,13 @@ const hasAlternativeFormat = !!alternativeStory;
 const availableLanguages = allStories
   .filter(s => s.data.storyId === story.data.storyId)
   .map(s => {
-    const lang = s.slug.match(/^([a-z]{2})\//)?.[1] || 'de';
-    const slug = s.slug.replace(/^[a-z]{2}\//, '');
+    const lang = s.id.match(/^([a-z]{2})\//)?.[1] || 'de';
+    const slug = s.id.replace(/^[a-z]{2}\//, '');
     return { locale: lang as Locale, slug };
   });
 
 // Extract slug without locale prefix for current story
-const currentStorySlug = story.slug.replace(/^[a-z]{2}\//, '');
+const currentStorySlug = story.id.replace(/^[a-z]{2}\//, '');
 
 // Find if bilingual mode is requested (from static route or query param)
 const bilingualWith = bilingualSecondLang || Astro.url.searchParams.get('bilingual');
@@ -111,10 +112,10 @@ let BilingualContent: any = null;
 if (bilingualMode) {
   bilingualStory =
     allStories.find(
-      s => s.data.storyId === story.data.storyId && s.slug.startsWith(bilingualWith + '/')
+      s => s.data.storyId === story.data.storyId && s.id.startsWith(bilingualWith + '/')
     ) || null;
   if (bilingualStory) {
-    const rendered = await bilingualStory.render();
+    const rendered = await render(bilingualStory);
     BilingualContent = rendered.Content;
   }
 }
@@ -252,7 +253,7 @@ const quizQuestions: QuizQuestion[] = story.data.questions || [];
           >
             📖 {getTranslation(uiLocale, 'exportBooklet')}
           </button>
-          <a href={`${import.meta.env.BASE_URL}/`} class="back-link">← {getTranslation(uiLocale, 'allStories')}</a>
+          <a href={`${BASE_PATH}/`} class="back-link">← {getTranslation(uiLocale, 'allStories')}</a>
         </div>
       </footer>
     </div>

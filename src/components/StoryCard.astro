@@ -2,6 +2,7 @@
 import type { Locale } from '../utils/i18n';
 import { getSkillsByIds } from '../utils/skills-taxonomy';
 import { getTranslation } from '../utils/i18n';
+import { BASE_PATH as base } from '../utils/site';
 
 interface Props {
   title: string;
@@ -39,7 +40,6 @@ const isNew = publishDate
   : false;
 
 const skillObjects = getSkillsByIds(skills);
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const storyUrl = locale === 'de' ? `${base}/stories/${slug}` : `${base}/${locale}/stories/${slug}`;
 ---
 

@@ -4,10 +4,13 @@ interface Props {
 }
 
 const { gtmId } = Astro.props;
+
+// A truthy check shipped `id=_` to production once; require a real container ID.
+const isValidGtmId = /^GTM-[A-Z0-9]+$/.test(gtmId?.trim() ?? '');
 ---
 
 {
-  gtmId && (
+  isValidGtmId && (
     <>
       <script
         type="text/partytown"
@@ -17,12 +20,12 @@ const { gtmId } = Astro.props;
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${gtmId}');
+})(window,document,'script','dataLayer','${gtmId?.trim()}');
 `}
       />
       <noscript>
         <iframe
-          src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+          src={`https://www.googletagmanager.com/ns.html?id=${gtmId?.trim()}`}
           height="0"
           width="0"
           style="display:none;visibility:hidden"
