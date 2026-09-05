@@ -1,13 +1,9 @@
 ---
-// The whole 404, in one file. The host has exactly one error document — Apache's
-// ErrorDocument and GitHub Pages both serve /404.html — so a per-locale page
-// would be unreachable. Instead the page is German (the default locale, served
-// from the root) and each other language gets a labelled link to its own
-// homepage, which is the way out for a visitor who cannot read the headline.
+// One error document per host — Apache's ErrorDocument and GitHub Pages both
+// serve /404.html — so a per-locale page here would be unreachable.
 //
-// Standalone rather than BaseLayout: the host serves this for any URL it cannot
-// match, so there is no canonical path to declare, nothing to rank for, and no
-// "you are here" for a nav to express. The links below are the site's top level.
+// Hand-rolls its own document rather than using BaseLayout: nothing here is
+// canonical or indexable, and a nav has no "you are here" to point at.
 import '@styles/global.css';
 import type { Locale } from '@utils/i18n';
 import { getTranslation, isRTL } from '@utils/i18n';
@@ -15,8 +11,7 @@ import { BASE_PATH as base } from '@utils/site';
 
 const locale: Locale = 'de';
 
-// Endonyms, not translatable UI strings — each language names itself the same
-// way whatever page it appears on.
+// Endonyms read the same in every locale, so they are not translation keys.
 const languages: { code: Locale; name: string; dot: string }[] = [
   { code: 'en', name: 'English', dot: '#2E9E8F' },
   { code: 'ar', name: 'العربية', dot: '#A83C63' },
@@ -96,8 +91,7 @@ const languages: { code: Locale; name: string; dot: string }[] = [
     /* Paper palette local to this page; the site tokens are the app chrome. */
     --nf-paper: #faf5ea;
     --nf-ink: #2b2a33;
-    /* The design's #9A8F78 / #8A8270 greys clear only 2.9:1 and 3.5:1 on the
-       paper. These are the same hues carried down to 4.84:1 and 5.38:1. */
+    /* The design's #9A8F78 / #8A8270 clear only 2.9:1 and 3.5:1 on the paper. */
     --nf-ink-soft: #746b59;
     --nf-ink-softer: #6c6454;
     --nf-ghost: #e3d5b8;
@@ -108,7 +102,6 @@ const languages: { code: Locale; name: string; dot: string }[] = [
     --nf-cream: #fffdf8;
     --nf-amber: #f4b23e;
 
-    /* One knob for the whole shelf: everything below is a ratio of it. */
     --nf-spine: clamp(24px, 6.5vw, 34px);
     --nf-shelf: clamp(78px, 22vw, 110px);
 
@@ -123,9 +116,8 @@ const languages: { code: Locale; name: string; dot: string }[] = [
   }
 
   .nf-shelf {
-    /* Sized off the spine knob so the plank keeps a constant overhang past the
-       books at every width. The design's fixed 440px left-pads the spine row;
-       centring it here means the overhang has to be symmetric. */
+    /* The design's fixed 440px left-pads the spine row; centred here instead, so
+       the overhang past the books has to be symmetric. */
     width: min(100%, calc(var(--nf-spine) * 9.8));
   }
 
@@ -141,7 +133,6 @@ const languages: { code: Locale; name: string; dot: string }[] = [
     flex: none;
     width: var(--nf-spine);
     border-radius: 6px 6px 3px 3px;
-    /* The highlight reads as the page block catching the light. */
     box-shadow: inset -6px 0 0 rgba(255, 255, 255, 0.18);
     transform-origin: bottom;
   }
@@ -169,7 +160,6 @@ const languages: { code: Locale; name: string; dot: string }[] = [
     background: #c77d2a;
   }
 
-  /* The missing book. */
   .nf-slot {
     flex: none;
     display: flex;
@@ -246,8 +236,7 @@ const languages: { code: Locale; name: string; dot: string }[] = [
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    /* A row is the way out for a visitor who cannot read the headline, so it is
-       a real control: 44px tall and hit-testable across its whole width. */
+    /* A row is the way out for a visitor who cannot read the headline. */
     min-height: 44px;
     padding: 0.25rem 0.75rem;
     border-radius: 999px;
@@ -256,8 +245,7 @@ const languages: { code: Locale; name: string; dot: string }[] = [
     transition: background 0.14s ease;
   }
 
-  /* Lightens rather than darkens: a darker fill drops the language name below
-     4.5:1, and a row lifting off the paper reads correctly anyway. */
+  /* A darker fill drops the language name below 4.5:1. */
   .nf-lang:hover {
     background: var(--nf-cream);
   }
