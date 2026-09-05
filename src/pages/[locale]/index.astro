@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import StoryCard from '../../components/StoryCard.astro';
 import SearchBar from '../../components/SearchBar.astro';
 import FilterSidebar from '../../components/FilterSidebar.astro';
-import { getPublishedStories } from '@utils/stories';
+import { getPublishedStories, getStoryAvailability } from '@utils/stories';
 import type { Locale } from '../../utils/i18n';
 import { getTranslation } from '../../utils/i18n';
 
@@ -21,6 +21,11 @@ const stories = await getPublishedStories(({ id }) => id.startsWith(`${locale}/`
 
 // Get filter params from URL
 const urlSkills = Astro.url.searchParams.get('skills')?.split(',').filter(Boolean) || [];
+const urlAvailableIn = Astro.url.searchParams.get('available-in')?.split(',').filter(Boolean) || [];
+
+// Availability is a relation across the whole collection, not a per-file
+// property: translations are separate files sharing a storyId.
+const availability = await getStoryAvailability();
 
 const heroContent = {
   de: {
@@ -59,7 +64,11 @@ const description = hero.text;
     <SearchBar locale={locale} />
 
     <div class="content-wrapper">
-      <FilterSidebar locale={locale} currentSkills={urlSkills} />
+      <FilterSidebar
+        locale={locale}
+        currentSkills={urlSkills}
+        currentAvailableIn={urlAvailableIn}
+      />
 
       <section class="stories-section">
         <h2>{getTranslation(locale, 'allStories')}</h2>
@@ -86,7 +95,7 @@ const description = hero.text;
                   }
                   emoji={story.data.emoji}
                   skills={story.data.skills}
-                  languages={story.data.languages}
+                  availableLocales={availability.get(story.data.storyId) ?? [locale]}
                   storyId={story.data.storyId}
                   estimatedReadTime={story.data.estimatedReadTime}
                   locale={locale}
@@ -110,6 +119,10 @@ const description = hero.text;
 </BaseLayout>
 
 <script>
+  // matchesFilter is the shared, tested predicate — the browser, the search page
+  // and recommendations must all agree on what a filter means.
+  import { matchesFilter } from '@utils/filter-stories';
+
   window.addEventListener('DOMContentLoaded', () => {
     const storiesGrid = document.querySelector('.stories-grid');
     if (!storiesGrid) return;
@@ -119,22 +132,23 @@ const description = hero.text;
     const filterStories = () => {
       const searchQuery = localStorage.getItem('search-query') || '';
       const selectedSkills = JSON.parse(localStorage.getItem('filters-skills') || '[]');
+      const selectedLanguages = JSON.parse(localStorage.getItem('filters-available-in') || '[]');
 
       storyCards.forEach(card => {
         const cardEl = card as HTMLElement;
-        const title = cardEl.querySelector('.story-title')?.textContent?.toLowerCase() || '';
-        const storySkills = JSON.parse(cardEl.getAttribute('data-skills') || '[]');
+        const story = {
+          title: cardEl.querySelector('.story-title')?.textContent || '',
+          skills: JSON.parse(cardEl.getAttribute('data-skills') || '[]'),
+          languages: JSON.parse(cardEl.getAttribute('data-available-locales') || '[]'),
+        };
 
-        const matchesSearch = !searchQuery || title.includes(searchQuery.toLowerCase());
-        const matchesSkills =
-          selectedSkills.length === 0 ||
-          selectedSkills.some((skill: string) => storySkills.includes(skill));
-
-        if (matchesSearch && matchesSkills) {
-          cardEl.style.display = '';
-        } else {
-          cardEl.style.display = 'none';
-        }
+        cardEl.style.display = matchesFilter(story, {
+          searchQuery,
+          selectedSkills,
+          selectedLanguages,
+        })
+          ? ''
+          : 'none';
       });
 
       // Filtering everything away used to leave a silent blank column.

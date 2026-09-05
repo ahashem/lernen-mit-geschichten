@@ -8,7 +8,8 @@ interface Props {
   title: string;
   emoji: string;
   skills: string[];
-  languages: string[];
+  /** Locales this story exists in, derived across the collection by storyId. */
+  availableLocales: Locale[];
   storyId: string;
   estimatedReadTime?: number;
   locale: Locale;
@@ -23,7 +24,7 @@ const {
   title,
   emoji,
   skills,
-  languages,
+  availableLocales,
   storyId,
   estimatedReadTime,
   locale,
@@ -46,7 +47,7 @@ const storyUrl = locale === 'de' ? `${base}/stories/${slug}` : `${base}/${locale
 <article
   class="story-card"
   data-skills={JSON.stringify(skills)}
-  data-languages={JSON.stringify(languages)}
+  data-available-locales={JSON.stringify(availableLocales)}
 >
   <a href={storyUrl} class="card-link">
     <div class="badges">

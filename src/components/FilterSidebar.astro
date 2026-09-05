@@ -6,9 +6,20 @@ import { skillsCategories } from '../utils/skills-taxonomy';
 interface Props {
   locale: Locale;
   currentSkills?: string[];
+  currentAvailableIn?: string[];
 }
 
-const { locale, currentSkills = [] } = Astro.props;
+const { locale, currentSkills = [], currentAvailableIn = [] } = Astro.props;
+
+// The page already renders one locale, so offering it here would tick a box
+// that changes nothing. Only the other four are a real question.
+const otherLocales = [
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+  { code: 'ur', name: 'اردو', flag: '🇵🇰' },
+].filter(lang => lang.code !== locale);
 ---
 
 <aside class="filter-sidebar" data-locale={locale}>
@@ -37,14 +48,26 @@ const { locale, currentSkills = [] } = Astro.props;
     }
   </div>
 
-  <!--
-    KNOWN BUG — the "filter by language" facet is withdrawn, not finished.
-    Each story file declares one language (its own locale) and each homepage
-    already renders one locale, so the facet could only ever match everything
-    or nothing, and a selection carried across locales blanked the grid.
-    Restoring it needs a story's *available* locales aggregated by storyId at
-    build time; the markup comes back with that data behind it.
-  -->
+  <h3>{getTranslation(locale, 'alsoAvailableIn')}</h3>
+
+  <div class="filter-section">
+    <div class="language-checkboxes">
+      {
+        otherLocales.map(lang => (
+          <label class="language-checkbox">
+            <input
+              type="checkbox"
+              name="available-in"
+              value={lang.code}
+              checked={currentAvailableIn.includes(lang.code)}
+            />
+            <span class="flag">{lang.flag}</span>
+            <span>{lang.name}</span>
+          </label>
+        ))
+      }
+    </div>
+  </div>
 
   <button type="button" class="clear-filters"
     >{locale === 'de' ? 'Filter zurücksetzen' : 'Clear filters'}</button
@@ -61,8 +84,13 @@ const { locale, currentSkills = [] } = Astro.props;
         sidebar.querySelectorAll('input[name="skill"]:checked')
       ).map(cb => (cb as HTMLInputElement).value);
 
+      const selectedAvailableIn = Array.from(
+        sidebar.querySelectorAll('input[name="available-in"]:checked')
+      ).map(cb => (cb as HTMLInputElement).value);
+
       // Store in localStorage
       localStorage.setItem('filters-skills', JSON.stringify(selectedSkills));
+      localStorage.setItem('filters-available-in', JSON.stringify(selectedAvailableIn));
 
       // Update URL params
       const url = new URL(window.location.href);
@@ -71,12 +99,17 @@ const { locale, currentSkills = [] } = Astro.props;
       } else {
         url.searchParams.delete('skills');
       }
+      if (selectedAvailableIn.length > 0) {
+        url.searchParams.set('available-in', selectedAvailableIn.join(','));
+      } else {
+        url.searchParams.delete('available-in');
+      }
       window.history.replaceState({}, '', url);
 
       // Dispatch custom event
       window.dispatchEvent(
         new CustomEvent('filtersChanged', {
-          detail: { skills: selectedSkills },
+          detail: { skills: selectedSkills, availableIn: selectedAvailableIn },
         })
       );
     };
@@ -91,29 +124,33 @@ const { locale, currentSkills = [] } = Astro.props;
           (cb as HTMLInputElement).checked = false;
         });
         localStorage.removeItem('filters-skills');
+        localStorage.removeItem('filters-available-in');
 
         // Clear URL params
         const url = new URL(window.location.href);
         url.searchParams.delete('skills');
+        url.searchParams.delete('available-in');
         window.history.replaceState({}, '', url);
 
         window.dispatchEvent(
           new CustomEvent('filtersChanged', {
-            detail: { skills: [] },
+            detail: { skills: [], availableIn: [] },
           })
         );
       });
     }
 
-    // The withdrawn language facet left a sticky `["de"]` in returning
-    // visitors' storage and in shared URLs; both hide every card on a
-    // non-German homepage. Discard them once rather than reading them.
+    // The old facet filtered a story's own locale, so a stored `["de"]` hid
+    // every card on a non-German homepage. Those keys and params carry no
+    // meaning under the availability semantics — discard them rather than
+    // migrate them, so returning visitors and old links land on a clean state.
     localStorage.removeItem('filters-languages');
     localStorage.removeItem('filters-locale');
 
     // Get URL params (client-side only, since we're using SSG)
     const urlParams = new URLSearchParams(window.location.search);
     const urlSkills = urlParams.get('skills')?.split(',').filter(Boolean) || [];
+    const urlAvailableIn = urlParams.get('available-in')?.split(',').filter(Boolean) || [];
 
     if (urlParams.has('languages')) {
       const url = new URL(window.location.href);
@@ -122,19 +159,24 @@ const { locale, currentSkills = [] } = Astro.props;
     }
 
     // Priority: URL params, then localStorage
-    const savedSkills = urlSkills.length > 0 ? null : localStorage.getItem('filters-skills');
-    const skills: string[] = savedSkills ? JSON.parse(savedSkills) : urlSkills;
+    const restore = (name: string, fromUrl: string[], storageKey: string) => {
+      const saved = fromUrl.length > 0 ? null : localStorage.getItem(storageKey);
+      const values: string[] = saved ? JSON.parse(saved) : fromUrl;
 
-    skills.forEach((skillId: string) => {
-      const cb = sidebar.querySelector(
-        `input[name="skill"][value="${skillId}"]`
-      ) as HTMLInputElement;
-      if (cb) cb.checked = true;
-    });
+      values.forEach((value: string) => {
+        const cb = sidebar.querySelector(
+          `input[name="${name}"][value="${value}"]`
+        ) as HTMLInputElement;
+        if (cb) cb.checked = true;
+      });
 
-    if (urlSkills.length > 0) {
-      localStorage.setItem('filters-skills', JSON.stringify(urlSkills));
-    }
+      if (fromUrl.length > 0) {
+        localStorage.setItem(storageKey, JSON.stringify(fromUrl));
+      }
+    };
+
+    restore('skill', urlSkills, 'filters-skills');
+    restore('available-in', urlAvailableIn, 'filters-available-in');
   });
 </script>
 
@@ -180,14 +222,16 @@ const { locale, currentSkills = [] } = Astro.props;
     background: var(--color-background);
   }
 
-  .skills-checkboxes {
+  .skills-checkboxes,
+  .language-checkboxes {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     padding: 0.75rem 0 0.75rem 1rem;
   }
 
-  .skill-checkbox {
+  .skill-checkbox,
+  .language-checkbox {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -195,14 +239,22 @@ const { locale, currentSkills = [] } = Astro.props;
     padding: 0.25rem;
     border-radius: 4px;
     transition: background 0.2s;
+    /* WCAG 2.1 AA target size; the label is the whole hit area. */
+    min-height: 44px;
   }
 
-  .skill-checkbox:hover {
+  .skill-checkbox:hover,
+  .language-checkbox:hover {
     background: var(--color-background);
   }
 
-  .skill-checkbox input {
+  .skill-checkbox input,
+  .language-checkbox input {
     cursor: pointer;
+  }
+
+  .language-checkbox .flag {
+    font-size: 1.2rem;
   }
 
   .clear-filters {
