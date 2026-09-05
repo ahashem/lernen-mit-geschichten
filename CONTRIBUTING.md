@@ -321,6 +321,10 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 <footer>
 ```
 
+Write as many commits as the work needs, with as much body as it takes to explain them. Branch
+commits are squashed on merge, so what lands on `main` is the squash subject — and that one has to
+read as a single conventional line.
+
 ### Types
 
 - `feat`: New feature
@@ -328,7 +332,10 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 - `docs`: Documentation changes
 - `style`: Code style changes (formatting)
 - `refactor`: Code refactoring
+- `perf`: Performance improvements
 - `test`: Adding tests
+- `build`: Build system or dependencies
+- `ci`: CI configuration
 - `chore`: Maintenance tasks
 - `content`: Story or translation additions
 
@@ -355,6 +362,19 @@ content(translation): translate Bruno story to Arabic
 Complete Arabic translation of "Bruno's Colorful Feelings"
 with RTL layout verification.
 ```
+
+### Enforcement
+
+`.githooks/commit-msg` rejects a subject with no conventional prefix. Git does not clone hooks, so
+activate them once per clone:
+
+```sh
+make hooks
+```
+
+`Merge`, `Revert`, `fixup!`, and `squash!` messages are exempt — Git writes those itself. The hook
+also drops attribution trailers left behind by AI coding tools; a `Co-authored-by:` naming a person
+is left alone.
 
 ## Pull Request Process
 

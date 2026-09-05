@@ -1,5 +1,6 @@
 ---
-import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { render, type CollectionEntry } from 'astro:content';
+import { getPublishedStories } from '@utils/stories';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import QuizInteractive, { type QuizQuestion } from '../../../components/QuizInteractive.astro';
 import InteractiveStorybook from '../../../components/InteractiveStorybook.astro';
@@ -11,7 +12,7 @@ import { getTranslation } from '../../../utils/i18n';
 import { getSkillsByIds } from '../../../utils/skills-taxonomy';
 
 export async function getStaticPaths() {
-  const stories = await getCollection('stories');
+  const stories = await getPublishedStories();
   const paths = [];
   const locales = ['ar', 'en', 'tr', 'ur']; // Non-German locales
 
@@ -53,7 +54,7 @@ const metaDescription = `${story.data.title} - ${skillObjects
   .join(' و ')}`;
 
 // Check if both standard and interactive versions exist
-const allStories = await getCollection('stories');
+const allStories = await getPublishedStories();
 const baseStoryId = story.data.storyId.replace(/-interactive$/, '');
 const alternativeFormat = story.data.storyFormat === 'interactive' ? 'standard' : 'interactive';
 const alternativeStory = allStories.find(

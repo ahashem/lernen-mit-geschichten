@@ -27,6 +27,8 @@ const storiesCollection = defineCollection({
     ageGroup: z.string().default('3-7'),
     languages: z.array(z.enum(['de', 'ar', 'en', 'tr', 'ur'])),
     storyId: z.string(),
+    // 'draft' unpublishes: no page, no listing, no sitemap entry.
+    status: z.enum(['draft', 'published']).default('published'),
     publishDate: z.date().optional(),
     author: z.string().optional(),
     provider: z.enum(['local', 'google-drive', 'external']).default('local'),

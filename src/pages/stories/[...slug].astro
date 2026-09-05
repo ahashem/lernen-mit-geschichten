@@ -1,5 +1,6 @@
 ---
-import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { render, type CollectionEntry } from 'astro:content';
+import { getPublishedStories } from '@utils/stories';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import QuizInteractive, { type QuizQuestion } from '../../components/QuizInteractive.astro';
 import InteractiveStorybook from '../../components/InteractiveStorybook.astro';
@@ -12,7 +13,7 @@ import { getSkillsByIds } from '../../utils/skills-taxonomy';
 import { BASE_PATH } from '../../utils/site';
 
 export async function getStaticPaths() {
-  const stories = await getCollection('stories');
+  const stories = await getPublishedStories();
   const paths = [];
 
   // Generate regular story pages (German only - others handled by [locale]/stories/[...slug].astro)
@@ -82,7 +83,7 @@ const metaDescription = `${story.data.title} - Eine Geschichte für Kinder über
   .join(' und ')}. Für Kinder im Alter von ${story.data.ageGroup} Jahren.`;
 
 // Check if both standard and interactive versions exist
-const allStories = await getCollection('stories');
+const allStories = await getPublishedStories();
 const baseStoryId = story.data.storyId.replace(/-interactive$/, '');
 const alternativeFormat = story.data.storyFormat === 'interactive' ? 'standard' : 'interactive';
 const alternativeStory = allStories.find(
@@ -162,8 +163,8 @@ const quizQuestions: QuizQuestion[] = story.data.questions || [];
               <a
                 href={
                   story.data.storyFormat === 'interactive'
-                    ? `/stories/${baseStoryId}`
-                    : `/stories/${baseStoryId}-interactive`
+                    ? `${BASE_PATH}/stories/${baseStoryId}`
+                    : `${BASE_PATH}/stories/${baseStoryId}-interactive`
                 }
                 class={`format-option ${story.data.storyFormat === 'standard' ? 'active' : ''}`}
               >
@@ -175,8 +176,8 @@ const quizQuestions: QuizQuestion[] = story.data.questions || [];
               <a
                 href={
                   story.data.storyFormat === 'standard'
-                    ? `/stories/${baseStoryId}-interactive`
-                    : `/stories/${baseStoryId}`
+                    ? `${BASE_PATH}/stories/${baseStoryId}-interactive`
+                    : `${BASE_PATH}/stories/${baseStoryId}`
                 }
                 class={`format-option ${story.data.storyFormat === 'interactive' ? 'active' : ''}`}
               >

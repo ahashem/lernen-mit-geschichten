@@ -26,6 +26,35 @@ export default [
     },
   },
 
+  // `status: draft` only unpublishes a story if every surface reads the
+  // collection through the same gate. See src/utils/stories.ts.
+  {
+    files: ['src/**/*.ts', 'src/**/*.tsx', 'src/**/*.astro'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'astro:content',
+              importNames: ['getCollection'],
+              message:
+                'Import getPublishedStories from @utils/stories instead — getCollection bypasses the draft gate.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  // The one file allowed to reach the collection directly.
+  {
+    files: ['src/utils/stories.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
+    },
+  },
+
   // Accessibility for React/JSX
   {
     files: ['**/*.jsx', '**/*.tsx', '**/*.astro'],
@@ -47,6 +76,8 @@ export default [
       '.astro/',
       '.github/',
       'public/',
+      // Read-only reference exports live here; linting them floods the report.
+      'tmp/',
       '*.config.js',
       '*.config.mjs',
     ],

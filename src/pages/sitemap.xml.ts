@@ -1,4 +1,4 @@
-import { getCollection } from 'astro:content';
+import { getPublishedStories } from '@utils/stories';
 import type { APIRoute } from 'astro';
 
 import { BASE_PATH } from '@utils/site';
@@ -6,7 +6,7 @@ import { BASE_PATH } from '@utils/site';
 export const GET: APIRoute = async ({ site }) => {
   const SITE_URL = `${site?.origin ?? ''}${BASE_PATH}`;
 
-  const stories = await getCollection('stories');
+  const stories = await getPublishedStories();
 
   // Group stories by slug (without language prefix)
   const storyMap = new Map<string, Set<string>>();
