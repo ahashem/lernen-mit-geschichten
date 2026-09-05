@@ -13,7 +13,6 @@ const description =
 
 // Get filter params from URL
 const urlSkills = Astro.url.searchParams.get('skills')?.split(',').filter(Boolean) || [];
-const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(Boolean) || [];
 ---
 
 <BaseLayout title="Startseite" locale={locale} description={description}>
@@ -29,7 +28,7 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
     <SearchBar locale={locale} />
 
     <div class="content-wrapper">
-      <FilterSidebar locale={locale} currentSkills={urlSkills} currentLanguages={urlLanguages} />
+      <FilterSidebar locale={locale} currentSkills={urlSkills} />
 
       <section class="stories-section">
         <h2>Alle Geschichten</h2>
@@ -80,13 +79,11 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
     const filterStories = () => {
       const searchQuery = localStorage.getItem('search-query') || '';
       const selectedSkills = JSON.parse(localStorage.getItem('filters-skills') || '[]');
-      const selectedLanguages = JSON.parse(localStorage.getItem('filters-languages') || '[]');
 
       storyCards.forEach(card => {
         const cardEl = card as HTMLElement;
         const title = cardEl.querySelector('.story-title')?.textContent?.toLowerCase() || '';
         const storySkills = JSON.parse(cardEl.getAttribute('data-skills') || '[]');
-        const storyLanguages = JSON.parse(cardEl.getAttribute('data-languages') || '[]');
 
         // Search filter
         const matchesSearch = !searchQuery || title.includes(searchQuery.toLowerCase());
@@ -96,13 +93,8 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
           selectedSkills.length === 0 ||
           selectedSkills.some((skill: string) => storySkills.includes(skill));
 
-        // Languages filter (OR logic within languages)
-        const matchesLanguages =
-          selectedLanguages.length === 0 ||
-          selectedLanguages.some((lang: string) => storyLanguages.includes(lang));
-
         // Show/hide card (AND logic between filter types)
-        if (matchesSearch && matchesSkills && matchesLanguages) {
+        if (matchesSearch && matchesSkills) {
           cardEl.style.display = '';
         } else {
           cardEl.style.display = 'none';

@@ -5,6 +5,10 @@ node_modules/
 dist/
 .astro/
 
+# Scratch working material, some of it checked out read-only
+tmp/
+backup/
+
 # Cache
 .cache/
 

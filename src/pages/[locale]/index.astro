@@ -21,7 +21,6 @@ const stories = await getPublishedStories(({ id }) => id.startsWith(`${locale}/`
 
 // Get filter params from URL
 const urlSkills = Astro.url.searchParams.get('skills')?.split(',').filter(Boolean) || [];
-const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(Boolean) || [];
 
 const heroContent = {
   de: {
@@ -60,7 +59,7 @@ const description = hero.text;
     <SearchBar locale={locale} />
 
     <div class="content-wrapper">
-      <FilterSidebar locale={locale} currentSkills={urlSkills} currentLanguages={urlLanguages} />
+      <FilterSidebar locale={locale} currentSkills={urlSkills} />
 
       <section class="stories-section">
         <h2>{getTranslation(locale, 'allStories')}</h2>
@@ -120,23 +119,18 @@ const description = hero.text;
     const filterStories = () => {
       const searchQuery = localStorage.getItem('search-query') || '';
       const selectedSkills = JSON.parse(localStorage.getItem('filters-skills') || '[]');
-      const selectedLanguages = JSON.parse(localStorage.getItem('filters-languages') || '[]');
 
       storyCards.forEach(card => {
         const cardEl = card as HTMLElement;
         const title = cardEl.querySelector('.story-title')?.textContent?.toLowerCase() || '';
         const storySkills = JSON.parse(cardEl.getAttribute('data-skills') || '[]');
-        const storyLanguages = JSON.parse(cardEl.getAttribute('data-languages') || '[]');
 
         const matchesSearch = !searchQuery || title.includes(searchQuery.toLowerCase());
         const matchesSkills =
           selectedSkills.length === 0 ||
           selectedSkills.some((skill: string) => storySkills.includes(skill));
-        const matchesLanguages =
-          selectedLanguages.length === 0 ||
-          selectedLanguages.some((lang: string) => storyLanguages.includes(lang));
 
-        if (matchesSearch && matchesSkills && matchesLanguages) {
+        if (matchesSearch && matchesSkills) {
           cardEl.style.display = '';
         } else {
           cardEl.style.display = 'none';
