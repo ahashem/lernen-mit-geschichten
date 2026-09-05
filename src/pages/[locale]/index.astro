@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import StoryCard from '../../components/StoryCard.astro';
 import SearchBar from '../../components/SearchBar.astro';
 import FilterSidebar from '../../components/FilterSidebar.astro';
-import { getCollection } from 'astro:content';
+import { getPublishedStories } from '@utils/stories';
 import type { Locale } from '../../utils/i18n';
 import { getTranslation } from '../../utils/i18n';
 
@@ -17,7 +17,7 @@ export async function getStaticPaths() {
 }
 
 const { locale } = Astro.params as { locale: Locale };
-const stories = await getCollection('stories', ({ id }) => id.startsWith(`${locale}/`));
+const stories = await getPublishedStories(({ id }) => id.startsWith(`${locale}/`));
 
 // Get filter params from URL
 const urlSkills = Astro.url.searchParams.get('skills')?.split(',').filter(Boolean) || [];

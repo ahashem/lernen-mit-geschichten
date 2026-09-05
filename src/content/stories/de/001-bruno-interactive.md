@@ -9,6 +9,7 @@ skills: ["self-awareness", "emotional-regulation"]
 ageGroup: "3-7"
 languages: ["de"]
 storyId: "001-bruno-interactive"
+status: "draft"
 characterType: "bear"
 difficulty: "beginner"
 estimatedReadTime: 3

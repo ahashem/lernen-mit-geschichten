@@ -3,10 +3,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import StoryCard from '../components/StoryCard.astro';
 import SearchBar from '../components/SearchBar.astro';
 import FilterSidebar from '../components/FilterSidebar.astro';
-import { getCollection } from 'astro:content';
+import { getPublishedStories } from '@utils/stories';
 
 const locale = 'de';
-const stories = await getCollection('stories', ({ id }) => id.startsWith('de/'));
+const stories = await getPublishedStories(({ id }) => id.startsWith('de/'));
 const description =
   'Entdecke spannende Geschichten, die Kindern wichtige Werte und Fähigkeiten vermitteln. Für Eltern, Lehrer und Erzieher.';
 

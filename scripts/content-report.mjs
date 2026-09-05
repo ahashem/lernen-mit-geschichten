@@ -38,6 +38,7 @@ function frontmatterField(text, field) {
 // storyId -> { locale -> filename }
 const stories = new Map();
 const noId = [];
+const drafts = [];
 
 for (const locale of LOCALES) {
   const dir = join(ROOT, locale);
@@ -46,6 +47,11 @@ for (const locale of LOCALES) {
     if (!/\.mdx?$/.test(file)) continue;
     const text = readFileSync(join(dir, file), 'utf8');
     const id = frontmatterField(text, 'storyId') ?? file.replace(/\.mdx?$/, '');
+    // Unpublished stories are not a translation backlog.
+    if (frontmatterField(text, 'status') === 'draft') {
+      drafts.push(`${locale}/${file}`);
+      continue;
+    }
     if (!frontmatterField(text, 'storyId')) noId.push(`${locale}/${file}`);
     if (!stories.has(id)) stories.set(id, {});
     stories.get(id)[locale] = file;
@@ -72,6 +78,7 @@ if (args.has('--json')) {
         stories: Object.fromEntries(stories),
         missing,
         orphans,
+        drafts,
       },
       null,
       2
@@ -121,6 +128,11 @@ if (args.has('--matrix')) {
 if (orphans.length) {
   console.log(`\nTranslations with no ${SOURCE} original (${orphans.length})`);
   for (const id of orphans) console.log(`  ${id}`);
+}
+
+if (drafts.length) {
+  console.log(`\nUnpublished drafts, excluded from the counts above (${drafts.length})`);
+  for (const f of drafts) console.log(`  ${f}`);
 }
 
 if (noId.length) {

@@ -49,6 +49,11 @@ node scripts/content-report.mjs            # which stories are missing which lan
 node scripts/content-report.mjs --matrix   # the full per-story grid
 ```
 
+**Unpublishing.** Set `status: draft` in a story's frontmatter — it then gets no page, no listing
+and no sitemap entry. Read the collection through `getPublishedStories()` in `src/utils/stories.ts`;
+calling `getCollection('stories')` directly bypasses the gate and leaks a draft into one surface
+while the others hide it.
+
 **Current policy — string freeze.** Do not merge work that adds new UI translation keys. The string
 surface is the binding constraint on shipping the feature backlog, and it is being routed through a
 translation pipeline before it is allowed to grow. Fixing or translating existing keys is always
