@@ -5,6 +5,13 @@
 No origins, credentials, personal data, or analytics IDs in source. Every deploy
 supplies its own through the environment.
 
+## Once per clone
+
+Git does not clone hooks. `make hooks` points `core.hooksPath` at `.githooks/`, which checks the
+conventional prefix on every commit subject. Commit format is `CONTRIBUTING.md`; the short version
+is that branch commits are squashed, so the squash subject is the one that has to read as a single
+conventional line.
+
 ## Deployment
 
 One variable describes a deploy. `SITE_URL` is its public URL, and any subpath

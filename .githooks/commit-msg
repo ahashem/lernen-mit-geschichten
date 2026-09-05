@@ -1,0 +1,39 @@
+#!/bin/sh
+# Conventional Commits, checked at commit time.
+#
+# A written rule in a docs file does not stop a tool that carries its own commit
+# defaults, so the format is enforced here. Hooks are not cloned: `make hooks`
+# points core.hooksPath at this directory once per clone.
+#
+# A body is allowed. Branch commits are squashed into main, and it is the squash
+# subject that has to read as one conventional line.
+set -eu
+
+MSG_FILE="$1"
+
+# AI attribution trailers, appended by tools rather than typed by anyone.
+# Narrowly matched so genuine human Co-authored-by trailers survive.
+# -E: BSD sed has no \| alternation in basic regex, so this is not portable without it.
+sed -E -i.bak \
+  -e '/^[Cc]o-[Aa]uthored-[Bb]y:.*(noreply@anthropic\.com|[Cc]laude|[Cc]ursor|[Cc]opilot)/d' \
+  -e '/^🤖 Generated with/d' \
+  -e '/^Generated with \[/d' \
+  "$MSG_FILE"
+rm -f "$MSG_FILE.bak"
+
+SUBJECT=$(grep -v '^#' "$MSG_FILE" | sed '/./,$!d' | head -n 1)
+
+# Git writes these itself or rewrites them later; they are not ours to police.
+case "$SUBJECT" in
+  Merge\ *|Revert\ *|fixup!\ *|squash!\ *|amend!\ *|--wip--*) exit 0 ;;
+esac
+
+TYPES='feat|fix|docs|style|refactor|perf|test|build|ci|chore|content'
+
+if ! printf '%s' "$SUBJECT" | grep -Eq "^($TYPES)(\([a-z0-9-]+\))?!?: .+"; then
+  echo "commit-msg: subject needs a conventional prefix." >&2
+  echo "  got:      $SUBJECT" >&2
+  echo "  expected: <type>(<optional scope>): <subject>" >&2
+  echo "  types:    $TYPES" >&2
+  exit 1
+fi
