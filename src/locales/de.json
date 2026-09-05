@@ -39,5 +39,9 @@
   "bilingualMode": "Zweisprachiger Modus",
   "fontSize": "Schriftgröße",
   "textToSpeech": "Vorlesen",
-  "settings": "Einstellungen"
+  "settings": "Einstellungen",
+  "pageNotFound": "Seite nicht gefunden",
+  "notFoundHeading": "Ups! Dieses Buch fehlt im Regal.",
+  "notFoundHint": "Die Geschichte, die du suchst, gibt es hier nicht.",
+  "notFoundBackToStories": "Zurück zu den Geschichten"
 }

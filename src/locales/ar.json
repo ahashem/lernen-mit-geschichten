@@ -39,5 +39,6 @@
   "bilingualMode": "وضع ثنائي اللغة",
   "fontSize": "حجم الخط",
   "textToSpeech": "القراءة بصوت عالٍ",
-  "settings": "الإعدادات"
+  "settings": "الإعدادات",
+  "notFoundHeading": "عفواً! هذا الكتاب مفقود من الرف."
 }
