@@ -140,23 +140,10 @@ const otherLocales = [
       });
     }
 
-    // The old facet filtered a story's own locale, so a stored `["de"]` hid
-    // every card on a non-German homepage. Those keys and params carry no
-    // meaning under the availability semantics — discard them rather than
-    // migrate them, so returning visitors and old links land on a clean state.
-    localStorage.removeItem('filters-languages');
-    localStorage.removeItem('filters-locale');
-
     // Get URL params (client-side only, since we're using SSG)
     const urlParams = new URLSearchParams(window.location.search);
     const urlSkills = urlParams.get('skills')?.split(',').filter(Boolean) || [];
     const urlAvailableIn = urlParams.get('available-in')?.split(',').filter(Boolean) || [];
-
-    if (urlParams.has('languages')) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete('languages');
-      window.history.replaceState({}, '', url);
-    }
 
     // Priority: URL params, then localStorage
     const restore = (name: string, fromUrl: string[], storageKey: string) => {
