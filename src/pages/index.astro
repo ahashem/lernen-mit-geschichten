@@ -3,7 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import StoryCard from '../components/StoryCard.astro';
 import SearchBar from '../components/SearchBar.astro';
 import FilterSidebar from '../components/FilterSidebar.astro';
-import { getPublishedStories } from '@utils/stories';
+import { getPublishedStories, getStoryAvailability } from '@utils/stories';
+import { getTranslation } from '@utils/i18n';
 
 const locale = 'de';
 const stories = await getPublishedStories(({ id }) => id.startsWith('de/'));
@@ -12,7 +13,11 @@ const description =
 
 // Get filter params from URL
 const urlSkills = Astro.url.searchParams.get('skills')?.split(',').filter(Boolean) || [];
-const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(Boolean) || [];
+const urlAvailableIn = Astro.url.searchParams.get('available-in')?.split(',').filter(Boolean) || [];
+
+// Availability is a relation across the whole collection, not a per-file
+// property: translations are separate files sharing a storyId.
+const availability = await getStoryAvailability();
 ---
 
 <BaseLayout title="Startseite" locale={locale} description={description}>
@@ -28,7 +33,11 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
     <SearchBar locale={locale} />
 
     <div class="content-wrapper">
-      <FilterSidebar locale={locale} currentSkills={urlSkills} currentLanguages={urlLanguages} />
+      <FilterSidebar
+        locale={locale}
+        currentSkills={urlSkills}
+        currentAvailableIn={urlAvailableIn}
+      />
 
       <section class="stories-section">
         <h2>Alle Geschichten</h2>
@@ -45,7 +54,7 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
                   title={story.data.title}
                   emoji={story.data.emoji}
                   skills={story.data.skills}
-                  languages={story.data.languages}
+                  availableLocales={availability.get(story.data.storyId) ?? [locale]}
                   storyId={story.data.storyId}
                   estimatedReadTime={story.data.estimatedReadTime}
                   locale={locale}
@@ -59,13 +68,20 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
             </div>
           )
         }
+
+        <div class="no-stories no-results" hidden>
+          <p>{getTranslation(locale, 'noMatchingStories')}</p>
+        </div>
       </section>
     </div>
   </div>
 </BaseLayout>
 
 <script>
-  // Client-side filtering and search
+  // matchesFilter is the shared, tested predicate — the browser, the search page
+  // and recommendations must all agree on what a filter means.
+  import { matchesFilter } from '@utils/filter-stories';
+
   window.addEventListener('DOMContentLoaded', () => {
     const storiesGrid = document.querySelector('.stories-grid');
     if (!storiesGrid) return;
@@ -75,34 +91,30 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
     const filterStories = () => {
       const searchQuery = localStorage.getItem('search-query') || '';
       const selectedSkills = JSON.parse(localStorage.getItem('filters-skills') || '[]');
-      const selectedLanguages = JSON.parse(localStorage.getItem('filters-languages') || '[]');
+      const selectedLanguages = JSON.parse(localStorage.getItem('filters-available-in') || '[]');
 
       storyCards.forEach(card => {
         const cardEl = card as HTMLElement;
-        const title = cardEl.querySelector('.story-title')?.textContent?.toLowerCase() || '';
-        const storySkills = JSON.parse(cardEl.getAttribute('data-skills') || '[]');
-        const storyLanguages = JSON.parse(cardEl.getAttribute('data-languages') || '[]');
+        const story = {
+          title: cardEl.querySelector('.story-title')?.textContent || '',
+          skills: JSON.parse(cardEl.getAttribute('data-skills') || '[]'),
+          languages: JSON.parse(cardEl.getAttribute('data-available-locales') || '[]'),
+        };
 
-        // Search filter
-        const matchesSearch = !searchQuery || title.includes(searchQuery.toLowerCase());
-
-        // Skills filter (OR logic within skills)
-        const matchesSkills =
-          selectedSkills.length === 0 ||
-          selectedSkills.some((skill: string) => storySkills.includes(skill));
-
-        // Languages filter (OR logic within languages)
-        const matchesLanguages =
-          selectedLanguages.length === 0 ||
-          selectedLanguages.some((lang: string) => storyLanguages.includes(lang));
-
-        // Show/hide card (AND logic between filter types)
-        if (matchesSearch && matchesSkills && matchesLanguages) {
-          cardEl.style.display = '';
-        } else {
-          cardEl.style.display = 'none';
-        }
+        cardEl.style.display = matchesFilter(story, {
+          searchQuery,
+          selectedSkills,
+          selectedLanguages,
+        })
+          ? ''
+          : 'none';
       });
+
+      // Filtering everything away used to leave a silent blank column.
+      const visible = storyCards.some(card => (card as HTMLElement).style.display !== 'none');
+      const noResults = document.querySelector('.no-results') as HTMLElement | null;
+      if (noResults) noResults.hidden = visible;
+      (storiesGrid as HTMLElement).hidden = !visible;
     };
 
     window.addEventListener('searchChanged', filterStories);
@@ -153,6 +165,11 @@ const urlLanguages = Astro.url.searchParams.get('languages')?.split(',').filter(
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
+  }
+
+  /* `display: grid` outranks the UA rule behind the hidden attribute. */
+  .stories-grid[hidden] {
+    display: none;
   }
 
   .no-stories {

@@ -6,22 +6,23 @@ import { skillsCategories } from '../utils/skills-taxonomy';
 interface Props {
   locale: Locale;
   currentSkills?: string[];
-  currentLanguages?: string[];
-  autoSelectLocale?: boolean;
+  currentAvailableIn?: string[];
 }
 
-const { locale, currentSkills = [], currentLanguages = [], autoSelectLocale = true } = Astro.props;
+const { locale, currentSkills = [], currentAvailableIn = [] } = Astro.props;
 
-const languages = [
+// The page already renders one locale, so offering it here would tick a box
+// that changes nothing. Only the other four are a real question.
+const otherLocales = [
   { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
   { code: 'ar', name: 'العربية', flag: '🇸🇦' },
   { code: 'en', name: 'English', flag: '🇬🇧' },
   { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
   { code: 'ur', name: 'اردو', flag: '🇵🇰' },
-];
+].filter(lang => lang.code !== locale);
 ---
 
-<aside class="filter-sidebar" data-locale={locale} data-auto-select={autoSelectLocale}>
+<aside class="filter-sidebar" data-locale={locale}>
   <h3>{getTranslation(locale, 'filterBySkill')}</h3>
 
   <div class="filter-section">
@@ -47,18 +48,18 @@ const languages = [
     }
   </div>
 
-  <h3>{getTranslation(locale, 'filterByLanguage')}</h3>
+  <h3>{getTranslation(locale, 'alsoAvailableIn')}</h3>
 
   <div class="filter-section">
     <div class="language-checkboxes">
       {
-        languages.map(lang => (
+        otherLocales.map(lang => (
           <label class="language-checkbox">
             <input
               type="checkbox"
-              name="language"
+              name="available-in"
               value={lang.code}
-              checked={currentLanguages.includes(lang.code)}
+              checked={currentAvailableIn.includes(lang.code)}
             />
             <span class="flag">{lang.flag}</span>
             <span>{lang.name}</span>
@@ -83,13 +84,13 @@ const languages = [
         sidebar.querySelectorAll('input[name="skill"]:checked')
       ).map(cb => (cb as HTMLInputElement).value);
 
-      const selectedLanguages = Array.from(
-        sidebar.querySelectorAll('input[name="language"]:checked')
+      const selectedAvailableIn = Array.from(
+        sidebar.querySelectorAll('input[name="available-in"]:checked')
       ).map(cb => (cb as HTMLInputElement).value);
 
       // Store in localStorage
       localStorage.setItem('filters-skills', JSON.stringify(selectedSkills));
-      localStorage.setItem('filters-languages', JSON.stringify(selectedLanguages));
+      localStorage.setItem('filters-available-in', JSON.stringify(selectedAvailableIn));
 
       // Update URL params
       const url = new URL(window.location.href);
@@ -98,17 +99,17 @@ const languages = [
       } else {
         url.searchParams.delete('skills');
       }
-      if (selectedLanguages.length > 0) {
-        url.searchParams.set('languages', selectedLanguages.join(','));
+      if (selectedAvailableIn.length > 0) {
+        url.searchParams.set('available-in', selectedAvailableIn.join(','));
       } else {
-        url.searchParams.delete('languages');
+        url.searchParams.delete('available-in');
       }
       window.history.replaceState({}, '', url);
 
       // Dispatch custom event
       window.dispatchEvent(
         new CustomEvent('filtersChanged', {
-          detail: { skills: selectedSkills, languages: selectedLanguages },
+          detail: { skills: selectedSkills, availableIn: selectedAvailableIn },
         })
       );
     };
@@ -123,93 +124,51 @@ const languages = [
           (cb as HTMLInputElement).checked = false;
         });
         localStorage.removeItem('filters-skills');
-        localStorage.removeItem('filters-languages');
+        localStorage.removeItem('filters-available-in');
 
         // Clear URL params
         const url = new URL(window.location.href);
         url.searchParams.delete('skills');
-        url.searchParams.delete('languages');
+        url.searchParams.delete('available-in');
         window.history.replaceState({}, '', url);
 
         window.dispatchEvent(
           new CustomEvent('filtersChanged', {
-            detail: { skills: [], languages: [] },
+            detail: { skills: [], availableIn: [] },
           })
         );
       });
     }
 
-    // Load filters: URL params > localStorage > auto-select locale
-    const currentLocale = sidebar.getAttribute('data-locale');
-    const shouldAutoSelect = sidebar.getAttribute('data-auto-select') === 'true';
-
     // Get URL params (client-side only, since we're using SSG)
     const urlParams = new URLSearchParams(window.location.search);
     const urlSkills = urlParams.get('skills')?.split(',').filter(Boolean) || [];
-    const urlLanguages = urlParams.get('languages')?.split(',').filter(Boolean) || [];
+    const urlAvailableIn = urlParams.get('available-in')?.split(',').filter(Boolean) || [];
 
-    // Priority: URL params, then localStorage, then auto-select
-    const hasUrlParams = urlSkills.length > 0 || urlLanguages.length > 0;
+    // A filtered URL is meant to be shareable, so it is a complete snapshot:
+    // any filter param makes the URL authoritative for *every* facet. Falling
+    // back per-facet would blend the recipient's saved filters into the sender's
+    // view, and an omitted facet means "off", not "keep yours".
+    const sharedFilters = urlSkills.length > 0 || urlAvailableIn.length > 0;
 
-    if (hasUrlParams) {
-      // Apply URL params to checkboxes
-      urlSkills.forEach((skillId: string) => {
+    const restore = (name: string, fromUrl: string[], storageKey: string) => {
+      const saved = sharedFilters ? null : localStorage.getItem(storageKey);
+      const values: string[] = saved ? JSON.parse(saved) : fromUrl;
+
+      values.forEach((value: string) => {
         const cb = sidebar.querySelector(
-          `input[name="skill"][value="${skillId}"]`
+          `input[name="${name}"][value="${value}"]`
         ) as HTMLInputElement;
         if (cb) cb.checked = true;
       });
-      urlLanguages.forEach((langCode: string) => {
-        const cb = sidebar.querySelector(
-          `input[name="language"][value="${langCode}"]`
-        ) as HTMLInputElement;
-        if (cb) cb.checked = true;
-      });
-      // Sync to localStorage
-      if (urlSkills.length > 0) {
-        localStorage.setItem('filters-skills', JSON.stringify(urlSkills));
-      }
-      if (urlLanguages.length > 0) {
-        localStorage.setItem('filters-languages', JSON.stringify(urlLanguages));
-      }
-    } else {
-      // No URL params, try localStorage
-      const savedSkills = localStorage.getItem('filters-skills');
-      const savedLanguages = localStorage.getItem('filters-languages');
 
-      if (savedSkills) {
-        const skills = JSON.parse(savedSkills);
-        skills.forEach((skillId: string) => {
-          const cb = sidebar.querySelector(
-            `input[name="skill"][value="${skillId}"]`
-          ) as HTMLInputElement;
-          if (cb) cb.checked = true;
-        });
+      if (sharedFilters) {
+        localStorage.setItem(storageKey, JSON.stringify(fromUrl));
       }
+    };
 
-      if (savedLanguages) {
-        const languages = JSON.parse(savedLanguages);
-        languages.forEach((langCode: string) => {
-          const cb = sidebar.querySelector(
-            `input[name="language"][value="${langCode}"]`
-          ) as HTMLInputElement;
-          if (cb) cb.checked = true;
-        });
-      } else if (shouldAutoSelect && currentLocale) {
-        // Auto-select current locale if no saved languages and auto-select is enabled
-        const cb = sidebar.querySelector(
-          `input[name="language"][value="${currentLocale}"]`
-        ) as HTMLInputElement;
-        if (cb) {
-          cb.checked = true;
-          // Save to localStorage and update URL
-          localStorage.setItem('filters-languages', JSON.stringify([currentLocale]));
-          const url = new URL(window.location.href);
-          url.searchParams.set('languages', currentLocale);
-          window.history.replaceState({}, '', url);
-        }
-      }
-    }
+    restore('skill', urlSkills, 'filters-skills');
+    restore('available-in', urlAvailableIn, 'filters-available-in');
   });
 </script>
 
@@ -272,6 +231,8 @@ const languages = [
     padding: 0.25rem;
     border-radius: 4px;
     transition: background 0.2s;
+    /* WCAG 2.1 AA target size; the label is the whole hit area. */
+    min-height: 44px;
   }
 
   .skill-checkbox:hover,
