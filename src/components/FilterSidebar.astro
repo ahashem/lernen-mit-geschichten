@@ -145,9 +145,14 @@ const otherLocales = [
     const urlSkills = urlParams.get('skills')?.split(',').filter(Boolean) || [];
     const urlAvailableIn = urlParams.get('available-in')?.split(',').filter(Boolean) || [];
 
-    // Priority: URL params, then localStorage
+    // A filtered URL is meant to be shareable, so it is a complete snapshot:
+    // any filter param makes the URL authoritative for *every* facet. Falling
+    // back per-facet would blend the recipient's saved filters into the sender's
+    // view, and an omitted facet means "off", not "keep yours".
+    const sharedFilters = urlSkills.length > 0 || urlAvailableIn.length > 0;
+
     const restore = (name: string, fromUrl: string[], storageKey: string) => {
-      const saved = fromUrl.length > 0 ? null : localStorage.getItem(storageKey);
+      const saved = sharedFilters ? null : localStorage.getItem(storageKey);
       const values: string[] = saved ? JSON.parse(saved) : fromUrl;
 
       values.forEach((value: string) => {
@@ -157,7 +162,7 @@ const otherLocales = [
         if (cb) cb.checked = true;
       });
 
-      if (fromUrl.length > 0) {
+      if (sharedFilters) {
         localStorage.setItem(storageKey, JSON.stringify(fromUrl));
       }
     };
