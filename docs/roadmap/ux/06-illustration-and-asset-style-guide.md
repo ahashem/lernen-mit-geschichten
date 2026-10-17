@@ -126,6 +126,26 @@ Consistency levers, in order of strength:
 6. **Model pinning:** record the model and version per story. Finish a story on one version. If the
    model changes, regenerate the character sheets first and get them approved.
 
+### Tools with text-to-image and instruction edit only (e.g. fal.ai)
+
+Some tools have no image-to-image strength control or line-art conditioning, only text-to-image and "edit" endpoints
+that take a prompt plus one or more reference images (for example Nano Banana Edit, FLUX Kontext, FLUX.2 Edit,
+Seedream Edit, Qwen Image Edit). The pipeline still works, with these changes:
+
+1. **Character sheet:** text-to-image with the sheet template. Approve it, then crop the front and three-quarter
+   views as the reference images.
+2. **Line pass:** use an *edit* endpoint with the sheet attached and an instruction, not a description:
+   "Using the attached character sheet for Bruno, draw scene {PAGE_NO}: {SCENE_DESCRIPTION}. Output a black ink line
+   drawing only, #24212E on white, no fill or shading, every shape closed, thick outlines." Add the previous frame as
+   a second reference for continuity.
+3. **Colour pass:** edit the approved line drawing: "Colour this line drawing exactly. Do not change, add or remove
+   any line or shape. Flat fills only, using only these inks: {PALETTE}. Bruno's colours follow the attached sheet."
+4. **If the line pass keeps drifting,** invert the order: generate the colour frame with the sheet as reference, then
+   derive the line drawing by edit ("Convert this image into a clean black ink outline drawing, same composition, no
+   colour, no fill, every shape closed"). The colouring page is then derived from the frame, which is just as good.
+5. **After every generation:** snap fills to the five inks (the model will drift), vectorise the line art, and run
+   the flood-fill closed-shape test. Record the endpoint, model version, seed and prompt in the manifest.
+
 ## 4. Scene composition rules for story frames
 
 - **Master ratio 3:2** (3000 × 2000). Keep a **safe area** in which every important element sits
