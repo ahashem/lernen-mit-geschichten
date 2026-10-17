@@ -1,8 +1,10 @@
 name: Deploy to GitHub Pages
 
+# Staging is `main` at the site root; the moderators' preview is the `content` branch at /preview/, with drafts
+# visible. One Pages deployment carries both. Production (Hostinger) builds `main` on its own.
 on:
   push:
-    branches: [main]
+    branches: [main, content]
   workflow_dispatch:
 
 permissions:
@@ -17,46 +19,97 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PAGES_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
     steps:
-      - name: Checkout
+      - name: Checkout main
         uses: actions/checkout@v7
+        with:
+          ref: main
+          path: site
 
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: 'npm'
-
-      - name: Cache Astro build
-        uses: actions/cache@v6
-        with:
-          path: |
-            .astro
-            node_modules/.astro
-          key: ${{ runner.os }}-astro-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**') }}
-          restore-keys: |
-            ${{ runner.os }}-astro-${{ hashFiles('**/package-lock.json') }}-
-            ${{ runner.os }}-astro-
+          cache-dependency-path: site/package-lock.json
 
       - name: Install dependencies
+        working-directory: site
         run: npm ci
 
-      # The only place tests run. Hostinger builds production from the same
+      # The only place tests run for main. Hostinger builds production from the same
       # commit but is locked to `npm run build`, which no longer runs them.
       - name: Run tests
+        working-directory: site
         run: npm test
 
-      - name: Build site (staging)
-        run: npm run build
+      - name: Build staging (main)
+        working-directory: site
         env:
-          # Derived, so renaming the repo or owner needs no edit here.
-          SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          SITE_URL: ${{ env.PAGES_URL }}
           NOINDEX: '1'
+          GITHUB_SHA: ''
+        run: npm run build
+
+      - name: Detect the content branch
+        id: detect
+        run: |
+          if git ls-remote --exit-code --heads "https://github.com/${{ github.repository }}.git" content >/dev/null; then
+            echo "has_content=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout content
+        if: steps.detect.outputs.has_content == 'true'
+        uses: actions/checkout@v7
+        with:
+          ref: content
+          path: preview-src
+          fetch-depth: 0
+
+      - name: Publishing gate on the content branch
+        if: steps.detect.outputs.has_content == 'true'
+        working-directory: preview-src
+        continue-on-error: true
+        run: node scripts/publish-gates.mjs --changed=origin/main > "$GITHUB_WORKSPACE/gate.txt" 2>&1
+
+      - name: Build preview (content, drafts visible)
+        id: preview
+        if: steps.detect.outputs.has_content == 'true'
+        working-directory: preview-src
+        continue-on-error: true
+        env:
+          SITE_URL: ${{ env.PAGES_URL }}/preview
+          NOINDEX: '1'
+          SHOW_DRAFTS: '1'
+          GITHUB_SHA: ''
+        run: |
+          npm ci
+          npm run build 2>&1 | tee "$GITHUB_WORKSPACE/preview-build.txt"
+
+      - name: Assemble the site
+        run: |
+          mkdir out
+          cp -r site/dist/. out/
+          BUILD=none
+          if [ "${{ steps.detect.outputs.has_content }}" = "true" ]; then
+            BUILD=failed
+            if [ "${{ steps.preview.outcome }}" = "success" ]; then
+              BUILD=ok
+              mkdir -p out/preview
+              cp -r preview-src/dist/. out/preview/
+            else
+              tail -n 25 preview-build.txt >> gate.txt 2>/dev/null || true
+            fi
+          fi
+          SHA=$(git -C preview-src rev-parse --short HEAD 2>/dev/null || echo none)
+          node site/scripts/preview-status.mjs out/preview/status/index.html "$BUILD" "$SHA" gate.txt
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: ./dist
+          path: ./out
 
   deploy:
     environment:

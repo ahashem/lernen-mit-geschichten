@@ -7,8 +7,9 @@ no content, no product.
 
 - **Git stays the source of truth.** Every edit is a commit; history is the audit log. No separate database.
 - **Moderators never see git.** They use a CMS with an email invite; the CMS commits on their behalf.
-- **A second pair of eyes before anything is public.** Moderators edit a `content` branch; the admin merges it to
-  `main` through a pull request, CI runs tests and build, both deploys follow.
+- **A second pair of eyes before anything is public, enforced by data.** Moderators save on the `content` branch. A
+  story goes live only when it is `published`, complete, and `reviewedBy` is someone other than `author`; CI checks
+  that on every changed file and publishes automatically when it passes. No admin merge, no waiting.
 - **Nothing machine-made ships unreviewed**: text, translations and images all have a named human reviewer.
 
 ## The join key
@@ -51,24 +52,40 @@ Moderators work in the CMS on the `content` branch and never see git. Steps 1 to
    pages or body, questions and the alt text in that language (`coverAlt`, `frameAlts` in the same order as the
    German pictures). A native speaker reads it and fills `reviewedBy` and `reviewedAt`. Recordings for that language
    go in `assets/audio/<language>/023-nora/`.
-10. **Publish.** Set `status: published` on the files that are ready; leave unreviewed translations as `draft`. Use
-    **Validate** to see what is missing, then **Submit for review**. The admin merges the pull request; staging and
-    production deploy. To take a story down, set it to `draft` and merge again.
-11. **Check the live page** in every published language, play a page of audio, and look at the Arabic and Urdu layouts.
+10. **Preview.** Every save rebuilds the preview at `…/preview/` (drafts visible, `noindex`). A reviewer reads the real
+    page there, with pictures and audio, and fills `reviewedBy` and `reviewedAt` in the CMS.
+11. **Publish.** Set `status: published` on the files that are ready; leave unreviewed translations as `draft`. A few
+    minutes after the save, CI merges the branch to `main` if everything passes and both sites update. The result,
+    or the exact error, is on `…/preview/status/`. To take a story down, set it to `draft`.
+12. **Check the live page** in every published language, play a page of audio, and look at the Arabic and Urdu layouts.
 
-## Setup and guardrails (admin)
+## How it runs, and one-time setup (admin)
 
-- Protect `main`: pull request and the `quality` check required, no direct pushes. A moderator who lands on `main` by
-  mistake is stopped by this, not by convention. Give them a bookmark that opens the CMS on the `content` branch.
-- `.pages.yml` must exist on `content` as well as `main`. Two small workflows keep the branch usable: one merges
-  `main` into `content` after every push to `main` (reset it if it has nothing new), and one opens or updates the pull
-  request when a moderator clicks Submit for review. Both are still to be written.
-- Commit identity stays `app` and commit messages are `content: update {path}`: the repo is public and moderators'
-  emails must not appear in it.
-- Pause moderator edits while a code change migrates many story files.
-- Not yet possible: a rendered preview before the merge, automatic conversion of PNG to WebP, a naming check on
-  uploaded files, and anything needing SVG or word-timing tools. To confirm in the first test: whether an editor can
-  switch branch in the UI, whether collaborators can start the workflow buttons, and how email sign-in behaves.
+- **Save → preview.** The CMS commits to `content`. `deploy.yml` builds `main` at the site root (staging) and
+  `content` at `/preview/` with `SHOW_DRAFTS=1` and `NOINDEX=1` (both are required; a build with only one of them
+  still hides drafts), plus a check-result page at `/preview/status/` (`scripts/preview-status.mjs`).
+- **Save → live.** `content-publish.yml` merges `main` into `content`, runs the changed-files publishing gate
+  (`node scripts/publish-gates.mjs --changed=origin/main`), `npm run quality` and the build, then fast-forwards `main`.
+  Untouched stories are never held to the gate, so the existing library stays as it is.
+- **Set up once:**
+  1. Create the branch: `git push origin origin/main:refs/heads/content`.
+  2. Make `content` the repository's default branch, so the CMS opens on it with no bookmark. Dependabot already
+     targets `main`; anyone opening a code PR picks `main` as the base.
+  3. Protect `main`: pull request and the `quality` check required for people and the agent.
+  4. Create a token for this repository only (contents: write) and store it as the secret `CONTENT_BOT_TOKEN`. Let
+     it bypass the `main` rule (a ruleset bypass), because `content-publish.yml` pushes straight to `main`.
+  5. Invite the moderators in the CMS.
+- **Why a moderator can't do harm.** The CMS only edits the configured story and media folders, not workflows. A
+  malformed file fails the checks and never reaches `main`; an incomplete or unreviewed published story is blocked
+  by the gate; a bad story is fixed by setting it to `draft`.
+- **What is still honor system.** `reviewedBy` is a typed name; CI checks it is present and not the author, not who
+  typed it.
+- Commit identity stays `app` and messages are `content: update {path}`: the repo is public and moderators' emails
+  must not appear in it. Pause moderator edits while a code change migrates many story files; a merge conflict stops
+  the pipeline and shows on the status page.
+- **To confirm in the first test:** the CMS writes to the default branch and its commits start the workflows; email
+  sign-in works; Pages publishes the preview folder. Not yet possible: automatic conversion of PNG to WebP, a naming
+  check on uploads, and anything needing SVG or word-timing tools.
 
 ## Roles
 

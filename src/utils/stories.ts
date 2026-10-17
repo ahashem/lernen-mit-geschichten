@@ -3,6 +3,12 @@ import { localesByStoryId } from './story-availability';
 
 export type Story = CollectionEntry<'stories'>;
 
+// The moderators' preview build shows drafts so a reviewer can read the real page before it goes live. Both
+// flags must be set, so an indexable production build can never leak a draft.
+// Astro hands these over as the raw strings from the environment ("1"), or as booleans once defined in vite config.
+const on = (value: unknown) => value === true || value === '1' || value === 'true';
+const showDrafts = on(import.meta.env.SHOW_DRAFTS) && on(import.meta.env.NOINDEX);
+
 /**
  * The only way to read the story collection.
  *
@@ -14,7 +20,7 @@ export type Story = CollectionEntry<'stories'>;
 export async function getPublishedStories(filter?: (entry: Story) => boolean): Promise<Story[]> {
   return getCollection(
     'stories',
-    entry => entry.data.status !== 'draft' && (filter ? filter(entry) : true)
+    entry => (showDrafts || entry.data.status !== 'draft') && (filter ? filter(entry) : true)
   );
 }
 

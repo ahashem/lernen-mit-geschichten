@@ -1,0 +1,63 @@
+name: Publish content
+
+# Moderators save in the CMS, which commits to `content`. When the checks pass, `main` is fast-forwarded to it and
+# both deploys follow; no human merge. A story only goes live once its status is `published`, and the publishing
+# gate (scripts/publish-gates.mjs --changed) refuses a published file that is incomplete or unreviewed.
+#
+# Needs the secret CONTENT_BOT_TOKEN: a token for this repository only (contents: write) that is allowed to push to
+# the protected `main` (a ruleset bypass). Without it the push below fails and nothing goes live.
+on:
+  push:
+    branches: [content]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: content
+          fetch-depth: 0
+          token: ${{ secrets.CONTENT_BOT_TOKEN }}
+
+      - name: Bring main into content
+        run: |
+          git config user.name "content-bot"
+          git config user.email "content-bot@users.noreply.github.com"
+          git merge --no-edit origin/main
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Publishing gate (changed files only)
+        run: node scripts/publish-gates.mjs --changed=origin/main
+
+      - run: npm run quality
+
+      - name: Build
+        run: npm run build
+        env:
+          SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          NOINDEX: '1'
+
+      - name: Publish (fast-forward main)
+        run: |
+          for attempt in 1 2 3; do
+            git push origin HEAD:content
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git merge --no-edit origin/main
+          done
+          echo "main moved too often; try saving again" >&2
+          exit 1

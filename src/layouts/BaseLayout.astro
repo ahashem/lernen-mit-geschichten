@@ -30,6 +30,8 @@ const pageTitle = `${title} | ${siteName}`;
 
 // Google Tag Manager ID from environment variable
 const gtmId = import.meta.env.PUBLIC_GTM_ID;
+// robots.txt only works at a host root, so staging and the moderators' preview also say it on every page.
+const noindex = ['1', 'true', true].includes(import.meta.env.NOINDEX);
 const build = buildMarker();
 ---
 
@@ -39,6 +41,7 @@ const build = buildMarker();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="build" content={build} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <script is:inline>
       // Apply the saved Lamp theme before first paint so a bedtime reader is never flashed with day colours.
