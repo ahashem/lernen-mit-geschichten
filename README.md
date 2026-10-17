@@ -9,7 +9,7 @@
 
 > **Werte durch Geschichten lernen** - Teaching children values and behavioral skills through interactive multilingual stories.
 
-A non-profit educational microwebsite designed for children ages 3-7, helping them learn important life skills through engaging stories. Built for parents, teachers, and KiTA caretakers in Germany.
+A non-profit educational microwebsite designed for children from age 3 up to Klasse 6, helping them learn important life skills through engaging stories. Built for parents, teachers, and KiTA caretakers in Germany.
 
 ## 🌍 Supported Languages
 
@@ -37,9 +37,9 @@ A non-profit educational microwebsite designed for children ages 3-7, helping th
 
 - **Framework**: [Astro](https://astro.build) - Static site generation
 - **Styling**: Scoped CSS with RTL support
-- **Interactivity**: Vanilla JavaScript (Web Speech API, Swiper.js)
+- **Interactivity**: Astro islands, React where needed (Web Speech API, Swiper.js)
 - **Content**: Markdown with YAML frontmatter
-- **Deployment**: GitHub Pages with GitHub Actions
+- **Deployment**: GitHub Pages (staging) via GitHub Actions; production on Hostinger
 - **Font**: Noto Sans (comprehensive language coverage)
 
 ## 🚀 Getting Started
@@ -170,7 +170,7 @@ Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed contribution guidel
 
 ## 📋 Content Guidelines
 
-- Stories should target ages 3-7
+- Stories state their age range (3 to 12); the library currently centres on ages 3-7
 - Each story maps to 1-3 skills from the taxonomy
 - Include 3 activity types: true/false, multiple choice, fill-in-the-blank
 - Professional translation required (no machine translation)

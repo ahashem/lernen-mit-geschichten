@@ -61,11 +61,11 @@ and no sitemap entry. Read the collection through `getPublishedStories()` in `sr
 calling `getCollection('stories')` directly bypasses the gate and leaks a draft into one surface
 while the others hide it.
 
-**Current policy — string freeze.** Do not merge work that adds new UI translation keys. The string
-surface is the binding constraint on shipping the feature backlog, and it is being routed through a
-translation pipeline before it is allowed to grow. Fixing or translating existing keys is always
-fine. This lifts when the pipeline lands; until then, a change that needs new keys is a conversation,
-not a merge.
+**UI strings for the roadmap.** The string freeze is lifted for the work in `docs/roadmap/`. The agent writes
+every new key in all five locales. Its `ar`/`tr`/`ur` strings are machine drafts that go live before a native
+review, which the owner has accepted for interface labels (never for story text). Each such key is recorded in
+`src/locales/review-queue.json` (`{ "ar": ["key", …], "tr": […], "ur": […] }`) and removed once a native speaker
+signs it off. Outside the roadmap work, a change that adds keys still needs a native reviewer on the PR.
 
 ## Verifying a build
 
@@ -80,3 +80,80 @@ SITE_URL=https://example.com npm run build && node scripts/verify-build.mjs
 It exits non-zero only on leaked runtime error strings. Broken links are reported without failing,
 because pages that exist in German but not the other four locales would fail every run. Use it as a
 diff against the previous run, not as a gate.
+
+## Project
+
+Static Astro site that teaches children values and behavioural skills through multilingual stories. It starts
+with ages 3–7 and grows with the child up to Klasse 6 (about age 12). Locales: `de` (default), `ar`, `en`, `tr`,
+`ur`; `ar`/`ur` are RTL. No backend, no accounts, no personal data; reader state lives on the device. Every
+push to `main` deploys staging (GitHub Pages, subpath, `noindex`) and production (https://mitgeschichten.com/,
+Hostinger, root, `npm run build` only), so the PR check is the only test gate.
+
+Product direction, the UX spec and the work plan are in `docs/roadmap/`; start at its `README.md`. Those specs
+outrank any existing look or feature.
+
+## Commands
+
+```sh
+npm run dev             # http://localhost:4321 (needs SITE_URL in .env.local)
+npm run quality         # format:check + lint + test; run before every commit
+npm run test -- -t "name"        # single test; vitest only collects src/**/*.test.ts
+npm run build && node scripts/verify-build.mjs
+node scripts/content-report.mjs  # translation coverage per story
+```
+
+Node >= 24.
+
+## Architecture
+
+- **i18n.** `src/locales/{de,ar,en,tr,ur}.json`, read with `getTranslation(locale, key)` from
+  `src/utils/i18n.ts` (typed against the German keys, falls back to German). A new key goes in all five
+  files. Never hardcode UI text; `locale === 'de' ? … : …` is for building URLs only.
+- **Routing, two files per route.** `prefixDefaultLocale: false`: German at `/route`, others at
+  `/{locale}/route`. Add `src/pages/{route}.astro` and `src/pages/[locale]/{route}.astro` (one
+  `getStaticPaths` over `ar`, `en`, `tr`, `ur`); copy `about`. Every page ships in all five locales in
+  the same change. `404.astro` is the one exception: hosts serve a single error document.
+- **Base path.** Import `BASE_PATH` from `@utils/site` and prefix every root-relative `href`, `src` and
+  `window.location` assignment. Astro rewrites markup but not JS string literals.
+- **Stories.** `src/content.config.ts` defines one `stories` collection over
+  `src/content/stories/{locale}/*.md`. Astro 7 semantics: `entry.id` (includes the locale, `de/bruno`) and
+  `render(entry)`. Translations of a story are separate files joined by `storyId`.
+  `src/pages/stories/[...slug].astro` builds the German pages plus bilingual pairs
+  (`/stories/{slug}-{primary}-{secondary}`, whitelisted in `commonPairs`); the `[locale]/` twin covers the
+  rest. Formats: `standard` (markdown + `QuizInteractive`) and `interactive` (`pages[]` driving
+  `InteractiveStorybook.astro`).
+- **Shared logic** in `src/utils/`: `skills-taxonomy.ts` (58 skills; changing an id breaks story
+  frontmatter), `filter-stories.ts` (`matchesFilter`: AND across filter types, OR within one),
+  `story-availability.ts`, `text-to-speech.ts`, `booklet-export.ts`.
+- `src/layouts/BaseLayout.astro` is the only layout (`lang`/`dir`, meta/OG, language selector). Pages must
+  not hand-roll `<html>`.
+
+## Conventions
+
+- `.astro` components with scoped `<style>`; React islands only where state earns it; no Vue/Svelte, no CSS
+  framework. Path aliases: `@components`, `@utils`, `@layouts`, `@styles`, `@/`.
+- Scoped CSS, custom properties for theming, mobile-first, `[dir="rtl"]` overrides; check Arabic and Urdu
+  after any layout change. The visual direction comes from `docs/roadmap/ux/`, not from existing CSS.
+- Accessibility is a requirement: WCAG 2.1 AA, keyboard reachable, labelled controls, 4.5:1 contrast, 44px
+  targets, `prefers-reduced-motion`.
+- Prettier: single quotes, semicolons, 2 spaces, 100 cols, `arrowParens: avoid`, `trailingComma: es5`.
+  TypeScript is `astro/tsconfigs/strict`.
+- Comments say why, only where it is non-obvious. One line where one line does.
+- Commits an AI writes: one conventional subject line, no body, no author or attribution trailer
+  (`CONTRIBUTING.md` has the full rule; `make hooks` installs the check). Types are the Conventional
+  Commits set plus `content:`.
+
+## Don't
+
+- Add accounts, a backend or any personal-data collection to the site.
+- Ship machine-translated story text, or UI strings that are not listed in `src/locales/review-queue.json`.
+- Skip or weaken tests to get a change through, or add a `prebuild` script (production does not tolerate
+  it).
+- Link to pages that do not exist, or add a German-only page.
+- Abstract ahead of need.
+
+## Known gaps
+
+- Legacy `locale === 'de' ? …` ternaries still hold UI text in a few components.
+- `GTMTracking.astro` is wired into `BaseLayout.astro` with no consent gate. It stays until a replacement is chosen.
+- `de/001-bruno-interactive.md` is a draft with placeholder image URLs.
