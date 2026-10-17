@@ -7,13 +7,13 @@ migrated to it; they do not constrain it.
 
 A **story** is language-neutral: its identity, cast, skills, and **all art** (no image carries text, so the same
 picture serves every locale and RTL). A **translation** is one language's text, audio and questions, reviewed by a
-human. Today both live in one frontmatter per locale file, joined by `storyId`, which lets shared fields drift.
+human. Both live in the same per-locale Markdown frontmatter, joined by `storyId`, but the language-neutral
+fields are written **only in the German source file** (`de/{storyId}.md`) and read from there by `getStoryMeta()`.
+A new story is one German file; each translation is one more file carrying its own text and its own alt text
+(`coverAlt`, `frameAlts`). Publish gates fail when a translation has no German file or repeats a shared field.
+The CMS (`/.pages.yml`) shows the shared fields only in the German collection.
 
-Recommended: a `story-meta` collection (`src/content/story-meta/{storyId}.yaml`) for the language-neutral part, and
-the existing per-locale Markdown for the text. A published translation must reference an existing meta entry
-(build fails otherwise). The CMS edits both.
-
-## Story (language-neutral) — `story-meta`
+## Story (language-neutral) — German file only
 
 | Field                     | Req            | Notes                                                                                                                                                                                                                                                                                                                                   |
 | ------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -95,11 +95,11 @@ highlight (sentence highlight on device voices). Both are valid states the reade
 published partly illustrated.
 
 Rules: no text inside images; leave a calm region for text overlay; every image has alt text written for a
-screen-reader user, not a caption, stored in `story-meta`; provenance lives in the manifest and `story-meta` points
-to it. Style, prompts and the review checklist are in `ux/06` and `03`.
+screen-reader user, not a caption, stored in the file of the language it is written in (`cover.alt` / `frames[].alt` in German, `coverAlt` /
+`frameAlts` elsewhere); provenance lives in the manifest and the German file's `art` points to it. Style, prompts and the review checklist are in `ux/06` and `03`.
 
 ## Migration
 
-An editor assigns each existing story a `band` (all current stories are ≈3–7, so band 1 or 2), then one script maps the existing 66 story files to `story-meta` + translations (`title*` fields move to their locale
-files; `languages[]` and read time drop out), then the schema in `src/content.config.ts` tightens. Run
-`node scripts/content-report.mjs` before and after to prove nothing was lost.
+Done: `band` and the Bruno art moved into the German files, `title*`, `languages[]`, read time and
+`characterType` dropped, and a before/after build of the whole site is byte-identical. Skills and emoji are still
+written in every language file; making them German-only is a possible follow-up.

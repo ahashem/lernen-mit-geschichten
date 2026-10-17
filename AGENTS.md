@@ -115,15 +115,16 @@ Node >= 24.
   the same change. `404.astro` is the one exception: hosts serve a single error document.
 - **Base path.** Import `BASE_PATH` from `@utils/site` and prefix every root-relative `href`, `src` and
   `window.location` assignment. Astro rewrites markup but not JS string literals.
-- **Stories.** `src/content.config.ts` defines `stories` (one Markdown file per locale, joined by `storyId`) and
-  `story-meta` (`src/content/story-meta/{storyId}.yaml`: `band`, cover, frames, palette). Astro 7 semantics:
+- **Stories.** `src/content.config.ts` defines `stories` (one Markdown file per locale, joined by `storyId`). Language-neutral fields (`band`, `cover`, `frames`, `palette`,
+  `art`) live only in the German file and are read through `getStoryMeta()`; other locales carry `coverAlt` and
+  `frameAlts`. `.pages.yml` configures the CMS from this schema. Astro 7 semantics:
   `entry.id` (includes the locale, `de/bruno`) and `render(entry)`. Both story routes render
   `components/reader/StoryPage.astro`: a cover, then a page-by-page storybook for bands 1-2 (`reader.ts`), an end
   screen with talk cards, and the full text (also the no-JS view). Pages come from `---` breaks, else are derived
   per band by `utils/story-pages.ts`; recordings (`public/assets/audio/{locale}/{storyId}/{nn}.m4a`) are used only
   with explicit pages, otherwise the device voice reads. `scripts/publish-gates.mjs` reports what stories lack.
-- **Shared logic** in `src/utils/`: `skills-taxonomy.ts` (58 skills; changing an id breaks story
-  frontmatter), `filter-stories.ts` (`matchesFilter`: AND across filter types, OR within one),
+- **Shared logic** in `src/utils/`: `skills-taxonomy.ts` (20 skills in 4 categories; stories also use
+  ids missing from it; changing an id breaks story frontmatter), `filter-stories.ts` (`matchesFilter`: AND across filter types, OR within one),
   `story-availability.ts`, `booklet-export.ts`.
 - `src/layouts/BaseLayout.astro` is the only layout (`lang`/`dir`, meta/OG, language selector). Pages must
   not hand-roll `<html>`.

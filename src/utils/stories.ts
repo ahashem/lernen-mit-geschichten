@@ -28,12 +28,60 @@ export async function getStoryAvailability() {
   return localesByStoryId(await getPublishedStories());
 }
 
-export type StoryMeta = CollectionEntry<'story-meta'>['data'];
+type Alt = Record<string, string>;
 
-/** Language-neutral part of a story (band, art), or undefined when no meta file exists yet. */
+/** Language-neutral part of a story, assembled from its German source file; alt text comes from each locale's own file. */
+export interface StoryMeta {
+  band: number;
+  cover?: { src: string; alt: Alt };
+  frames?: { src: string; alt: Alt; pageRef?: number }[];
+  palette?: [string, string];
+  art?: NonNullable<Story['data']['art']>;
+}
+
+let metaByStory: Promise<Map<string, StoryMeta>> | undefined;
+
+function buildMeta(entries: Story[]): Map<string, StoryMeta> {
+  const byId = new Map<string, Story[]>();
+  for (const e of entries) byId.set(e.data.storyId, [...(byId.get(e.data.storyId) ?? []), e]);
+  const out = new Map<string, StoryMeta>();
+  for (const [storyId, group] of byId) {
+    const source = group.find(e => e.id.startsWith('de/'));
+    if (!source) continue;
+    const d = source.data;
+    const alts = (pick: (e: Story) => string | undefined) => {
+      const a: Alt = {};
+      for (const e of group) {
+        const text = e.id.startsWith('de/') ? undefined : pick(e);
+        if (text) a[e.id.split('/')[0]] = text;
+      }
+      return a;
+    };
+    out.set(storyId, {
+      band: d.band ?? 1,
+      palette: d.palette,
+      art: d.art,
+      cover: d.cover && {
+        src: d.cover.src,
+        alt: { ...(d.cover.alt ? { de: d.cover.alt } : {}), ...alts(e => e.data.coverAlt) },
+      },
+      frames: d.frames?.map((f, i) => ({
+        src: f.src,
+        pageRef: f.pageRef,
+        alt: { ...(f.alt ? { de: f.alt } : {}), ...alts(e => e.data.frameAlts?.[i]) },
+      })),
+    });
+  }
+  return out;
+}
+
+/**
+ * Shared fields (band, art) of a story, or undefined when it has no German source file.
+ * Reads drafts too: an unpublished German file must not strip the art from a published translation.
+ */
 export async function getStoryMeta(storyId: string): Promise<StoryMeta | undefined> {
-  const entries = await getCollection('story-meta');
-  return entries.find(e => e.data.storyId === storyId)?.data;
+  metaByStory ??= getCollection('stories').then(buildMeta);
+  return (await metaByStory).get(storyId);
 }
 
 /** Derived from the text, never hand-entered: 150 words a minute for a child being read to. */
