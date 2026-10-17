@@ -3,6 +3,7 @@ title: "Bruno's Colorful Feelings"
 emoji: "🐻"
 skills: ["self-awareness", "emotional-regulation"]
 ageGroup: "3-7"
+band: 1
 languages: ["en"]
 storyId: "001-bruno"
 publishDate: 2024-01-15

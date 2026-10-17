@@ -3,6 +3,7 @@ title: "مورِٹس کی کہانی – چھوٹا سا چوہا"
 emoji: "🐭"
 skills: ["courage", "self-confidence"]
 ageGroup: "3-7"
+band: 1
 languages: ["ur"]
 storyId: "006-moritz"
 publishDate: 2024-01-15

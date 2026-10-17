@@ -3,6 +3,7 @@ title: "Fritz Flamingo Düzeni Öğreniyor"
 emoji: "🦩"
 skills: ["organization", "responsibility"]
 ageGroup: "3-7"
+band: 1
 languages: ["tr"]
 storyId: "007-fritz-flamingo"
 publishDate: 2024-01-15

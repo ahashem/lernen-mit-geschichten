@@ -7,6 +7,7 @@ titleUr: "برونو کے رنگین جذبات"
 emoji: "🐻"
 skills: ["self-awareness", "emotional-regulation"]
 ageGroup: "3-7"
+band: 1
 languages: ["de"]
 storyId: "001-bruno"
 characterType: "bear"

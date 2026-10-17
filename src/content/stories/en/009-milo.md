@@ -3,6 +3,7 @@ title: "Milo Learns to Adapt"
 emoji: "🐨"
 skills: ["adaptability", "flexibility"]
 ageGroup: "3-7"
+band: 1
 languages: ["en"]
 storyId: "009-milo"
 publishDate: 2024-01-15

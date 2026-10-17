@@ -3,6 +3,7 @@ title: "Moritz'in Hikâyesi – Küçük Fare"
 emoji: "🐭"
 skills: ["courage", "self-confidence"]
 ageGroup: "3-7"
+band: 1
 languages: ["tr"]
 storyId: "006-moritz"
 publishDate: 2024-01-15
