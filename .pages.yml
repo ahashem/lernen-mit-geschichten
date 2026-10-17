@@ -1,12 +1,16 @@
+# Pages CMS config. The schema of record is src/content.config.ts; keep field names in step with it.
+# Shared fields (band, cover, frames, palette, art) are set in the German file only; every other
+# language file carries its own text and its own alt text (coverAlt, frameAlts).
+
 settings:
-  content: true # keep frontmatter the forms do not show
+  content: true # keep frontmatter the forms do not show (palette, legacy fields)
   commit:
     identity: app # the repo is public: never put a moderator's email in git history
     templates:
-      create: "content: add {path}"
-      update: "content: update {path}"
-      delete: "content: remove {path}"
-      rename: "content: rename {oldPath} to {newPath}"
+      create: 'content: add {path}'
+      update: 'content: update {path}'
+      delete: 'content: remove {path}'
+      rename: 'content: rename {oldPath} to {newPath}'
 
 media:
   - name: art
@@ -14,7 +18,7 @@ media:
     input: public/assets/stories
     output: /assets/stories
     extensions: [webp, png, svg]
-    rename: false
+    rename: false # file names follow docs/roadmap/02-content-model.md; do not slugify
   - name: audio
     label: Narration audio
     input: public/assets/audio
@@ -77,9 +81,15 @@ components:
     list:
       collapsible:
         collapsed: true
-        summary: "{fields.text}"
+        summary: '{fields.text}'
     fields:
-      - { name: id, type: string, label: Id, required: true, description: "Short and unique within the story, e.g. q1" }
+      - {
+          name: id,
+          type: string,
+          label: Id,
+          required: true,
+          description: 'Short and unique within the story, e.g. q1',
+        }
       - { name: text, type: text, label: Question, required: true }
       - name: type
         type: select
@@ -97,7 +107,12 @@ components:
     type: object
     label: Narration
     fields:
-      - { name: audio, type: string, label: Audio folder name }
+      - {
+          name: audio,
+          type: string,
+          label: Audio folder name,
+          description: 'Folder under assets/audio/<language>/ with one file per page: 01.m4a, 02.m4a ...',
+        }
       - { name: narrator, type: string, label: Narrator credit }
       - { name: consent, type: string, label: Narrator consent note }
       - { name: timing, type: boolean, label: Word timings (nn.json) exist, default: false }
@@ -112,9 +127,9 @@ content:
       create: true
       rename: false
       delete: false
-    filename: "{storyId}.md"
+    filename: '{storyId}.md'
     view:
-      fields: [title, storyId, status]
+      fields: [title, storyId, status, band]
       primary: title
       search: [title, storyId, status]
       sort: [storyId, title]
@@ -128,8 +143,8 @@ content:
         required: true
         description: Same in every language. Never change it after publishing.
         pattern:
-          regex: "^[0-9]{3}-[a-z0-9-]+$"
-          message: "Use three digits, a dash and a lowercase name, e.g. 023-nora"
+          regex: '^[0-9]{3}-[a-z0-9-]+$'
+          message: 'Use three digits, a dash and a lowercase name, e.g. 023-nora'
       - name: status
         type: select
         label: Status
@@ -137,17 +152,70 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
-      - { name: emoji, type: string, label: Emoji, required: true, default: "📖" }
+      - {
+          name: emoji,
+          type: string,
+          label: Emoji (shown when there is no picture),
+          required: true,
+          default: '📖',
+        }
       - { name: skills, component: skills }
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
-      - { name: body, type: rich-text, label: Story text, required: false, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
+      - {
+          name: body,
+          type: rich-text,
+          label: Story text,
+          description: 'Write it here like a document. A horizontal line (Insert, divider) starts a new page.',
+        }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
-      - { name: narration, component: narration }
+      - name: band
+        type: select
+        label: Band
+        required: true
+        description: Set once, here. 1 picture book (3-5), 2 read-along (6-7), 3 chapter story (8-9), 4 long read (10-12).
+        options:
+          values:
+            - { value: '1', label: '1 Picture book' }
+            - { value: '2', label: '2 Read-along' }
+            - { value: '3', label: '3 Chapter story' }
+            - { value: '4', label: '4 Long read' }
+      - name: cover
+        type: object
+        label: Cover
+        fields:
+          - { name: src, type: image, label: Picture, options: { media: art } }
+          - { name: alt, type: text, label: Alt text (German) }
+      - name: frames
+        type: object
+        label: Page pictures
+        description: In page order. A page without a picture shows the generated fallback.
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{index}'
+        fields:
+          - { name: src, type: image, label: Picture, options: { media: art } }
+          - { name: alt, type: text, label: Alt text (German) }
+          - {
+              name: pageRef,
+              type: number,
+              label: Page number (only if it differs from its position),
+            }
+      - name: art
+        type: object
+        label: How the art was made
+        description: Required once the story has art.
+        fields:
+          - { name: generator, type: string, label: Tool and model }
+          - { name: styleVersion, type: string, label: Style guide version }
+          - { name: reviewedBy, type: string, label: Reviewed by }
+          - { name: reviewedAt, type: date, label: Reviewed on }
+          - { name: aiGenerated, type: boolean, label: Made with AI, default: true }
       - { name: publishDate, type: date, label: First published }
-      - { name: reviewedBy, type: string, label: Reviewed by }
-      - { name: reviewedAt, type: date, label: Reviewed on }
+      - { name: ageGroup, type: string, hidden: true, default: '3-7' }
+      - { name: narration, component: narration }
   - name: stories-en
     label: English
     type: collection
@@ -157,9 +225,9 @@ content:
       create: true
       rename: false
       delete: false
-    filename: "{storyId}.md"
+    filename: '{storyId}.md'
     view:
-      fields: [title, storyId, status]
+      fields: [title, storyId, status, reviewedBy]
       primary: title
       search: [title, storyId, status]
       sort: [storyId, title]
@@ -175,8 +243,8 @@ content:
         options:
           collection: stories-de
           search: fields.title
-          value: "{fields.storyId}"
-          label: "{fields.storyId} - {fields.title}"
+          value: '{fields.storyId}'
+          label: '{fields.storyId} - {fields.title}'
       - name: status
         type: select
         label: Status
@@ -184,16 +252,32 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
-      - { name: emoji, type: string, label: Emoji, required: true, default: "📖" }
+      - {
+          name: emoji,
+          type: string,
+          label: Emoji (shown when there is no picture),
+          required: true,
+          default: '📖',
+        }
       - { name: skills, component: skills }
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
-      - { name: body, type: rich-text, label: Story text, required: false, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
+      - {
+          name: body,
+          type: rich-text,
+          label: Story text,
+          description: 'Write it here like a document. A horizontal line (Insert, divider) starts a new page.',
+        }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
+      - { name: coverAlt, type: text, label: Cover alt text (this language) }
+      - name: frameAlts
+        type: text
+        label: Page picture alt texts (this language)
+        description: Same order as the German file's page pictures.
+        list: true
       - { name: narration, component: narration }
-      - { name: publishDate, type: date, label: First published }
-      - { name: reviewedBy, type: string, label: Reviewed by }
+      - { name: reviewedBy, type: string, label: Reviewed by (a native speaker) }
       - { name: reviewedAt, type: date, label: Reviewed on }
   - name: stories-ar
     label: العربية
@@ -204,9 +288,9 @@ content:
       create: true
       rename: false
       delete: false
-    filename: "{storyId}.md"
+    filename: '{storyId}.md'
     view:
-      fields: [title, storyId, status]
+      fields: [title, storyId, status, reviewedBy]
       primary: title
       search: [title, storyId, status]
       sort: [storyId, title]
@@ -222,8 +306,8 @@ content:
         options:
           collection: stories-de
           search: fields.title
-          value: "{fields.storyId}"
-          label: "{fields.storyId} - {fields.title}"
+          value: '{fields.storyId}'
+          label: '{fields.storyId} - {fields.title}'
       - name: status
         type: select
         label: Status
@@ -231,16 +315,32 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
-      - { name: emoji, type: string, label: Emoji, required: true, default: "📖" }
+      - {
+          name: emoji,
+          type: string,
+          label: Emoji (shown when there is no picture),
+          required: true,
+          default: '📖',
+        }
       - { name: skills, component: skills }
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
-      - { name: body, type: rich-text, label: Story text, required: false, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
+      - {
+          name: body,
+          type: rich-text,
+          label: Story text,
+          description: 'Write it here like a document. A horizontal line (Insert, divider) starts a new page.',
+        }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
+      - { name: coverAlt, type: text, label: Cover alt text (this language) }
+      - name: frameAlts
+        type: text
+        label: Page picture alt texts (this language)
+        description: Same order as the German file's page pictures.
+        list: true
       - { name: narration, component: narration }
-      - { name: publishDate, type: date, label: First published }
-      - { name: reviewedBy, type: string, label: Reviewed by }
+      - { name: reviewedBy, type: string, label: Reviewed by (a native speaker) }
       - { name: reviewedAt, type: date, label: Reviewed on }
   - name: stories-tr
     label: Türkçe
@@ -251,9 +351,9 @@ content:
       create: true
       rename: false
       delete: false
-    filename: "{storyId}.md"
+    filename: '{storyId}.md'
     view:
-      fields: [title, storyId, status]
+      fields: [title, storyId, status, reviewedBy]
       primary: title
       search: [title, storyId, status]
       sort: [storyId, title]
@@ -269,8 +369,8 @@ content:
         options:
           collection: stories-de
           search: fields.title
-          value: "{fields.storyId}"
-          label: "{fields.storyId} - {fields.title}"
+          value: '{fields.storyId}'
+          label: '{fields.storyId} - {fields.title}'
       - name: status
         type: select
         label: Status
@@ -278,16 +378,32 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
-      - { name: emoji, type: string, label: Emoji, required: true, default: "📖" }
+      - {
+          name: emoji,
+          type: string,
+          label: Emoji (shown when there is no picture),
+          required: true,
+          default: '📖',
+        }
       - { name: skills, component: skills }
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
-      - { name: body, type: rich-text, label: Story text, required: false, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
+      - {
+          name: body,
+          type: rich-text,
+          label: Story text,
+          description: 'Write it here like a document. A horizontal line (Insert, divider) starts a new page.',
+        }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
+      - { name: coverAlt, type: text, label: Cover alt text (this language) }
+      - name: frameAlts
+        type: text
+        label: Page picture alt texts (this language)
+        description: Same order as the German file's page pictures.
+        list: true
       - { name: narration, component: narration }
-      - { name: publishDate, type: date, label: First published }
-      - { name: reviewedBy, type: string, label: Reviewed by }
+      - { name: reviewedBy, type: string, label: Reviewed by (a native speaker) }
       - { name: reviewedAt, type: date, label: Reviewed on }
   - name: stories-ur
     label: اردو
@@ -298,9 +414,9 @@ content:
       create: true
       rename: false
       delete: false
-    filename: "{storyId}.md"
+    filename: '{storyId}.md'
     view:
-      fields: [title, storyId, status]
+      fields: [title, storyId, status, reviewedBy]
       primary: title
       search: [title, storyId, status]
       sort: [storyId, title]
@@ -316,8 +432,8 @@ content:
         options:
           collection: stories-de
           search: fields.title
-          value: "{fields.storyId}"
-          label: "{fields.storyId} - {fields.title}"
+          value: '{fields.storyId}'
+          label: '{fields.storyId} - {fields.title}'
       - name: status
         type: select
         label: Status
@@ -325,14 +441,30 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
-      - { name: emoji, type: string, label: Emoji, required: true, default: "📖" }
+      - {
+          name: emoji,
+          type: string,
+          label: Emoji (shown when there is no picture),
+          required: true,
+          default: '📖',
+        }
       - { name: skills, component: skills }
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
-      - { name: body, type: rich-text, label: Story text, required: false, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
+      - {
+          name: body,
+          type: rich-text,
+          label: Story text,
+          description: 'Write it here like a document. A horizontal line (Insert, divider) starts a new page.',
+        }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
+      - { name: coverAlt, type: text, label: Cover alt text (this language) }
+      - name: frameAlts
+        type: text
+        label: Page picture alt texts (this language)
+        description: Same order as the German file's page pictures.
+        list: true
       - { name: narration, component: narration }
-      - { name: publishDate, type: date, label: First published }
-      - { name: reviewedBy, type: string, label: Reviewed by }
+      - { name: reviewedBy, type: string, label: Reviewed by (a native speaker) }
       - { name: reviewedAt, type: date, label: Reviewed on }

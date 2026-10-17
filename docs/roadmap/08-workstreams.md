@@ -8,7 +8,7 @@ $9.** A run stops when its scope is done or its budget is spent, whichever is fi
 
 - Read `AGENTS.md`, this file and `ux/README.md`'s "How to use this spec". Then only the sections the run lists
   below. `docs/roadmap/ux/` is about 21,000 words; never open it whole, and `ux/06` (art) is not needed.
-- Serial small PRs, squashed into `main`, one conventional subject line, `npm run quality` green first.
+- Serial small PRs, squashed into `main` (the default branch is `editorial`, so open them with `--base main`), one conventional subject line, `npm run quality` green first.
 - **The UX spec defines the look.** Replace the existing CSS with the tokens and components it defines; do not
   extend the old style or invent one. Implement the tokens and `data-band` once; do not fork components per band.
 - Every new page ships in all 5 locales. New UI keys go in all five locales; list the `ar`/`tr`/`ur` keys in
@@ -59,6 +59,8 @@ record it in `ux/07-open-questions.md` or the run report; do not improvise.
 - Do not call `getCollection('stories')` directly, disable ESLint rules, skip or weaken tests, use `--no-verify`,
   add a `prebuild` script, rename `build`, force-push, rewrite `main`, or delete branches and tags you did not
   create.
+- Do not edit `.pages.yml`: the CMS configuration belongs to the owner, and you cannot see the CMS. If you add,
+  rename or remove a field in `src/content.config.ts`, say so in the PR description so the owner can mirror it.
 - Do not hardcode UI text, domains or the base path; every internal URL goes through `BASE_PATH`. Do not add
   German-only pages or links to pages that do not exist. Do not rename existing story slugs, `storyId`s or skill ids.
 - Do not reformat or refactor files you are not changing. Do not edit the UX spec or roadmap docs except the
@@ -150,8 +152,8 @@ Not in any run: Class room two-screen mode, My reading list, pre-built PDF class
 
 Run 1 left M1 mostly complete; the reading experience is live on staging. In order:
 
-1. **Owner, content (unblocks the pilot).** Add `---` page breaks to `de/001-bruno` that match the two recordings (38 s and 51 s), then the recordings and the colour frame will pair with pages; review the draft alt text in `story-meta/001-bruno.yaml`; decide whether the portrait line drawing is the cover or a colouring page; tell translators that paragraph structure must match `de` for Two languages (only 28 story pages pair today).
-2. **Owner, access.** Push the annotated tags `m1-foundation` (`934b69c`), `m1-storybook` (`50205f6`) and `m1-two-languages` (`e2259f4`); the cloud session could not (the git proxy answers 403 to tag pushes and to the refs API). `m1-story-worth-opening` is not tagged because M1 is not complete (leftovers below).
+1. **Owner, content (unblocks the pilot).** Add `---` page breaks to `de/001-bruno` that match the two recordings (38 s and 51 s), then the recordings and the colour frame will pair with pages; review the draft alt text (`coverAlt`, `frameAlts` in `en/001-bruno.md`); decide whether the portrait line drawing is the cover or a colouring page; tell translators that paragraph structure must match `de` for Two languages (only 28 story pages pair today).
+2. **Done.** The annotated tags `m1-foundation`, `m1-storybook` and `m1-two-languages` are pushed. `m1-story-worth-opening` is not tagged because M1 is not complete (leftovers below).
 3. **Owner, review.** Native review of `src/locales/review-queue.json` (`node scripts/review-queue.mjs`).
 4. **Run 2** as scoped above, plus the M1 leftovers it needs: the chapter reader for bands 3-4 (bands 3-4 stories currently open as full text), and Reader home and Picture home consuming `reader-prefs.shelf`.
-5. **M1 leftovers (small).** Spoken first-tap labels and the "?" icon tour for pre-readers; recall and feeling talk cards (need frames); the Lamp shelf (`bedtime` tag in `story-meta`) and "Listen in the dark" for bands 3-4; an in-app "Less motion" switch; preload the one reading font for the active locale; move `skills` into `story-meta`; fold `001-bruno-interactive` into `001-bruno`; remember the language pair per story.
+5. **M1 leftovers (small).** Spoken first-tap labels and the "?" icon tour for pre-readers; recall and feeling talk cards (need frames); the Lamp shelf (`bedtime` tag in the German file) and "Listen in the dark" for bands 3-4; an in-app "Less motion" switch; preload the one reading font for the active locale; move `skills` into `story-meta`; fold `001-bruno-interactive` into `001-bruno`; remember the language pair per story.
