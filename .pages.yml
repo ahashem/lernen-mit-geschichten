@@ -116,17 +116,6 @@ components:
       - { name: narrator, type: string, label: Narrator credit }
       - { name: consent, type: string, label: Narrator consent note }
       - { name: timing, type: boolean, label: Word timings (nn.json) exist, default: false }
-  pages:
-    type: object
-    label: Pages
-    description: One item per page. Page n pairs with picture n and recording n. Use this for picture books; leave empty for chapter stories.
-    list:
-      collapsible:
-        collapsed: true
-        summary: '{index}'
-    fields:
-      - { name: text, type: text, label: Words on this page, required: true }
-      - { name: image, type: string, hidden: true }
 
 content:
   - name: stories-de
@@ -137,6 +126,7 @@ content:
     view:
       fields: [title, storyId, status, band]
       primary: title
+      search: [title, storyId, status]
       sort: [storyId, title]
       default:
         sort: storyId
@@ -157,12 +147,22 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
-      - { name: emoji, type: string, label: Emoji (shown when there is no picture), required: true }
+      - {
+          name: emoji,
+          type: string,
+          label: Emoji (shown when there is no picture),
+          required: true,
+          default: '📖',
+        }
       - { name: skills, component: skills }
       - { name: summary, type: text, label: Summary (1-2 sentences) }
       - { name: keyMessage, type: text, label: The one idea }
-      - { name: pages, component: pages }
-      - { name: body, type: rich-text, label: Text (chapter stories) }
+      - {
+          name: body,
+          type: rich-text,
+          label: Story text,
+          description: 'Write it here like a document. A horizontal line (Insert, divider) starts a new page.',
+        }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
       - name: band
@@ -219,19 +219,22 @@ content:
     view:
       fields: [title, storyId, status, reviewedBy]
       primary: title
+      search: [title, storyId, status]
       sort: [storyId, title]
       default:
         sort: storyId
         order: asc
     fields:
       - name: storyId
-        type: string
-        label: Story id
+        type: reference
+        label: Story (pick the German original)
         required: true
-        description: Same in every language. Never change it after publishing.
-        pattern:
-          regex: '^[0-9]{3}-[a-z0-9-]+$'
-          message: 'Use three digits, a dash and a lowercase name, e.g. 023-nora'
+        description: Choose from the list so the languages always match.
+        options:
+          collection: stories-de
+          search: fields.title
+          value: '{fields.storyId}'
+          label: '{fields.storyId} - {fields.title}'
       - name: status
         type: select
         label: Status
@@ -239,12 +242,22 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
-      - { name: emoji, type: string, label: Emoji (shown when there is no picture), required: true }
+      - {
+          name: emoji,
+          type: string,
+          label: Emoji (shown when there is no picture),
+          required: true,
+          default: '📖',
+        }
       - { name: skills, component: skills }
       - { name: summary, type: text, label: Summary (1-2 sentences) }
       - { name: keyMessage, type: text, label: The one idea }
-      - { name: pages, component: pages }
-      - { name: body, type: rich-text, label: Text (chapter stories) }
+      - {
+          name: body,
+          type: rich-text,
+          label: Story text,
+          description: 'Write it here like a document. A horizontal line (Insert, divider) starts a new page.',
+        }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
       - { name: coverAlt, type: text, label: Cover alt text (this language) }
@@ -264,19 +277,22 @@ content:
     view:
       fields: [title, storyId, status, reviewedBy]
       primary: title
+      search: [title, storyId, status]
       sort: [storyId, title]
       default:
         sort: storyId
         order: asc
     fields:
       - name: storyId
-        type: string
-        label: Story id
+        type: reference
+        label: Story (pick the German original)
         required: true
-        description: Same in every language. Never change it after publishing.
-        pattern:
-          regex: '^[0-9]{3}-[a-z0-9-]+$'
-          message: 'Use three digits, a dash and a lowercase name, e.g. 023-nora'
+        description: Choose from the list so the languages always match.
+        options:
+          collection: stories-de
+          search: fields.title
+          value: '{fields.storyId}'
+          label: '{fields.storyId} - {fields.title}'
       - name: status
         type: select
         label: Status
@@ -284,12 +300,22 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
-      - { name: emoji, type: string, label: Emoji (shown when there is no picture), required: true }
+      - {
+          name: emoji,
+          type: string,
+          label: Emoji (shown when there is no picture),
+          required: true,
+          default: '📖',
+        }
       - { name: skills, component: skills }
       - { name: summary, type: text, label: Summary (1-2 sentences) }
       - { name: keyMessage, type: text, label: The one idea }
-      - { name: pages, component: pages }
-      - { name: body, type: rich-text, label: Text (chapter stories) }
+      - {
+          name: body,
+          type: rich-text,
+          label: Story text,
+          description: 'Write it here like a document. A horizontal line (Insert, divider) starts a new page.',
+        }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
       - { name: coverAlt, type: text, label: Cover alt text (this language) }
@@ -309,19 +335,22 @@ content:
     view:
       fields: [title, storyId, status, reviewedBy]
       primary: title
+      search: [title, storyId, status]
       sort: [storyId, title]
       default:
         sort: storyId
         order: asc
     fields:
       - name: storyId
-        type: string
-        label: Story id
+        type: reference
+        label: Story (pick the German original)
         required: true
-        description: Same in every language. Never change it after publishing.
-        pattern:
-          regex: '^[0-9]{3}-[a-z0-9-]+$'
-          message: 'Use three digits, a dash and a lowercase name, e.g. 023-nora'
+        description: Choose from the list so the languages always match.
+        options:
+          collection: stories-de
+          search: fields.title
+          value: '{fields.storyId}'
+          label: '{fields.storyId} - {fields.title}'
       - name: status
         type: select
         label: Status
@@ -329,12 +358,22 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
-      - { name: emoji, type: string, label: Emoji (shown when there is no picture), required: true }
+      - {
+          name: emoji,
+          type: string,
+          label: Emoji (shown when there is no picture),
+          required: true,
+          default: '📖',
+        }
       - { name: skills, component: skills }
       - { name: summary, type: text, label: Summary (1-2 sentences) }
       - { name: keyMessage, type: text, label: The one idea }
-      - { name: pages, component: pages }
-      - { name: body, type: rich-text, label: Text (chapter stories) }
+      - {
+          name: body,
+          type: rich-text,
+          label: Story text,
+          description: 'Write it here like a document. A horizontal line (Insert, divider) starts a new page.',
+        }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
       - { name: coverAlt, type: text, label: Cover alt text (this language) }
@@ -354,19 +393,22 @@ content:
     view:
       fields: [title, storyId, status, reviewedBy]
       primary: title
+      search: [title, storyId, status]
       sort: [storyId, title]
       default:
         sort: storyId
         order: asc
     fields:
       - name: storyId
-        type: string
-        label: Story id
+        type: reference
+        label: Story (pick the German original)
         required: true
-        description: Same in every language. Never change it after publishing.
-        pattern:
-          regex: '^[0-9]{3}-[a-z0-9-]+$'
-          message: 'Use three digits, a dash and a lowercase name, e.g. 023-nora'
+        description: Choose from the list so the languages always match.
+        options:
+          collection: stories-de
+          search: fields.title
+          value: '{fields.storyId}'
+          label: '{fields.storyId} - {fields.title}'
       - name: status
         type: select
         label: Status
@@ -374,12 +416,22 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
-      - { name: emoji, type: string, label: Emoji (shown when there is no picture), required: true }
+      - {
+          name: emoji,
+          type: string,
+          label: Emoji (shown when there is no picture),
+          required: true,
+          default: '📖',
+        }
       - { name: skills, component: skills }
       - { name: summary, type: text, label: Summary (1-2 sentences) }
       - { name: keyMessage, type: text, label: The one idea }
-      - { name: pages, component: pages }
-      - { name: body, type: rich-text, label: Text (chapter stories) }
+      - {
+          name: body,
+          type: rich-text,
+          label: Story text,
+          description: 'Write it here like a document. A horizontal line (Insert, divider) starts a new page.',
+        }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
       - { name: coverAlt, type: text, label: Cover alt text (this language) }

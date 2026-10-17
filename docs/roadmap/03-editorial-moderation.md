@@ -21,7 +21,7 @@ dash and a lowercase name, for example `023-nora`. It must be **exactly the same
   `art`); every other language carries its own text and its own alt text (`coverAlt`, `frameAlts`).
 - The CMS checks the pattern when a file is saved. `scripts/publish-gates.mjs` (part of `npm run quality`, so part of
   the PR check) **fails** if a translation's `storyId` has no German file, or if a translation repeats a shared field.
-  A typo is therefore caught before it can be merged.
+  In the CMS a translation picks its German original from a list, so a typo is not possible there; the gate catches it anywhere else.
 - The file name defaults to `{storyId}.md` in every language but is not the join key. Each page's URL comes from
   its file name, so rename a file only on purpose.
 - Never change a `storyId` after publishing. Art folders, audio folders and readers' bookmarks all use it.
@@ -48,7 +48,7 @@ Moderators work in the CMS on the `editorial` branch and never see git. Steps 1 
    Fill "How the art was made" (tool, model, who reviewed it).
 8. **Review.** A second moderator checks the text and art against the checklists below and fills in the reviewer
    fields. The CMS cannot force this to be a different person.
-9. **Translate.** In each language's collection add a file with the same `storyId`: title, summary, key message,
+9. **Translate.** In each language's collection add a file and pick the German original from the list (the `storyId` is then guaranteed to match): title, summary, key message,
    pages or body, questions and the alt text in that language (`coverAlt`, `frameAlts` in the same order as the
    German pictures). A native speaker reads it and fills `reviewedBy` and `reviewedAt`. Recordings for that language
    go in `assets/audio/<language>/023-nora/`.
@@ -56,7 +56,7 @@ Moderators work in the CMS on the `editorial` branch and never see git. Steps 1 
     page there, with pictures and audio, and fills `reviewedBy` and `reviewedAt` in the CMS.
 11. **Publish.** Set `status: published` on the files that are ready; leave unreviewed translations as `draft`. A few
     minutes after the save, CI merges the branch to `main` if everything passes and both sites update. The result,
-    or the exact error, is on `…/preview/status/`. To take a story down, set it to `draft`.
+    or the exact error, is on `…/preview/status/`, which also lists every story with its status in each language. To take a story down, set it to `draft`.
 12. **Check the live page** in every published language, play a page of audio, and look at the Arabic and Urdu layouts.
 
 ## How it runs, and one-time setup (admin)
