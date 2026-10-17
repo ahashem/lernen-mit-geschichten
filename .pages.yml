@@ -23,6 +23,53 @@ media:
     rename: false
 
 components:
+  skills:
+    type: select
+    label: Skills
+    required: true
+    description: Pick 1 to 3.
+    options:
+      multiple: true
+      min: 1
+      max: 3
+      values:
+        - self-awareness
+        - emotional-regulation
+        - empathy
+        - patience
+        - impulse-control
+        - effective-communication
+        - cooperation
+        - conflict-resolution
+        - leadership
+        - respect
+        - problem-solving
+        - decision-making
+        - critical-thinking
+        - adaptability
+        - goal-setting
+        - responsibility
+        - honesty
+        - persistence
+        - self-discipline
+        - time-management
+        # Used by existing stories but missing from src/utils/skills-taxonomy.ts; resolve, then remove.
+        - anger-management
+        - attention
+        - communication
+        - courage
+        - delayed-gratification
+        - emotional-expression
+        - flexibility
+        - focus
+        - generosity
+        - motivation
+        - organization
+        - planning
+        - self-confidence
+        - self-control
+        - sharing
+        - teamwork
   questions:
     type: object
     label: Questions
@@ -60,6 +107,11 @@ content:
     label: Deutsch (Quelle)
     type: collection
     path: src/content/stories/de
+    subfolders: false
+    operations:
+      create: true
+      rename: false
+      delete: false
     filename: "{storyId}.md"
     view:
       fields: [title, storyId, status]
@@ -86,10 +138,10 @@ content:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
       - { name: emoji, type: string, label: Emoji, required: true, default: "📖" }
-      - { name: skills, type: string, label: Skills (1 to 3 ids), list: true, required: true }
-      - { name: summary, type: text, label: Summary (1-2 sentences) }
-      - { name: keyMessage, type: text, label: The one idea }
-      - { name: body, type: rich-text, label: Story text, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
+      - { name: skills, component: skills }
+      - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
+      - { name: keyMessage, type: text, label: The one idea, required: false }
+      - { name: body, type: rich-text, label: Story text, required: false, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
       - { name: narration, component: narration }
@@ -100,6 +152,11 @@ content:
     label: English
     type: collection
     path: src/content/stories/en
+    subfolders: false
+    operations:
+      create: true
+      rename: false
+      delete: false
     filename: "{storyId}.md"
     view:
       fields: [title, storyId, status]
@@ -128,10 +185,10 @@ content:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
       - { name: emoji, type: string, label: Emoji, required: true, default: "📖" }
-      - { name: skills, type: string, label: Skills (1 to 3 ids), list: true, required: true }
-      - { name: summary, type: text, label: Summary (1-2 sentences) }
-      - { name: keyMessage, type: text, label: The one idea }
-      - { name: body, type: rich-text, label: Story text, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
+      - { name: skills, component: skills }
+      - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
+      - { name: keyMessage, type: text, label: The one idea, required: false }
+      - { name: body, type: rich-text, label: Story text, required: false, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
       - { name: narration, component: narration }
@@ -142,6 +199,11 @@ content:
     label: العربية
     type: collection
     path: src/content/stories/ar
+    subfolders: false
+    operations:
+      create: true
+      rename: false
+      delete: false
     filename: "{storyId}.md"
     view:
       fields: [title, storyId, status]
@@ -170,10 +232,10 @@ content:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
       - { name: emoji, type: string, label: Emoji, required: true, default: "📖" }
-      - { name: skills, type: string, label: Skills (1 to 3 ids), list: true, required: true }
-      - { name: summary, type: text, label: Summary (1-2 sentences) }
-      - { name: keyMessage, type: text, label: The one idea }
-      - { name: body, type: rich-text, label: Story text, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
+      - { name: skills, component: skills }
+      - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
+      - { name: keyMessage, type: text, label: The one idea, required: false }
+      - { name: body, type: rich-text, label: Story text, required: false, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
       - { name: narration, component: narration }
@@ -184,6 +246,11 @@ content:
     label: Türkçe
     type: collection
     path: src/content/stories/tr
+    subfolders: false
+    operations:
+      create: true
+      rename: false
+      delete: false
     filename: "{storyId}.md"
     view:
       fields: [title, storyId, status]
@@ -212,10 +279,10 @@ content:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
       - { name: emoji, type: string, label: Emoji, required: true, default: "📖" }
-      - { name: skills, type: string, label: Skills (1 to 3 ids), list: true, required: true }
-      - { name: summary, type: text, label: Summary (1-2 sentences) }
-      - { name: keyMessage, type: text, label: The one idea }
-      - { name: body, type: rich-text, label: Story text, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
+      - { name: skills, component: skills }
+      - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
+      - { name: keyMessage, type: text, label: The one idea, required: false }
+      - { name: body, type: rich-text, label: Story text, required: false, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
       - { name: narration, component: narration }
@@ -226,6 +293,11 @@ content:
     label: اردو
     type: collection
     path: src/content/stories/ur
+    subfolders: false
+    operations:
+      create: true
+      rename: false
+      delete: false
     filename: "{storyId}.md"
     view:
       fields: [title, storyId, status]
@@ -254,10 +326,10 @@ content:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
       - { name: emoji, type: string, label: Emoji, required: true, default: "📖" }
-      - { name: skills, type: string, label: Skills (1 to 3 ids), list: true, required: true }
-      - { name: summary, type: text, label: Summary (1-2 sentences) }
-      - { name: keyMessage, type: text, label: The one idea }
-      - { name: body, type: rich-text, label: Story text, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
+      - { name: skills, component: skills }
+      - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
+      - { name: keyMessage, type: text, label: The one idea, required: false }
+      - { name: body, type: rich-text, label: Story text, required: false, description: "Write it here like a document. A horizontal line (Insert, divider) starts a new page." }
       - { name: questions, component: questions }
       - { name: discussion, component: discussion }
       - { name: narration, component: narration }
