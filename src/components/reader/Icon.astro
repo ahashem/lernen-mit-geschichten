@@ -1,0 +1,36 @@
+---
+// One hand-drawn-feel icon set on a 24 grid, 2.25 stroke, round caps (ux/02 Iconography).
+interface Props {
+  name: 'home' | 'play' | 'pause' | 'prev' | 'next' | 'more' | 'moon' | 'repeat' | 'speaker';
+  size?: number;
+}
+const { name, size = 24 } = Astro.props;
+const paths: Record<string, string> = {
+  home: 'M4 11.5 12 4l8 7.5M6.5 10v9.5h11V10M10 19.5v-5h4v5',
+  play: 'M8 5.5v13l11-6.5z',
+  pause: 'M8 5.5v13M16 5.5v13',
+  prev: 'M15 5l-7 7 7 7',
+  next: 'M9 5l7 7-7 7',
+  more: 'M5 12h.01M12 12h.01M19 12h.01',
+  moon: 'M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z',
+  repeat:
+    'M4 12a8 8 0 0 1 13.7-5.6L20 8.5M20 4v4.5h-4.5M20 12a8 8 0 0 1-13.7 5.6L4 15.5M4 20v-4.5h4.5',
+  speaker: 'M4 9.5v5h3.5L12 18.5v-13L7.5 9.5zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11',
+};
+const filled = name === 'play';
+const mirror = name === 'prev' || name === 'next';
+---
+
+<svg
+  class={mirror ? 'icon mirror' : 'icon'}
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill={filled ? 'currentColor' : 'none'}
+  stroke="currentColor"
+  stroke-width="2.25"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"><path d={paths[name]}></path></svg
+>

@@ -94,6 +94,10 @@ button {
   cursor: pointer;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .container {
   inline-size: 100%;
   max-inline-size: var(--max-width);
