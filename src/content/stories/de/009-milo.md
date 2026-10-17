@@ -7,6 +7,7 @@ titleUr: "میلو موافقت سیکھتا ہے"
 emoji: "🐾"
 skills: ["adaptability", "problem-solving"]
 ageGroup: "3-7"
+band: 1
 languages: ["de"]
 storyId: "009-milo"
 characterType: "cat"

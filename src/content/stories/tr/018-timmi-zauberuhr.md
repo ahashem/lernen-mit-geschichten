@@ -3,6 +3,7 @@ title: "Timmi ve Sihirli Saat"
 emoji: "⏰"
 skills: ["time-management", "organization"]
 ageGroup: "3-7"
+band: 1
 languages: ["tr"]
 storyId: "018-timmi-zauberuhr"
 publishDate: 2024-01-15

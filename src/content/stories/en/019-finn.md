@@ -3,6 +3,7 @@ title: "Finn and the Giant Nut"
 emoji: "🌰"
 skills: ["teamwork", "cooperation"]
 ageGroup: "3-7"
+band: 2
 languages: ["en"]
 storyId: "019-finn"
 publishDate: 2024-01-15

@@ -3,6 +3,7 @@ title: "Tobi and the Big Apple Cake"
 emoji: "🍰"
 skills: ["sharing", "generosity"]
 ageGroup: "3-7"
+band: 1
 languages: ["en"]
 storyId: "004-tobi"
 publishDate: 2024-01-15

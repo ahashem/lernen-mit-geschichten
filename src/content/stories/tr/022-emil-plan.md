@@ -3,6 +3,7 @@ title: "Emil ve Çılgın Plan"
 emoji: "📝"
 skills: ["planning", "problem-solving"]
 ageGroup: "3-7"
+band: 2
 languages: ["tr"]
 storyId: "022-emil-plan"
 publishDate: 2024-01-15

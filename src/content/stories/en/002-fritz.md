@@ -3,6 +3,7 @@ title: "Fritzchen and the Angry Squirrel"
 emoji: "🐿️"
 skills: ["self-control", "anger-management"]
 ageGroup: "3-7"
+band: 1
 languages: ["en"]
 storyId: "002-fritz"
 publishDate: 2024-01-15

@@ -3,6 +3,7 @@ title: "Tobi und der große Apfelkuchen"
 emoji: "🦔"
 skills: ["cooperation", "effective-communication", "problem-solving"]
 ageGroup: "3-7"
+band: 1
 languages: ["de"]
 storyId: "004-tobi"
 characterType: "hedgehog"

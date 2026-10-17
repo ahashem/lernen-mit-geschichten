@@ -3,6 +3,7 @@ title: "ڈینو ڈینو اور بڑی انتظار"
 emoji: "🦕"
 skills: ["patience", "delayed-gratification"]
 ageGroup: "3-7"
+band: 1
 languages: ["ur"]
 storyId: "008-dino"
 publishDate: 2024-01-15

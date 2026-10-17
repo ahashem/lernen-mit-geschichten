@@ -25,6 +25,8 @@ const storiesCollection = defineCollection({
     emoji: z.string(),
     skills: z.array(z.string()),
     ageGroup: z.string().default('3-7'),
+    // 1 picture book, 2 read-along, 3 chapter story, 4 long read; set by editors from length and density.
+    band: z.number().int().min(1).max(4).optional(),
     languages: z.array(z.enum(['de', 'ar', 'en', 'tr', 'ur'])),
     storyId: z.string(),
     // 'draft' unpublishes: no page, no listing, no sitemap entry.
