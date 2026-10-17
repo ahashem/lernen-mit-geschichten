@@ -82,7 +82,7 @@ Technical contributions are welcome! Areas where you can help:
 
 - **Accessibility improvements** - WCAG compliance, keyboard navigation, screen reader support
 - **Performance optimization** - Faster load times, smaller bundle sizes
-- **New features** - Interactive elements, learning games, progress tracking
+- **New features** - Reader improvements: interactive storybook, accessibility, RTL polish
 - **Bug fixes** - Check [Issues](https://github.com/ahashem/lernen-mit-geschichten/issues) for open bugs
 - **Documentation** - Improve setup guides, add code comments, update README
 

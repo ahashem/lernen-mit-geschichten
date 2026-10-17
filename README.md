@@ -37,9 +37,9 @@ A non-profit educational microwebsite designed for children ages 3-7, helping th
 
 - **Framework**: [Astro](https://astro.build) - Static site generation
 - **Styling**: Scoped CSS with RTL support
-- **Interactivity**: Vanilla JavaScript (Web Speech API, Swiper.js)
+- **Interactivity**: Astro islands, React where needed (Web Speech API, Swiper.js)
 - **Content**: Markdown with YAML frontmatter
-- **Deployment**: GitHub Pages with GitHub Actions
+- **Deployment**: GitHub Pages (staging) via GitHub Actions; production on Hostinger
 - **Font**: Noto Sans (comprehensive language coverage)
 
 ## 🚀 Getting Started
