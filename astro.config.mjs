@@ -49,6 +49,9 @@ const BASE_PATH = normalizeBase(fromEnv('BASE_PATH') ?? deployUrl.pathname);
 
 const NOINDEX = isTruthy(fromEnv('NOINDEX'));
 
+// Moderators' preview build only: shows draft stories. Honoured together with NOINDEX, never alone.
+const SHOW_DRAFTS = isTruthy(fromEnv('SHOW_DRAFTS'));
+
 // A wrong base shows up only as 404s on every asset.
 console.log(`[deploy] site=${SITE_URL} base=${BASE_PATH} noindex=${NOINDEX}`);
 
@@ -75,7 +78,10 @@ export default defineConfig({
     }),
   ],
   vite: {
-    define: { 'import.meta.env.NOINDEX': JSON.stringify(NOINDEX) },
+    define: {
+      'import.meta.env.NOINDEX': JSON.stringify(NOINDEX),
+      'import.meta.env.SHOW_DRAFTS': JSON.stringify(SHOW_DRAFTS),
+    },
   },
   // Astro applies base to a redirect's source but not its destination, so a bare
   // '/' would send a subpath deploy off the site.
