@@ -1,0 +1,12 @@
+/* Self-hosted, subset per script by the packages' unicode-range: a page only fetches the faces it draws. */
+@import '@fontsource/andika/400.css';
+@import '@fontsource/andika/700.css';
+@import '@fontsource-variable/fraunces/soft.css';
+@import '@fontsource-variable/literata/wght.css';
+@import '@fontsource/noto-naskh-arabic/400.css';
+@import '@fontsource/noto-naskh-arabic/500.css';
+@import '@fontsource/noto-naskh-arabic/700.css';
+@import '@fontsource/baloo-bhaijaan-2/600.css';
+@import '@fontsource/baloo-bhaijaan-2/700.css';
+@import '@fontsource/gulzar/400.css';
+@import '@fontsource/noto-nastaliq-urdu/400.css';

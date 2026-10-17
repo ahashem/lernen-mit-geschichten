@@ -1,0 +1,303 @@
+/* Paper & Ink tokens. Source of truth: docs/roadmap/ux/02-visual-language.md */
+:root {
+  color-scheme: light;
+  --paper: #fbf5ea;
+  --paper-2: #f3eada;
+  --card: #fffdf8;
+  --ink: #24212e;
+  --ink-2: #5a5466;
+  --rule: #d9cdb8;
+  --edge: #8c7f6a;
+  --poppy: #c8402b;
+  --poppy-ink: #a3311f;
+  --lagoon: #0f6e6a;
+  --honey: #f2b33d;
+  --plum: #6b3e75;
+  --moss: #3f6b2e;
+  --sky: #2c5d9e;
+  --poppy-tint: #f8d9cf;
+  --lagoon-tint: #cfe7e3;
+  --honey-tint: #fbe3a8;
+  --plum-tint: #e6d5e8;
+  --sky-tint: #d3e0f2;
+  --moss-tint: #dce8cf;
+  --mark: #fbd989;
+  --mark-ink: var(--ink);
+  --focus: #1f4fd1;
+  --focus-halo: var(--honey);
+  --accent: var(--poppy);
+  --on-accent: #ffffff;
+  --listen: var(--lagoon);
+
+  --font-display: 'Fraunces', 'Andika', system-ui, sans-serif;
+  --font-read: 'Andika', system-ui, sans-serif;
+  --font-ui: 'Andika', system-ui, sans-serif;
+  --t-story: 24px;
+  --lh-story: 1.5;
+  --t-prose: 20px;
+  --lh-prose: 1.6;
+  --t-display-1: 44px;
+  --t-display-2: 30px;
+  --lh-display: 1.1;
+  --t-ui: 17px;
+  --t-ui-sm: 15px;
+  --lh-ui: 1.45;
+  --measure-story: 32ch;
+  --measure-prose: 66ch;
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --gutter: 16px;
+  --r-s: 8px;
+  --r-m: 16px;
+  --r-l: 24px;
+  --r-round: 999px;
+  --shadow-x: 1; /* flipped to -1 in RTL */
+  --e-1: calc(3px * var(--shadow-x)) 4px 0 rgb(36 33 46 / 0.14);
+  --e-2: calc(5px * var(--shadow-x)) 7px 0 rgb(36 33 46 / 0.16);
+  --e-press: calc(1px * var(--shadow-x)) 1px 0 rgb(36 33 46 / 0.14);
+  --tap-child: 64px;
+  --tap-adult: 44px;
+  --tap-gap-child: 24px;
+  --grain-opacity: 0.04;
+
+  --dur-instant: 80ms;
+  --dur-quick: 160ms;
+  --dur-base: 240ms;
+  --dur-page: 360ms;
+  --dur-gentle: 600ms;
+  --dur-breath: 4000ms;
+  --ease-out: cubic-bezier(0.22, 0.8, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-settle: cubic-bezier(0.3, 1.3, 0.5, 1); /* tiny overshoot, used only for "card lands" */
+}
+@media (min-width: 600px) {
+  :root {
+    --t-story: 30px;
+    --gutter: 32px;
+    --t-display-1: 56px;
+  }
+}
+@media (min-width: 1440px) {
+  :root {
+    --gutter: 48px;
+  }
+}
+
+:root:lang(ar) {
+  --font-display: 'Baloo Bhaijaan 2', 'Noto Naskh Arabic', system-ui, sans-serif;
+  --font-read: 'Noto Naskh Arabic', system-ui, serif;
+  --font-ui: 'Noto Naskh Arabic', system-ui, sans-serif;
+  --t-story: 28px;
+  --lh-story: 1.9;
+  --t-prose: 22px;
+  --lh-prose: 1.9;
+  --t-display-1: 40px;
+  --lh-display: 1.5;
+  --t-ui: 18px;
+  --t-ui-sm: 16px;
+  --lh-ui: 1.7;
+}
+:root:lang(ur) {
+  --font-display: 'Gulzar', 'Noto Nastaliq Urdu', serif;
+  --font-read: 'Gulzar', 'Noto Nastaliq Urdu', serif;
+  --font-ui: 'Gulzar', 'Noto Nastaliq Urdu', serif;
+  --t-story: 26px;
+  --lh-story: 2.3;
+  --t-prose: 22px;
+  --lh-prose: 2.3;
+  --t-display-1: 38px;
+  --lh-display: 1.9;
+  --t-ui: 18px;
+  --t-ui-sm: 17px;
+  --lh-ui: 2;
+}
+@media (min-width: 600px) {
+  :root:lang(ar) {
+    --t-story: 34px;
+    --t-display-1: 52px;
+  }
+  :root:lang(ur) {
+    --t-story: 32px;
+    --t-display-1: 48px;
+  }
+}
+[dir='rtl'] {
+  --shadow-x: -1;
+}
+
+/* Reading bands: set data-band on the story root (from the story), or on <body> for shelf views.
+   Bands switch density tokens only. Components must not branch on band. */
+[data-band='1'] {
+  --tap-child: 64px;
+  --tap-gap-child: 24px;
+  --measure-story: 32ch;
+}
+[data-band='2'] {
+  --tap-child: 56px;
+  --tap-gap-child: 16px;
+  --measure-story: 36ch;
+  --t-story: 24px;
+}
+[data-band='3'] {
+  --tap-child: 48px;
+  --tap-gap-child: 12px;
+  --measure-story: 58ch;
+  --font-read: 'Literata', Georgia, serif;
+  --t-story: 19px;
+  --lh-story: 1.6;
+}
+[data-band='4'] {
+  --tap-child: 48px;
+  --tap-gap-child: 12px;
+  --measure-story: 66ch;
+  --font-read: 'Literata', Georgia, serif;
+  --t-story: 18px;
+  --lh-story: 1.6;
+}
+@media (min-width: 600px) {
+  [data-band='2'] {
+    --t-story: 28px;
+  }
+  [data-band='3'] {
+    --t-story: 21px;
+  }
+  [data-band='4'] {
+    --t-story: 19px;
+  }
+}
+:lang(ar)[data-band='3'],
+:lang(ar) [data-band='3'],
+:lang(ar)[data-band='4'],
+:lang(ar) [data-band='4'] {
+  --font-read: 'Noto Naskh Arabic', serif;
+  --t-story: 21px;
+  --lh-story: 1.9;
+}
+:lang(ur)[data-band='3'],
+:lang(ur) [data-band='3'],
+:lang(ur)[data-band='4'],
+:lang(ur) [data-band='4'] {
+  --font-read: 'Gulzar', 'Noto Nastaliq Urdu', serif;
+  --t-story: 20px;
+  --lh-story: 2.3;
+}
+/* User text-size step: --text-step is -3..3 */
+.story-text {
+  font-size: calc(var(--t-story) * (1 + 0.12 * var(--text-step, 0)));
+}
+
+/* Lamp (bedtime) */
+:root[data-theme='lamp'] {
+  color-scheme: dark;
+  --paper: #14100c;
+  --paper-2: #1e1812;
+  --card: #261e16;
+  --ink: #e9b26a;
+  --ink-2: #b98a55;
+  --rule: #3a2e22;
+  --edge: #b98a55;
+  --accent: #ffcf8a;
+  --on-accent: #14100c;
+  --listen: #ffcf8a;
+  --mark: #5a3e1e;
+  --mark-ink: #ffcf8a;
+  --focus: #ffcf8a;
+  --focus-halo: #5a3e1e;
+  --poppy-tint: #261e16;
+  --lagoon-tint: #261e16;
+  --honey-tint: #261e16;
+  --plum-tint: #261e16;
+  --sky-tint: #261e16;
+  --moss-tint: #261e16;
+  --e-1: calc(3px * var(--shadow-x)) 4px 0 rgb(0 0 0 / 0.5);
+  --e-2: calc(5px * var(--shadow-x)) 7px 0 rgb(0 0 0 / 0.5);
+  --grain-opacity: 0.03;
+}
+:root[data-theme='lamp'] .frame img {
+  filter: brightness(0.62) sepia(0.35) saturate(0.8);
+}
+
+/* High contrast */
+:root[data-theme='hc-light'] {
+  --paper: #ffffff;
+  --paper-2: #ffffff;
+  --card: #ffffff;
+  --ink: #000000;
+  --ink-2: #000000;
+  --edge: #000000;
+  --rule: #000000;
+  --accent: #0033cc;
+  --on-accent: #ffffff;
+  --listen: #0033cc;
+  --mark: #ffe600;
+  --mark-ink: #000000;
+  --focus: #000000;
+  --focus-halo: #ffe600;
+  --e-1: none;
+  --e-2: none;
+  --grain-opacity: 0;
+}
+:root[data-theme='hc-dark'] {
+  color-scheme: dark;
+  --paper: #000000;
+  --paper-2: #000000;
+  --card: #000000;
+  --ink: #ffffff;
+  --ink-2: #ffffff;
+  --edge: #ffffff;
+  --rule: #ffffff;
+  --accent: #ffe600;
+  --on-accent: #000000;
+  --listen: #ffe600;
+  --mark: #ffe600;
+  --mark-ink: #000000;
+  --focus: #ffe600;
+  --focus-halo: #000000;
+  --e-1: none;
+  --e-2: none;
+  --grain-opacity: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 7px var(--focus-halo);
+  border-radius: inherit;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-quick: 0ms;
+    --dur-base: 120ms;
+    --dur-page: 120ms;
+    --dur-gentle: 120ms;
+  }
+}
+
+/* Legacy names used by components not yet rewritten; delete as each one moves to the tokens above. */
+:root {
+  --color-primary: var(--poppy);
+  --color-secondary: var(--honey);
+  --color-accent: var(--lagoon);
+  --color-background: var(--paper);
+  --color-text: var(--ink);
+  --color-text-light: var(--ink-2);
+  --color-white: var(--card);
+  --border-radius: var(--r-m);
+  --spacing-xs: var(--s-1);
+  --spacing-sm: var(--s-2);
+  --spacing-md: var(--s-4);
+  --spacing-lg: var(--s-6);
+  --spacing-xl: var(--s-8);
+  --max-width: 1200px;
+  --transition: all var(--dur-base) var(--ease-out);
+  --font-arabic: var(--font-ui);
+  --font-base: var(--font-ui);
+}

@@ -1,4 +1,6 @@
 ---
+import '@styles/fonts.css';
+import '@styles/tokens.css';
 import '@styles/global.css';
 import '@styles/rtl.css';
 import LanguageSelector from '@components/LanguageSelector.astro';
@@ -6,6 +8,7 @@ import GTMTracking from '@components/GTMTracking.astro';
 import type { Locale } from '@utils/i18n';
 import { getTranslation, isRTL } from '@utils/i18n';
 import { BASE_PATH as base } from '@utils/site';
+import { buildMarker } from '@utils/build-marker';
 
 interface Props {
   title: string;
@@ -27,6 +30,7 @@ const pageTitle = `${title} | ${siteName}`;
 
 // Google Tag Manager ID from environment variable
 const gtmId = import.meta.env.PUBLIC_GTM_ID;
+const build = buildMarker();
 ---
 
 <!doctype html>
@@ -34,6 +38,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="build" content={build} />
 
     <GTMTracking gtmId={gtmId} />
 
@@ -76,7 +81,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
   </head>
   <body>
-    <a href="#main-content" class="visually-hidden">Skip to main content</a>
+    <a href="#main-content" class="visually-hidden">{getTranslation(locale, 'skipToContent')}</a>
 
     <header>
       <div class="container">
@@ -123,10 +128,10 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
 
     <style>
       header {
-        background: white;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: var(--card);
+        border-block-end: 1px solid var(--rule);
         position: sticky;
-        top: 0;
+        inset-block-start: 0;
         z-index: 1000;
       }
 
@@ -134,8 +139,8 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 1rem 0;
-        gap: 1rem;
+        padding-block: var(--s-3);
+        gap: var(--s-4);
         flex-wrap: wrap;
       }
 
@@ -145,52 +150,44 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
       }
 
       .site-title {
-        font-size: 1.5rem;
-        margin: 0;
-        color: var(--color-primary);
+        font-size: var(--t-display-2);
+        color: var(--poppy-ink);
       }
 
       .site-tagline {
-        font-size: 0.9rem;
-        color: var(--color-text-light);
-        margin: 0;
+        font-size: var(--t-ui-sm);
+        color: var(--ink-2);
       }
 
       .nav-links {
         display: flex;
-        gap: 1.5rem;
+        gap: var(--s-5);
         align-items: center;
       }
 
       .nav-links a {
-        font-weight: 500;
-        color: var(--color-text);
-        transition: color 0.2s;
-      }
-
-      .nav-links a:hover {
-        color: var(--color-primary);
+        display: inline-flex;
+        align-items: center;
+        min-block-size: var(--tap-adult);
+        font-weight: 600;
+        color: var(--ink);
       }
 
       main {
-        min-height: calc(100vh - 200px);
-        padding: 2rem 0;
+        min-block-size: 60vh;
+        padding-block: var(--s-6);
       }
 
       footer {
-        background: var(--color-text);
-        color: white;
-        padding: 2rem 0;
-        margin-top: 4rem;
+        background: var(--paper-2);
+        color: var(--ink);
+        padding-block: var(--s-6);
+        margin-block-start: var(--s-8);
         text-align: center;
       }
 
       footer p {
-        margin: 0.25rem 0;
-      }
-
-      footer a {
-        color: var(--color-secondary);
+        margin-block: var(--s-1);
       }
 
       @media (max-width: 768px) {
@@ -204,7 +201,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
         }
 
         .site-title {
-          font-size: 1.25rem;
+          font-size: 1.5rem;
         }
       }
     </style>

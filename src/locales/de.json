@@ -45,5 +45,6 @@
   "pageNotFound": "Seite nicht gefunden",
   "notFoundHeading": "Ups! Dieses Buch fehlt im Regal.",
   "notFoundHint": "Die Geschichte, die du suchst, gibt es hier nicht.",
-  "notFoundBackToStories": "Zurück zu den Geschichten"
+  "notFoundBackToStories": "Zurück zu den Geschichten",
+  "skipToContent": "Zum Inhalt springen"
 }
