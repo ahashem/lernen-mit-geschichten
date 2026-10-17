@@ -10,8 +10,8 @@ Ordered work for an autonomous coding agent. **Budget: $30 hard cap; stop and re
   `BaseLayout`) collide, so never run two workstreams at once.
 - **The UX spec in `ux/` defines the look.** Do not extend the existing CSS; replace it with the tokens and
   components the spec defines. Do not invent a style.
-- Every new page ships in all 5 locales. New UI keys: write `de` and `en`, draft `ar`/`tr`/`ur`, and list those
-  keys in the PR for native review (string-freeze exemption, see `README.md`).
+- Every new page ships in all 5 locales. New UI keys: write all five locales, and list the `ar`/`tr`/`ur`
+  keys in `src/locales/review-queue.json` (see `AGENTS.md`). Add a small script that reports the queue per locale.
 - No backend, accounts, personal data or third-party requests. All state on the device.
 - Skip a feature rather than stub it. No new documentation beyond keeping `AGENTS.md` and `docs/roadmap/` true. No
   tests unless they guard data loss, filtering or the publish gates.
@@ -64,7 +64,7 @@ two-screen mode, My reading list, pre-built PDF class packs. Implement tokens an
 
 Walk every reader surface at 375 px and 1280 px in `de`, `en`, `ar`, keyboard only. Write a ranked list of what
 stops it feeling world-class, measured against `01`. Put it in the first PR description. Known issues to confirm:
-text-only standard stories; draft Bruno story with placeholder images; Google Fonts import and GTM (`06`); English
+text-only standard stories; draft Bruno story with placeholder images; Google Fonts import (`06`); English
 `aria-label`s in four components; no manifest or service worker; reduced motion mostly ignored.
 
 ## 1. Foundation (about 20%)
@@ -76,7 +76,7 @@ text-only standard stories; draft Bruno story with placeholder images; Google Fo
   meta descriptions, `package.json`).
 - Implement the content model from `02`: tightened `src/content.config.ts`, `story-meta` collection, publish-gate
   validation, the migration script, and the generated fallback (emoji + palette) used when art is missing.
-- Remove the Google Fonts import and ungated GTM.
+- Remove the Google Fonts import (self-host the fonts). Leave GTM as it is.
 
 ## 2. The reading moment (about 25%)
 

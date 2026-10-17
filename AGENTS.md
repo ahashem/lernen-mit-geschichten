@@ -61,11 +61,11 @@ and no sitemap entry. Read the collection through `getPublishedStories()` in `sr
 calling `getCollection('stories')` directly bypasses the gate and leaks a draft into one surface
 while the others hide it.
 
-**Current policy — string freeze.** Do not merge work that adds new UI translation keys. The string
-surface is the binding constraint on shipping the feature backlog, and it is being routed through a
-translation pipeline before it is allowed to grow. Fixing or translating existing keys is always
-fine. This lifts when the pipeline lands; until then, a change that needs new keys is a conversation,
-not a merge.
+**UI strings for the roadmap.** The string freeze is lifted for the work in `docs/roadmap/`. The agent writes
+every new key in all five locales. Its `ar`/`tr`/`ur` strings are machine drafts that go live before a native
+review, which the owner has accepted for interface labels (never for story text). Each such key is recorded in
+`src/locales/review-queue.json` (`{ "ar": ["key", …], "tr": […], "ur": […] }`) and removed once a native speaker
+signs it off. Outside the roadmap work, a change that adds keys still needs a native reviewer on the PR.
 
 ## Verifying a build
 
@@ -147,7 +147,7 @@ Node >= 24.
 ## Don't
 
 - Add accounts, a backend or any personal-data collection to the site.
-- Ship machine-translated UI strings or story text without a human reviewer.
+- Ship machine-translated story text, or UI strings that are not listed in `src/locales/review-queue.json`.
 - Skip or weaken tests to get a change through, or add a `prebuild` script (production does not tolerate
   it).
 - Link to pages that do not exist, or add a German-only page.
@@ -156,5 +156,5 @@ Node >= 24.
 ## Known gaps
 
 - Legacy `locale === 'de' ? …` ternaries still hold UI text in a few components.
-- `GTMTracking.astro` is wired into `BaseLayout.astro` with no consent gate.
+- `GTMTracking.astro` is wired into `BaseLayout.astro` with no consent gate. It is active in production and stays until the owner picks a replacement.
 - `de/001-bruno-interactive.md` is a draft with placeholder image URLs.

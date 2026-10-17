@@ -25,9 +25,8 @@ Pick the file for the job; each stands on its own and links to the others where 
 
 ## Decisions still open
 
-- **String freeze.** `AGENTS.md` forbids merging new UI translation keys. The workstreams in `08` need new keys.
-  Until the owner lifts or scopes the freeze, an agent adds keys only in PRs that list every new `ar`/`tr`/`ur`
-  key for native review.
+- **UI strings** (decided): the freeze is lifted for this work; the agent writes all five locales and records `ar`/`tr`/`ur` drafts in `src/locales/review-queue.json` for later native review.
+- **Analytics** (decided): Google Tag Manager is active in production and stays for now; replacing it is open (`07`).
 - **CMS hosting and deployment** for moderators (Pages CMS, branch-based review). See `03`.
 - **No rewards, at any age.** The UX spec bans points, stars, badges, streaks and read counts, which drops
   the sticker album and daily surprise from the old backlog. It is evidence-based and fits the non-goals; the

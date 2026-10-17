@@ -2,8 +2,9 @@
 
 ## Privacy (a product feature, not a footnote)
 
-- Zero third-party requests: self-host fonts, no CDN scripts, no embeds. Today `global.css` imports Google Fonts
-  and `GTMTracking.astro` can load Google Tag Manager; both go.
+- Zero third-party requests: self-host fonts, no CDN scripts, no embeds. Today `global.css` imports Google Fonts, which goes.
+  `GTMTracking.astro` loads Google Tag Manager in production; it stays until the owner chooses a replacement, and the
+  privacy page must say so plainly. Do not add any new third-party request.
 - No cookies, no accounts, no PII. Device state (`localStorage`/IndexedDB) is described on a plain-language
   privacy page in all five locales, with a "clear my data on this device" control.
 - Recordings and bookshelf data never leave the device.
