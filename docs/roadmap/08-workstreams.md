@@ -1,121 +1,93 @@
-# Workstreams
+# Cloud-agent runs
 
-Ordered work for an autonomous coding agent. **Budget: $30 hard cap; stop and report at about $25.** Read
-`AGENTS.md` first, then `ux/` and the spec each workstream names.
+Three runs, in order, each shipping something a family or teacher can feel. Milestones and what "world-class"
+means at each are in [README.md](README.md). **Total budget $30; run 1 about $11, run 2 about $10, run 3 about
+$9.** A run stops when its scope is done or its budget is spent, whichever is first, and ends with a report.
 
-## Rules
+## Rules (all runs)
 
-- Serial. Each workstream is one or more small PRs, squashed into `main` with a single conventional subject line,
-  `npm run quality` green first. Shared files (`InteractiveStorybook`, `ReadingControls`, the story page,
-  `BaseLayout`) collide, so never run two workstreams at once.
-- **The UX spec in `ux/` defines the look.** Do not extend the existing CSS; replace it with the tokens and
-  components the spec defines. Do not invent a style.
-- Every new page ships in all 5 locales. New UI keys: write all five locales, and list the `ar`/`tr`/`ur`
-  keys in `src/locales/review-queue.json` (see `AGENTS.md`). Add a small script that reports the queue per locale.
-- No backend, accounts, personal data or third-party requests. All state on the device.
+- Read `AGENTS.md`, this file and `ux/README.md`'s "How to use this spec". Then only the sections the run lists
+  below. `docs/roadmap/ux/` is about 21,000 words; never open it whole, and `ux/06` (art) is not needed.
+- Serial small PRs, squashed into `main`, one conventional subject line, `npm run quality` green first.
+- **The UX spec defines the look.** Replace the existing CSS with the tokens and components it defines; do not
+  extend the old style or invent one. Implement the tokens and `data-band` once; do not fork components per band.
+- Every new page ships in all 5 locales. New UI keys go in all five locales; list the `ar`/`tr`/`ur` keys in
+  `src/locales/review-queue.json` (`AGENTS.md`) and add a small script that reports the queue per locale.
+- No backend, accounts, personal data or third-party requests. State stays on the device.
+- **You do not write or edit story content.** Stories, translations, `band` values, art, audio and alt text for
+  published art are the owner's and the moderators'. You may draft alt text from images for review.
 - Skip a feature rather than stub it. No new documentation beyond keeping `AGENTS.md` and `docs/roadmap/` true. No
   tests unless they guard data loss, filtering or the publish gates.
-- The old backlog (`origin/catchup/44-commits`) is a source of ideas and code to rewrite, not to merge. See `09`.
-- If a browser (Playwright) is available, verify in it; otherwise build and inspect the HTML.
+- The old backlog (`origin/catchup/44-commits`) is a quarry for ideas and code to rewrite, never to merge (`09`).
 
-## Ship, verify, tag
+## Ship, verify, tag (after every PR)
 
-Every merge to `main` deploys to both GitHub Pages (staging, `noindex`, under a subpath) and production
-(https://mitgeschichten.com/, root). The owner tagged `main` before this roadmap started (`pre-roadmap`), so a
-restore point exists. After each workstream:
+1. `gh pr checks <n> --watch`; squash-merge only when green. This is the only test gate.
+2. Wait for the GitHub Pages deploy of that commit. Production is the owner's concern; do not verify it.
+3. Smoke-test staging cheaply: `node scripts/verify-build.mjs` on a fresh build, `curl` the pages you changed, and
+   compare `<meta name="build" content="<short sha>">` (added in run 1) with your commit. Use a browser
+   (Playwright) only for the screens you changed in `de`, `en` and `ar` at 375 px, and locate by role and label
+   (`getByRole`), not test ids: the accessibility rules already require every control to have an accessible name.
+   If a browser is not available, inspect the built HTML.
+4. Tag the verified commit `roadmap-runN-<name>`. If it is broken, fix forward in a small PR or revert the merge.
+   The site has no active visitors yet, so there is no backward-compatibility burden.
 
-1. Open a PR, wait for the PR check (`gh pr checks <n> --watch`), and squash-merge only when it is green. This is
-   the only test gate: pushing to `main` deploys production without running tests. Never skip hooks or tests.
-2. Wait for both deploys, then confirm each serves your commit: WS1 adds a `<meta name="build" content="<short
-sha>">` to `BaseLayout`; fetch the home page of both sites and compare.
-3. Verify on the live sites, not only in the PR: `node scripts/verify-build.mjs` against a fresh build, then a
-   browser pass (Playwright if available) over the screens you changed in `de`, `en` and `ar` at 375 px, plus a
-   check that a story page and the service worker still load.
-4. Tag the verified commit `roadmap-wsN-<name>`. Report the result in the PR or a comment.
-5. If verification fails, fix forward in a small PR if the cause is clear; otherwise revert the merge and retag
-   nothing. The site has no active visitors yet, so there is no backward-compatibility burden.
+## Run 1 — A story worth opening (about $11)
 
-## What to read (do not load `ux/` wholesale)
+Value: Leyla and Maria. One story, read in two ways, looks and sounds finished, with or without art.
 
-`docs/roadmap/ux/` is about 21,000 words. Read only the rows for the workstream you are on; grep headings rather
-than opening whole files. `ux/06` (art) is not needed: you generate no images.
+- **Foundation.** Tokens, `data-band`, self-hosted fonts per script (drop the Google Fonts import; leave GTM),
+  base components. The `story-meta` collection and tightened `src/content.config.ts` per `02`: `band`, line art,
+  frames, narration, `reviewedBy`; `storyFormat` removed, pages from `---` breaks; the migration script (the owner
+  assigns each story's `band` in frontmatter first; lift it, do not decide it); `.describe()` on every field; the
+  emoji + palette fallback when art is missing. Build marker meta. Fix public copy that says "3–7".
+- **Reading.** Cover screen, Storybook for bands 1–2 (pictures, narration with word highlight, tap a word, resume),
+  End of story and talk cards, Two languages, Settings ("Who reads on this device?"), Lamp mode (bedtime). Pilot:
+  Bruno, art in `public/assets/stories/001-bruno/` (`02`).
 
-| Workstream   | Read                                                                                                                                                                                                                                                     |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0 Audit      | `01-vision.md` (quality bars), `ux/README.md` (thesis, people)                                                                                                                                                                                           |
-| 1 Foundation | `ux/02` sections Colour system, Typography, Spacing, Paste-ready tokens; `ux/01` Reading bands; `02-content-model.md`; `06-reach-and-trust.md` (Privacy, Performance)                                                                                    |
-| 2 Reading    | `ux/03` §4 Story cover, §5 Storybook, §5b Chapter reader, §6, §7 End of story, §8 Two languages, §15 Settings; `ux/04` all; `ux/05` Screen-reader experience, Pre-reader navigation, Second-language readers; `04-reader-and-discovery.md` Reading table |
-| 3 Finding    | `ux/03` §1a Reader home, §1b Picture home, §2 Library, §3 Find by feeling; `04-reader-and-discovery.md` Discovery table                                                                                                                                  |
-| 4 Together   | `ux/03` §9 Lamp mode, §10 Class room, §11 Print and colouring; `05-parents-and-educators.md`                                                                                                                                                             |
-| 5 Trust      | `ux/03` §12 Offline, §13 Language switch, §14 System states; `ux/05` RTL mirroring, Arabic/Urdu pitfalls, Text expansion, Testing checklist; `06-reach-and-trust.md`                                                                                     |
+Read: `02-content-model.md`; `04-reader-and-discovery.md` Reading table; `ux/01` Reading bands; `ux/02` Colour
+system, Typography, Spacing, Paste-ready tokens; `ux/03` §4, §5, §7, §8, §9, §15; `ux/04` all; `ux/05` Screen-reader
+experience, Pre-reader navigation, Second-language readers, RTL mirroring; `06-reach-and-trust.md` Privacy.
 
-Always: `AGENTS.md`, this file, and `ux/README.md`'s "How to use this spec".
+## Run 2 — It grows with the child (about $10)
 
-## Scope of the UX spec
+Value: a 4-year-old and an 11-year-old each land on a home that fits, and find a story fast.
 
-`ux/03-screens.md` defines more than $30 can build. Priority order: Reader home, Library, Story cover,
-Storybook (bands 1–2), Chapter reader (bands 3–4), End of story and talk cards, Two languages, Settings ("Who
-reads on this device?"), System states, Offline, Language switch; then Picture home, Find by feeling and Lamp
-mode; then Print and colouring, Class room single-screen and class links. Not in this budget: Class room
-two-screen mode, My reading list, pre-built PDF class packs. Implement tokens and the `data-band` mechanism once
-(`ux/README.md`: do not fork components per band).
+- Reader home, Picture home, Library, Find by feeling, Chapter reader for bands 3–4 (think cards, second-language
+  tools), Language switch, System states (empty, loading, error, offline notice), search and filters with URL state,
+  language availability. Next-shelf tile, no autoplay. The footer states how art is made.
 
-## 0. Audit (about 5%)
+Read: `04-reader-and-discovery.md` Discovery table; `ux/03` §1a, §1b, §2, §3, §5b, §6, §13, §14; `ux/05` Text
+expansion, Arabic and Urdu pitfalls, Dyslexia options; `ux/01` Voice and tone.
 
-Walk every reader surface at 375 px and 1280 px in `de`, `en`, `ar`, keyboard only. Write a ranked list of what
-stops it feeling world-class, measured against `01`. Put it in the first PR description. Known issues to confirm:
-text-only standard stories; draft Bruno story with placeholder images; Google Fonts import (`06`); English
-`aria-label`s in four components; no manifest or service worker; reduced motion mostly ignored.
+## Run 3 — Ready for the classroom and the world (about $9)
 
-## 1. Foundation (about 20%)
+Value: Thomas and Frau Yıldız can use it in class, and everyone can trust it.
 
-- Implement the design tokens, self-hosted fonts per script, and base components from `ux/02`; retire the old
-  global styles page by page as screens are rebuilt.
-- Implement the reading-level model (4 levels, ages 3–12) in tokens, components and settings per `ux/`, so the
-  shell works for a 4-year-old and a Klasse 6 reader. Fix public copy that says "3–7" (README, About page,
-  meta descriptions, `package.json`).
-- Implement the content model from `02`: tightened `src/content.config.ts`, `story-meta` collection, publish-gate
-  validation, the migration script, and the generated fallback (emoji + palette) used when art is missing.
-- Remove the Google Fonts import (self-host the fonts). Leave GTM as it is.
+- Class room (single-screen: Kamishibai and shared reading) and class links, educator prep sheet, Print and
+  colouring with a QR to the story derived from `SITE_URL`, discussion material.
+- Offline with a service worker behind `PUBLIC_OFFLINE=1`, **off by default**, tested with the flag on in a local
+  build. Accessibility verified (keyboard path, focus, contrast, reduced motion, live regions, RTL checks) and
+  fixed; responsive images and budgets; Open Graph, `hreflang`, structured data; privacy page in five locales
+  stating GTM plainly, and the "forget this device" control; remaining hardcoded strings to locale JSON.
+- Re-run the audit from `01`'s quality bars; report fixed, deferred, rejected, with reasons. Report Lighthouse
+  before and after.
 
-## 2. The reading moment (about 25%)
+Read: `05-parents-and-educators.md`; `ux/03` §10 (not two-screen mode), §11, §12; `ux/05` Testing checklist;
+`06-reach-and-trust.md`; `01-vision.md` quality bars.
 
-`04` Reading table, screens from `ux/03`: reader modes, pictures with fallback, narration and read-aloud with
-highlight, resume, quiet end, next story, bedtime theme, reading comfort.
+Not in any run: Class room two-screen mode, My reading list, pre-built PDF class packs, "Read it in my voice".
 
-## 3. Finding stories (about 10%)
+## Owner and parallel tasks
 
-`04` Discovery table: find by feeling, shelves, forgiving search and filters with URL state, language availability,
-bookshelf, story of the day.
-
-## 4. Reading together (about 10%)
-
-`05`: discussion panel, teacher view, projector mode, print with QR from `SITE_URL`, colouring page flow,
-bilingual-as-learning. "Read it in my voice" only if budget remains after 5.
-
-## 5. Trust and delivery (about 20%)
-
-`06`: accessibility verified and fixed, offline with a service worker (base-path aware) behind a build flag, `PUBLIC_OFFLINE=1`, **off by default**; test it
-with the flag on in a local build and leave it off in the deployed config, responsive images and
-budgets, Open Graph / `hreflang` / structured data, privacy page and clear-my-data control, remaining hardcoded
-strings into locale JSON. Report Lighthouse before and after.
-
-## 6. Close the loop (about 5%) and reserve (about 5%)
-
-Re-run the audit; report fixed, deferred, rejected with reasons; update this file's "Next" list in place.
-
-## Parallel and owner tasks
-
-The moderator CMS (Pages CMS, `03`) is being set up by the owner in parallel and is **not** in the agent's scope.
-The agent's schema work is its contract: keep `src/content.config.ts` the single source of truth, give every field
-a `.describe()` string, and do not rename fields after WS1 lands without noting it in the PR.
-
-Owner: generate art and audio (templates in `ux/06`), invite moderators, native review via
-`src/locales/review-queue.json`, open decisions in `README.md`. The pilot story is **Bruno** (`001-bruno`); its
-assets go in `public/assets/stories/001-bruno/` as `cover.webp`, `line-NN.svg`, `frame-NN.webp`, `colour-NN.svg`
-and `audio/{locale}.m4a` (`02`). WS2 uses them to verify the reader. The agent drafts alt text from the images for
-owner review.
+- **CMS** (Pages CMS, `03`) is being set up by the owner in parallel and is outside the agent's scope. The schema in
+  `src/content.config.ts` is its contract: give every field a `.describe()` string and do not rename fields after
+  run 1 without noting it in the PR.
+- Generate the pilot art and audio (templates in `ux/06`); assign `band` to existing stories (`02`); native review
+  of `review-queue.json`; invite moderators; the open decisions in `README.md`.
+- Pilot story **Bruno** (`001-bruno`): `cover.webp`, `line-NN.svg`, `frame-NN.webp`, `colour-NN.svg` and
+  `audio/{locale}.m4a` in `public/assets/stories/001-bruno/`.
 
 ## Next
 
-(Filled in by the agent at the end of the run.)
+(Filled in by the agent at the end of each run.)

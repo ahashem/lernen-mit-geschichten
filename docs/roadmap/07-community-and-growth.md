@@ -33,8 +33,4 @@ and offline installs, as daily aggregates.
 
 ## Roadmap shape
 
-1. **Foundation**: moderator CMS, content model, first illustrated stories (`08`).
-2. **Excellence**: the reading moment and parent/educator material (`04`, `05`).
-3. **Scale**: pipeline for art and audio, UI translation platform, more stories per month, partner handouts.
-4. **Later, if proven**: opt-in classroom features as a separate project (needs a backend), more languages (the
-   locale list is data; adding one is a content and RTL exercise).
+Milestones M1–M6 and who owns each are in [README.md](README.md). This file covers M5.

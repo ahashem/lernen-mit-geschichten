@@ -16,6 +16,25 @@ Pick the file for the job; each stands on its own and links to the others where 
 | [09-parked-ideas.md](09-parked-ideas.md)                   | Ideas deliberately not now, with where the old code lives                |
 | [ux/](ux/)                                                 | UX direction: principles, visual language, screens, motion, art style    |
 
+## Milestones
+
+✅ = built by the cloud agent (see [08](08-workstreams.md)). The rest is the owner's or the moderators'.
+
+| Milestone                          | "World-class" at this point means                                                                                                                            | Why it comes here                                                                           |  Agent   |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- | :------: |
+| **M1 A story worth opening**       | One story reads and sounds finished: pictures or a designed fallback, narration with word highlight, calm ending and talk cards, two languages, bedtime mode | Stories are the product; Leyla and Maria judge the whole site by this                       | ✅ Run 1 |
+| **M2 It grows with the child**     | A 4-year-old and an 11-year-old each land on a home that fits; chapter reader for older children; find a story by feeling                                    | Without it the site is a toddler site; discovery makes the library usable                   | ✅ Run 2 |
+| **M3 Classroom and world**         | Educators can run it on a projector and print it; accessible, private, offline-ready (flagged), shareable and findable                                       | Reach and trust come once the reading is excellent                                          | ✅ Run 3 |
+| **M4 Editorial engine**            | CMS live, 2–3 moderators, AI-art pipeline, bands assigned, a library across all four bands (today every story is band 1 or 2), the review queue cleared      | Without stories and people to keep them, nothing above matters; runs in parallel with M1–M3 |  owner   |
+| **M5 Reach and community**         | Partner kitas and schools, feedback loop, a measurement choice, a UI translation platform, recorded human narration                                          | Growth is trust spreading, so it follows quality                                            |  owner   |
+| **M6 Richer interactivity, later** | More than the one "practice" page per story, short interactive video, drawing activities, classroom features that need a backend                             | Parked on evidence and cost (below)                                                         |    —     |
+
+**Interactivity.** The UX spec keeps what supports the story (page turns, narration highlight, tap-a-word, talk and
+think cards, bilingual tap-to-hear, at most one "practice" page per story such as breathing together or a choice
+that returns to the story, colouring) and leaves out hotspots, games, scoring and open branching, because the
+research it cites finds matched narration helps comprehension while hotspots and games distract. Richer
+interactivity is a deliberate M6 decision for the owner, not an oversight.
+
 ## Precedence
 
 1. `AGENTS.md` (how to work in this repo) wins on tooling, routing, base path, i18n and commits.
