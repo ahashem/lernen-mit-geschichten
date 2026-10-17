@@ -3,13 +3,9 @@ title: "ٹوبی اور بڑا سیب کا کیک"
 emoji: "🍰"
 skills: ["sharing", "generosity"]
 ageGroup: "3-7"
-band: 1
-languages: ["ur"]
 storyId: "004-tobi"
 publishDate: 2024-01-15
-characterType: "boy"
 difficulty: "beginner"
-estimatedReadTime: 3
 ---
 
 کہانی: توبی اور بڑا سیب کا پائی

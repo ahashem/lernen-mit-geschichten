@@ -1,18 +1,10 @@
 ---
 title: "Brunos bunte Gefühle"
-titleAr: "مشاعر برونو الملونة"
-titleEn: "Bruno's Colorful Feelings"
-titleTr: "Bruno'nun Renkli Duyguları"
-titleUr: "برونو کے رنگین جذبات"
 emoji: "🐻"
 skills: ["self-awareness", "emotional-regulation"]
 ageGroup: "3-7"
-band: 1
-languages: ["de"]
 storyId: "001-bruno"
-characterType: "bear"
 difficulty: "beginner"
-estimatedReadTime: 3
 publishDate: 2024-01-15
 ---
 

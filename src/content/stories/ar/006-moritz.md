@@ -3,13 +3,9 @@ title: "موريتس، الْفَأْرِ الصَّغِيرِ"
 emoji: "🐭"
 skills: ["courage", "self-confidence"]
 ageGroup: "3-7"
-band: 1
-languages: ["ar"]
 storyId: "006-moritz"
 publishDate: 2024-01-15
-characterType: "mouse"
 difficulty: "beginner"
-estimatedReadTime: 3
 ---
 
 ## القِصَّة

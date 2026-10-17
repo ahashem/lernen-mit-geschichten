@@ -1,21 +1,12 @@
 ---
 title: "Brunos bunte Gefühle"
-titleAr: "مشاعر برونو الملونة"
-titleEn: "Bruno's Colorful Feelings"
-titleTr: "Bruno'nun Renkli Duyguları"
-titleUr: "برونو کے رنگین جذبات"
 emoji: "🐻"
 skills: ["self-awareness", "emotional-regulation"]
 ageGroup: "3-7"
-band: 1
-languages: ["de"]
 storyId: "001-bruno-interactive"
 status: "draft"
-characterType: "bear"
 difficulty: "beginner"
-estimatedReadTime: 3
 publishDate: 2024-01-15
-storyFormat: "interactive"
 pages:
   - text: "Es war einmal ein kleiner Bär namens Bruno. Bruno liebte Honig, Spielen im Wald und – ganz besonders – Klettern auf Bäume."
     image: "/assets/stories/bruno-bunte-gefuhle/cover.png"

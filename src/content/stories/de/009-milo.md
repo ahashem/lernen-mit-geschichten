@@ -1,18 +1,10 @@
 ---
 title: "Milo lernt, sich anzupassen"
-titleAr: "ميلو يتعلم التكيف"
-titleEn: "Milo Learns to Adapt"
-titleTr: "Milo Uyum Sağlamayı Öğreniyor"
-titleUr: "میلو موافقت سیکھتا ہے"
 emoji: "🐾"
 skills: ["adaptability", "problem-solving"]
 ageGroup: "3-7"
-band: 1
-languages: ["de"]
 storyId: "009-milo"
-characterType: "cat"
 difficulty: "beginner"
-estimatedReadTime: 3
 publishDate: 2024-01-15
 questions:
   - id: "tf1"

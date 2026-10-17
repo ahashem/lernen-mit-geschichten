@@ -3,13 +3,9 @@ title: "فْرِيتْسُ الفْلامِنْغُو يَتَعَلَّمُ ا�
 emoji: "🦩"
 skills: ["organization", "responsibility"]
 ageGroup: "3-7"
-band: 1
-languages: ["ar"]
 storyId: "007-fritz-flamingo"
 publishDate: 2024-01-15
-characterType: "flamingo"
 difficulty: "beginner"
-estimatedReadTime: 3
 questions:
   - id: "tf1"
     text: "كَانَ فْرِيتْسُ يُرِيدُ أَنْ يَفْعَلَ كُلَّ شَيْءٍ فِي نَفْسِ الوَقْتِ."

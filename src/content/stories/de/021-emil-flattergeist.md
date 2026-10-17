@@ -3,13 +3,9 @@ title: "Emil und dem Flattergeist"
 emoji: "👻"
 skills: ["focus", "attention"]
 ageGroup: "3-7"
-band: 2
-languages: ["de"]
 storyId: "021-emil-flattergeist"
 publishDate: 2024-01-15
-characterType: "boy"
 difficulty: "beginner"
-estimatedReadTime: 3
 questions:
   - id: "tf1"
     text: "Emil konnte sich leicht konzentrieren."

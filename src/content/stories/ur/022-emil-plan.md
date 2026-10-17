@@ -3,13 +3,9 @@ title: "ایمیل اور پاگل منصوبہ"
 emoji: "📝"
 skills: ["planning", "problem-solving"]
 ageGroup: "3-7"
-band: 2
-languages: ["ur"]
 storyId: "022-emil-plan"
 publishDate: 2024-01-15
-characterType: "boy"
 difficulty: "beginner"
-estimatedReadTime: 3
 questions:
   - id: "tf1"
     text: "ایمیل نے بڑی چاکلیٹ کیک بنانا چاہی۔"

@@ -3,13 +3,9 @@ title: "فریٹز فلیمنگو نے تنظیم سیکھ لی"
 emoji: "🦩"
 skills: ["organization", "responsibility"]
 ageGroup: "3-7"
-band: 1
-languages: ["ur"]
 storyId: "007-fritz-flamingo"
 publishDate: 2024-01-15
-characterType: "flamingo"
 difficulty: "beginner"
-estimatedReadTime: 3
 questions:
   - id: "tf1"
     text: "فریٹز ہر کام ایک ہی وقت میں کرنا چاہتا تھا۔"
