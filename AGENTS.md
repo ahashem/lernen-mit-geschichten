@@ -128,8 +128,8 @@ Node >= 24.
   screen with talk cards, and the full text (also the no-JS view). Pages come from `---` breaks, else are derived
   per band by `utils/story-pages.ts`; recordings (`public/assets/audio/{locale}/{storyId}/{nn}.m4a`) are used only
   with explicit pages, otherwise the device voice reads. `scripts/publish-gates.mjs` reports what stories lack.
-- **Shared logic** in `src/utils/`: `skills-taxonomy.ts` (20 skills in 4 categories; stories also use
-  ids missing from it; changing an id breaks story frontmatter), `filter-stories.ts` (`matchesFilter`: AND across filter types, OR within one),
+- **Shared logic** in `src/utils/`: `skills-taxonomy.ts` (30 skills in 4 categories; `publish-gates.mjs` fails on any other
+  id and on a `.pages.yml` dropdown that drifts from it; changing an id breaks story frontmatter), `filter-stories.ts` (`matchesFilter`: AND across filter types, OR within one),
   `story-availability.ts`, `booklet-export.ts`.
 - `src/layouts/BaseLayout.astro` is the only layout (`lang`/`dir`, meta/OG, language selector). Pages must
   not hand-roll `<html>`.

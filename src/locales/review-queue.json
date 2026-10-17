@@ -65,7 +65,17 @@
     "shelfMixed",
     "shelfMixedHint",
     "languagesIRead",
-    "savedOnDevice"
+    "savedOnDevice",
+    "skill:anger-management",
+    "skill:emotional-expression",
+    "skill:courage",
+    "skill:self-confidence",
+    "skill:sharing",
+    "skill:generosity",
+    "skill:focus",
+    "skill:motivation",
+    "skill:delayed-gratification",
+    "skill:organization"
   ],
   "tr": [
     "skipToContent",
@@ -133,7 +143,17 @@
     "shelfMixed",
     "shelfMixedHint",
     "languagesIRead",
-    "savedOnDevice"
+    "savedOnDevice",
+    "skill:anger-management",
+    "skill:emotional-expression",
+    "skill:courage",
+    "skill:self-confidence",
+    "skill:sharing",
+    "skill:generosity",
+    "skill:focus",
+    "skill:motivation",
+    "skill:delayed-gratification",
+    "skill:organization"
   ],
   "ur": [
     "skipToContent",
@@ -201,6 +221,16 @@
     "shelfMixed",
     "shelfMixedHint",
     "languagesIRead",
-    "savedOnDevice"
+    "savedOnDevice",
+    "skill:anger-management",
+    "skill:emotional-expression",
+    "skill:courage",
+    "skill:self-confidence",
+    "skill:sharing",
+    "skill:generosity",
+    "skill:focus",
+    "skill:motivation",
+    "skill:delayed-gratification",
+    "skill:organization"
   ]
 }

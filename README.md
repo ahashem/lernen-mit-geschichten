@@ -22,7 +22,7 @@ A non-profit educational microwebsite designed for children from age 3 up to Kla
 ## ✨ Features
 
 - **📚 Interactive Stories** - Engaging narratives with TTS narration and page-flipping animations
-- **🎯 58-Skill Taxonomy** - Stories mapped to emotional, social, cognitive, and behavioral skills
+- **🎯 30-Skill Taxonomy** - Stories mapped to emotional, social, cognitive, and behavioral skills
 - **🎨 Multiple Formats** - Standard text-based and interactive storybook modes
 - **🎧 Text-to-Speech** - Browser-based narration with word highlighting
 - **📱 Mobile-First** - Fully responsive design optimized for all devices
@@ -104,23 +104,23 @@ npm run preview   # Preview production build locally
 
 ## 🎓 Skills Taxonomy
 
-Stories are mapped to **58 skills** across 4 categories:
+Stories are mapped to **30 skills** across 4 categories:
 
 ### 🎭 Emotional Skills
 
-Self-awareness, emotional regulation, empathy, patience, impulse control
+Self-awareness, emotional regulation, empathy, patience, impulse control, anger management, emotional expression, courage, self-confidence
 
 ### 🤝 Social Skills
 
-Communication, cooperation, conflict resolution, leadership, respect
+Communication, cooperation, conflict resolution, leadership, respect, sharing, generosity
 
 ### 🧠 Cognitive Skills
 
-Problem-solving, decision-making, critical thinking, adaptability, goal-setting
+Problem-solving, decision-making, critical thinking, adaptability, goal-setting, focus
 
 ### 🌱 Behavioral Skills
 
-Responsibility, honesty, persistence, self-discipline, time management
+Responsibility, honesty, persistence, self-discipline, time management, motivation, delayed gratification, organization
 
 ## 📖 Story Format
 

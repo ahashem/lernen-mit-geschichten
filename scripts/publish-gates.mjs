@@ -9,12 +9,14 @@
  * since <ref> that is `published` must be complete and reviewed by someone other than its author, or the run
  * fails. Untouched files are never held to it, so existing stories stay as they are.
  */
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 
 const STORIES = 'src/content/stories';
 const SHARED = ['band', 'cover', 'frames', 'palette', 'art'];
+const TAXONOMY = 'src/utils/skills-taxonomy.ts';
+const CMS_CONFIG = '.pages.yml';
 const strict = process.env.CONTENT_STRICT === '1';
 const changedRef = process.argv.find(a => a.startsWith('--changed='))?.slice('--changed='.length);
 
@@ -33,11 +35,15 @@ for (const locale of readdirSync(STORIES)) {
 }
 const source = new Map(files.filter(f => f.locale === 'de').map(f => [f.id, f]));
 
+// Skills: every id a story uses must exist in the taxonomy, and the CMS dropdown must offer exactly those ids.
+const taxonomy = [...readFileSync(TAXONOMY, 'utf8').matchAll(/^\s{8}id: '([^']+)'/gm)].map(m => m[1]);
+const skillsOf = fm => [...(fm.match(/^skills:\s*\[(.*?)\]/m)?.[1] ?? '').matchAll(/"([^"]+)"/g)].map(m => m[1]);
 const lacking = { band: {}, summary: {}, keyMessage: {}, reviewedBy: {}, coverAlt: {}, frameAlts: {} };
 const note = (field, locale) => (lacking[field][locale] = (lacking[field][locale] ?? 0) + 1);
 const hard = [];
 
 for (const f of files) {
+  for (const id of skillsOf(f.fm)) if (!taxonomy.includes(id)) hard.push(`${f.locale}/${f.file}: skill "${id}" is not in ${TAXONOMY}`);
   if (f.draft) continue;
   const de = source.get(f.id);
   if (!de) hard.push(`${f.locale}/${f.file}: no German source file for storyId ${f.id}`);
@@ -48,6 +54,14 @@ for (const f of files) {
     if (de && countFrames(de.fm) > 0 && !has(f.fm, 'frameAlts')) note('frameAlts', f.locale);
   } else if (!has(f.fm, 'band')) note('band', f.locale);
   for (const field of ['summary', 'keyMessage']) if (!has(f.fm, field)) note(field, f.locale);
+}
+
+if (existsSync(CMS_CONFIG)) {
+  const cms = readFileSync(CMS_CONFIG, 'utf8');
+  const block = cms.match(/^ {2}skills:\n([\s\S]*?)^ {2}questions:/m)?.[1] ?? '';
+  const offered = [...block.matchAll(/^\s{8}- ([a-z-]+)\s*$/gm)].map(m => m[1]);
+  const off = [...taxonomy.filter(i => !offered.includes(i)), ...offered.filter(i => !taxonomy.includes(i))];
+  if (off.length) hard.push(`${CMS_CONFIG}: skills dropdown out of step with the taxonomy (${off.join(', ')})`);
 }
 
 let missing = 0;

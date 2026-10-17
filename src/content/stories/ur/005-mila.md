@@ -1,7 +1,7 @@
 ---
 title: "میلا اور خواہش کا غبارہ"
 emoji: "🎈"
-skills: ["communication", "emotional-expression"]
+skills: ["effective-communication", "emotional-expression"]
 ageGroup: "3-7"
 storyId: "005-mila"
 publishDate: 2024-01-15
