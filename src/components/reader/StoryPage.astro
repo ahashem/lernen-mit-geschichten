@@ -1,0 +1,978 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getPublishedStories, getStoryMeta, readMinutes } from '@utils/stories';
+import { endonyms, fmt, getTranslation, type Locale } from '@utils/i18n';
+import { getSkillsByIds } from '@utils/skills-taxonomy';
+import { BASE_PATH } from '@utils/site';
+import { firstSentence, paginate, wordsOf } from '@utils/story-pages';
+import { coverOf, frameFor, narrationFor, paletteFor } from '@utils/story-art';
+import Icon from './Icon.astro';
+import StoryArt from './StoryArt.astro';
+
+interface Props {
+  story: CollectionEntry<'stories'>;
+}
+
+const { story } = Astro.props;
+const locale = story.id.split('/')[0] as Locale;
+const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
+const { storyId, title, emoji } = story.data;
+
+const meta = await getStoryMeta(storyId);
+const band = meta?.band ?? 1;
+const palette = paletteFor(storyId, meta);
+const { Content } = await render(story);
+const { pages, explicit } = paginate(story.body ?? '', locale, band, story.data.pages);
+// Chapter reader for bands 3-4 is a later milestone; those stories read as full text for now.
+const hasBook = band <= 2 && pages.length > 0;
+const narration = narrationFor(storyId, locale, pages.length, explicit);
+const cover = coverOf(meta, locale);
+const minutes = readMinutes(story.body);
+const skills = getSkillsByIds(story.data.skills);
+const summary = story.data.summary ?? firstSentence(story.body ?? '', locale);
+const prompts = (story.data.discussion ?? story.data.questions?.map(q => q.text) ?? []).slice(0, 3);
+
+const home = locale === 'de' ? `${BASE_PATH}/` : `${BASE_PATH}/${locale}`;
+const siblings = (await getPublishedStories(s => s.data.storyId === storyId)).filter(
+  s => s.id !== story.id
+);
+const otherLanguages = siblings.map(s => {
+  const loc = s.id.split('/')[0] as Locale;
+  const slug = s.id.replace(`${loc}/`, '');
+  return {
+    locale: loc,
+    href: loc === 'de' ? `${BASE_PATH}/stories/${slug}` : `${BASE_PATH}/${loc}/stories/${slug}`,
+  };
+});
+
+const keys = [
+  'pageOf',
+  'noVoiceFor',
+  'noSoundNow',
+  'timerMinutes',
+  'goodNight',
+  'theEnd',
+  'readAloud',
+  'lampTip',
+] as const;
+const strings = Object.fromEntries(keys.map(k => [k, t(k)]));
+const clientData = {
+  storyId,
+  locale,
+  title,
+  siteName: t('siteName'),
+  language: endonyms[locale],
+  audio: narration?.audio ?? null,
+  timings: narration?.timings ?? null,
+  pageCount: pages.length,
+  strings,
+};
+const description = summary || `${title} | ${t('siteName')}`;
+---
+
+<BaseLayout title={title} locale={locale} description={description} type="article">
+  <div
+    class="story-app"
+    data-band={band}
+    data-has-book={hasBook}
+    data-view="cover"
+    data-story-id={storyId}
+  >
+    <section class="view cover" data-view="cover" aria-labelledby="story-title" tabindex="-1">
+      <div class="container cover-grid">
+        <div class="cover-art surface">
+          <StoryArt picture={cover} emoji={emoji} palette={palette} eager />
+        </div>
+        <div class="cover-main">
+          <h1 id="story-title" class="cover-title">{title}</h1>
+          {
+            hasBook && (
+              <div class="cover-actions" data-js-only>
+                <button class="btn btn--listen btn--lg" data-action="read-with-me" type="button">
+                  <Icon name="play" size={28} />
+                  <span>{narration ? t('readWithMe') : t('readWithDeviceVoice')}</span>
+                </button>
+                <div class="cover-secondary">
+                  <button class="btn" data-action="read-myself" type="button">
+                    {t('readMyself')}
+                  </button>
+                  <button class="btn" data-action="full-text" type="button">
+                    {t('fullText')}
+                  </button>
+                </div>
+              </div>
+            )
+          }
+          <details class="grownups surface">
+            <summary>{t('forGrownUps')}</summary>
+            <div class="grownups-body">
+              <ul class="chips" aria-label={t('skills')}>
+                {skills.map(skill => <li>{skill[locale]}</li>)}
+              </ul>
+              <p>{summary}</p>
+              <p class="meta">
+                {minutes}
+                {t('minutes')} · {t('ageGroup')}: {story.data.ageGroup}
+              </p>
+              {!narration && <p class="meta">{t('noRecordedVoice')}</p>}
+              {
+                prompts.length > 0 && (
+                  <>
+                    <h2 class="small-heading">{t('talkPrompts')}</h2>
+                    <ul>
+                      {prompts.map(p => (
+                        <li>{p}</li>
+                      ))}
+                    </ul>
+                  </>
+                )
+              }
+              <button
+                class="btn export-booklet-btn"
+                type="button"
+                data-story-title={title}
+                data-locale={locale}>{t('exportBooklet')}</button
+              >
+            </div>
+          </details>
+          {
+            otherLanguages.length > 0 && (
+              <nav class="other-languages" aria-label={t('alsoAvailableIn')}>
+                <span>{t('alsoAvailableIn')}</span>
+                {otherLanguages.map(l => (
+                  <a href={l.href} lang={l.locale} hreflang={l.locale}>
+                    {endonyms[l.locale]}
+                  </a>
+                ))}
+              </nav>
+            )
+          }
+        </div>
+      </div>
+    </section>
+
+    {
+      hasBook && (
+        <section
+          class="view book"
+          data-view="book"
+          hidden
+          aria-roledescription="storybook"
+          aria-label={title}
+        >
+          <div class="topbar" data-topbar>
+            <a class="icon-btn" href={home} aria-label={t('home')}>
+              <Icon name="home" size={28} />
+            </a>
+            <div class="topbar-end">
+              <button
+                class="icon-btn icon-btn--listen"
+                type="button"
+                data-action="toggle-narration"
+                aria-pressed="false"
+                aria-label={t('readAloud')}
+              >
+                <span data-icon="play">
+                  <Icon name="play" size={28} />
+                </span>
+                <span data-icon="pause" hidden>
+                  <Icon name="pause" size={28} />
+                </span>
+              </button>
+              <button
+                class="icon-btn"
+                type="button"
+                data-action="lights-out"
+                hidden
+                aria-label={t('lightsOut')}
+              >
+                <Icon name="moon" size={28} />
+              </button>
+              <button
+                class="icon-btn"
+                type="button"
+                data-action="menu"
+                aria-expanded="false"
+                aria-controls="reader-menu"
+                aria-label={t('moreOptions')}
+              >
+                <Icon name="more" size={28} />
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="menu surface"
+            id="reader-menu"
+            hidden
+            role="group"
+            aria-label={t('moreOptions')}
+          >
+            <div class="menu-row">
+              <button class="btn" type="button" data-text-step="-1" aria-label={t('textSmaller')}>
+                <span class="a-small" aria-hidden="true">
+                  A
+                </span>
+              </button>
+              <button class="btn" type="button" data-text-step="1" aria-label={t('textLarger')}>
+                <span class="a-large" aria-hidden="true">
+                  A
+                </span>
+              </button>
+            </div>
+            <label class="menu-check">
+              <input type="checkbox" data-pref="spacing" />
+              {t('widerSpacing')}
+            </label>
+            <label class="menu-check">
+              <input type="checkbox" data-pref="highlight" />
+              {t('highlightWords')}
+            </label>
+            <label class="menu-check">
+              <input type="checkbox" data-pref="autoTurn" />
+              {t('autoTurn')}
+            </label>
+            <label class="menu-select">
+              {t('speed')}
+              <select data-pref="speed">
+                <option value="0.75">0.75×</option>
+                <option value="0.9">0.9×</option>
+                <option value="1">1×</option>
+                <option value="1.15">1.15×</option>
+              </select>
+            </label>
+            <label class="menu-select">
+              {t('sleepTimer')}
+              <select data-pref="sleep">
+                <option value="0">{t('timerOff')}</option>
+                {[10, 20, 30].map(n => (
+                  <option value={n}>{fmt(t('timerMinutes'), { n })}</option>
+                ))}
+              </select>
+            </label>
+            <label class="menu-check">
+              <input type="checkbox" data-pref="lamp" />
+              {t('lampMode')}
+            </label>
+            <button class="btn" type="button" data-action="repeat">
+              <Icon name="repeat" size={20} />
+              {t('repeatPage')}
+            </button>
+            <button class="btn" type="button" data-action="to-cover">
+              {t('leaveBook')}
+            </button>
+          </div>
+
+          <div class="pages">
+            {pages.map((page, i) => {
+              let w = 0;
+              return (
+                <section
+                  class="page"
+                  data-page={i}
+                  hidden={i > 0}
+                  tabindex="-1"
+                  aria-label={fmt(t('pageOf'), { n: i + 1, total: pages.length })}
+                >
+                  <div class="frame">
+                    <StoryArt
+                      picture={frameFor(meta, i + 1, locale)}
+                      emoji={emoji}
+                      palette={palette}
+                      eager={i === 0}
+                    />
+                  </div>
+                  <p class="story-text" lang={locale}>
+                    {page.sentences.map((sentence, s) => (
+                      <>
+                        <span class="s" data-s={s}>
+                          {wordsOf(sentence).map(word => (
+                            <>
+                              <span class="w" data-w={w++}>
+                                {word}
+                              </span>{' '}
+                            </>
+                          ))}
+                        </span>{' '}
+                      </>
+                    ))}
+                  </p>
+                </section>
+              );
+            })}
+          </div>
+
+          <p class="notice notice--problem" data-status role="status" hidden />
+          <button class="restart" type="button" data-action="restart" hidden>
+            {t('startAgain')}
+          </button>
+
+          <div class="pagebar">
+            <button class="nav-btn" type="button" data-action="prev" aria-label={t('previousPage')}>
+              <Icon name="prev" size={32} />
+              <span class="nav-label">{t('backLabel')}</span>
+            </button>
+            <div
+              class="dots"
+              role="img"
+              data-dots
+              aria-label={fmt(t('pageOf'), { n: 1, total: pages.length })}
+            >
+              {pages.map(() => (
+                <span />
+              ))}
+            </div>
+            <button class="nav-btn" type="button" data-action="next" aria-label={t('nextPage')}>
+              <span class="nav-label">{t('nextLabel')}</span>
+              <Icon name="next" size={32} />
+            </button>
+          </div>
+          <div class="blackout" data-blackout aria-hidden="true">
+            <Icon name="moon" size={24} />
+          </div>
+        </section>
+      )
+    }
+
+    {
+      hasBook && (
+        <section class="view end" data-view="end" hidden tabindex="-1" aria-labelledby="end-title">
+          <div class="container end-inner">
+            <div class="end-art surface">
+              <StoryArt picture={cover} emoji={emoji} palette={palette} />
+            </div>
+            <h2 id="end-title" data-end-title>
+              {t('theEnd')}
+            </h2>
+            <p class="meta" data-lamp-only hidden>
+              {story.data.keyMessage}
+            </p>
+            <div class="end-choices">
+              {prompts.length > 0 && (
+                <button class="btn btn--lg" type="button" data-action="talk">
+                  {t('letsTalk')}
+                </button>
+              )}
+              <button class="btn btn--lg" type="button" data-action="again">
+                {t('readAgain')}
+              </button>
+            </div>
+            <a class="quiet-link" href={home}>
+              {t('home')}
+            </a>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      hasBook && prompts.length > 0 && (
+        <section
+          class="view cards"
+          data-view="cards"
+          hidden
+          tabindex="-1"
+          aria-labelledby="cards-title"
+        >
+          <div class="container">
+            <h2 id="cards-title" class="visually-hidden">
+              {t('letsTalk')}
+            </h2>
+            {prompts.map((prompt, i) => (
+              <article class="card surface" data-card={i} hidden={i > 0}>
+                <p class="card-text">{prompt}</p>
+                <button class="btn btn--primary" type="button" data-action="next-card">
+                  {i < prompts.length - 1 ? t('nextCard') : t('weTalked')}
+                </button>
+              </article>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <section class="view text" data-view="text" aria-label={t('fullText')}>
+      <div class="container">
+        <article class="story-content" lang={locale}>
+          <Content />
+        </article>
+        <a class="back-link" href={home}>{t('allStories')}</a>
+      </div>
+    </section>
+  </div>
+
+  <script type="application/json" id="reader-data" set:html={JSON.stringify(clientData)} />
+</BaseLayout>
+
+<script>
+  import { startReader } from './reader';
+  import {
+    exportAsBooklet,
+    showExportProgress,
+    hideExportProgress,
+    detectOrientation,
+  } from '@utils/booklet-export';
+
+  startReader();
+
+  const booklet = {
+    de: 'Heft wird erstellt... Bitte warten.',
+    ar: 'جاري إنشاء الكتيب... يرجى الانتظار.',
+    en: 'Creating booklet... Please wait.',
+    tr: 'Kitapçık oluşturuluyor... Lütfen bekleyin.',
+    ur: 'کتابچہ بنایا جا رہا ہے... براہ کرم انتظار کریں۔',
+  };
+  document.querySelectorAll<HTMLButtonElement>('.export-booklet-btn').forEach(button => {
+    button.addEventListener('click', async () => {
+      const content = document.querySelector<HTMLElement>('.story-content');
+      const view = content?.closest<HTMLElement>('.view');
+      if (!content || !view) return;
+      const wasHidden = view.hidden;
+      view.hidden = false;
+      const locale = (button.dataset.locale ?? 'en') as keyof typeof booklet;
+      const overlay = showExportProgress(booklet[locale] ?? booklet.en);
+      try {
+        await exportAsBooklet(content, {
+          orientation: detectOrientation(content),
+          pageSize: 'a5',
+          title: button.dataset.storyTitle ?? 'Story',
+          addCover: true,
+          addPageNumbers: true,
+        });
+      } finally {
+        view.hidden = wasHidden;
+        hideExportProgress(overlay);
+      }
+    });
+  });
+</script>
+
+<style>
+  .view[hidden] {
+    display: none;
+  }
+
+  /* Without JS the cover and the full text are all there is; the book needs scripts. */
+  .story-app:not([data-ready]) [data-js-only] {
+    display: none;
+  }
+
+  .cover-grid {
+    display: grid;
+    gap: var(--s-6);
+    align-items: start;
+  }
+
+  .cover-art {
+    container-type: inline-size;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--paper-2);
+  }
+
+  .cover-title {
+    margin-block-end: var(--s-5);
+    overflow-wrap: anywhere;
+  }
+
+  .cover-actions {
+    display: grid;
+    gap: var(--s-4);
+    margin-block-end: var(--s-5);
+  }
+
+  .cover-secondary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+
+  :global(.btn--lg) {
+    min-block-size: var(--tap-child);
+    font-size: var(--t-ui);
+    padding-inline: var(--s-5);
+  }
+
+  .grownups {
+    padding: var(--s-4);
+    margin-block-end: var(--s-5);
+  }
+
+  .grownups summary {
+    min-block-size: var(--tap-adult);
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .grownups-body {
+    display: grid;
+    gap: var(--s-3);
+    padding-block-start: var(--s-3);
+  }
+
+  .grownups-body ul:not(.chips) {
+    padding-inline-start: var(--s-5);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    list-style: none;
+  }
+
+  .chips li {
+    padding: var(--s-1) var(--s-3);
+    border-radius: var(--r-s);
+    background: var(--lagoon-tint);
+    color: var(--ink);
+    font-size: var(--t-ui-sm);
+  }
+
+  .meta {
+    color: var(--ink-2);
+    font-size: var(--t-ui-sm);
+  }
+
+  .small-heading {
+    font-size: var(--t-ui);
+    font-family: var(--font-ui);
+  }
+
+  .other-languages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-4);
+    align-items: center;
+    color: var(--ink-2);
+  }
+
+  .other-languages a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-adult);
+    unicode-bidi: isolate;
+  }
+
+  .view.text {
+    padding-block: var(--s-6);
+  }
+
+  .story-content {
+    max-inline-size: var(--measure-prose);
+    margin-inline: auto;
+    font-family: var(--font-read);
+    font-size: var(--t-prose);
+    line-height: var(--lh-prose);
+  }
+
+  .story-content :global(h2) {
+    margin-block: var(--s-5) var(--s-3);
+  }
+
+  .story-content :global(p + p),
+  .story-content :global(li) {
+    margin-block-start: var(--s-3);
+  }
+
+  .story-content :global(ul) {
+    padding-inline-start: var(--s-5);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-adult);
+    margin-block-start: var(--s-6);
+  }
+
+  /* The book fills the screen: the story is the screen. */
+  .view.book {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-block-size: calc(100dvh - 2 * var(--s-6));
+    margin-block: calc(-1 * var(--s-6));
+    background: var(--paper);
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--s-3) var(--gutter);
+    transition: opacity var(--dur-quick);
+  }
+
+  .topbar-end {
+    display: flex;
+    gap: var(--s-2);
+  }
+
+  .topbar.is-quiet {
+    opacity: 0;
+  }
+
+  .topbar.is-quiet:focus-within {
+    opacity: 1;
+  }
+
+  .icon-btn,
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-2);
+    min-inline-size: var(--tap-child);
+    min-block-size: var(--tap-child);
+    border: 2px solid var(--edge);
+    border-radius: var(--r-m);
+    background: var(--card);
+    color: var(--ink);
+    box-shadow: var(--e-1);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .icon-btn--listen {
+    background: var(--listen);
+    border-color: var(--listen);
+    color: var(--on-accent);
+  }
+
+  .icon-btn:active,
+  .nav-btn:active {
+    transform: translate(calc(2px * var(--shadow-x)), 3px);
+    box-shadow: var(--e-press);
+  }
+
+  .nav-btn[disabled] {
+    opacity: 0.4;
+  }
+
+  .nav-btn.pulse {
+    animation: pulse var(--dur-gentle) var(--ease-in-out) 1;
+  }
+
+  @keyframes pulse {
+    50% {
+      transform: scale(1.06);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-btn.pulse {
+      animation: none;
+      box-shadow: 0 0 0 6px var(--honey);
+    }
+  }
+
+  .pages {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    block-size: 100%;
+    outline: none;
+  }
+
+  .page[hidden] {
+    display: none;
+  }
+
+  .frame {
+    container-type: inline-size;
+    aspect-ratio: 4 / 3;
+    background: var(--paper-2);
+  }
+
+  .story-text {
+    align-self: stretch;
+    padding: var(--s-5) var(--gutter);
+    background: var(--paper-2);
+    font-family: var(--font-read);
+    line-height: var(--lh-story);
+    max-inline-size: none;
+  }
+
+  .story-text :global(.s),
+  .story-text :global(.w) {
+    max-inline-size: var(--measure-story);
+  }
+
+  .story-text :global(.w) {
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color var(--dur-quick);
+  }
+
+  .story-text :global(.s.is-on) {
+    background: color-mix(in srgb, var(--mark) 45%, transparent);
+  }
+
+  .story-text :global(.w.is-on) {
+    background: var(--mark);
+    color: var(--mark-ink);
+  }
+
+  [data-highlight='off'] .story-text :global(.is-on) {
+    background: none;
+    color: inherit;
+  }
+
+  [data-spacing='wide'] .story-text {
+    line-height: calc(var(--lh-story) + 0.2);
+    word-spacing: 0.25em;
+  }
+
+  [data-spacing='wide'] .story-text:lang(de),
+  [data-spacing='wide'] .story-text:lang(en),
+  [data-spacing='wide'] .story-text:lang(tr) {
+    letter-spacing: 0.12em;
+    word-spacing: 0.16em;
+  }
+
+  .pagebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    padding: var(--s-3) var(--gutter) var(--s-4);
+  }
+
+  .nav-label {
+    display: none;
+  }
+
+  [data-band='2'] .nav-label {
+    display: inline;
+  }
+
+  .dots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--s-2);
+  }
+
+  .dots span {
+    inline-size: 10px;
+    block-size: 10px;
+    border-radius: var(--r-round);
+    background: var(--rule);
+  }
+
+  .dots span.is-done {
+    background: var(--ink-2);
+  }
+
+  .dots span.is-current {
+    background: var(--ink);
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  .menu {
+    position: absolute;
+    inset-block-start: calc(var(--tap-child) + var(--s-5));
+    inset-inline-end: var(--gutter);
+    z-index: 5;
+    display: grid;
+    gap: var(--s-3);
+    padding: var(--s-4);
+    inline-size: min(22rem, calc(100% - 2 * var(--gutter)));
+    box-shadow: var(--e-2);
+  }
+
+  .menu[hidden] {
+    display: none;
+  }
+
+  .menu-row {
+    display: flex;
+    gap: var(--s-3);
+  }
+
+  .a-small {
+    font-size: 16px;
+  }
+
+  .a-large {
+    font-size: 28px;
+  }
+
+  .menu-check {
+    justify-content: flex-start;
+  }
+
+  .menu-check,
+  .menu-select {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    min-block-size: var(--tap-adult);
+  }
+
+  .menu-check input {
+    inline-size: 24px;
+    block-size: 24px;
+    accent-color: var(--accent);
+  }
+
+  .menu-select select {
+    min-block-size: var(--tap-adult);
+    padding-inline: var(--s-3);
+    border: 2px solid var(--edge);
+    border-radius: var(--r-s);
+    background: var(--card);
+  }
+
+  .notice {
+    position: absolute;
+    inset-inline: var(--gutter);
+    inset-block-end: calc(var(--tap-child) + var(--s-6));
+    z-index: 4;
+    text-align: center;
+  }
+
+  .notice[hidden] {
+    display: none;
+  }
+
+  .restart {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: calc(var(--tap-child) + var(--s-7));
+    translate: -50% 0;
+    z-index: 4;
+    min-block-size: var(--tap-adult);
+    padding-inline: var(--s-4);
+    border: 0;
+    background: none;
+    color: var(--lagoon);
+    text-decoration: underline;
+  }
+
+  [dir='rtl'] .restart {
+    translate: 50% 0;
+  }
+
+  .restart[hidden] {
+    display: none;
+  }
+
+  .end-inner {
+    display: grid;
+    justify-items: center;
+    gap: var(--s-5);
+    padding-block: var(--s-7);
+    text-align: center;
+  }
+
+  .end-art {
+    container-type: inline-size;
+    inline-size: min(100%, 28rem);
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--paper-2);
+  }
+
+  .end-choices {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--s-4);
+  }
+
+  .quiet-link {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-adult);
+  }
+
+  .card {
+    display: grid;
+    gap: var(--s-5);
+    justify-items: start;
+    max-inline-size: 40rem;
+    margin: var(--s-7) auto;
+    padding: var(--s-6);
+  }
+
+  .card[hidden] {
+    display: none;
+  }
+
+  .card-text {
+    font-family: var(--font-read);
+    font-size: var(--t-story);
+    line-height: var(--lh-story);
+  }
+
+  :global(body[data-reading='true'] > header),
+  :global(body[data-reading='true'] > footer) {
+    display: none;
+  }
+
+  :global(body[data-reading='true'] > main) {
+    padding-block: var(--s-6);
+  }
+
+  .blackout {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 4s linear;
+  }
+
+  .blackout.is-on {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .blackout svg {
+    position: absolute;
+    inset-block-start: var(--s-4);
+    inset-inline-end: var(--s-4);
+    color: var(--rose, #d98263);
+    opacity: 0.2;
+  }
+
+  :global(:root[data-theme='lamp']) .frame :global(img) {
+    filter: brightness(0.62) sepia(0.35) saturate(0.8);
+  }
+
+  @media (min-width: 1024px) and (orientation: landscape) {
+    .cover-grid {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    }
+
+    .view.book .page {
+      grid-template-rows: none;
+      grid-template-columns: 62fr 38fr;
+    }
+
+    [data-band='2'] .view.book .page {
+      grid-template-columns: 56fr 44fr;
+    }
+
+    .frame {
+      aspect-ratio: 3 / 2;
+      align-self: center;
+    }
+
+    .story-text {
+      align-self: center;
+      background: none;
+    }
+  }
+</style>

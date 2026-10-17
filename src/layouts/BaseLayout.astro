@@ -40,6 +40,14 @@ const build = buildMarker();
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="build" content={build} />
 
+    <script is:inline>
+      // Apply the saved Lamp theme before first paint so a bedtime reader is never flashed with day colours.
+      try {
+        if (JSON.parse(localStorage.getItem('reader-prefs') || '{}').theme === 'lamp')
+          document.documentElement.dataset.theme = 'lamp';
+      } catch (e) {}
+    </script>
+
     <GTMTracking gtmId={gtmId} />
 
     <!-- Primary Meta Tags -->
@@ -88,7 +96,7 @@ const build = buildMarker();
         <nav>
           <div class="nav-brand">
             <a href={locale === 'de' ? `${base}/` : `${base}/${locale}`}>
-              <h1 class="site-title">{siteName}</h1>
+              <p class="site-title">{siteName}</p>
               <p class="site-tagline">{getTranslation(locale, 'tagline')}</p>
             </a>
           </div>

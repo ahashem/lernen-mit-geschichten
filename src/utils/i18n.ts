@@ -23,3 +23,16 @@ export function getTranslation(locale: Locale, key: keyof typeof translations.de
 export function isRTL(locale: Locale): boolean {
   return locale === 'ar' || locale === 'ur';
 }
+
+export const endonyms: Record<Locale, string> = {
+  de: 'Deutsch',
+  ar: 'العربية',
+  en: 'English',
+  tr: 'Türkçe',
+  ur: 'اردو',
+};
+
+/** Fill `{name}` placeholders in a translated string. */
+export function fmt(text: string, values: Record<string, string | number>): string {
+  return text.replace(/\{(\w+)\}/g, (_, key) => String(values[key] ?? ''));
+}
