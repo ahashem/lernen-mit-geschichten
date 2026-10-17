@@ -108,6 +108,9 @@ const build = buildMarker();
             <a href={locale === 'de' ? `${base}/about` : `${base}/${locale}/about`}
               >{getTranslation(locale, 'about')}</a
             >
+            <a href={locale === 'de' ? `${base}/settings` : `${base}/${locale}/settings`}
+              >{getTranslation(locale, 'settings')}</a
+            >
           </div>
 
           <LanguageSelector currentLocale={locale} currentPath={Astro.url.pathname} />

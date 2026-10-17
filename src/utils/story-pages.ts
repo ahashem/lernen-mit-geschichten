@@ -2,6 +2,8 @@ import type { Locale } from './i18n';
 
 export interface BookPage {
   sentences: string[];
+  /** Indices of the story paragraphs this page holds (derived pages only); used to align translations. */
+  paragraphs?: number[];
 }
 
 export interface BookPages {
@@ -47,7 +49,8 @@ export function paginate(
     };
   }
 
-  if (/^\s*---\s*$/m.test(body)) {
+  // Existing stories use `---` as a rule between `##` sections; only a body without sections has page breaks.
+  if (!/^## /m.test(body) && /^\s*---\s*$/m.test(body)) {
     const parts = body
       .split(/^\s*---\s*$/m)
       .map(plain)
@@ -55,33 +58,62 @@ export function paginate(
     return { explicit: true, pages: parts.map(text => ({ sentences: sentencesOf(text, locale) })) };
   }
 
-  const sections = body.split(/^## .*$/m).filter(s => s.trim());
-  const story = body.trimStart().startsWith('## ')
-    ? (sections[0] ?? '')
-    : (body.split(/^## /m)[0] ?? '');
+  const story = storySection(body);
   const limit = SENTENCES_PER_PAGE[band] ?? 5;
   const pages: BookPage[] = [];
-  let current: string[] = [];
+  let current: BookPage = { sentences: [], paragraphs: [] };
+  const flush = () => {
+    if (current.sentences.length) pages.push(current);
+    current = { sentences: [], paragraphs: [] };
+  };
 
-  for (const paragraph of story
+  paragraphsOf(story).forEach((paragraph, index) => {
+    const sentences = sentencesOf(paragraph, locale);
+    if (current.sentences.length && current.sentences.length + sentences.length > limit) flush();
+    for (const sentence of sentences) {
+      if (current.sentences.length === limit) flush();
+      current.sentences.push(sentence);
+      if (!current.paragraphs!.includes(index)) current.paragraphs!.push(index);
+    }
+  });
+  flush();
+  return { pages, explicit: false };
+}
+
+const paragraphsOf = (story: string) =>
+  story
     .split(/\n\s*\n/)
     .map(plain)
-    .filter(Boolean)) {
-    const sentences = sentencesOf(paragraph, locale);
-    if (current.length && current.length + sentences.length > limit) {
-      pages.push({ sentences: current });
-      current = [];
-    }
-    for (const sentence of sentences) {
-      if (current.length === limit) {
-        pages.push({ sentences: current });
-        current = [];
-      }
-      current.push(sentence);
-    }
+    .filter(Boolean);
+
+/** The story section of a Markdown body: the first `##` section, or everything before the first. */
+function storySection(body: string): string {
+  const sections = body.split(/^## .*$/m).filter(s => s.trim());
+  return body.trimStart().startsWith('## ') ? (sections[0] ?? '') : (body.split(/^## /m)[0] ?? '');
+}
+
+/**
+ * A translation cut into the same pages as `base`, or null when the two cannot be aligned honestly
+ * (different paragraph count, or different explicit page count). Two-language reading needs this.
+ */
+export function alignTo(
+  base: BookPages,
+  rawBody: string,
+  locale: Locale,
+  band: number,
+  explicitPages?: { text: string }[]
+): BookPage[] | null {
+  const body = rawBody.replace(/^# .*$/gm, '');
+  if (base.explicit) {
+    const other = paginate(rawBody, locale, band, explicitPages);
+    return other.explicit && other.pages.length === base.pages.length ? other.pages : null;
   }
-  if (current.length) pages.push({ sentences: current });
-  return { pages, explicit: false };
+  const paragraphs = paragraphsOf(storySection(body));
+  const total = base.pages.reduce((n, p) => Math.max(n, ...(p.paragraphs ?? [-1]), -1), -1) + 1;
+  if (paragraphs.length !== total) return null;
+  return base.pages.map(page => ({
+    sentences: (page.paragraphs ?? []).flatMap(i => sentencesOf(paragraphs[i], locale)),
+  }));
 }
 
 /** A card or meta description when a story has no `summary`: derived, never stored. */
