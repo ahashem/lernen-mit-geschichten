@@ -55,6 +55,13 @@ questions (`type: open`); the schema must not assume a story is a few short para
 Removed from today's schema: `titleAr/En/Tr/Ur`, hand-entered `estimatedReadTime`, `languages[]` (derived),
 `provider*`, `characterType` (replaced by `characters`).
 
+## Reading modes, not formats
+
+Every story reads in scroll mode and in page-by-page mode. `storyFormat: standard|interactive` goes away. Pages come
+from `---` breaks in the Markdown (and chapters from `##` headings); `pages[]` stays only as an optional explicit
+override. The draft `de/001-bruno-interactive.md` folds into `001-bruno` (one `storyId`, frames mapped to pages).
+The CMS is being configured in parallel against this schema; treat field names as a contract.
+
 ## Publish gates (build or CMS validation, not convention)
 
 A translation can be `published` only if: story meta exists and is `published`; 1–3 valid skills; non-empty title,

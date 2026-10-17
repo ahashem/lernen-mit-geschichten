@@ -83,15 +83,14 @@ diff against the previous run, not as a gate.
 
 ## Project
 
-Static Astro site that teaches children values and behavioural skills through multilingual stories. It
-starts with ages 3–7 (kita and early primary) and grows with the child up to Klasse 6 (about age 12). Locales: `de` (default), `ar`, `en`, `tr`, `ur`; `ar`/`ur` are RTL. No backend, no accounts, no
-personal data; reader state lives in `localStorage`. Stories are the product. Staging is GitHub Pages
-(`.github/workflows/deploy.yml`, builds `main` under a subpath, `NOINDEX=1`); production is
-https://mitgeschichten.com/ on Hostinger, root-mounted, built from the same commit by `npm run build`
-only, so CI is the only place tests run.
+Static Astro site that teaches children values and behavioural skills through multilingual stories. It starts
+with ages 3–7 and grows with the child up to Klasse 6 (about age 12). Locales: `de` (default), `ar`, `en`, `tr`,
+`ur`; `ar`/`ur` are RTL. No backend, no accounts, no personal data; reader state lives on the device. Every
+push to `main` deploys staging (GitHub Pages, subpath, `noindex`) and production (https://mitgeschichten.com/,
+Hostinger, root, `npm run build` only), so the PR check is the only test gate.
 
-Where the product is going, and what "world-class" means here, is specified in `docs/roadmap/`. Start
-at its `README.md`; the specs there outrank any existing look or feature.
+Product direction, the UX spec and the work plan are in `docs/roadmap/`; start at its `README.md`. Those specs
+outrank any existing look or feature.
 
 ## Commands
 
@@ -156,5 +155,5 @@ Node >= 24.
 ## Known gaps
 
 - Legacy `locale === 'de' ? …` ternaries still hold UI text in a few components.
-- `GTMTracking.astro` is wired into `BaseLayout.astro` with no consent gate. It is active in production and stays until the owner picks a replacement.
+- `GTMTracking.astro` is wired into `BaseLayout.astro` with no consent gate. It stays until a replacement is chosen.
 - `de/001-bruno-interactive.md` is a draft with placeholder image URLs.

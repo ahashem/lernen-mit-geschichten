@@ -24,7 +24,8 @@ Every merge to `main` deploys to both GitHub Pages (staging, `noindex`, under a 
 (https://mitgeschichten.com/, root). The owner tagged `main` before this roadmap started (`pre-roadmap`), so a
 restore point exists. After each workstream:
 
-1. Merge only with CI green. Never skip hooks or tests.
+1. Open a PR, wait for the PR check (`gh pr checks <n> --watch`), and squash-merge only when it is green. This is
+   the only test gate: pushing to `main` deploys production without running tests. Never skip hooks or tests.
 2. Wait for both deploys, then confirm each serves your commit: WS1 adds a `<meta name="build" content="<short
 sha>">` to `BaseLayout`; fetch the home page of both sites and compare.
 3. Verify on the live sites, not only in the PR: `node scripts/verify-build.mjs` against a fresh build, then a
@@ -32,8 +33,7 @@ sha>">` to `BaseLayout`; fetch the home page of both sites and compare.
    check that a story page and the service worker still load.
 4. Tag the verified commit `roadmap-wsN-<name>`. Report the result in the PR or a comment.
 5. If verification fails, fix forward in a small PR if the cause is clear; otherwise revert the merge and retag
-   nothing. A service worker (WS5) must ship with a version stamp and an unregister path so a revert is not pinned
-   in returning visitors' browsers.
+   nothing. The site has no active visitors yet, so there is no backward-compatibility burden.
 
 ## What to read (do not load `ux/` wholesale)
 
@@ -95,7 +95,8 @@ bilingual-as-learning. "Read it in my voice" only if budget remains after 5.
 
 ## 5. Trust and delivery (about 20%)
 
-`06`: accessibility verified and fixed, offline with service worker (base-path aware), responsive images and
+`06`: accessibility verified and fixed, offline with a service worker (base-path aware) behind a build flag, `PUBLIC_OFFLINE=1`, **off by default**; test it
+with the flag on in a local build and leave it off in the deployed config, responsive images and
 budgets, Open Graph / `hreflang` / structured data, privacy page and clear-my-data control, remaining hardcoded
 strings into locale JSON. Report Lighthouse before and after.
 
@@ -103,10 +104,17 @@ strings into locale JSON. Report Lighthouse before and after.
 
 Re-run the audit; report fixed, deferred, rejected with reasons; update this file's "Next" list in place.
 
-## Not in this budget (owner tasks)
+## Parallel and owner tasks
 
-CMS setup and hosting (`03`), generating the first art and audio (`ux/06` has the templates), invite moderators,
-native review of drafted translations, decisions in `README.md`.
+The moderator CMS (Pages CMS, `03`) is being set up by the owner in parallel and is **not** in the agent's scope.
+The agent's schema work is its contract: keep `src/content.config.ts` the single source of truth, give every field
+a `.describe()` string, and do not rename fields after WS1 lands without noting it in the PR.
+
+Owner: generate art and audio (templates in `ux/06`), invite moderators, native review via
+`src/locales/review-queue.json`, open decisions in `README.md`. The pilot story is **Bruno** (`001-bruno`); its
+assets go in `public/assets/stories/001-bruno/` as `cover.webp`, `line-NN.svg`, `frame-NN.webp`, `colour-NN.svg`
+and `audio/{locale}.m4a` (`02`). WS2 uses them to verify the reader. The agent drafts alt text from the images for
+owner review.
 
 ## Next
 

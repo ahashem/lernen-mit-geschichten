@@ -27,7 +27,7 @@ Pick the file for the job; each stands on its own and links to the others where 
 
 - **UI strings** (decided): the freeze is lifted for this work; the agent writes all five locales and records `ar`/`tr`/`ur` drafts in `src/locales/review-queue.json` for later native review.
 - **Analytics** (decided): Google Tag Manager is active in production and stays for now; replacing it is open (`07`).
-- **CMS hosting and deployment** for moderators (Pages CMS, branch-based review). See `03`.
+- **CMS** is set up by the owner in parallel, outside the agent's scope; the content model in `02` is its contract. See `03`.
 - **No rewards, at any age.** The UX spec bans points, stars, badges, streaks and read counts, which drops
   the sticker album and daily surprise from the old backlog. It is evidence-based and fits the non-goals; the
   owner should confirm it is the intended product stance.

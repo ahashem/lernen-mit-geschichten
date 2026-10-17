@@ -19,7 +19,7 @@ high contrast. Screen-reader pass with VoiceOver on iOS and TalkBack on Android.
 ## Performance and offline
 
 Budgets are in `01`. Method: responsive images (`astro:assets`), lazy loading below the fold, self-hosted font
-subsets per script, no layout shift, minimal JavaScript on listing pages. Installable web app (manifest) with a
+subsets per script, no layout shift, minimal JavaScript on listing pages. Installable web app (manifest) and, behind `PUBLIC_OFFLINE=1` (off by default), a
 service worker that caches the shell and every story the reader opened, including audio and images; must respect
 the base path because staging lives under a subpath. Production builds with `npm run build` only (`AGENTS.md`).
 
