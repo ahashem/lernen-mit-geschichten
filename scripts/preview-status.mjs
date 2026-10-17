@@ -12,7 +12,7 @@ const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&
 const blocked = gate.split('\n').filter(l => l.startsWith('BLOCKED') || l.startsWith('FAIL'));
 const verdict =
   build === 'none'
-    ? 'No content branch yet.'
+    ? 'No editorial branch yet.'
     : build !== 'ok'
       ? 'The preview could not be built. Fix the error below and save again.'
       : blocked.length

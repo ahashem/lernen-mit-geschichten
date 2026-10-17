@@ -7,7 +7,7 @@ no content, no product.
 
 - **Git stays the source of truth.** Every edit is a commit; history is the audit log. No separate database.
 - **Moderators never see git.** They use a CMS with an email invite; the CMS commits on their behalf.
-- **A second pair of eyes before anything is public, enforced by data.** Moderators save on the `content` branch. A
+- **A second pair of eyes before anything is public, enforced by data.** Moderators save on the `editorial` branch. A
   story goes live only when it is `published`, complete, and `reviewedBy` is someone other than `author`; CI checks
   that on every changed file and publishes automatically when it passes. No admin merge, no waiting.
 - **Nothing machine-made ships unreviewed**: text, translations and images all have a named human reviewer.
@@ -28,7 +28,7 @@ dash and a lowercase name, for example `023-nora`. It must be **exactly the same
 
 ## Workflow for one new story
 
-Moderators work in the CMS on the `content` branch and never see git. Steps 1 to 5 happen outside it.
+Moderators work in the CMS on the `editorial` branch and never see git. Steps 1 to 5 happen outside it.
 
 1. **Brief.** One short note: skills (1 to 3), band, the one key message, the cast, and whether a character is new.
 2. **Characters.** Reuse an existing character sheet. A new recurring character needs a sheet and a second moderator's
@@ -61,19 +61,23 @@ Moderators work in the CMS on the `content` branch and never see git. Steps 1 to
 
 ## How it runs, and one-time setup (admin)
 
-- **Save → preview.** The CMS commits to `content`. `deploy.yml` builds `main` at the site root (staging) and
-  `content` at `/preview/` with `SHOW_DRAFTS=1` and `NOINDEX=1` (both are required; a build with only one of them
+- **Save → preview.** The CMS commits to `editorial`. `deploy.yml` builds `main` at the site root (staging) and
+  `editorial` at `/preview/` with `SHOW_DRAFTS=1` and `NOINDEX=1` (both are required; a build with only one of them
   still hides drafts), plus a check-result page at `/preview/status/` (`scripts/preview-status.mjs`).
-- **Save → live.** `content-publish.yml` merges `main` into `content`, runs the changed-files publishing gate
+- **Save → live.** `editorial-publish.yml` merges `main` into `editorial`, runs the changed-files publishing gate
   (`node scripts/publish-gates.mjs --changed=origin/main`), `npm run quality` and the build, then fast-forwards `main`.
   Untouched stories are never held to the gate, so the existing library stays as it is.
 - **Set up once:**
-  1. Create the branch: `git push origin origin/main:refs/heads/content`.
-  2. Make `content` the repository's default branch, so the CMS opens on it with no bookmark. Dependabot already
-     targets `main`; anyone opening a code PR picks `main` as the base.
-  3. Protect `main`: pull request and the `quality` check required for people and the agent.
-  4. Create a token for this repository only (contents: write) and store it as the secret `CONTENT_BOT_TOKEN`. Let
-     it bypass the `main` rule (a ruleset bypass), because `content-publish.yml` pushes straight to `main`.
+  1. Create the branch: `git push origin origin/main:refs/heads/editorial`.
+  2. Rulesets. Target branches **by name**, never "Default branch", because that follows the default when it moves.
+     - `main`: require a pull request and the `quality` check, block force pushes and deletion. This is the rule for
+       people and the agent; the bot token below bypasses it.
+     - `editorial`: block force pushes and deletion only. It must **not** require a pull request, because the CMS
+       commits to it directly.
+  3. Make `editorial` the repository's default branch, so the CMS opens on it with no bookmark. Open PRs keep their
+     base. Dependabot targets `main`; anyone opening a code PR picks `main` as the base.
+  4. Create a token for this repository only (contents: write) and store it as the secret `EDITORIAL_BOT_TOKEN`. Let
+     it bypass the `main` ruleset, because `editorial-publish.yml` pushes straight to `main`.
   5. Invite the moderators in the CMS.
 - **Why a moderator can't do harm.** The CMS only edits the configured story and media folders, not workflows. A
   malformed file fails the checks and never reaches `main`; an incomplete or unreviewed published story is blocked

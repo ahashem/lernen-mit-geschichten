@@ -1,20 +1,20 @@
-name: Publish content
+name: Publish stories
 
-# Moderators save in the CMS, which commits to `content`. When the checks pass, `main` is fast-forwarded to it and
+# Moderators save in the CMS, which commits to `editorial`. When the checks pass, `main` is fast-forwarded to it and
 # both deploys follow; no human merge. A story only goes live once its status is `published`, and the publishing
 # gate (scripts/publish-gates.mjs --changed) refuses a published file that is incomplete or unreviewed.
 #
-# Needs the secret CONTENT_BOT_TOKEN: a token for this repository only (contents: write) that is allowed to push to
+# Needs the secret EDITORIAL_BOT_TOKEN: a token for this repository only (contents: write) that is allowed to push to
 # the protected `main` (a ruleset bypass). Without it the push below fails and nothing goes live.
 on:
   push:
-    branches: [content]
+    branches: [editorial]
 
 permissions:
   contents: read
 
 concurrency:
-  group: content-publish
+  group: editorial-publish
   cancel-in-progress: false
 
 jobs:
@@ -23,14 +23,14 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: content
+          ref: editorial
           fetch-depth: 0
-          token: ${{ secrets.CONTENT_BOT_TOKEN }}
+          token: ${{ secrets.EDITORIAL_BOT_TOKEN }}
 
-      - name: Bring main into content
+      - name: Bring main into editorial
         run: |
-          git config user.name "content-bot"
-          git config user.email "content-bot@users.noreply.github.com"
+          git config user.name "editorial-bot"
+          git config user.email "editorial-bot@users.noreply.github.com"
           git merge --no-edit origin/main
 
       - uses: actions/setup-node@v7
@@ -54,7 +54,7 @@ jobs:
       - name: Publish (fast-forward main)
         run: |
           for attempt in 1 2 3; do
-            git push origin HEAD:content
+            git push origin HEAD:editorial
             if git push origin HEAD:main; then exit 0; fi
             git fetch origin main
             git merge --no-edit origin/main

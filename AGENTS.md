@@ -115,9 +115,9 @@ Node >= 24.
   the same change. `404.astro` is the one exception: hosts serve a single error document.
 - **Base path.** Import `BASE_PATH` from `@utils/site` and prefix every root-relative `href`, `src` and
   `window.location` assignment. Astro rewrites markup but not JS string literals.
-- **Branches.** `content` is the default branch: the CMS commits to it and `content-publish.yml` fast-forwards
+- **Branches.** `editorial` is the default branch: the CMS commits to it and `editorial-publish.yml` fast-forwards
   `main` when the checks pass (`docs/roadmap/03`). Code changes go through pull requests with `--base main`. The
-  Pages site shows `main` at the root and `content` at `/preview/` with drafts (`SHOW_DRAFTS=1` plus `NOINDEX=1`;
+  Pages site shows `main` at the root and `editorial` at `/preview/` with drafts (`SHOW_DRAFTS=1` plus `NOINDEX=1`;
   a production build never shows them).
 - **Stories.** `src/content.config.ts` defines `stories` (one Markdown file per locale, joined by `storyId`). Language-neutral fields (`band`, `cover`, `frames`, `palette`,
   `art`) live only in the German file and are read through `getStoryMeta()`; other locales carry `coverAlt` and

@@ -8,7 +8,7 @@ $9.** A run stops when its scope is done or its budget is spent, whichever is fi
 
 - Read `AGENTS.md`, this file and `ux/README.md`'s "How to use this spec". Then only the sections the run lists
   below. `docs/roadmap/ux/` is about 21,000 words; never open it whole, and `ux/06` (art) is not needed.
-- Serial small PRs, squashed into `main` (the default branch is `content`, so open them with `--base main`), one conventional subject line, `npm run quality` green first.
+- Serial small PRs, squashed into `main` (the default branch is `editorial`, so open them with `--base main`), one conventional subject line, `npm run quality` green first.
 - **The UX spec defines the look.** Replace the existing CSS with the tokens and components it defines; do not
   extend the old style or invent one. Implement the tokens and `data-band` once; do not fork components per band.
 - Every new page ships in all 5 locales. New UI keys go in all five locales; list the `ar`/`tr`/`ur` keys in
