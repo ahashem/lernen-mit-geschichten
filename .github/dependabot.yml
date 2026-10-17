@@ -8,18 +8,26 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: 'chore'
+    # A dependency joins the first group that matches it; majors match none
+    # except astro, so they open as individual PRs.
     groups:
       # astro and its integrations must move together; split bumps break the build
       astro:
         patterns:
           - 'astro'
           - '@astrojs/*'
-      lint-format:
+      # Security updates ignore the groups below; transitive ones (devalue, undici, ...) land here
+      security:
+        applies-to: security-updates
         patterns:
-          - 'eslint*'
-          - '@typescript-eslint/*'
-          - 'prettier*'
-      minor-and-patch:
+          - '*'
+      dev-dependencies:
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
+      prod-dependencies:
+        dependency-type: production
         update-types:
           - minor
           - patch
