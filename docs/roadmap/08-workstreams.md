@@ -59,6 +59,8 @@ record it in `ux/07-open-questions.md` or the run report; do not improvise.
 - Do not call `getCollection('stories')` directly, disable ESLint rules, skip or weaken tests, use `--no-verify`,
   add a `prebuild` script, rename `build`, force-push, rewrite `main`, or delete branches and tags you did not
   create.
+- Do not edit `.pages.yml`: the CMS configuration belongs to the owner, and you cannot see the CMS. If you add,
+  rename or remove a field in `src/content.config.ts`, say so in the PR description so the owner can mirror it.
 - Do not hardcode UI text, domains or the base path; every internal URL goes through `BASE_PATH`. Do not add
   German-only pages or links to pages that do not exist. Do not rename existing story slugs, `storyId`s or skill ids.
 - Do not reformat or refactor files you are not changing. Do not edit the UX spec or roadmap docs except the

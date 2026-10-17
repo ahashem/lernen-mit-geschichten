@@ -121,7 +121,8 @@ Node >= 24.
   a production build never shows them).
 - **Stories.** `src/content.config.ts` defines `stories` (one Markdown file per locale, joined by `storyId`). Language-neutral fields (`band`, `cover`, `frames`, `palette`,
   `art`) live only in the German file and are read through `getStoryMeta()`; other locales carry `coverAlt` and
-  `frameAlts`. `.pages.yml` configures the CMS from this schema. Astro 7 semantics:
+  `frameAlts`. `.pages.yml` configures the CMS from this schema; a field added, renamed or removed in
+  `src/content.config.ts` has to be mirrored there (an agent notes it in the PR; the owner edits `.pages.yml`). Astro 7 semantics:
   `entry.id` (includes the locale, `de/bruno`) and `render(entry)`. Both story routes render
   `components/reader/StoryPage.astro`: a cover, then a page-by-page storybook for bands 1-2 (`reader.ts`), an end
   screen with talk cards, and the full text (also the no-JS view). Pages come from `---` breaks, else are derived

@@ -122,6 +122,11 @@ content:
     label: Deutsch (Quelle)
     type: collection
     path: src/content/stories/de
+    subfolders: false
+    operations:
+      create: true
+      rename: false
+      delete: false
     filename: '{storyId}.md'
     view:
       fields: [title, storyId, status, band]
@@ -155,8 +160,8 @@ content:
           default: '📖',
         }
       - { name: skills, component: skills }
-      - { name: summary, type: text, label: Summary (1-2 sentences) }
-      - { name: keyMessage, type: text, label: The one idea }
+      - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
+      - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
           name: body,
           type: rich-text,
@@ -215,6 +220,11 @@ content:
     label: English
     type: collection
     path: src/content/stories/en
+    subfolders: false
+    operations:
+      create: true
+      rename: false
+      delete: false
     filename: '{storyId}.md'
     view:
       fields: [title, storyId, status, reviewedBy]
@@ -250,8 +260,8 @@ content:
           default: '📖',
         }
       - { name: skills, component: skills }
-      - { name: summary, type: text, label: Summary (1-2 sentences) }
-      - { name: keyMessage, type: text, label: The one idea }
+      - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
+      - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
           name: body,
           type: rich-text,
@@ -273,6 +283,11 @@ content:
     label: العربية
     type: collection
     path: src/content/stories/ar
+    subfolders: false
+    operations:
+      create: true
+      rename: false
+      delete: false
     filename: '{storyId}.md'
     view:
       fields: [title, storyId, status, reviewedBy]
@@ -308,8 +323,8 @@ content:
           default: '📖',
         }
       - { name: skills, component: skills }
-      - { name: summary, type: text, label: Summary (1-2 sentences) }
-      - { name: keyMessage, type: text, label: The one idea }
+      - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
+      - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
           name: body,
           type: rich-text,
@@ -331,6 +346,11 @@ content:
     label: Türkçe
     type: collection
     path: src/content/stories/tr
+    subfolders: false
+    operations:
+      create: true
+      rename: false
+      delete: false
     filename: '{storyId}.md'
     view:
       fields: [title, storyId, status, reviewedBy]
@@ -366,8 +386,8 @@ content:
           default: '📖',
         }
       - { name: skills, component: skills }
-      - { name: summary, type: text, label: Summary (1-2 sentences) }
-      - { name: keyMessage, type: text, label: The one idea }
+      - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
+      - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
           name: body,
           type: rich-text,
@@ -389,6 +409,11 @@ content:
     label: اردو
     type: collection
     path: src/content/stories/ur
+    subfolders: false
+    operations:
+      create: true
+      rename: false
+      delete: false
     filename: '{storyId}.md'
     view:
       fields: [title, storyId, status, reviewedBy]
@@ -424,8 +449,8 @@ content:
           default: '📖',
         }
       - { name: skills, component: skills }
-      - { name: summary, type: text, label: Summary (1-2 sentences) }
-      - { name: keyMessage, type: text, label: The one idea }
+      - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
+      - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
           name: body,
           type: rich-text,
