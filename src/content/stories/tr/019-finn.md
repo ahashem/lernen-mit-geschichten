@@ -3,13 +3,9 @@ title: "Finn ve Dev Ceviz"
 emoji: "🌰"
 skills: ["teamwork", "cooperation"]
 ageGroup: "3-7"
-band: 2
-languages: ["tr"]
 storyId: "019-finn"
 publishDate: 2024-01-15
-characterType: "raccoon"
 difficulty: "beginner"
-estimatedReadTime: 3
 questions:
   - id: "tf1"
     text: "Finn ormanda dev bir ceviz buldu."

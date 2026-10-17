@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import StoryCard from '../components/StoryCard.astro';
 import SearchBar from '../components/SearchBar.astro';
 import FilterSidebar from '../components/FilterSidebar.astro';
-import { getPublishedStories, getStoryAvailability } from '@utils/stories';
+import { getPublishedStories, getStoryAvailability, readMinutes } from '@utils/stories';
 import { getTranslation } from '@utils/i18n';
 
 const locale = 'de';
@@ -56,12 +56,10 @@ const availability = await getStoryAvailability();
                   skills={story.data.skills}
                   availableLocales={availability.get(story.data.storyId) ?? [locale]}
                   storyId={story.data.storyId}
-                  estimatedReadTime={story.data.estimatedReadTime}
+                  estimatedReadTime={readMinutes(story.body)}
                   locale={locale}
                   slug={story.id.replace('de/', '')}
-                  isInteractive={story.data.storyFormat === 'interactive'}
-                  provider={story.data.provider}
-                  providerUrl={story.data.providerUrl}
+                  isInteractive={!!story.data.pages}
                   publishDate={story.data.publishDate}
                 />
               ))}

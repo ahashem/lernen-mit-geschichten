@@ -3,13 +3,9 @@ title: "Timmi und die Zauberuhr"
 emoji: "⏰"
 skills: ["time-management", "organization"]
 ageGroup: "3-7"
-band: 1
-languages: ["de"]
 storyId: "018-timmi-zauberuhr"
 publishDate: 2024-01-15
-characterType: "boy"
 difficulty: "beginner"
-estimatedReadTime: 3
 questions:
   - id: "tf1"
     text: "Timmi wollte den ganzen Tag spielen."

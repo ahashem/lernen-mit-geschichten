@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import StoryCard from '../../components/StoryCard.astro';
 import SearchBar from '../../components/SearchBar.astro';
 import FilterSidebar from '../../components/FilterSidebar.astro';
-import { getPublishedStories, getStoryAvailability } from '@utils/stories';
+import { getPublishedStories, getStoryAvailability, readMinutes } from '@utils/stories';
 import type { Locale } from '../../utils/i18n';
 import { getTranslation } from '../../utils/i18n';
 
@@ -88,21 +88,15 @@ const description = hero.text;
             <div class="stories-grid">
               {stories.map(story => (
                 <StoryCard
-                  title={
-                    (story.data[
-                      `title${locale.charAt(0).toUpperCase() + locale.slice(1)}` as keyof typeof story.data
-                    ] as string) || story.data.title
-                  }
+                  title={story.data.title}
                   emoji={story.data.emoji}
                   skills={story.data.skills}
                   availableLocales={availability.get(story.data.storyId) ?? [locale]}
                   storyId={story.data.storyId}
-                  estimatedReadTime={story.data.estimatedReadTime}
+                  estimatedReadTime={readMinutes(story.body)}
                   locale={locale}
                   slug={story.id.replace(`${locale}/`, '')}
-                  isInteractive={story.data.storyFormat === 'interactive'}
-                  provider={story.data.provider}
-                  providerUrl={story.data.providerUrl}
+                  isInteractive={!!story.data.pages}
                   publishDate={story.data.publishDate}
                 />
               ))}

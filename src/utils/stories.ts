@@ -27,3 +27,17 @@ export async function getPublishedStories(filter?: (entry: Story) => boolean): P
 export async function getStoryAvailability() {
   return localesByStoryId(await getPublishedStories());
 }
+
+export type StoryMeta = CollectionEntry<'story-meta'>['data'];
+
+/** Language-neutral part of a story (band, art), or undefined when no meta file exists yet. */
+export async function getStoryMeta(storyId: string): Promise<StoryMeta | undefined> {
+  const entries = await getCollection('story-meta');
+  return entries.find(e => e.data.storyId === storyId)?.data;
+}
+
+/** Derived from the text, never hand-entered: 150 words a minute for a child being read to. */
+export function readMinutes(body: string | undefined): number {
+  const words = (body ?? '').split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 150));
+}

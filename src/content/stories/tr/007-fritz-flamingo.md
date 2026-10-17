@@ -3,13 +3,9 @@ title: "Fritz Flamingo Düzeni Öğreniyor"
 emoji: "🦩"
 skills: ["organization", "responsibility"]
 ageGroup: "3-7"
-band: 1
-languages: ["tr"]
 storyId: "007-fritz-flamingo"
 publishDate: 2024-01-15
-characterType: "flamingo"
 difficulty: "beginner"
-estimatedReadTime: 3
 questions:
   - id: "tf1"
     text: "Fritz her şeyi aynı anda yapmak istiyordu."

@@ -3,13 +3,9 @@ title: "لینا اور بڑا بسکٹ"
 emoji: "🍪"
 skills: ["patience", "delayed-gratification"]
 ageGroup: "3-7"
-band: 1
-languages: ["ur"]
 storyId: "003-lina"
 publishDate: 2024-01-15
-characterType: "girl"
 difficulty: "beginner"
-estimatedReadTime: 3
 ---
 
 کہانی کا پیغام

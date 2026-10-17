@@ -3,13 +3,9 @@ title: "Timmi Thinks Before He Acts"
 emoji: "🧠"
 skills: ["critical-thinking", "decision-making"]
 ageGroup: "3-7"
-band: 1
-languages: ["en"]
 storyId: "020-timmi-denkt"
 publishDate: 2024-01-15
-characterType: "boy"
 difficulty: "beginner"
-estimatedReadTime: 3
 ---
 
 ## The Story

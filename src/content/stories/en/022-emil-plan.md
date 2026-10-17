@@ -3,13 +3,9 @@ title: "Emil and the Crazy Plan"
 emoji: "📝"
 skills: ["planning", "problem-solving"]
 ageGroup: "3-7"
-band: 2
-languages: ["en"]
 storyId: "022-emil-plan"
 publishDate: 2024-01-15
-characterType: "boy"
 difficulty: "beginner"
-estimatedReadTime: 3
 questions:
   - id: "tf1"
     text: "Emil wanted to bake a big chocolate cake."

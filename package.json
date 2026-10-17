@@ -12,7 +12,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "quality": "npm run format:check && npm run lint && npm run test",
+    "quality": "npm run format:check && npm run lint && npm run test && node scripts/publish-gates.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

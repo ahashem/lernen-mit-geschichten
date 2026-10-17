@@ -3,13 +3,9 @@ title: "میلا اور خواہش کا غبارہ"
 emoji: "🎈"
 skills: ["communication", "emotional-expression"]
 ageGroup: "3-7"
-band: 1
-languages: ["ur"]
 storyId: "005-mila"
 publishDate: 2024-01-15
-characterType: "girl"
 difficulty: "beginner"
-estimatedReadTime: 3
 questions:
   - id: "mc1"
     text: "میلا پہلے کیا کھیلنا چاہتی تھی؟"
