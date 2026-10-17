@@ -131,9 +131,7 @@ Consistency levers, in order of strength:
 - **Master ratio 3:2** (3000 × 2000). Keep a **safe area** in which every important element sits
   inside the central 4:3 (2667 × 2000) *and* the central 1:1 for portrait crops. Faces never sit
   within 8% of an edge.
-- **No text overlay by default.** Text lives in the reading band (03). Covers keep the **top 22%**
-  quiet (paper or a simple sky) in case a localised title overlay is used in print, which is
-  optional.
+- **No text in or over the image.** Text lives in the reading band (03) as HTML.
 - **Direction-neutral composition for RTL:** movement is staged toward the viewer, upward, or
   centre-out, rather than left-to-right. When a story needs lateral movement (a journey), commission
   **two variants** (`-ltr` and `-rtl`), each drawn and reviewed. A CSS flip is not allowed: it
@@ -206,8 +204,7 @@ duplicate character, cropped face, scary, gore, weapon, real person likeness, br
 {STYLE}. {PALETTE}. {BAND_{BAND}}.
 Book cover illustration for a story about {SKILL_IN_PLAIN_WORDS}.
 {CHARACTER_DESCRIPTOR_1}{, and CHARACTER_DESCRIPTOR_2}, {POSE_AND_ACTION}, feeling {EMOTION}.
-Setting: {SETTING}, sparse. Keep the top 22% of the image quiet and empty (plain paper or simple
-sky). Main subject inside the central square. Aspect ratio 3:2.
+Setting: {SETTING}, sparse. Main subject inside the central square. Aspect ratio 3:2.
 References: character sheet {CHAR_ID}_{BAND} (front, three-quarter).
 Negative: {NEGATIVE}
 ```
