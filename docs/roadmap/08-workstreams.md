@@ -20,6 +20,58 @@ $9.** A run stops when its scope is done or its budget is spent, whichever is fi
   tests unless they guard data loss, filtering or the publish gates.
 - The old backlog (`origin/catchup/44-commits`) is a quarry for ideas and code to rewrite, never to merge (`09`).
 
+## Do not
+
+The failure modes of an autonomous agent with merge rights. If a requirement seems to force one of these, stop and
+record it in `ux/07-open-questions.md` or the run report; do not improvise.
+
+**Content and assets**
+
+- Do not write or edit story content: text, titles, summaries, key messages, quiz or discussion questions,
+  translations, `band`. Frontmatter migrations are mechanical (rename, move, remove fields); never change a value or
+  a body.
+- Do not generate, download, hotlink or commit images, audio or video, and never use placeholder services. Missing
+  art uses the generated fallback. Do not special-case Bruno (or any `storyId`) in code.
+- Do not hide existing stories because they lack new fields. Publish gates report counts for what existing stories
+  lack (`summary`, `keyMessage`, `reviewedBy`) and fail only with `CONTENT_STRICT=1`, which the owner switches on
+  later. Missing summaries fall back to a derived first sentence at render time and are never stored.
+
+**Scope**
+
+- Do not start work from another run, and do not build the CMS (no `.pages.yml`, Keystatic, Drive import).
+- Do not merge, rebase or cherry-pick `catchup/44-commits` or the old stash; rewrite an idea from it if the run
+  needs one.
+- Do not reintroduce games, points, stars, streaks, badges, read counts, leaderboards, shops, pets, quests,
+  stickers, autoplay of the next story, or "come back tomorrow" copy.
+- Do not touch production or hosting: `.htaccess`, deploy logic in `astro.config.mjs`, `.github/workflows/*`,
+  repository settings, branch protection, secrets, Dependabot. Do not verify production.
+
+**Privacy and dependencies**
+
+- Do not add accounts, a backend, cookies, analytics, or any third-party request (CDNs, web fonts, embeds). Do not
+  remove or extend GTM. Recordings and bookmarks never leave the device.
+- Do not add a CSS framework, a third UI framework, animation libraries, or any dependency beyond self-hosted font
+  packages without saying why in the PR. Interaction JS stays under 60 KB gzip per page. Do not bump major
+  versions or run `npm audit fix --force`.
+
+**Code and repo hygiene**
+
+- Do not call `getCollection('stories')` directly, disable ESLint rules, skip or weaken tests, use `--no-verify`,
+  add a `prebuild` script, rename `build`, force-push, rewrite `main`, or delete branches and tags you did not
+  create.
+- Do not hardcode UI text, domains or the base path; every internal URL goes through `BASE_PATH`. Do not add
+  German-only pages or links to pages that do not exist. Do not rename existing story slugs, `storyId`s or skill ids.
+- Do not reformat or refactor files you are not changing. Do not edit the UX spec or roadmap docs except the
+  "Next" list, open questions and keeping `AGENTS.md` true. Do not create other documentation, notes or summary files,
+  and do not commit screenshots or scratch output.
+- Do not enable `PUBLIC_OFFLINE`; it ships off.
+
+**Cost and honesty**
+
+- Do not read more than the run lists, re-read files you have, take screenshots in loops, rerun Lighthouse
+  repeatedly, or fan out sub-agents. Do not merge on red or pending checks. Do not leave a PR half done when you
+  stop. Do not report something as verified that you did not verify.
+
 ## Ship, verify, tag (after every PR)
 
 1. `gh pr checks <n> --watch`; squash-merge only when green. This is the only test gate.
@@ -29,10 +81,15 @@ $9.** A run stops when its scope is done or its budget is spent, whichever is fi
    (Playwright) only for the screens you changed in `de`, `en` and `ar` at 375 px, and locate by role and label
    (`getByRole`), not test ids: the accessibility rules already require every control to have an accessible name.
    If a browser is not available, inspect the built HTML.
-4. Tag the verified commit `roadmap-runN-<name>`. If it is broken, fix forward in a small PR or revert the merge.
-   The site has no active visitors yet, so there is no backward-compatibility burden.
+4. Tag every verified feature with an annotated tag named for the milestone and the user-facing feature, not the
+   run: `m1-storybook`, `m1-foundation`, `m2-chapter-reader`, `m3-class-room`. The one-line tag message says what a
+   reader can now do (`git tag -a m1-storybook -m "Bands 1-2 storybook with narration and word highlight"`). When a
+   milestone's scope is complete, tag that commit with the milestone slug from `README.md`
+   (`m1-story-worth-opening`, `m2-grows-with-the-child`, `m3-classroom-and-world`). Maintainers use these tags as
+   restore points and as release history. If a merge is broken, fix forward in a small PR or revert it. The site has
+   no active visitors yet, so there is no backward-compatibility burden.
 
-## Run 1 — A story worth opening (about $11)
+## Run 1 — M1: A story worth opening (about $11)
 
 Value: Leyla and Maria. One story, read in two ways, looks and sounds finished, with or without art.
 
@@ -49,7 +106,7 @@ Read: `02-content-model.md`; `04-reader-and-discovery.md` Reading table; `ux/01`
 system, Typography, Spacing, Paste-ready tokens; `ux/03` §4, §5, §7, §8, §9, §15; `ux/04` all; `ux/05` Screen-reader
 experience, Pre-reader navigation, Second-language readers, RTL mirroring; `06-reach-and-trust.md` Privacy.
 
-## Run 2 — It grows with the child (about $10)
+## Run 2 — M2: It grows with the child (about $10)
 
 Value: a 4-year-old and an 11-year-old each land on a home that fits, and find a story fast.
 
@@ -60,7 +117,7 @@ Value: a 4-year-old and an 11-year-old each land on a home that fits, and find a
 Read: `04-reader-and-discovery.md` Discovery table; `ux/03` §1a, §1b, §2, §3, §5b, §6, §13, §14; `ux/05` Text
 expansion, Arabic and Urdu pitfalls, Dyslexia options; `ux/01` Voice and tone.
 
-## Run 3 — Ready for the classroom and the world (about $9)
+## Run 3 — M3: Ready for the classroom and the world (about $9)
 
 Value: Thomas and Frau Yıldız can use it in class, and everyone can trust it.
 

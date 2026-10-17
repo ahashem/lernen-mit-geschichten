@@ -62,7 +62,11 @@ from `---` breaks in the Markdown (and chapters from `##` headings); `pages[]` s
 override. The draft `de/001-bruno-interactive.md` folds into `001-bruno` (one `storyId`, frames mapped to pages).
 The CMS is being configured in parallel against this schema; treat field names as a contract.
 
-## Publish gates (build or CMS validation, not convention)
+## Publish gates
+
+Phase-in: the existing stories lack `summary`, `keyMessage` and `reviewedBy`. Gates therefore _report_ what is
+missing (counts per locale in the build log) and fail only when `CONTENT_STRICT=1`; the owner turns that on once
+content is complete. No story disappears because a new field is empty. (build or CMS validation, not convention)
 
 A translation can be `published` only if: story meta exists and is `published`; 1–3 valid skills; non-empty title,
 summary, keyMessage and body; every image present has alt text; `reviewedBy` is set unless the locale is `de`;
