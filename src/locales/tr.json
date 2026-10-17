@@ -42,5 +42,6 @@
   "fontSize": "Yazı Boyutu",
   "textToSpeech": "Sesli Oku",
   "settings": "Ayarlar",
-  "notFoundHeading": "Hoppala! Bu kitap rafta yok."
+  "notFoundHeading": "Hoppala! Bu kitap rafta yok.",
+  "skipToContent": "İçeriğe geç"
 }
