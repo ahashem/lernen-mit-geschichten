@@ -1,0 +1,269 @@
+settings:
+  content: true # keep frontmatter the forms do not show
+  commit:
+    identity: app # the repo is public: never put a moderator's email in git history
+    templates:
+      create: "content: add {path}"
+      update: "content: update {path}"
+      delete: "content: remove {path}"
+      rename: "content: rename {oldPath} to {newPath}"
+
+media:
+  - name: art
+    label: Story art
+    input: public/assets/stories
+    output: /assets/stories
+    extensions: [webp, png, svg]
+    rename: false
+  - name: audio
+    label: Narration audio
+    input: public/assets/audio
+    output: /assets/audio
+    extensions: [m4a, opus, json]
+    rename: false
+
+components:
+  questions:
+    type: object
+    label: Questions
+    description: Talk prompts. Nothing is scored.
+    list:
+      collapsible:
+        collapsed: true
+        summary: "{fields.text}"
+    fields:
+      - { name: id, type: string, label: Id, required: true, description: "Short and unique within the story, e.g. q1" }
+      - { name: text, type: text, label: Question, required: true }
+      - name: type
+        type: select
+        label: Kind
+        required: true
+        options:
+          values: [truefalse, multiplechoice, fillinblank]
+      - { name: correctAnswer, type: string, label: Answer the story supports }
+      - { name: options, type: string, label: Choices, list: true }
+  discussion:
+    type: text
+    label: Questions for the grown-up
+    list: true
+  narration:
+    type: object
+    label: Narration
+    fields:
+      - { name: audio, type: string, label: Audio folder name }
+      - { name: narrator, type: string, label: Narrator credit }
+      - { name: consent, type: string, label: Narrator consent note }
+      - { name: timing, type: boolean, label: Word timings (nn.json) exist, default: false }
+  pages:
+    type: object
+    label: Pages
+    description: One item per page. Leave empty for chapter stories.
+    list:
+      collapsible:
+        collapsed: true
+        summary: "{index}"
+    fields:
+      - { name: text, type: text, label: Words on this page, required: true }
+      - { name: image, type: string, hidden: true }
+
+content:
+  - name: stories-de
+    label: Deutsch (Quelle)
+    type: collection
+    path: src/content/stories/de
+    filename: "{storyId}.md"
+    view:
+      fields: [title, storyId, status]
+      primary: title
+      sort: [storyId, title]
+      default:
+        sort: storyId
+        order: asc
+    fields:
+      - name: storyId
+        type: string
+        label: Story id
+        required: true
+        description: Same in every language. Never change it after publishing.
+        pattern:
+          regex: "^[0-9]{3}-[a-z0-9-]+$"
+          message: "Use three digits, a dash and a lowercase name, e.g. 023-nora"
+      - name: status
+        type: select
+        label: Status
+        default: draft
+        options:
+          values: [draft, published]
+      - { name: title, type: string, label: Title, required: true }
+      - { name: emoji, type: string, label: Emoji, required: true }
+      - { name: skills, type: string, label: Skills (1 to 3 ids), list: true, required: true }
+      - { name: summary, type: text, label: Summary (1-2 sentences) }
+      - { name: keyMessage, type: text, label: The one idea }
+      - { name: pages, component: pages }
+      - { name: body, type: rich-text, label: Text (chapter stories) }
+      - { name: questions, component: questions }
+      - { name: discussion, component: discussion }
+      - { name: narration, component: narration }
+      - { name: publishDate, type: date, label: First published }
+      - { name: reviewedBy, type: string, label: Reviewed by }
+      - { name: reviewedAt, type: date, label: Reviewed on }
+  - name: stories-en
+    label: English
+    type: collection
+    path: src/content/stories/en
+    filename: "{storyId}.md"
+    view:
+      fields: [title, storyId, status]
+      primary: title
+      sort: [storyId, title]
+      default:
+        sort: storyId
+        order: asc
+    fields:
+      - name: storyId
+        type: string
+        label: Story id
+        required: true
+        description: Same in every language. Never change it after publishing.
+        pattern:
+          regex: "^[0-9]{3}-[a-z0-9-]+$"
+          message: "Use three digits, a dash and a lowercase name, e.g. 023-nora"
+      - name: status
+        type: select
+        label: Status
+        default: draft
+        options:
+          values: [draft, published]
+      - { name: title, type: string, label: Title, required: true }
+      - { name: emoji, type: string, label: Emoji, required: true }
+      - { name: skills, type: string, label: Skills (1 to 3 ids), list: true, required: true }
+      - { name: summary, type: text, label: Summary (1-2 sentences) }
+      - { name: keyMessage, type: text, label: The one idea }
+      - { name: pages, component: pages }
+      - { name: body, type: rich-text, label: Text (chapter stories) }
+      - { name: questions, component: questions }
+      - { name: discussion, component: discussion }
+      - { name: narration, component: narration }
+      - { name: publishDate, type: date, label: First published }
+      - { name: reviewedBy, type: string, label: Reviewed by }
+      - { name: reviewedAt, type: date, label: Reviewed on }
+  - name: stories-ar
+    label: العربية
+    type: collection
+    path: src/content/stories/ar
+    filename: "{storyId}.md"
+    view:
+      fields: [title, storyId, status]
+      primary: title
+      sort: [storyId, title]
+      default:
+        sort: storyId
+        order: asc
+    fields:
+      - name: storyId
+        type: string
+        label: Story id
+        required: true
+        description: Same in every language. Never change it after publishing.
+        pattern:
+          regex: "^[0-9]{3}-[a-z0-9-]+$"
+          message: "Use three digits, a dash and a lowercase name, e.g. 023-nora"
+      - name: status
+        type: select
+        label: Status
+        default: draft
+        options:
+          values: [draft, published]
+      - { name: title, type: string, label: Title, required: true }
+      - { name: emoji, type: string, label: Emoji, required: true }
+      - { name: skills, type: string, label: Skills (1 to 3 ids), list: true, required: true }
+      - { name: summary, type: text, label: Summary (1-2 sentences) }
+      - { name: keyMessage, type: text, label: The one idea }
+      - { name: pages, component: pages }
+      - { name: body, type: rich-text, label: Text (chapter stories) }
+      - { name: questions, component: questions }
+      - { name: discussion, component: discussion }
+      - { name: narration, component: narration }
+      - { name: publishDate, type: date, label: First published }
+      - { name: reviewedBy, type: string, label: Reviewed by }
+      - { name: reviewedAt, type: date, label: Reviewed on }
+  - name: stories-tr
+    label: Türkçe
+    type: collection
+    path: src/content/stories/tr
+    filename: "{storyId}.md"
+    view:
+      fields: [title, storyId, status]
+      primary: title
+      sort: [storyId, title]
+      default:
+        sort: storyId
+        order: asc
+    fields:
+      - name: storyId
+        type: string
+        label: Story id
+        required: true
+        description: Same in every language. Never change it after publishing.
+        pattern:
+          regex: "^[0-9]{3}-[a-z0-9-]+$"
+          message: "Use three digits, a dash and a lowercase name, e.g. 023-nora"
+      - name: status
+        type: select
+        label: Status
+        default: draft
+        options:
+          values: [draft, published]
+      - { name: title, type: string, label: Title, required: true }
+      - { name: emoji, type: string, label: Emoji, required: true }
+      - { name: skills, type: string, label: Skills (1 to 3 ids), list: true, required: true }
+      - { name: summary, type: text, label: Summary (1-2 sentences) }
+      - { name: keyMessage, type: text, label: The one idea }
+      - { name: pages, component: pages }
+      - { name: body, type: rich-text, label: Text (chapter stories) }
+      - { name: questions, component: questions }
+      - { name: discussion, component: discussion }
+      - { name: narration, component: narration }
+      - { name: publishDate, type: date, label: First published }
+      - { name: reviewedBy, type: string, label: Reviewed by }
+      - { name: reviewedAt, type: date, label: Reviewed on }
+  - name: stories-ur
+    label: اردو
+    type: collection
+    path: src/content/stories/ur
+    filename: "{storyId}.md"
+    view:
+      fields: [title, storyId, status]
+      primary: title
+      sort: [storyId, title]
+      default:
+        sort: storyId
+        order: asc
+    fields:
+      - name: storyId
+        type: string
+        label: Story id
+        required: true
+        description: Same in every language. Never change it after publishing.
+        pattern:
+          regex: "^[0-9]{3}-[a-z0-9-]+$"
+          message: "Use three digits, a dash and a lowercase name, e.g. 023-nora"
+      - name: status
+        type: select
+        label: Status
+        default: draft
+        options:
+          values: [draft, published]
+      - { name: title, type: string, label: Title, required: true }
+      - { name: emoji, type: string, label: Emoji, required: true }
+      - { name: skills, type: string, label: Skills (1 to 3 ids), list: true, required: true }
+      - { name: summary, type: text, label: Summary (1-2 sentences) }
+      - { name: keyMessage, type: text, label: The one idea }
+      - { name: pages, component: pages }
+      - { name: body, type: rich-text, label: Text (chapter stories) }
+      - { name: questions, component: questions }
+      - { name: discussion, component: discussion }
+      - { name: narration, component: narration }
+      - { name: publishDate, type: date, label: First published }
+      - { name: reviewedBy, type: string, label: Reviewed by }
+      - { name: reviewedAt, type: date, label: Reviewed on }
