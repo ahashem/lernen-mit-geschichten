@@ -76,18 +76,27 @@ A story is **launch-ready** at `de` plus two reviewed translations. It is **feat
 
 ## Assets
 
-| Kind      | Format and size                                                                                                                                              | Naming (under `public/assets/stories/{storyId}/`)  |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
-| Cover     | WebP or AVIF, 1600×1200 (4:3), ≤ 300 KB; JPEG fallback                                                                                                       | `cover.webp`                                       |
-| Line art  | SVG or PNG, 1600×1200, closed shapes. **The master**: every colour frame is built on its own line drawing, so a frame and its printable page are one picture | `line-01.svg` …                                    |
-| Frames    | WebP, 1600×1200, ≤ 250 KB each (coloured over the line art)                                                                                                  | `frame-01.webp` …                                  |
-| Colouring | The line art itself, at print scale, or a richer page for bands 3–4 (patterns, comic panels with empty speech bubbles, story map)                            | `colour-01.svg` …                                  |
-| Narration | Opus/AAC ≤ 64 kbps mono, plus MP3 fallback; `{locale}.m4a`                                                                                                   | `audio/{locale}.m4a`, `audio/{locale}.timing.json` |
-| Video     | WebM/MP4 ≤ 2 MB, muted loop, captioned                                                                                                                       | `video-01.webm`                                    |
+Naming and formats follow `ux/06-illustration-and-asset-style-guide.md` §7, which wins on any conflict. Masters (PNG,
+WAV) stay out of the repo; only web deliveries are committed.
+
+| Kind                    | Delivered as                                                               | Path under `public/assets/`                            |
+| ----------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Cover                   | WebP (AVIF optional), 1200 w, ≤ 120 KB                                     | `stories/{story-id}/{story-id}_cover.webp`             |
+| Colour frame            | WebP, 1200 w, ≤ 120 KB; drawn over its own line art                        | `stories/{story-id}/{story-id}_frame-{nn}_colour.webp` |
+| Line frame (**master**) | SVG, closed paths, ≤ 80 KB (bands 1–2), ≤ 250 KB (bands 3–4)               | `stories/{story-id}/{story-id}_frame-{nn}_line.svg`    |
+| Colouring or print page | SVG, A4, per band                                                          | `stories/{story-id}/{story-id}_print-{nn}_b{1-4}.svg`  |
+| Narration, one per page | Opus/WebM 48 kbps mono plus M4A fallback                                   | `audio/{locale}/{story-id}/{nn}.opus`, `{nn}.m4a`      |
+| Word timings, per page  | JSON `[{ "w", "start", "end" }]` from forced alignment; optional           | `audio/{locale}/{story-id}/{nn}.json`                  |
+| Provenance              | One `manifest.json` per story: tool, model, seed, prompt, reviewer, checks | `stories/{story-id}/manifest.json`                     |
+
+`{nn}` is the page or frame number, two digits, and pages and frames pair by number. A page without a frame uses the
+generated fallback; a page without audio simply has no narration; audio without timings plays without word
+highlight (sentence highlight on device voices). Both are valid states the reader must handle, so a story can be
+published partly illustrated.
 
 Rules: no text inside images; leave a calm region for text overlay; every image has alt text written for a
-screen-reader user, not a caption; provenance (`art`) recorded at the story level. Style, prompt templates and the
-review checklist live in `ux/06-illustration-and-asset-style-guide.md` and `03`.
+screen-reader user, not a caption, stored in `story-meta`; provenance lives in the manifest and `story-meta` points
+to it. Style, prompts and the review checklist are in `ux/06` and `03`.
 
 ## Migration
 

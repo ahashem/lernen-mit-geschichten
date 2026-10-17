@@ -142,8 +142,9 @@ Not in any run: Class room two-screen mode, My reading list, pre-built PDF class
   run 1 without noting it in the PR.
 - Generate the pilot art and audio (templates in `ux/06`); assign `band` to existing stories (`02`); native review
   of `review-queue.json`; invite moderators; the open decisions in `README.md`.
-- Pilot story **Bruno** (`001-bruno`): `cover.webp`, `line-NN.svg`, `frame-NN.webp`, `colour-NN.svg` and
-  `audio/{locale}.m4a` in `public/assets/stories/001-bruno/`.
+- Pilot story **Bruno** (`001-bruno`), assets as in `02` Assets: art in `public/assets/stories/001-bruno/`, German
+  narration in `public/assets/audio/de/001-bruno/`. A partial set (cover, a few frames, matching audio pages) is
+  enough: the reader must handle the gaps.
 
 ## Next
 
