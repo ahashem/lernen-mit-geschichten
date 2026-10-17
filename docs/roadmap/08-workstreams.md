@@ -5,8 +5,9 @@ Ordered work for an autonomous coding agent. **Budget: $30 hard cap; stop and re
 
 ## Rules
 
-- Serial, one squashed PR per workstream, one conventional subject line, `npm run quality` green before each PR.
-  Shared files (`InteractiveStorybook`, `ReadingControls`, the story page, `BaseLayout`) collide.
+- Serial. Each workstream is one or more small PRs, squashed into `main` with a single conventional subject line,
+  `npm run quality` green first. Shared files (`InteractiveStorybook`, `ReadingControls`, the story page,
+  `BaseLayout`) collide, so never run two workstreams at once.
 - **The UX spec in `ux/` defines the look.** Do not extend the existing CSS; replace it with the tokens and
   components the spec defines. Do not invent a style.
 - Every new page ships in all 5 locales. New UI keys: write `de` and `en`, draft `ar`/`tr`/`ur`, and list those
@@ -16,6 +17,39 @@ Ordered work for an autonomous coding agent. **Budget: $30 hard cap; stop and re
   tests unless they guard data loss, filtering or the publish gates.
 - The old backlog (`origin/catchup/44-commits`) is a source of ideas and code to rewrite, not to merge. See `09`.
 - If a browser (Playwright) is available, verify in it; otherwise build and inspect the HTML.
+
+## Ship, verify, tag
+
+Every merge to `main` deploys to both GitHub Pages (staging, `noindex`, under a subpath) and production
+(https://mitgeschichten.com/, root). The owner tagged `main` before this roadmap started (`pre-roadmap`), so a
+restore point exists. After each workstream:
+
+1. Merge only with CI green. Never skip hooks or tests.
+2. Wait for both deploys, then confirm each serves your commit: WS1 adds a `<meta name="build" content="<short
+sha>">` to `BaseLayout`; fetch the home page of both sites and compare.
+3. Verify on the live sites, not only in the PR: `node scripts/verify-build.mjs` against a fresh build, then a
+   browser pass (Playwright if available) over the screens you changed in `de`, `en` and `ar` at 375 px, plus a
+   check that a story page and the service worker still load.
+4. Tag the verified commit `roadmap-wsN-<name>`. Report the result in the PR or a comment.
+5. If verification fails, fix forward in a small PR if the cause is clear; otherwise revert the merge and retag
+   nothing. A service worker (WS5) must ship with a version stamp and an unregister path so a revert is not pinned
+   in returning visitors' browsers.
+
+## What to read (do not load `ux/` wholesale)
+
+`docs/roadmap/ux/` is about 21,000 words. Read only the rows for the workstream you are on; grep headings rather
+than opening whole files. `ux/06` (art) is not needed: you generate no images.
+
+| Workstream   | Read                                                                                                                                                                                                                                                     |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0 Audit      | `01-vision.md` (quality bars), `ux/README.md` (thesis, people)                                                                                                                                                                                           |
+| 1 Foundation | `ux/02` sections Colour system, Typography, Spacing, Paste-ready tokens; `ux/01` Reading bands; `02-content-model.md`; `06-reach-and-trust.md` (Privacy, Performance)                                                                                    |
+| 2 Reading    | `ux/03` §4 Story cover, §5 Storybook, §5b Chapter reader, §6, §7 End of story, §8 Two languages, §15 Settings; `ux/04` all; `ux/05` Screen-reader experience, Pre-reader navigation, Second-language readers; `04-reader-and-discovery.md` Reading table |
+| 3 Finding    | `ux/03` §1a Reader home, §1b Picture home, §2 Library, §3 Find by feeling; `04-reader-and-discovery.md` Discovery table                                                                                                                                  |
+| 4 Together   | `ux/03` §9 Lamp mode, §10 Class room, §11 Print and colouring; `05-parents-and-educators.md`                                                                                                                                                             |
+| 5 Trust      | `ux/03` §12 Offline, §13 Language switch, §14 System states; `ux/05` RTL mirroring, Arabic/Urdu pitfalls, Text expansion, Testing checklist; `06-reach-and-trust.md`                                                                                     |
+
+Always: `AGENTS.md`, this file, and `ux/README.md`'s "How to use this spec".
 
 ## Scope of the UX spec
 
