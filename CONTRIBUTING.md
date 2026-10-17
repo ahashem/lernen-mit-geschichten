@@ -39,7 +39,7 @@ We need help translating stories into our supported languages:
 **Translation Requirements:**
 
 - Professional or native-level proficiency in both source and target languages
-- Understanding of child-appropriate language (ages 3-7)
+- Understanding of child-appropriate language (ages 3-12, by reading level)
 - Cultural sensitivity and adaptation where necessary
 - **No machine translation** - all translations must be human-reviewed
 
@@ -57,7 +57,7 @@ We welcome original stories that teach children important life skills!
 
 **Story Requirements:**
 
-- Target age: 3-7 years
+- Target reader: set the story's `band` (1 Picture books to 4 Long reads, ages 3 to 12)
 - Length: 2-5 minutes reading time
 - Must map to 1-3 skills from our [58-skill taxonomy](./src/utils/skills-taxonomy.ts)
 - Include 3 types of interactive activities:
@@ -228,7 +228,7 @@ storyFormat: 'standard' # or "interactive"
 
 ### Content Quality Standards
 
-- **Age-Appropriate**: Language suitable for 3-7 year-olds
+- **Age-Appropriate**: Language suitable for the stated age range
 - **Positive Messaging**: Focus on solutions, not just problems
 - **Inclusive**: Diverse characters and situations
 - **Clear Moral**: Explicit connection to skills being taught
