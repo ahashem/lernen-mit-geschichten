@@ -1,0 +1,165 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { endonyms, getTranslation, isRTL, type Locale } from '@utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
+
+// The level belongs to the story, so these name shelves, never a child's ability.
+const shelves = [
+  {
+    id: 'picture',
+    title: t('shelfPicture'),
+    hint: t('shelfPictureHint'),
+    adult: t('shelfPictureAdult'),
+  },
+  {
+    id: 'readalong',
+    title: t('shelfReadAlong'),
+    hint: t('shelfReadAlongHint'),
+    adult: t('shelfReadAlongAdult'),
+  },
+  { id: 'chapter', title: t('shelfChapter'), hint: '', adult: t('shelfChapterAdult') },
+  { id: 'long', title: t('shelfLong'), hint: '', adult: t('shelfLongAdult') },
+  { id: 'mixed', title: t('shelfMixed'), hint: t('shelfMixedHint'), adult: '' },
+];
+const locales: Locale[] = ['de', 'ar', 'en', 'tr', 'ur'];
+---
+
+<BaseLayout title={t('settingsTitle')} locale={locale}>
+  <div class="container settings">
+    <h1>{t('settingsTitle')}</h1>
+    <p class="intro">{t('settingsIntro')}</p>
+
+    <fieldset class="shelves">
+      <legend class="visually-hidden">{t('settingsTitle')}</legend>
+      {
+        shelves.map(shelf => (
+          <label class="shelf surface">
+            <input type="radio" name="shelf" value={shelf.id} />
+            <span class="shelf-text">
+              <strong>{shelf.title}</strong>
+              {shelf.hint && <span>{shelf.hint}</span>}
+              {shelf.adult && <small>{shelf.adult}</small>}
+            </span>
+          </label>
+        ))
+      }
+    </fieldset>
+
+    <fieldset class="langs">
+      <legend>{t('languagesIRead')}</legend>
+      {
+        (['lang', 'second'] as const).map(which => (
+          <label class="lang-select">
+            {t(which === 'lang' ? 'firstLanguage' : 'secondLanguage')}
+            <select name={which}>
+              {which === 'second' && <option value="">{t('timerOff')}</option>}
+              {locales.map(loc => (
+                <option value={loc} lang={loc} dir={isRTL(loc) ? 'rtl' : 'ltr'}>
+                  {endonyms[loc]}
+                </option>
+              ))}
+            </select>
+          </label>
+        ))
+      }
+    </fieldset>
+
+    <p class="notice" role="status" data-saved hidden>{t('savedOnDevice')}</p>
+  </div>
+</BaseLayout>
+
+<script>
+  import { loadPrefs, savePrefs } from './reader/prefs';
+
+  const prefs = loadPrefs() as ReturnType<typeof loadPrefs> & { shelf?: string };
+  const saved = document.querySelector<HTMLElement>('[data-saved]');
+  const radios = document.querySelectorAll<HTMLInputElement>('input[name="shelf"]');
+  const selects = document.querySelectorAll<HTMLSelectElement>('select[name]');
+
+  for (const r of radios) r.checked = r.value === (prefs.shelf ?? 'mixed');
+  for (const s of selects) {
+    const value =
+      s.name === 'lang' ? (prefs.lang ?? document.documentElement.lang) : (prefs.second ?? '');
+    s.value = value;
+  }
+
+  document.addEventListener('change', e => {
+    const el = e.target as HTMLInputElement | HTMLSelectElement;
+    if (el.name === 'shelf') prefs.shelf = el.value;
+    else if (el.name === 'lang') prefs.lang = el.value;
+    else if (el.name === 'second') prefs.second = el.value || undefined;
+    else return;
+    savePrefs(prefs);
+    if (saved) saved.hidden = false;
+  });
+</script>
+
+<style>
+  .settings {
+    max-inline-size: 40rem;
+    display: grid;
+    gap: var(--s-5);
+  }
+
+  fieldset {
+    display: grid;
+    gap: var(--s-3);
+    border: 0;
+  }
+
+  legend {
+    font-weight: 700;
+    margin-block-end: var(--s-2);
+  }
+
+  .shelf {
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+    padding: var(--s-4);
+    min-block-size: var(--tap-child);
+    cursor: pointer;
+  }
+
+  .shelf input {
+    inline-size: 24px;
+    block-size: 24px;
+    accent-color: var(--accent);
+  }
+
+  .shelf:has(input:checked) {
+    outline: 3px solid var(--ink);
+  }
+
+  .shelf-text {
+    display: grid;
+    gap: var(--s-1);
+  }
+
+  .shelf-text small {
+    color: var(--ink-2);
+    font-size: var(--t-ui-sm);
+  }
+
+  .lang-select {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    min-block-size: var(--tap-adult);
+  }
+
+  .lang-select select {
+    min-block-size: var(--tap-adult);
+    padding-inline: var(--s-3);
+    border: 2px solid var(--edge);
+    border-radius: var(--r-s);
+    background: var(--card);
+  }
+</style>

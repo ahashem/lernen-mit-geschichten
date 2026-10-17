@@ -1,4 +1,5 @@
 import { fmt } from '@utils/i18n';
+import { applyTheme, loadPrefs, read, savePrefs, write } from './prefs';
 
 interface Timing {
   w: number;
@@ -11,68 +12,12 @@ interface ReaderData {
   locale: string;
   title: string;
   siteName: string;
-  language: string;
+  endonyms: Record<string, string>;
+  aligned: string[];
   audio: string[] | null;
   timings: (Timing[] | null)[] | null;
   pageCount: number;
   strings: Record<string, string>;
-}
-
-interface Prefs {
-  textStep: number;
-  spacing: boolean;
-  highlight: boolean;
-  autoTurn: boolean;
-  speed: number;
-  sleep: number;
-  theme: 'day' | 'lamp';
-  narrate: boolean;
-}
-
-const PREFS_KEY = 'reader-prefs';
-const DEFAULTS: Prefs = {
-  textStep: 0,
-  spacing: false,
-  highlight: true,
-  autoTurn: false,
-  speed: 1,
-  sleep: 0,
-  theme: 'day',
-  narrate: false,
-};
-
-// Device state only: nothing here is ever sent anywhere.
-const read = (key: string): string | null => {
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-};
-const write = (key: string, value: string | null) => {
-  try {
-    if (value === null) localStorage.removeItem(key);
-    else localStorage.setItem(key, value);
-  } catch {
-    /* storage can be blocked; the reader still works */
-  }
-};
-
-export function loadPrefs(): Prefs {
-  try {
-    return { ...DEFAULTS, ...JSON.parse(read(PREFS_KEY) ?? '{}') };
-  } catch {
-    return { ...DEFAULTS };
-  }
-}
-
-export function savePrefs(prefs: Prefs) {
-  write(PREFS_KEY, JSON.stringify(prefs));
-}
-
-export function applyTheme(prefs: Prefs) {
-  if (prefs.theme === 'lamp') document.documentElement.dataset.theme = 'lamp';
-  else delete document.documentElement.dataset.theme;
 }
 
 const $ = <T extends HTMLElement>(root: ParentNode, selector: string) =>
@@ -87,7 +32,9 @@ export function startReader() {
   if (!app || !dataEl) return;
   const data: ReaderData = JSON.parse(dataEl.textContent ?? '{}');
   const hasBook = app.dataset.hasBook === 'true';
-  const rtl = document.documentElement.dir === 'rtl';
+  const pageRtl = () => (book?.dir || document.documentElement.dir) === 'rtl';
+  const isRtl = (locale: string) => locale === 'ar' || locale === 'ur';
+  let pair: { first: string; second: string } | null = null;
   const t = data.strings;
   const prefs = loadPrefs();
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -162,7 +109,7 @@ export function startReader() {
     const forward = next > current;
     const out = pages[current];
     const into = pages[next];
-    const sign = (forward ? -1 : 1) * (rtl ? -1 : 1);
+    const sign = (forward ? -1 : 1) * (pageRtl() ? -1 : 1);
     stopNarration(true);
     into.hidden = false;
     const ms = dur();
@@ -242,12 +189,12 @@ export function startReader() {
     if (!keepState) setNarrating(false);
   }
 
-  async function voice(): Promise<SpeechSynthesisVoice | null> {
+  async function voice(locale: string): Promise<SpeechSynthesisVoice | null> {
     if (typeof speechSynthesis === 'undefined') return null;
     const find = () =>
       speechSynthesis
         .getVoices()
-        .find(v => v.lang.toLowerCase().replace('_', '-').split('-')[0] === data.locale) ?? null;
+        .find(v => v.lang.toLowerCase().replace('_', '-').split('-')[0] === locale) ?? null;
     const found = find();
     if (found) return found;
     await new Promise<void>(resolve => {
@@ -269,11 +216,11 @@ export function startReader() {
     }
   }
 
-  function playRecording(src: string, timings: Timing[] | null, mine: number) {
-    const words = $$(pages[current], '.w');
+  function playRecording(src: string, timings: Timing[] | null, mine: number, done: () => void) {
+    const words = $$(block(current, data.locale), '.w');
     audio.src = src;
     audio.playbackRate = prefs.speed;
-    audio.onended = () => pageDone(mine);
+    audio.onended = done;
     audio.onerror = () => {
       status(t.noSoundNow);
       setNarrating(false);
@@ -292,18 +239,18 @@ export function startReader() {
     raf = requestAnimationFrame(tick);
   }
 
-  async function speakSentences(mine: number) {
-    const chosen = await voice();
+  async function speakSentences(mine: number, locale: string, done: () => void) {
+    const chosen = await voice(locale);
     if (mine !== token) return;
     if (!chosen) {
-      status(fmt(t.noVoiceFor, { language: data.language }));
+      status(fmt(t.noVoiceFor, { language: data.endonyms[locale] }));
       setNarrating(false);
       return;
     }
-    const sentences = $$(pages[current], '.s');
+    const sentences = $$(block(current, locale), '.s');
     const next = (i: number) => {
       if (mine !== token) return;
-      if (i >= sentences.length) return pageDone(mine);
+      if (i >= sentences.length) return done();
       sentenceIndex = i;
       clearMarks();
       const sentence = sentences[i];
@@ -331,6 +278,9 @@ export function startReader() {
     next(sentenceIndex);
   }
 
+  const block = (page: number, locale: string) =>
+    $<HTMLElement>(pages[page], `[data-lang-block="${locale}"]`)!;
+
   const band1Pause = () => (app!.dataset.band === '1' ? 700 : 250);
 
   function startNarration(restart = false) {
@@ -340,9 +290,24 @@ export function startReader() {
     if (restart) sentenceIndex = 0;
     setNarrating(true);
     acquireWake();
-    const src = data.audio?.[current];
-    if (src) playRecording(src, data.timings?.[current] ?? null, mine);
-    else speakSentences(mine);
+    const order = pair
+      ? prefs.voice === 'first'
+        ? [pair.first]
+        : prefs.voice === 'second'
+          ? [pair.second]
+          : [pair.first, pair.second]
+      : [data.locale];
+    const speak = (n: number) => {
+      if (mine !== token) return;
+      if (n >= order.length) return pageDone(mine);
+      sentenceIndex = 0;
+      const locale = order[n];
+      const src = locale === data.locale ? data.audio?.[current] : undefined;
+      const next = () => speak(n + 1);
+      if (src) playRecording(src, data.timings?.[current] ?? null, mine, next);
+      else speakSentences(mine, locale, next);
+    };
+    speak(0);
     armSleep();
     setMediaSession();
   }
@@ -397,8 +362,9 @@ export function startReader() {
     const idx = Number(el.dataset.w);
     const timing = data.timings?.[current]?.find(x => x.w === idx);
     const src = data.audio?.[current];
+    const locale = el.closest<HTMLElement>('[data-lang-block]')?.dataset.langBlock ?? data.locale;
     stopNarration();
-    if (src && timing) {
+    if (src && timing && locale === data.locale) {
       audio.src = src;
       audio.currentTime = Math.max(0, timing.start - 0.03);
       const stop = () => {
@@ -411,14 +377,64 @@ export function startReader() {
       audio.play().catch(() => {});
       return;
     }
-    voice().then(chosen => {
-      if (!chosen) return status(fmt(t.noVoiceFor, { language: data.language }));
+    voice(locale).then(chosen => {
+      if (!chosen) return status(fmt(t.noVoiceFor, { language: data.endonyms[locale] }));
       const u = new SpeechSynthesisUtterance(el.textContent ?? '');
       u.voice = chosen;
       u.lang = chosen.lang;
       u.rate = prefs.speed;
       speechSynthesis.speak(u);
     });
+  }
+
+  /* ---- two languages ---- */
+  function applyPair() {
+    if (!book) return;
+    if (pair) app!.dataset.pair = '';
+    else delete app!.dataset.pair;
+    const first = pair?.first ?? data.locale;
+    if (pair) book.dir = isRtl(first) ? 'rtl' : 'ltr';
+    else book.removeAttribute('dir');
+    if (pair && isRtl(pair.first) === isRtl(pair.second)) app!.dataset.pairWide = '';
+    else delete app!.dataset.pairWide;
+    for (const el of $$(book, '[data-lang-block]')) {
+      const index = pair
+        ? [pair.first, pair.second].indexOf(el.dataset.langBlock!)
+        : el.dataset.langBlock === data.locale
+          ? 0
+          : -1;
+      el.hidden = index < 0;
+      el.style.order = String(index);
+    }
+  }
+
+  const radios = (which: string) => $$<HTMLInputElement>(app!, `input[name="pair-${which}"]`);
+  function syncRadios() {
+    const chosen = (which: string) => radios(which).find(r => r.checked)?.value;
+    for (const [mine, other] of [
+      ['first', 'second'],
+      ['second', 'first'],
+    ]) {
+      for (const r of radios(mine)) {
+        const unavailable = !data.aligned.includes(r.value);
+        r.disabled = unavailable || r.value === chosen(other);
+      }
+    }
+    $<HTMLButtonElement>(app!, '[data-action="start-pair"]')!.disabled =
+      !chosen('first') || !chosen('second');
+  }
+
+  function openPairSetup() {
+    closeMenu();
+    const first = prefs.lang && data.aligned.includes(prefs.lang) ? prefs.lang : data.locale;
+    const second =
+      prefs.second && prefs.second !== first && data.aligned.includes(prefs.second)
+        ? prefs.second
+        : data.aligned.find(l => l !== first);
+    for (const r of radios('first')) r.checked = r.value === first;
+    for (const r of radios('second')) r.checked = r.value === second;
+    syncRadios();
+    showView('pair');
   }
 
   /* ---- end, cards, lamp ---- */
@@ -439,7 +455,22 @@ export function startReader() {
 
   /* ---- wiring ---- */
   const actions: Record<string, () => void> = {
+    'pair-setup': openPairSetup,
+    'start-pair': () => {
+      const pick = (which: string) => radios(which).find(r => r.checked)?.value;
+      pair = { first: pick('first')!, second: pick('second')! };
+      prefs.lang = pair.first;
+      prefs.second = pair.second;
+      savePrefs(prefs);
+      applyPair();
+      current = resumePage();
+      showView('book');
+      syncPageUi();
+      offerRestart();
+    },
     'read-with-me': () => {
+      pair = null;
+      applyPair();
       current = resumePage();
       showView('book');
       syncPageUi();
@@ -447,6 +478,8 @@ export function startReader() {
       startNarration();
     },
     'read-myself': () => {
+      pair = null;
+      applyPair();
       current = resumePage();
       showView('book');
       syncPageUi();
@@ -556,11 +589,17 @@ export function startReader() {
       if (el.checked) status(t.lampTip);
     } else if (el.type === 'checkbox')
       (prefs as unknown as Record<string, unknown>)[key] = el.checked;
-    else (prefs as unknown as Record<string, unknown>)[key] = Number(el.value);
+    else
+      (prefs as unknown as Record<string, unknown>)[key] =
+        key === 'voice' ? el.value : Number(el.value);
     applyPrefs();
     savePrefs(prefs);
     if (key === 'sleep') armSleep();
     if (key === 'speed' && narrating) startNarration();
+  });
+
+  app.addEventListener('change', e => {
+    if ((e.target as HTMLInputElement).name?.startsWith('pair-')) syncRadios();
   });
 
   $<HTMLElement>(app, '[data-blackout]')?.addEventListener('click', () => lightsOut(false));
@@ -571,8 +610,8 @@ export function startReader() {
       lightsOut(false);
     }
     if (app!.dataset.view !== 'book' || (e.target as HTMLElement).closest('select, input')) return;
-    const forward = rtl ? 'ArrowLeft' : 'ArrowRight';
-    const back = rtl ? 'ArrowRight' : 'ArrowLeft';
+    const forward = pageRtl() ? 'ArrowLeft' : 'ArrowRight';
+    const back = pageRtl() ? 'ArrowRight' : 'ArrowLeft';
     if (e.key === forward) go(current + 1, true);
     else if (e.key === back) go(current - 1, true);
   });
@@ -602,7 +641,7 @@ export function startReader() {
     down = null;
     if (!start || (e.target as HTMLElement).closest('.w')) return;
     const dx = e.clientX - start.x;
-    const forward = rtl ? -1 : 1;
+    const forward = pageRtl() ? -1 : 1;
     if (Math.abs(dx) >= 48 && Math.abs(dx) > Math.abs(e.clientY - start.y)) {
       return go(current + (dx * forward < 0 ? 1 : -1));
     }
@@ -610,7 +649,7 @@ export function startReader() {
     if (!(e.target as HTMLElement).closest('.frame')) return;
     const frame = (e.target as HTMLElement).closest('.frame')!.getBoundingClientRect();
     const rel = (e.clientX - frame.left) / frame.width;
-    const startSide = rtl ? 1 - rel : rel;
+    const startSide = pageRtl() ? 1 - rel : rel;
     if (startSide < 0.25) go(current - 1);
     else if (startSide > 0.75) go(current + 1);
     else if (topbar?.classList.contains('is-quiet')) wake();

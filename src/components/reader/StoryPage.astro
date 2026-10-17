@@ -2,10 +2,10 @@
 import { render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { getPublishedStories, getStoryMeta, readMinutes } from '@utils/stories';
-import { endonyms, fmt, getTranslation, type Locale } from '@utils/i18n';
+import { endonyms, fmt, getTranslation, isRTL, type Locale } from '@utils/i18n';
 import { getSkillsByIds } from '@utils/skills-taxonomy';
 import { BASE_PATH } from '@utils/site';
-import { firstSentence, paginate, wordsOf } from '@utils/story-pages';
+import { alignTo, firstSentence, paginate, wordsOf, type BookPage } from '@utils/story-pages';
 import { coverOf, frameFor, narrationFor, paletteFor } from '@utils/story-art';
 import Icon from './Icon.astro';
 import StoryArt from './StoryArt.astro';
@@ -46,6 +46,16 @@ const otherLanguages = siblings.map(s => {
   };
 });
 
+// Every translation that can be cut into exactly these pages can be read beside this one.
+const aligned: Record<string, BookPage[]> = { [locale]: pages };
+for (const sibling of siblings) {
+  const loc = sibling.id.split('/')[0] as Locale;
+  const other = alignTo({ pages, explicit }, sibling.body ?? '', loc, band, sibling.data.pages);
+  if (other) aligned[loc] = other;
+}
+const allLocales: Locale[] = ['de', 'ar', 'en', 'tr', 'ur'];
+const canPair = hasBook && Object.keys(aligned).length >= 2;
+
 const keys = [
   'pageOf',
   'noVoiceFor',
@@ -62,7 +72,8 @@ const clientData = {
   locale,
   title,
   siteName: t('siteName'),
-  language: endonyms[locale],
+  endonyms,
+  aligned: Object.keys(aligned),
   audio: narration?.audio ?? null,
   timings: narration?.timings ?? null,
   pageCount: pages.length,
@@ -97,6 +108,11 @@ const description = summary || `${title} | ${t('siteName')}`;
                   <button class="btn" data-action="read-myself" type="button">
                     {t('readMyself')}
                   </button>
+                  {canPair && (
+                    <button class="btn" data-action="pair-setup" type="button">
+                      {t('twoLanguages')}
+                    </button>
+                  )}
                   <button class="btn" data-action="full-text" type="button">
                     {t('fullText')}
                   </button>
@@ -251,10 +267,23 @@ const description = summary || `${title} | ${t('siteName')}`;
                 ))}
               </select>
             </label>
+            <label class="menu-select" data-pair-only>
+              {t('voiceOrder')}
+              <select data-pref="voice">
+                <option value="both">{t('voiceBoth')}</option>
+                <option value="first">{t('voiceFirst')}</option>
+                <option value="second">{t('voiceSecond')}</option>
+              </select>
+            </label>
             <label class="menu-check">
               <input type="checkbox" data-pref="lamp" />
               {t('lampMode')}
             </label>
+            {canPair && (
+              <button class="btn" type="button" data-action="pair-setup">
+                {t('twoLanguages')}
+              </button>
+            )}
             <button class="btn" type="button" data-action="repeat">
               <Icon name="repeat" size={20} />
               {t('repeatPage')}
@@ -265,8 +294,7 @@ const description = summary || `${title} | ${t('siteName')}`;
           </div>
 
           <div class="pages">
-            {pages.map((page, i) => {
-              let w = 0;
+            {pages.map((_, i) => {
               return (
                 <section
                   class="page"
@@ -283,21 +311,37 @@ const description = summary || `${title} | ${t('siteName')}`;
                       eager={i === 0}
                     />
                   </div>
-                  <p class="story-text" lang={locale}>
-                    {page.sentences.map((sentence, s) => (
-                      <>
-                        <span class="s" data-s={s}>
-                          {wordsOf(sentence).map(word => (
-                            <>
-                              <span class="w" data-w={w++}>
-                                {word}
-                              </span>{' '}
-                            </>
-                          ))}
-                        </span>{' '}
-                      </>
-                    ))}
-                  </p>
+                  <div class="texts">
+                    {Object.entries(aligned).map(([loc, locPages]) => {
+                      let w = 0;
+                      return (
+                        <div
+                          class="text-block"
+                          data-lang-block={loc}
+                          lang={loc}
+                          dir={isRTL(loc as Locale) ? 'rtl' : 'ltr'}
+                          hidden={loc !== locale}
+                        >
+                          <p class="lang-label">{endonyms[loc as Locale]}</p>
+                          <p class="story-text">
+                            {locPages[i].sentences.map((sentence, s) => (
+                              <>
+                                <span class="s" data-s={s}>
+                                  {wordsOf(sentence).map(word => (
+                                    <>
+                                      <span class="w" data-w={w++}>
+                                        {word}
+                                      </span>{' '}
+                                    </>
+                                  ))}
+                                </span>{' '}
+                              </>
+                            ))}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </section>
               );
             })}
@@ -387,6 +431,49 @@ const description = summary || `${title} | ${t('siteName')}`;
                 </button>
               </article>
             ))}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      canPair && (
+        <section
+          class="view pair"
+          data-view="pair"
+          hidden
+          tabindex="-1"
+          aria-labelledby="pair-title"
+        >
+          <div class="container pair-inner">
+            <h2 id="pair-title">{t('twoLanguages')}</h2>
+            {(['first', 'second'] as const).map(which => (
+              <fieldset class="pair-group">
+                <legend>{t(which === 'first' ? 'firstLanguage' : 'secondLanguage')}</legend>
+                {allLocales.map(loc => (
+                  <label class="pair-choice">
+                    <input
+                      type="radio"
+                      name={`pair-${which}`}
+                      value={loc}
+                      disabled={!aligned[loc]}
+                    />
+                    <span lang={loc} dir={isRTL(loc) ? 'rtl' : 'ltr'}>
+                      {endonyms[loc]}
+                    </span>
+                    {!aligned[loc] && <small>{t('notYet')}</small>}
+                  </label>
+                ))}
+              </fieldset>
+            ))}
+            <div class="end-choices">
+              <button class="btn btn--primary btn--lg" type="button" data-action="start-pair">
+                {t('startPair')}
+              </button>
+              <button class="btn btn--lg" type="button" data-action="to-cover">
+                {t('backLabel')}
+              </button>
+            </div>
           </div>
         </section>
       )
@@ -691,6 +778,66 @@ const description = summary || `${title} | ${t('siteName')}`;
     background: var(--paper-2);
   }
 
+  .texts {
+    display: grid;
+    align-content: start;
+  }
+
+  .lang-label {
+    display: none;
+    color: var(--ink-2);
+    font-size: var(--t-ui-sm);
+    padding-inline: var(--gutter);
+    padding-block-start: var(--s-3);
+  }
+
+  .story-app[data-pair] .lang-label {
+    display: block;
+  }
+
+  .story-app[data-pair] .text-block + .text-block:not([hidden]) {
+    border-block-start: 1px solid var(--rule);
+  }
+
+  .story-app:not([data-pair]) [data-pair-only] {
+    display: none;
+  }
+
+  .pair-inner {
+    display: grid;
+    gap: var(--s-5);
+    padding-block: var(--s-6);
+    max-inline-size: 36rem;
+  }
+
+  .pair-group {
+    display: grid;
+    gap: var(--s-2);
+    border: 0;
+  }
+
+  .pair-group legend {
+    font-weight: 700;
+    margin-block-end: var(--s-2);
+  }
+
+  .pair-choice {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    min-block-size: var(--tap-adult);
+  }
+
+  .pair-choice input {
+    inline-size: 24px;
+    block-size: 24px;
+    accent-color: var(--accent);
+  }
+
+  .pair-choice small {
+    color: var(--ink-2);
+  }
+
   .story-text {
     align-self: stretch;
     padding: var(--s-5) var(--gutter);
@@ -973,6 +1120,25 @@ const description = summary || `${title} | ${t('siteName')}`;
     .story-text {
       align-self: center;
       background: none;
+    }
+
+    .story-app[data-pair-wide] .view.book .page {
+      grid-template-columns: none;
+      grid-template-rows: auto 1fr;
+    }
+
+    .story-app[data-pair-wide] .frame {
+      aspect-ratio: auto;
+      block-size: 40dvh;
+    }
+
+    .story-app[data-pair-wide] .texts {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-5);
+    }
+
+    .story-app[data-pair-wide] .text-block + .text-block:not([hidden]) {
+      border-block-start: 0;
     }
   }
 </style>
