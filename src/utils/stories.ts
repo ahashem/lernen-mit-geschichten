@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { localesByStoryId } from './story-availability';
 
 export type Story = CollectionEntry<'stories'>;
 
@@ -15,4 +16,14 @@ export async function getPublishedStories(filter?: (entry: Story) => boolean): P
     'stories',
     entry => entry.data.status !== 'draft' && (filter ? filter(entry) : true)
   );
+}
+
+/**
+ * Which locales each published story exists in, keyed by `storyId`.
+ *
+ * Drafts are excluded, so an unpublished translation does not advertise a
+ * language the visitor cannot actually read.
+ */
+export async function getStoryAvailability() {
+  return localesByStoryId(await getPublishedStories());
 }
