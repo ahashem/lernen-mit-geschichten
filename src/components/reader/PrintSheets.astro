@@ -67,7 +67,7 @@ const code = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
     frames.map(frame => (
       <section class="sheet colouring" data-sheet="pack">
         <div class="frame-art">
-          <img src={frame.src} alt="" />
+          <img src={frame.src} alt="" loading="lazy" decoding="async" />
         </div>
         <p class="foot">
           {title} · {t('siteName')} · {t('footerArt')}

@@ -247,6 +247,7 @@ const description = summary || `${title} | ${t('siteName')}`;
           aria-roledescription="storybook"
           aria-label={title}
         >
+          <h1 class="visually-hidden">{title}</h1>
           <div class="topbar" data-topbar>
             <a class="icon-btn" href={home} aria-label={t('home')}>
               <Icon name="home" size={28} />
@@ -552,6 +553,7 @@ const description = summary || `${title} | ${t('siteName')}`;
     {
       chapters.length > 0 && (
         <section class="view chapters" data-view="chapters" hidden tabindex="-1" aria-label={title}>
+          <h1 class="visually-hidden">{title}</h1>
           <header class="chapter-bar">
             <button class="btn" type="button" data-action="chapters-back" aria-label={t('toCover')}>
               <Icon name="prev" size={20} />
@@ -610,7 +612,14 @@ const description = summary || `${title} | ${t('siteName')}`;
             <div class="cr-shared" data-shared lang={locale} />
             <div class="cr-black" data-black hidden />
           </div>
-          <aside class="cr-notes" data-notes hidden aria-label={t('classNotes')}>
+          <div
+            class="cr-notes"
+            data-notes
+            hidden
+            role="group"
+            tabindex="0"
+            aria-label={t('classNotes')}
+          >
             <p class="cr-notes-text" data-notes-text />
             {prompts.length > 0 && (
               <>
@@ -623,7 +632,7 @@ const description = summary || `${title} | ${t('siteName')}`;
               </>
             )}
             <div class="cr-next" data-next-frame aria-hidden="true" />
-          </aside>
+          </div>
           <div class="cr-bar">
             <button class="btn" type="button" data-action="class-exit">
               {t('classExit')}
@@ -696,12 +705,6 @@ const description = summary || `${title} | ${t('siteName')}`;
 
 <script>
   import { startReader } from './reader';
-  import {
-    exportAsBooklet,
-    showExportProgress,
-    hideExportProgress,
-    detectOrientation,
-  } from '@utils/booklet-export';
 
   startReader();
 
@@ -720,6 +723,9 @@ const description = summary || `${title} | ${t('siteName')}`;
       const wasHidden = view.hidden;
       view.hidden = false;
       const locale = (button.dataset.locale ?? 'en') as keyof typeof booklet;
+      // The PDF libraries are most of this page's script; they load only when a grown-up asks for the booklet.
+      const { exportAsBooklet, showExportProgress, hideExportProgress, detectOrientation } =
+        await import('@utils/booklet-export');
       const overlay = showExportProgress(booklet[locale] ?? booklet.en);
       try {
         await exportAsBooklet(content, {
