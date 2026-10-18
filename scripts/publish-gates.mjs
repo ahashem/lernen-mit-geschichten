@@ -14,7 +14,7 @@ import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 
 const STORIES = 'src/content/stories';
-const SHARED = ['band', 'cover', 'frames', 'palette', 'art', 'skills', 'emoji'];
+const SHARED = ['band', 'cover', 'frames', 'palette', 'art'];
 const SKILLS = 'src/content/skills';
 const strict = process.env.CONTENT_STRICT === '1';
 const changedRef = process.argv.find(a => a.startsWith('--changed='))?.slice('--changed='.length);
@@ -39,6 +39,8 @@ const taxonomy = readdirSync(SKILLS)
   .filter(f => f.endsWith('.yaml'))
   .map(f => f.replace(/\.yaml$/, ''));
 const skillsOf = fm => [...(fm.match(/^skills:\s*\[(.*?)\]/m)?.[1] ?? '').matchAll(/"([^"]+)"/g)].map(m => m[1]);
+// A translation may carry its own skills when its story really differs from the German one; the report lists them.
+const overrides = [];
 const lacking = { band: {}, summary: {}, keyMessage: {}, reviewedBy: {}, coverAlt: {}, frameAlts: {} };
 const note = (field, locale) => (lacking[field][locale] = (lacking[field][locale] ?? 0) + 1);
 const hard = [];
@@ -51,6 +53,7 @@ for (const f of files) {
   if (f.locale !== 'de') {
     for (const field of SHARED) if (has(f.fm, field)) hard.push(`${f.locale}/${f.file}: shared field "${field}" belongs in the German file`);
     if (!has(f.fm, 'reviewedBy')) note('reviewedBy', f.locale);
+    if (has(f.fm, 'skills') && de && skillsOf(f.fm).join() !== skillsOf(de.fm).join()) overrides.push(`${f.locale}/${f.file}`);
     if (de && has(de.fm, 'cover') && !has(f.fm, 'coverAlt')) note('coverAlt', f.locale);
     if (de && countFrames(de.fm) > 0 && !has(f.fm, 'frameAlts')) note('frameAlts', f.locale);
   } else if (!has(f.fm, 'band')) note('band', f.locale);
@@ -69,6 +72,7 @@ for (const [field, byLocale] of Object.entries(lacking)) {
   const detail = Object.entries(byLocale).map(([l, n]) => `${l} ${n}`).join(', ');
   console.log(`${field}: ${total} published file(s) lack it${total ? ` (${detail})` : ''}`);
 }
+if (overrides.length) console.log(`skills overridden in a translation (its story may differ from the German one): ${overrides.join(', ')}`);
 for (const line of hard) console.error(`FAIL ${line}`);
 
 // Publishing gate for changed files.

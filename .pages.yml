@@ -217,6 +217,17 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
+      - name: skills
+        type: reference
+        label: Skills (only if this language's story differs)
+        description: Leave empty to use the German story's skills.
+        options:
+          collection: skills
+          multiple: true
+          max: 3
+          search: fields.en
+          value: '{fields.id}'
+          label: '{fields.en}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
@@ -272,6 +283,17 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
+      - name: skills
+        type: reference
+        label: Skills (only if this language's story differs)
+        description: Leave empty to use the German story's skills.
+        options:
+          collection: skills
+          multiple: true
+          max: 3
+          search: fields.en
+          value: '{fields.id}'
+          label: '{fields.en}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
@@ -327,6 +349,17 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
+      - name: skills
+        type: reference
+        label: Skills (only if this language's story differs)
+        description: Leave empty to use the German story's skills.
+        options:
+          collection: skills
+          multiple: true
+          max: 3
+          search: fields.en
+          value: '{fields.id}'
+          label: '{fields.en}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
@@ -382,6 +415,17 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
+      - name: skills
+        type: reference
+        label: Skills (only if this language's story differs)
+        description: Leave empty to use the German story's skills.
+        options:
+          collection: skills
+          multiple: true
+          max: 3
+          search: fields.en
+          value: '{fields.id}'
+          label: '{fields.en}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
