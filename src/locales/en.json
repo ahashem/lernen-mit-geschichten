@@ -182,5 +182,21 @@
   "storyNotIn": "This story isn't in {lang} yet.",
   "goToHome": "Go to {lang} home",
   "notFoundHint": "The story you are looking for isn't here.",
-  "notFoundBackToStories": "Back to the stories"
+  "notFoundBackToStories": "Back to the stories",
+  "privacyTitle": "Privacy",
+  "privacyLead": "We store nothing about you. There are no accounts, no cookies and no ads.",
+  "privacyStoredTitle": "What this device remembers",
+  "privacyStoredPrefs": "Your settings: text size, Lamp mode, languages and shelf.",
+  "privacyStoredPlace": "Where you stopped in a story.",
+  "privacyStoredLast": "Which story you read last, so we can offer “Continue”.",
+  "privacyNever": "All of this stays on this device and is never sent anywhere.",
+  "privacyGtmTitle": "Google Tag Manager",
+  "privacyGtm": "On the live site, Google Tag Manager loads from Google's servers when it is set up. It is the only connection to a third party, and we plan to replace it. Test sites do not use it.",
+  "forgetTitle": "Forget this device",
+  "forgetText": "Clears everything this device remembered.",
+  "forgetButton": "Forget this device",
+  "forgetConfirm": "Clear everything on this device?",
+  "forgetYes": "Yes, clear it",
+  "forgetNo": "Cancel",
+  "forgetDone": "Done. This device has forgotten everything."
 }

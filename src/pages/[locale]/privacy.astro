@@ -1,0 +1,12 @@
+---
+import Privacy from '@components/privacy/Privacy.astro';
+import type { Locale } from '@utils/i18n';
+
+export function getStaticPaths() {
+  return ['ar', 'en', 'tr', 'ur'].map(locale => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+---
+
+<Privacy locale={locale} />
