@@ -219,7 +219,8 @@ const description = summary || `${title} | ${t('siteName')}`;
                 class="btn export-booklet-btn"
                 type="button"
                 data-story-title={title}
-                data-locale={locale}>{t('exportBooklet')}</button
+                data-locale={locale}
+                data-progress={t('exportingBooklet')}>{t('exportBooklet')}</button
               >
             </div>
           </details>
@@ -710,13 +711,6 @@ const description = summary || `${title} | ${t('siteName')}`;
 
   startReader();
 
-  const booklet = {
-    de: 'Heft wird erstellt... Bitte warten.',
-    ar: 'جاري إنشاء الكتيب... يرجى الانتظار.',
-    en: 'Creating booklet... Please wait.',
-    tr: 'Kitapçık oluşturuluyor... Lütfen bekleyin.',
-    ur: 'کتابچہ بنایا جا رہا ہے... براہ کرم انتظار کریں۔',
-  };
   document.querySelectorAll<HTMLButtonElement>('.export-booklet-btn').forEach(button => {
     button.addEventListener('click', async () => {
       const content = document.querySelector<HTMLElement>('.story-content');
@@ -724,11 +718,10 @@ const description = summary || `${title} | ${t('siteName')}`;
       if (!content || !view) return;
       const wasHidden = view.hidden;
       view.hidden = false;
-      const locale = (button.dataset.locale ?? 'en') as keyof typeof booklet;
       // The PDF libraries are most of this page's script; they load only when a grown-up asks for the booklet.
       const { exportAsBooklet, showExportProgress, hideExportProgress, detectOrientation } =
         await import('@utils/booklet-export');
-      const overlay = showExportProgress(booklet[locale] ?? booklet.en);
+      const overlay = showExportProgress(button.dataset.progress ?? '');
       try {
         await exportAsBooklet(content, {
           orientation: detectOrientation(content),
