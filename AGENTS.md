@@ -128,8 +128,10 @@ Node >= 24.
   screen with talk cards, and the full text (also the no-JS view). Pages come from `---` breaks, else are derived
   per band by `utils/story-pages.ts`; recordings (`public/assets/audio/{locale}/{storyId}/{nn}.m4a`) are used only
   with explicit pages, otherwise the device voice reads. `scripts/publish-gates.mjs` reports what stories lack.
-- **Shared logic** in `src/utils/`: `skills-taxonomy.ts` (30 skills in 4 categories; `publish-gates.mjs` fails on any other
-  id and on a `.pages.yml` dropdown that drifts from it; changing an id breaks story frontmatter), `filter-stories.ts` (`matchesFilter`: AND across filter types, OR within one),
+- **Shared logic** in `src/utils/`: the skills are files in `src/content/skills` (id, group and one German name; the CMS edits them), read through
+  `skills-taxonomy.ts`. Their labels in the other languages are UI strings (`skillLabels`, `skillGroups` in
+  `src/locales/*.json`), so they follow the usual translation and review-queue flow. A story's `skills` and `emoji` are set in the German file, like `band`; a translation may carry its own
+  `skills` only if its story really differs (the gate reports it), and `publish-gates.mjs` fails on an unknown id. Changing a skill id breaks story frontmatter. `filter-stories.ts` (`matchesFilter`: AND across filter types, OR within one),
   `story-availability.ts`, `booklet-export.ts`.
 - `src/layouts/BaseLayout.astro` is the only layout (`lang`/`dir`, meta/OG, language selector). Pages must
   not hand-roll `<html>`.

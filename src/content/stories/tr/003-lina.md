@@ -1,7 +1,5 @@
 ---
 title: "Lina ve Büyük Kurabiye"
-emoji: "🍪"
-skills: ["patience", "delayed-gratification"]
 ageGroup: "3-7"
 storyId: "003-lina"
 publishDate: 2024-01-15

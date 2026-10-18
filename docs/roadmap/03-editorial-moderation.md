@@ -40,9 +40,8 @@ Moderators work in the CMS on the `editorial` branch and never see git. Steps 1 
    drawings and SVG vectorising are an owner job for later and are optional.
 5. **Audio (optional).** One recording per page, trimmed and named `01.m4a`, `02.m4a`. Word timings are optional and
    need a technical tool; without them the reader highlights sentences.
-6. **German entry.** In the CMS: Stories (German), New. Fill `storyId`, title, emoji, skills, band, summary, key
-   message. For picture books add one list item per page (page _n_ pairs with picture _n_ and recording _n_); for
-   chapter stories write the body. Add questions and the grown-up prompts. `status` is `draft`.
+6. **German entry.** In the CMS: Stories (German), New. Fill `storyId`, title, emoji, skills (pick from the list), band, summary, key
+   message. Skills and emoji are set here only; translations inherit them. Write the text in the editor like a document; a horizontal line starts a new page (page _n_ pairs with picture _n_ and recording _n_). Chapter stories use headings instead. Add questions and the grown-up prompts. `status` is `draft`.
 7. **Art and audio.** Upload the cover and page pictures to `assets/stories/023-nora/` and the recordings to
    `assets/audio/de/023-nora/`, choose them in the Cover and Page pictures fields, and write the German alt text.
    Fill "How the art was made" (tool, model, who reviewed it).
@@ -128,6 +127,12 @@ All art is AI-generated in-house, currently one image at a time, later a pipelin
    Policy: AI imagery is labelled on the page (EU AI Act Art. 50, from 2 August 2026) and disclosed on the site ("illustrated with AI, reviewed by people"), never imitates a living
    artist's style, never depicts a real child. Rights and licence terms of the generator used are recorded in
    `art.generator`; the owner decides who may reuse the art (open decision).
+
+## Adding a skill
+
+Rare, and an editor's job: add an entry in the CMS "Skills" collection (an id, its group and the German name). It shows
+up in every picker at once. Until its labels are added to `skillLabels` in `src/locales/*.json` (the usual UI
+translation flow, listed in `review-queue.json`), the other languages show the German name.
 
 ## UI strings and translation
 

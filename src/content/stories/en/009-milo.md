@@ -1,7 +1,5 @@
 ---
 title: "Milo Learns to Adapt"
-emoji: "🐨"
-skills: ["adaptability"]
 ageGroup: "3-7"
 storyId: "009-milo"
 publishDate: 2024-01-15

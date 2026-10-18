@@ -1,7 +1,5 @@
 ---
 title: "ایمیل اور پاگل منصوبہ"
-emoji: "📝"
-skills: ["goal-setting", "problem-solving"]
 ageGroup: "3-7"
 storyId: "022-emil-plan"
 publishDate: 2024-01-15

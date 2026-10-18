@@ -1,7 +1,7 @@
 ---
 import type { Locale } from '../utils/i18n';
 import { getTranslation } from '../utils/i18n';
-import { skillsCategories } from '../utils/skills-taxonomy';
+import { getSkillsByCategory } from '../utils/skills-taxonomy';
 
 interface Props {
   locale: Locale;
@@ -10,6 +10,7 @@ interface Props {
 }
 
 const { locale, currentSkills = [], currentAvailableIn = [] } = Astro.props;
+const categories = await getSkillsByCategory(locale);
 
 // The page already renders one locale, so offering it here would tick a box
 // that changes nothing. Only the other four are a real question.
@@ -27,9 +28,9 @@ const otherLocales = [
 
   <div class="filter-section">
     {
-      Object.entries(skillsCategories).map(([categoryId, category]) => (
+      categories.map(category => (
         <details class="category-group" open>
-          <summary>{category[locale]}</summary>
+          <summary>{category.label}</summary>
           <div class="skills-checkboxes">
             {category.skills.map(skill => (
               <label class="skill-checkbox">
@@ -39,7 +40,7 @@ const otherLocales = [
                   value={skill.id}
                   checked={currentSkills.includes(skill.id)}
                 />
-                <span>{skill[locale]}</span>
+                <span>{skill.label}</span>
               </label>
             ))}
           </div>

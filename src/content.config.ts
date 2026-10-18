@@ -74,8 +74,14 @@ const storiesCollection = defineCollection({
     title: z.string().describe("This locale's title."),
     summary: z.string().optional().describe('One or two sentences for cards, previews and SEO.'),
     keyMessage: z.string().optional().describe('The one idea, shown at the end of the story.'),
-    emoji: z.string().describe('Fallback identity when the story has no cover.'),
-    skills: z.array(z.string()).describe('1-3 ids from skills-taxonomy.ts.'),
+    emoji: z
+      .string()
+      .optional()
+      .describe('SHARED, German file only. Fallback identity when the story has no cover.'),
+    skills: z
+      .array(z.string())
+      .optional()
+      .describe('SHARED, German file only. 1-3 ids of files in src/content/skills.'),
     ageGroup: z.string().default('3-7').describe('Guidance for adults only; never shown to children.'),
     status: z
       .enum(['draft', 'published'])
@@ -96,7 +102,21 @@ const storiesCollection = defineCollection({
   }),
 });
 
+const skillsCollection = defineCollection({
+  loader: glob({ pattern: '*.yaml', base: './src/content/skills' }),
+  schema: z.object({
+    id: z.string().describe('Slug; the file name and the id stories use. Never change it once a story uses it.'),
+    category: z
+      .enum(['emotional', 'social', 'cognitive', 'behavioral'])
+      .describe('The group it appears under in the filter.'),
+    name: z
+      .string()
+      .describe('The name in German. Other languages are UI strings under skillLabels in src/locales/*.json.'),
+  }),
+});
+
 export const collections = {
   stories: storiesCollection,
+  skills: skillsCollection,
 };
 
