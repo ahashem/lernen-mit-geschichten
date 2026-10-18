@@ -17,7 +17,7 @@ Growth is trust spreading through kitas and families, not a funnel. Everything h
   widget on the page) on every story and on the About page.
 - Kita partners: a short yearly conversation and a printed feedback card, because their questions shape the library
   more than clicks do.
-- Content requests feed a public wishlist of skills not yet covered (the 58-skill taxonomy shows the gaps).
+- Content requests feed a public wishlist of skills not yet covered (the skills taxonomy shows the gaps).
 
 ## Partnerships
 

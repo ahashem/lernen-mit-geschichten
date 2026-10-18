@@ -58,6 +58,6 @@ arcade. The product is stories; anything else must earn its place by making read
 
 ## Success signals
 
-Content: 40+ stories, every one of the 58 skills covered by the library over time. Reach: kita partnerships,
+Content: 40+ stories, every skill in the taxonomy covered by the library over time. Reach: kita partnerships,
 organic search for values and feelings in the five languages. Quality: the bars above stay green. Engagement is
 measured only if `07` approves a privacy-preserving method; story completion is the signal that matters most.

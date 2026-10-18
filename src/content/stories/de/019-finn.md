@@ -1,7 +1,7 @@
 ---
 title: "Finn und die Riesen-Nuss"
 emoji: "🌰"
-skills: ["teamwork", "cooperation"]
+skills: ["cooperation"]
 ageGroup: "3-7"
 band: 2
 storyId: "019-finn"

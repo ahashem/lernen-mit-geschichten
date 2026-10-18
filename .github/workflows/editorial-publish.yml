@@ -1,17 +1,23 @@
 name: Publish stories
 
-# Moderators save in the CMS, which commits to `editorial`. When the checks pass, `main` is fast-forwarded to it and
-# both deploys follow; no human merge. A story only goes live once its status is `published`, and the publishing
-# gate (scripts/publish-gates.mjs --changed) refuses a published file that is incomplete or unreviewed.
+# Moderators save in the CMS, which commits to `editorial`. When the checks pass, this opens a pull request from
+# `editorial` to `main` and squash-merges it with the built-in GITHUB_TOKEN, so both deploys follow with no human
+# merge and no personal token: a squash merge made through the API is signed by GitHub and linear, which the `main`
+# ruleset requires. A story only goes live once its status is `published`; the publishing gate
+# (scripts/publish-gates.mjs --changed) refuses a published file that is incomplete or unreviewed.
 #
-# Needs the secret EDITORIAL_BOT_TOKEN: a token for this repository only (contents: write) that is allowed to push to
-# the protected `main` (a ruleset bypass). Without it the push below fails and nothing goes live.
+# Needs one repository setting: Settings > Actions > General > "Allow GitHub Actions to create and approve pull
+# requests". Pull requests and merges made with GITHUB_TOKEN start no other workflow, so the Pages deploy is
+# dispatched explicitly at the end. This workflow runs only on pushes to `editorial`, never on pull requests, so a
+# pull request from a fork cannot reach it.
 on:
   push:
     branches: [editorial]
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
+  actions: write
 
 concurrency:
   group: editorial-publish
@@ -20,18 +26,20 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v7
         with:
           ref: editorial
           fetch-depth: 0
-          token: ${{ secrets.EDITORIAL_BOT_TOKEN }}
 
       - name: Bring main into editorial
         run: |
           git config user.name "editorial-bot"
           git config user.email "editorial-bot@users.noreply.github.com"
           git merge --no-edit origin/main
+          git push origin HEAD:editorial
 
       - uses: actions/setup-node@v7
         with:
@@ -51,13 +59,18 @@ jobs:
           SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
           NOINDEX: '1'
 
-      - name: Publish (fast-forward main)
+      - name: Publish through a pull request
         run: |
-          for attempt in 1 2 3; do
-            git push origin HEAD:editorial
-            if git push origin HEAD:main; then exit 0; fi
-            git fetch origin main
-            git merge --no-edit origin/main
-          done
-          echo "main moved too often; try saving again" >&2
-          exit 1
+          if git diff --quiet origin/main HEAD; then
+            echo "Nothing to publish."
+            exit 0
+          fi
+          number=$(gh pr list --head editorial --base main --state open --json number --jq '.[0].number')
+          if [ -z "$number" ]; then
+            number=$(gh pr create --base main --head editorial --title "content: publish editorial changes" --body "" | grep -o '[0-9]*$')
+          fi
+          gh pr merge "$number" --squash --subject "content: publish editorial changes" --body ""
+          git fetch origin main
+          git merge --no-edit origin/main
+          git push origin HEAD:editorial
+          gh workflow run deploy.yml --ref main

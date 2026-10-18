@@ -115,8 +115,8 @@ Node >= 24.
   the same change. `404.astro` is the one exception: hosts serve a single error document.
 - **Base path.** Import `BASE_PATH` from `@utils/site` and prefix every root-relative `href`, `src` and
   `window.location` assignment. Astro rewrites markup but not JS string literals.
-- **Branches.** `editorial` is the default branch: the CMS commits to it and `editorial-publish.yml` fast-forwards
-  `main` when the checks pass (`docs/roadmap/03`). Code changes go through pull requests with `--base main`. The
+- **Branches.** `editorial` is the default branch: the CMS commits to it and `editorial-publish.yml` squash-merges
+  it into `main` through a pull request when the checks pass (`docs/roadmap/03`). Code changes go through pull requests with `--base main`. The
   Pages site shows `main` at the root and `editorial` at `/preview/` with drafts (`SHOW_DRAFTS=1` plus `NOINDEX=1`;
   a production build never shows them).
 - **Stories.** `src/content.config.ts` defines `stories` (one Markdown file per locale, joined by `storyId`). Language-neutral fields (`band`, `cover`, `frames`, `palette`,
@@ -128,8 +128,8 @@ Node >= 24.
   screen with talk cards, and the full text (also the no-JS view). Pages come from `---` breaks, else are derived
   per band by `utils/story-pages.ts`; recordings (`public/assets/audio/{locale}/{storyId}/{nn}.m4a`) are used only
   with explicit pages, otherwise the device voice reads. `scripts/publish-gates.mjs` reports what stories lack.
-- **Shared logic** in `src/utils/`: `skills-taxonomy.ts` (20 skills in 4 categories; stories also use
-  ids missing from it; changing an id breaks story frontmatter), `filter-stories.ts` (`matchesFilter`: AND across filter types, OR within one),
+- **Shared logic** in `src/utils/`: `skills-taxonomy.ts` (30 skills in 4 categories; `publish-gates.mjs` fails on any other
+  id and on a `.pages.yml` dropdown that drifts from it; changing an id breaks story frontmatter), `filter-stories.ts` (`matchesFilter`: AND across filter types, OR within one),
   `story-availability.ts`, `booklet-export.ts`.
 - `src/layouts/BaseLayout.astro` is the only layout (`lang`/`dir`, meta/OG, language selector). Pages must
   not hand-roll `<html>`.

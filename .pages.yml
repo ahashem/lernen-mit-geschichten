@@ -42,38 +42,31 @@ components:
         - empathy
         - patience
         - impulse-control
+        - anger-management
+        - emotional-expression
+        - courage
+        - self-confidence
         - effective-communication
         - cooperation
         - conflict-resolution
         - leadership
         - respect
+        - sharing
+        - generosity
         - problem-solving
         - decision-making
         - critical-thinking
         - adaptability
         - goal-setting
+        - focus
         - responsibility
         - honesty
         - persistence
         - self-discipline
         - time-management
-        # Used by existing stories but missing from src/utils/skills-taxonomy.ts; resolve, then remove.
-        - anger-management
-        - attention
-        - communication
-        - courage
-        - delayed-gratification
-        - emotional-expression
-        - flexibility
-        - focus
-        - generosity
         - motivation
+        - delayed-gratification
         - organization
-        - planning
-        - self-confidence
-        - self-control
-        - sharing
-        - teamwork
   questions:
     type: object
     label: Questions

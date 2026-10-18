@@ -65,20 +65,23 @@ Moderators work in the CMS on the `editorial` branch and never see git. Steps 1 
   `editorial` at `/preview/` with `SHOW_DRAFTS=1` and `NOINDEX=1` (both are required; a build with only one of them
   still hides drafts), plus a check-result page at `/preview/status/` (`scripts/preview-status.mjs`).
 - **Save → live.** `editorial-publish.yml` merges `main` into `editorial`, runs the changed-files publishing gate
-  (`node scripts/publish-gates.mjs --changed=origin/main`), `npm run quality` and the build, then fast-forwards `main`.
+  (`node scripts/publish-gates.mjs --changed=origin/main`), `npm run quality` and the build, then opens a pull request from `editorial` to `main` and squash-merges it with the built-in token.
   Untouched stories are never held to the gate, so the existing library stays as it is.
 - **Set up once:**
   1. Create the branch: `git push origin origin/main:refs/heads/editorial`.
   2. Rulesets. Target branches **by name**, never "Default branch", because that follows the default when it moves.
-     - `main`: require a pull request and the `quality` check, block force pushes and deletion. This is the rule for
-       people and the agent; the bot token below bypasses it.
+     - `main`: block force pushes and deletion, require signed commits and linear history. No bypass is needed: the
+       workflow merges with a squash, which GitHub signs and keeps linear.
      - `editorial`: block force pushes and deletion only. It must **not** require a pull request, because the CMS
        commits to it directly.
   3. Make `editorial` the repository's default branch, so the CMS opens on it with no bookmark. Open PRs keep their
      base. Dependabot targets `main`; anyone opening a code PR picks `main` as the base.
-  4. Create a token for this repository only (contents: write) and store it as the secret `EDITORIAL_BOT_TOKEN`. Let
-     it bypass the `main` ruleset, because `editorial-publish.yml` pushes straight to `main`.
+  4. Tick Settings > Actions > General > "Allow GitHub Actions to create and approve pull requests". No personal
+     token and no secret are involved.
   5. Invite the moderators in the CMS.
+- **Forks.** Anyone can open a pull request from a fork, but it is only a proposal: nothing here runs on pull
+  requests with secrets or write access, and `editorial-publish.yml` listens to pushes only. Merging a pull request
+  into `editorial` publishes it, so merge outside contributions into `main` instead.
 - **Why a moderator can't do harm.** The CMS only edits the configured story and media folders, not workflows. A
   malformed file fails the checks and never reaches `main`; an incomplete or unreviewed published story is blocked
   by the gate; a bad story is fixed by setting it to `draft`.
