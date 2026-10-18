@@ -20,6 +20,19 @@ export function getTranslation(locale: Locale, key: keyof typeof translations.de
   return translations[locale]?.[key] || translations.de[key];
 }
 
+type Labels = Record<string, string>;
+const labelsIn = (locale: Locale, group: 'skillLabels' | 'skillGroups'): Labels =>
+  (translations[locale]?.[group] as Labels | undefined) ?? {};
+
+/** A skill's label: this language, else German, else the name stored in the skill file. */
+export function skillLabel(locale: Locale, id: string, name: string): string {
+  return labelsIn(locale, 'skillLabels')[id] ?? labelsIn('de', 'skillLabels')[id] ?? name;
+}
+
+export function skillGroupLabel(locale: Locale, group: string): string {
+  return labelsIn(locale, 'skillGroups')[group] ?? labelsIn('de', 'skillGroups')[group] ?? group;
+}
+
 export function isRTL(locale: Locale): boolean {
   return locale === 'ar' || locale === 'ur';
 }

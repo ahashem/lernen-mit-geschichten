@@ -109,11 +109,9 @@ const skillsCollection = defineCollection({
     category: z
       .enum(['emotional', 'social', 'cognitive', 'behavioral'])
       .describe('The group it appears under in the filter.'),
-    de: z.string().describe('Label in German.'),
-    en: z.string().describe('Label in English.'),
-    ar: z.string().describe('Label in Arabic.'),
-    tr: z.string().describe('Label in Turkish.'),
-    ur: z.string().describe('Label in Urdu.'),
+    name: z
+      .string()
+      .describe('The name in German. Other languages are UI strings under skillLabels in src/locales/*.json.'),
   }),
 });
 

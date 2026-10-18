@@ -128,6 +128,12 @@ All art is AI-generated in-house, currently one image at a time, later a pipelin
    artist's style, never depicts a real child. Rights and licence terms of the generator used are recorded in
    `art.generator`; the owner decides who may reuse the art (open decision).
 
+## Adding a skill
+
+Rare, and an editor's job: add an entry in the CMS "Skills" collection (an id, its group and the German name). It shows
+up in every picker at once. Until its labels are added to `skillLabels` in `src/locales/*.json` (the usual UI
+translation flow, listed in `review-queue.json`), the other languages show the German name.
+
 ## UI strings and translation
 
 Story text goes through the CMS. UI strings (`src/locales/*.json`) are few and change with features, so they go

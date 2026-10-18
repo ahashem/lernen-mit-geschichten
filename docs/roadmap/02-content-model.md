@@ -102,5 +102,5 @@ screen-reader user, not a caption, stored in the file of the language it is writ
 
 Done: `band` and the Bruno art moved into the German files, `title*`, `languages[]`, read time and
 `characterType` dropped, and a before/after build of the whole site is byte-identical. Skills and emoji are now German-only too, and the
-skills taxonomy is one YAML file per skill in `src/content/skills` with its label in all five languages, edited in
-the CMS. Four stories had translations tagged differently from the German original; three now follow the German tags, and the two `004-tobi` translations keep their own because that story differs.
+skills taxonomy is one YAML file per skill in `src/content/skills` (id, group, a German name), edited in the CMS;
+labels in the other languages are UI strings in `src/locales`. Four stories had translations tagged differently from the German original; three now follow the German tags, and the two `004-tobi` translations keep their own because that story differs.

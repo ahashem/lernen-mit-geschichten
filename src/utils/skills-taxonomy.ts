@@ -1,74 +1,58 @@
 import { getSkillEntries } from './stories';
-import type { Locale } from './i18n';
+import { skillGroupLabel, skillLabel, type Locale } from './i18n';
 
+// A skill is a file in src/content/skills holding only its id, its group and one name (German). Labels in the
+// other languages are UI strings in src/locales/*.json (skillLabels, skillGroups), like every other translation.
 export interface Skill {
   id: string;
   category: string;
-  de: string;
-  ar: string;
-  en: string;
-  tr: string;
-  ur: string;
+  name: string;
 }
 
-export interface SkillCategory extends Record<Locale, string> {
+export interface LabeledSkill extends Skill {
+  label: string;
+}
+
+export interface SkillGroup {
   id: string;
-  skills: Skill[];
+  label: string;
+  skills: LabeledSkill[];
 }
 
-// The four groups are structure, not content: they change with the design, so they live here. The skills
-// themselves (ids and labels in all five languages) are files in src/content/skills, which the CMS edits.
-const CATEGORIES: Record<string, Record<Locale, string>> = {
-  emotional: {
-    de: 'Emotionale Fähigkeiten',
-    ar: 'المهارات العاطفية',
-    en: 'Emotional Skills',
-    tr: 'Duygusal Beceriler',
-    ur: 'جذباتی مہارتیں',
-  },
-  social: {
-    de: 'Soziale Fähigkeiten',
-    ar: 'المهارات الاجتماعية',
-    en: 'Social Skills',
-    tr: 'Sosyal Beceriler',
-    ur: 'سماجی مہارتیں',
-  },
-  cognitive: {
-    de: 'Kognitive Fähigkeiten',
-    ar: 'المهارات المعرفية',
-    en: 'Cognitive Skills',
-    tr: 'Bilişsel Beceriler',
-    ur: 'ذہنی مہارتیں',
-  },
-  behavioral: {
-    de: 'Verhaltensfähigkeiten',
-    ar: 'المهارات السلوكية',
-    en: 'Behavioral Skills',
-    tr: 'Davranışsal Beceriler',
-    ur: 'رویہ کی مہارتیں',
-  },
-};
+// The four groups are structure, not content; they change with the design.
+const GROUPS = ['emotional', 'social', 'cognitive', 'behavioral'];
 
 let all: Promise<Skill[]> | undefined;
 
-/** Every skill, from src/content/skills. */
 export function getSkills(): Promise<Skill[]> {
   all ??= getSkillEntries().then(entries => entries.map(e => e.data as Skill));
   return all;
 }
 
-/** Skills grouped by category, in category order and alphabetical by English label within one. */
-export async function getSkillsByCategory(): Promise<SkillCategory[]> {
+const labeled = (skill: Skill, locale: Locale): LabeledSkill => ({
+  ...skill,
+  label: skillLabel(locale, skill.id, skill.name),
+});
+
+/** Skills grouped by category, sorted by their label in the reader's language. */
+export async function getSkillsByCategory(locale: Locale): Promise<SkillGroup[]> {
   const skills = await getSkills();
-  return Object.entries(CATEGORIES).map(([id, labels]) => ({
+  const collator = new Intl.Collator(locale);
+  return GROUPS.map(id => ({
     id,
-    ...labels,
-    skills: skills.filter(s => s.category === id).sort((a, b) => a.en.localeCompare(b.en)),
+    label: skillGroupLabel(locale, id),
+    skills: skills
+      .filter(s => s.category === id)
+      .map(s => labeled(s, locale))
+      .sort((a, b) => collator.compare(a.label, b.label)),
   }));
 }
 
-/** The skills for a list of ids; unknown ids are dropped. */
-export async function getSkillsByIds(ids: string[]): Promise<Skill[]> {
+/** The skills for a list of ids, labelled for the reader; unknown ids are dropped. */
+export async function getSkillsByIds(ids: string[], locale: Locale): Promise<LabeledSkill[]> {
   const skills = await getSkills();
-  return ids.map(id => skills.find(s => s.id === id)).filter((s): s is Skill => s !== undefined);
+  return ids
+    .map(id => skills.find(s => s.id === id))
+    .filter((s): s is Skill => s !== undefined)
+    .map(s => labeled(s, locale));
 }

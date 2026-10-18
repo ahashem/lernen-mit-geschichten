@@ -9,8 +9,8 @@ interface Props {
   currentAvailableIn?: string[];
 }
 
-const categories = await getSkillsByCategory();
 const { locale, currentSkills = [], currentAvailableIn = [] } = Astro.props;
+const categories = await getSkillsByCategory(locale);
 
 // The page already renders one locale, so offering it here would tick a box
 // that changes nothing. Only the other four are a real question.
@@ -30,7 +30,7 @@ const otherLocales = [
     {
       categories.map(category => (
         <details class="category-group" open>
-          <summary>{category[locale]}</summary>
+          <summary>{category.label}</summary>
           <div class="skills-checkboxes">
             {category.skills.map(skill => (
               <label class="skill-checkbox">
@@ -40,7 +40,7 @@ const otherLocales = [
                   value={skill.id}
                   checked={currentSkills.includes(skill.id)}
                 />
-                <span>{skill[locale]}</span>
+                <span>{skill.label}</span>
               </label>
             ))}
           </div>

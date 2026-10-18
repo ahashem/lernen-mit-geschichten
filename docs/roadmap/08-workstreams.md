@@ -148,6 +148,14 @@ Not in any run: Class room two-screen mode, My reading list, pre-built PDF class
   narration in `public/assets/audio/de/001-bruno/`. A partial set (cover, a few frames, matching audio pages) is
   enough: the reader must handle the gaps.
 
+## Technical debt (owner, after Run 3)
+
+- Remove the optional `skills` field from the four translation forms in `.pages.yml` so skills are picked once, in
+  the German file. Keep the schema override: a genuine adaptation must stay possible.
+- Decide as a content question whether the English and Urdu `004-tobi` is a deliberate adaptation or drift. The
+  same pass should look at `021-emil-flattergeist` (the German file is in Turkish), `007-fritz-flamingo` (the English
+  file holds only German exercises), and the much longer English `009-milo` and `002-fritz`.
+
 ## Next
 
 Run 1 left M1 mostly complete; the reading experience is live on staging. In order:

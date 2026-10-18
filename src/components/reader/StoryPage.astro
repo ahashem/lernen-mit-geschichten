@@ -30,7 +30,7 @@ const hasBook = band <= 2 && pages.length > 0;
 const narration = narrationFor(storyId, locale, pages.length, explicit);
 const cover = coverOf(meta, locale);
 const minutes = readMinutes(story.body);
-const skills = await getSkillsByIds(story.data.skills ?? meta?.skills ?? []);
+const skills = await getSkillsByIds(story.data.skills ?? meta?.skills ?? [], locale);
 const summary = story.data.summary ?? firstSentence(story.body ?? '', locale);
 const prompts = (story.data.discussion ?? story.data.questions?.map(q => q.text) ?? []).slice(0, 3);
 
@@ -125,7 +125,7 @@ const description = summary || `${title} | ${t('siteName')}`;
             <summary>{t('forGrownUps')}</summary>
             <div class="grownups-body">
               <ul class="chips" aria-label={t('skills')}>
-                {skills.map(skill => <li>{skill[locale]}</li>)}
+                {skills.map(skill => <li>{skill.label}</li>)}
               </ul>
               <p>{summary}</p>
               <p class="meta">

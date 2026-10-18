@@ -122,9 +122,9 @@ content:
           multiple: true
           min: 1
           max: 3
-          search: fields.en
+          search: fields.name
           value: '{fields.id}'
-          label: '{fields.en}'
+          label: '{fields.name}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
@@ -225,9 +225,9 @@ content:
           collection: skills
           multiple: true
           max: 3
-          search: fields.en
+          search: fields.name
           value: '{fields.id}'
-          label: '{fields.en}'
+          label: '{fields.name}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
@@ -291,9 +291,9 @@ content:
           collection: skills
           multiple: true
           max: 3
-          search: fields.en
+          search: fields.name
           value: '{fields.id}'
-          label: '{fields.en}'
+          label: '{fields.name}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
@@ -357,9 +357,9 @@ content:
           collection: skills
           multiple: true
           max: 3
-          search: fields.en
+          search: fields.name
           value: '{fields.id}'
-          label: '{fields.en}'
+          label: '{fields.name}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
@@ -423,9 +423,9 @@ content:
           collection: skills
           multiple: true
           max: 3
-          search: fields.en
+          search: fields.name
           value: '{fields.id}'
-          label: '{fields.en}'
+          label: '{fields.name}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
@@ -446,7 +446,7 @@ content:
       - { name: reviewedBy, type: string, label: Reviewed by (a native speaker) }
       - { name: reviewedAt, type: date, label: Reviewed on }
   - name: skills
-    label: Skills (all languages)
+    label: Skills
     type: collection
     path: src/content/skills
     filename: '{id}.yaml'
@@ -456,12 +456,12 @@ content:
       rename: false
       delete: false
     view:
-      fields: [en, category, de]
-      primary: en
-      search: [en, de, id]
-      sort: [en, category]
+      fields: [name, category, id]
+      primary: name
+      search: [name, id]
+      sort: [name, category]
       default:
-        sort: en
+        sort: name
         order: asc
     fields:
       - name: id
@@ -478,8 +478,8 @@ content:
         required: true
         options:
           values: [emotional, social, cognitive, behavioral]
-      - { name: en, type: string, label: English, required: true }
-      - { name: de, type: string, label: Deutsch, required: true }
-      - { name: ar, type: string, label: العربية, required: true }
-      - { name: tr, type: string, label: Türkçe, required: true }
-      - { name: ur, type: string, label: اردو, required: true }
+      - name: name
+        type: string
+        label: Name (German)
+        required: true
+        description: The other languages are translated with the interface texts (src/locales), not here.

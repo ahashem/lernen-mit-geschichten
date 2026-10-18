@@ -41,7 +41,7 @@ const taxonomy = readdirSync(SKILLS)
 const skillsOf = fm => [...(fm.match(/^skills:\s*\[(.*?)\]/m)?.[1] ?? '').matchAll(/"([^"]+)"/g)].map(m => m[1]);
 // A translation may carry its own skills when its story really differs from the German one; the report lists them.
 const overrides = [];
-const lacking = { band: {}, summary: {}, keyMessage: {}, reviewedBy: {}, coverAlt: {}, frameAlts: {} };
+const lacking = { skillLabels: {}, band: {}, summary: {}, keyMessage: {}, reviewedBy: {}, coverAlt: {}, frameAlts: {} };
 const note = (field, locale) => (lacking[field][locale] = (lacking[field][locale] ?? 0) + 1);
 const hard = [];
 
@@ -61,8 +61,15 @@ for (const f of files) {
 }
 
 for (const id of taxonomy) {
-  const declared = readFileSync(join(SKILLS, `${id}.yaml`), 'utf8').match(/^id:\s*(\S+)/m)?.[1];
+  const file = readFileSync(join(SKILLS, `${id}.yaml`), 'utf8');
+  const declared = file.match(/^id:\s*(\S+)/m)?.[1];
   if (declared !== id) hard.push(`${SKILLS}/${id}.yaml: id is "${declared}", expected "${id}"`);
+  if (!/^name:\s*\S/m.test(file)) hard.push(`${SKILLS}/${id}.yaml: needs a name`);
+}
+// Labels in the other languages are UI strings; a missing one falls back to German, so it is only reported.
+for (const locale of readdirSync(STORIES)) {
+  const labels = JSON.parse(readFileSync(`src/locales/${locale}.json`, 'utf8')).skillLabels ?? {};
+  for (const id of taxonomy) if (!labels[id]) note('skillLabels', locale);
 }
 
 let missing = 0;
