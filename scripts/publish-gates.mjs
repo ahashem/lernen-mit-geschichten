@@ -9,15 +9,16 @@
  * since <ref> that is `published` must be complete and reviewed by someone other than its author, or the run
  * fails. Untouched files are never held to it, so existing stories stay as they are.
  */
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { parse as parseYaml } from 'yaml';
 import { join } from 'node:path';
 
 const STORIES = 'src/content/stories';
-const SHARED = ['band', 'cover', 'frames', 'palette', 'art'];
+const SHARED = ['band', 'cover', 'frames', 'palette', 'art', 'feelings', 'editorsPick'];
 const SKILLS = 'src/content/skills';
 const strict = process.env.CONTENT_STRICT === '1';
+const listStories = process.argv.includes('--stories');
 const changedRef = process.argv.find(a => a.startsWith('--changed='))?.slice('--changed='.length);
 
 const head = text => text.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
@@ -49,7 +50,18 @@ const skillsOf = fm => [...(fm.match(/^skills:\s*\[(.*?)\]/m)?.[1] ?? '').matchA
 // A translation may carry its own skills when its story really differs from the German one; the report lists them.
 const overrides = [];
 const lacking = { skillLabels: {}, band: {}, summary: {}, keyMessage: {}, reviewedBy: {}, coverAlt: {}, frameAlts: {} };
-const note = (field, locale) => (lacking[field][locale] = (lacking[field][locale] ?? 0) + 1);
+const perStory = new Map();
+let current = '';
+const note = (field, locale) => {
+  lacking[field][locale] = (lacking[field][locale] ?? 0) + 1;
+  perStory.set(current, [...(perStory.get(current) ?? []), field]);
+};
+// Recorded narration is reported but never counted towards CONTENT_STRICT: bands 3-4 may publish text first (ux/07 #4).
+const unnarrated = {};
+const hasRecording = (locale, id) => {
+  const dir = `public/assets/audio/${locale}/${id}`;
+  return existsSync(dir) && readdirSync(dir).some(x => x.endsWith('.m4a'));
+};
 const hard = [];
 
 for (const f of files) {
@@ -57,6 +69,11 @@ for (const f of files) {
   for (const key of keysOf(f.fm)) if (!form.includes(key)) hard.push(`${f.locale}/${f.file}: "${key}" is not a field of the ${f.locale} form in .pages.yml, so the CMS would drop it on save`);
   for (const id of skillsOf(f.fm)) if (!taxonomy.includes(id)) hard.push(`${f.locale}/${f.file}: skill "${id}" is not a file in ${SKILLS}`);
   if (f.draft) continue;
+  current = `${f.locale}/${f.file}`;
+  if (!hasRecording(f.locale, f.id)) {
+    unnarrated[f.locale] = (unnarrated[f.locale] ?? 0) + 1;
+    perStory.set(current, [...(perStory.get(current) ?? []), 'narration']);
+  }
   const de = source.get(f.id);
   if (!de) hard.push(`${f.locale}/${f.file}: no German source file for storyId ${f.id}`);
   if (f.locale !== 'de') {
@@ -87,6 +104,14 @@ for (const [field, byLocale] of Object.entries(lacking)) {
   missing += total;
   const detail = Object.entries(byLocale).map(([l, n]) => `${l} ${n}`).join(', ');
   console.log(`${field}: ${total} published file(s) lack it${total ? ` (${detail})` : ''}`);
+}
+const narrationTotal = Object.values(unnarrated).reduce((a, b) => a + b, 0);
+console.log(
+  `narration: ${narrationTotal} published file(s) have no recording (${Object.entries(unnarrated).map(([l, n]) => `${l} ${n}`).join(', ')}); not counted for CONTENT_STRICT`
+);
+if (listStories) {
+  console.log('\nper story:');
+  for (const [file, fields] of [...perStory].sort(([a], [b]) => a.localeCompare(b))) console.log(`  ${file}: lacks ${fields.join(', ')}`);
 }
 if (overrides.length) console.log(`skills overridden in a translation (its story may differ from the German one): ${overrides.join(', ')}`);
 for (const line of hard) console.error(`FAIL ${line}`);

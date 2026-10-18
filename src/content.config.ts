@@ -82,6 +82,32 @@ const storiesCollection = defineCollection({
       .array(z.string())
       .optional()
       .describe('SHARED, German file only. 1-3 ids of files in src/content/skills.'),
+    feelings: z
+      .array(z.enum(['happy', 'angry', 'sad', 'scared', 'calm', 'proud']))
+      .optional()
+      .describe('SHARED, German file only. The feelings this story helps with; Find by feeling will read them.'),
+    editorsPick: z
+      .boolean()
+      .optional()
+      .describe('SHARED, German file only. Ranks the story first within its feeling and shelf.'),
+    situations: z
+      .array(z.string())
+      .optional()
+      .describe("This locale's curated situation words, e.g. 'new at school'. Examples, not a taxonomy."),
+    glossary: z
+      .array(
+        z.object({
+          word: z.string().describe('The word as it appears in the story.'),
+          meaning: z.string().describe('Its short meaning in this locale, written by a translator.'),
+        })
+      )
+      .optional()
+      .describe("Vocabulary glosses for bands 3-4, 5-10 per chapter, in this locale. Never machine-written."),
+    thinkCards: z
+      .array(z.string())
+      .max(5)
+      .optional()
+      .describe('Bands 3-4: at most 5 short reflection prompts, one per screen. No wrong answers.'),
     ageGroup: z.string().default('3-7').describe('Guidance for adults only; never shown to children.'),
     status: z
       .enum(['draft', 'published'])
