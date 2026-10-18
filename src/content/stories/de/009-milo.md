@@ -3,7 +3,7 @@ title: "Milo lernt, sich anzupassen"
 emoji: "🐾"
 skills: ["adaptability", "problem-solving"]
 ageGroup: "3-7"
-band: 1
+band: "1"
 storyId: "009-milo"
 difficulty: "beginner"
 publishDate: 2024-01-15

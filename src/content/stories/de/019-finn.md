@@ -3,7 +3,7 @@ title: "Finn und die Riesen-Nuss"
 emoji: "🌰"
 skills: ["cooperation"]
 ageGroup: "3-7"
-band: 2
+band: "2"
 storyId: "019-finn"
 publishDate: 2024-01-15
 difficulty: "beginner"
