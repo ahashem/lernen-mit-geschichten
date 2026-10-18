@@ -84,6 +84,13 @@ Moderators work in the CMS on the `editorial` branch and never see git. Steps 1 
 - **Why a moderator can't do harm.** The CMS only edits the configured story and media folders, not workflows. A
   malformed file fails the checks and never reaches `main`; an incomplete or unreviewed published story is blocked
   by the gate; a bad story is fixed by setting it to `draft`.
+- **The CMS rewrites a file from its form.** A frontmatter key that is not a field of the form is dropped on the next
+  save (this happened once: `pages` and `difficulty` vanished from a draft). So every key in use must be a field of
+  its language's collection in `.pages.yml`, hidden or visible, and `publish-gates.mjs` fails otherwise; on a changed
+  file it also blocks a save that removed a key the form cannot edit. Adding a field to `src/content.config.ts` means
+  adding it to `.pages.yml` too.
+- **`editorial` carries no signature or pull-request rule.** The CMS saves straight to it, and a rule of either kind
+  makes the save fail with "requires changes through a pull request".
 - **What is still honor system.** `reviewedBy` is a typed name; CI checks it is present and not the author, not who
   typed it.
 - Commit identity stays `app` and messages are `content: update {path}`: the repo is public and moderators' emails

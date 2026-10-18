@@ -20,7 +20,7 @@ const quizQuestionSchema = z.object({
 });
 
 const narrationSchema = z.object({
-  audio: z.string().describe('Folder under public/assets/audio/{locale}/ holding one file per page.'),
+  audio: z.string().optional().describe('Folder under public/assets/audio/{locale}/ holding one file per page.'),
   narrator: z.string().optional().describe('Credit shown to grown-ups.'),
   consent: z.string().optional().describe('Note that the narrator agreed to this use.'),
   timing: z.boolean().default(false).describe('True when per-page word timings (nn.json) exist.'),
@@ -58,11 +58,11 @@ const storiesCollection = defineCollection({
       .describe('SHARED, German file only. Two hex colours; tint the fallback art and the reader.'),
     art: z
       .object({
-        generator: z.string(),
-        styleVersion: z.string(),
-        reviewedBy: z.string(),
-        reviewedAt: z.date(),
-        aiGenerated: z.literal(true),
+        generator: z.string().optional(),
+        styleVersion: z.string().optional(),
+        reviewedBy: z.string().optional(),
+        reviewedAt: z.date().optional(),
+        aiGenerated: z.boolean().optional(),
       })
       .optional()
       .describe('SHARED, German file only. Provenance for any art; required once a story carries art.'),

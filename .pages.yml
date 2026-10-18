@@ -68,7 +68,7 @@ components:
         }
       - { name: narrator, type: string, label: Narrator credit }
       - { name: consent, type: string, label: Narrator consent note }
-      - { name: timing, type: boolean, label: Word timings (nn.json) exist, default: false }
+      - { name: timing, type: boolean, label: Word timings (nn.json) exist }
 
 content:
   - name: stories-de
@@ -177,10 +177,18 @@ content:
           - { name: styleVersion, type: string, label: Style guide version }
           - { name: reviewedBy, type: string, label: Reviewed by }
           - { name: reviewedAt, type: date, label: Reviewed on }
-          - { name: aiGenerated, type: boolean, label: Made with AI, default: true }
+          - { name: aiGenerated, type: boolean, label: Made with AI }
       - { name: publishDate, type: date, label: First published }
       - { name: ageGroup, type: string, hidden: true, default: '3-7' }
       - { name: narration, component: narration }
+      - { name: difficulty, type: string, hidden: true }
+      - name: pages
+        type: object
+        hidden: true
+        list: true
+        fields:
+          - { name: text, type: text }
+          - { name: image, type: string }
   - name: stories-en
     label: English
     type: collection
@@ -247,6 +255,9 @@ content:
       - { name: narration, component: narration }
       - { name: reviewedBy, type: string, label: Reviewed by (a native speaker) }
       - { name: reviewedAt, type: date, label: Reviewed on }
+      - { name: difficulty, type: string, hidden: true }
+      - { name: ageGroup, type: string, hidden: true }
+      - { name: publishDate, type: date, hidden: true }
   - name: stories-ar
     label: العربية
     type: collection
@@ -313,6 +324,9 @@ content:
       - { name: narration, component: narration }
       - { name: reviewedBy, type: string, label: Reviewed by (a native speaker) }
       - { name: reviewedAt, type: date, label: Reviewed on }
+      - { name: difficulty, type: string, hidden: true }
+      - { name: ageGroup, type: string, hidden: true }
+      - { name: publishDate, type: date, hidden: true }
   - name: stories-tr
     label: Türkçe
     type: collection
@@ -379,6 +393,9 @@ content:
       - { name: narration, component: narration }
       - { name: reviewedBy, type: string, label: Reviewed by (a native speaker) }
       - { name: reviewedAt, type: date, label: Reviewed on }
+      - { name: difficulty, type: string, hidden: true }
+      - { name: ageGroup, type: string, hidden: true }
+      - { name: publishDate, type: date, hidden: true }
   - name: stories-ur
     label: اردو
     type: collection
@@ -445,6 +462,9 @@ content:
       - { name: narration, component: narration }
       - { name: reviewedBy, type: string, label: Reviewed by (a native speaker) }
       - { name: reviewedAt, type: date, label: Reviewed on }
+      - { name: difficulty, type: string, hidden: true }
+      - { name: ageGroup, type: string, hidden: true }
+      - { name: publishDate, type: date, hidden: true }
   - name: skills
     label: Skills
     type: collection

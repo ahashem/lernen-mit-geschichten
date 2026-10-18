@@ -11,6 +11,7 @@
  */
 import { readdirSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { parse as parseYaml } from 'yaml';
 import { join } from 'node:path';
 
 const STORIES = 'src/content/stories';
@@ -23,7 +24,13 @@ const head = text => text.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
 const has = (fm, field) => new RegExp(`^${field}:`, 'm').test(fm);
 const scalar = (fm, field) => fm.match(new RegExp(`^${field}:\\s*["']?([^"'\\r\\n]+)`, 'm'))?.[1].trim();
 const block = (fm, key) => fm.match(new RegExp(`^${key}:[^\\n]*\\r?\\n((?:[ \\t]+.*\\r?\\n?)*)`, 'm'))?.[1] ?? '';
+const keysOf = fm => [...fm.matchAll(/^([A-Za-z][A-Za-z0-9]*):/gm)].map(m => m[1]);
 const countFrames = fm => (fm.match(/^frames:\r?\n((?:[ \t]+.*\r?\n?)*)/m)?.[1].match(/^[ \t]+- /gm) ?? []).length;
+
+// The CMS rewrites a file from its form, so a frontmatter key that is not a form field is silently dropped on the
+// next save. Every key in use must therefore be a field (hidden counts) of its language's collection.
+const cms = parseYaml(readFileSync('.pages.yml', 'utf8'));
+const formOf = locale => cms.content.find(c => c.name === `stories-${locale}`)?.fields ?? [];
 
 const files = [];
 for (const locale of readdirSync(STORIES)) {
@@ -46,6 +53,8 @@ const note = (field, locale) => (lacking[field][locale] = (lacking[field][locale
 const hard = [];
 
 for (const f of files) {
+  const form = formOf(f.locale).map(x => x.name);
+  for (const key of keysOf(f.fm)) if (!form.includes(key)) hard.push(`${f.locale}/${f.file}: "${key}" is not a field of the ${f.locale} form in .pages.yml, so the CMS would drop it on save`);
   for (const id of skillsOf(f.fm)) if (!taxonomy.includes(id)) hard.push(`${f.locale}/${f.file}: skill "${id}" is not a file in ${SKILLS}`);
   if (f.draft) continue;
   const de = source.get(f.id);
@@ -90,7 +99,18 @@ if (changedRef) {
     .filter(f => f.endsWith('.md'));
   for (const path of changed) {
     const f = files.find(x => `${STORIES}/${x.locale}/${x.file}` === path);
-    if (!f || f.draft) continue; // deleted, or a draft: nothing to hold back
+    if (!f) continue; // deleted
+    // Keys the form cannot edit must never disappear in a save.
+    try {
+      const before = execFileSync('git', ['show', `${changedRef}:${path}`], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+      const editable = formOf(f.locale).filter(x => !x.hidden).map(x => x.name);
+      for (const key of keysOf(head(before))) {
+        if (!keysOf(f.fm).includes(key) && !editable.includes(key)) blocked.push(`${path}: "${key}" was removed but the CMS form cannot edit it`);
+      }
+    } catch {
+      // a new file has nothing to lose
+    }
+    if (f.draft) continue; // a draft is never held to the publishing rules
     const de = source.get(f.id);
     const need = (cond, message) => cond || blocked.push(`${path}: ${message}`);
     for (const field of ['summary', 'keyMessage', 'reviewedBy', 'reviewedAt']) need(has(f.fm, field), `published needs ${field}`);
@@ -105,7 +125,10 @@ if (changedRef) {
       const frames = countFrames(f.fm);
       if (has(f.fm, 'cover')) need(/^\s+alt:/m.test(block(f.fm, 'cover')), 'cover needs alt text');
       if (frames) need((block(f.fm, 'frames').match(/^\s+alt:/gm) ?? []).length >= frames, 'every page picture needs alt text');
-      if (has(f.fm, 'cover') || frames) need(has(f.fm, 'art'), 'art needs its provenance (art:)');
+      if (has(f.fm, 'cover') || frames) {
+        const art = block(f.fm, 'art');
+        need(/^\s+generator:\s*\S/m.test(art) && /^\s+reviewedBy:\s*\S/m.test(art), 'art needs its provenance (art.generator and art.reviewedBy)');
+      }
     } else if (de) {
       if (has(de.fm, 'cover')) need(has(f.fm, 'coverAlt'), 'needs coverAlt');
       const n = countFrames(de.fm);
