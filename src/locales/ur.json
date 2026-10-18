@@ -212,5 +212,8 @@
   "pupilDevices": "طلبہ کے آلات ترتیب دیں",
   "classLinkConfirm": "یہ ڈیوائس {lang} میں «{shelf}» کے ساتھ شروع ہوگی۔",
   "classLinkAlongside": "ساتھ میں {second}۔",
-  "classLinkYes": "ترتیب دیں"
+  "classLinkYes": "ترتیب دیں",
+  "offlineBanner": "آف لائن۔ اس ڈیوائس پر موجود کہانیاں چلتی رہیں گی۔",
+  "dismiss": "بند کریں",
+  "offlineNeedsInternet": "اس کہانی کے لیے انٹرنیٹ چاہیے۔"
 }

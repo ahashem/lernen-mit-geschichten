@@ -8,7 +8,7 @@ import LanguageSelector from '@components/LanguageSelector.astro';
 import GTMTracking from '@components/GTMTracking.astro';
 import type { Locale } from '@utils/i18n';
 import { getTranslation, isRTL } from '@utils/i18n';
-import { BASE_PATH as base } from '@utils/site';
+import { BASE_PATH as base, OFFLINE } from '@utils/site';
 import { buildMarker } from '@utils/build-marker';
 import { LOCALES } from '@utils/story-availability';
 
@@ -128,6 +128,8 @@ const jsonLd =
     }
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
+    {OFFLINE && <link rel="manifest" href={`${base}/manifest.webmanifest`} />}
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
   </head>
@@ -170,6 +172,26 @@ const jsonLd =
 
     <ClassLinkCard locale={locale} />
 
+    {
+      OFFLINE && (
+        <>
+          <div
+            class="offline-bar notice notice--problem"
+            role="status"
+            hidden
+            data-offline-bar
+            data-sw={`${base}/sw.js`}
+            data-scope={`${base}/`}
+          >
+            <span>{getTranslation(locale, 'offlineBanner')}</span>
+            <button class="btn" type="button" data-offline-dismiss>
+              {getTranslation(locale, 'dismiss')}
+            </button>
+          </div>
+        </>
+      )
+    }
+
     <main id="main-content">
       <slot />
     </main>
@@ -195,7 +217,23 @@ const jsonLd =
       </div>
     </footer>
 
+    {OFFLINE && <script src="../scripts/offline.ts" />}
+
     <style>
+      .offline-bar {
+        position: fixed;
+        inset-inline: var(--s-4);
+        inset-block-end: var(--s-4);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--s-3);
+      }
+      .offline-bar[hidden] {
+        display: none;
+      }
+
       header {
         background: var(--card);
         border-block-end: 1px solid var(--rule);

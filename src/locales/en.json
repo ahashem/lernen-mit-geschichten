@@ -212,5 +212,8 @@
   "pupilDevices": "Set up pupil devices",
   "classLinkConfirm": "This device will start with “{shelf}” in {lang}.",
   "classLinkAlongside": "With {second} alongside.",
-  "classLinkYes": "Set it up"
+  "classLinkYes": "Set it up",
+  "offlineBanner": "Offline. Stories on this device still work.",
+  "dismiss": "Dismiss",
+  "offlineNeedsInternet": "This story needs the internet."
 }

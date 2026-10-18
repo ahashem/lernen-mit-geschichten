@@ -213,5 +213,8 @@
   "pupilDevices": "Geräte der Kinder einrichten",
   "classLinkConfirm": "Dieses Gerät startet mit „{shelf}“ auf {lang}.",
   "classLinkAlongside": "Mit {second} daneben.",
-  "classLinkYes": "Einrichten"
+  "classLinkYes": "Einrichten",
+  "offlineBanner": "Offline. Geschichten auf diesem Gerät funktionieren weiter.",
+  "dismiss": "Schließen",
+  "offlineNeedsInternet": "Diese Geschichte braucht das Internet."
 }
