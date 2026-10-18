@@ -212,5 +212,8 @@
   "pupilDevices": "إعداد أجهزة التلاميذ",
   "classLinkConfirm": "سيبدأ هذا الجهاز بـ «{shelf}» بلغة {lang}.",
   "classLinkAlongside": "مع {second} بجانبها.",
-  "classLinkYes": "إعداد"
+  "classLinkYes": "إعداد",
+  "offlineBanner": "لا يوجد اتصال. القصص المحفوظة على هذا الجهاز تعمل.",
+  "dismiss": "إغلاق",
+  "offlineNeedsInternet": "هذه القصة تحتاج إلى الإنترنت."
 }

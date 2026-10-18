@@ -143,7 +143,10 @@
     "pupilDevices",
     "classLinkConfirm",
     "classLinkAlongside",
-    "classLinkYes"
+    "classLinkYes",
+    "offlineBanner",
+    "dismiss",
+    "offlineNeedsInternet"
   ],
   "tr": [
     "skipToContent",
@@ -289,7 +292,10 @@
     "pupilDevices",
     "classLinkConfirm",
     "classLinkAlongside",
-    "classLinkYes"
+    "classLinkYes",
+    "offlineBanner",
+    "dismiss",
+    "offlineNeedsInternet"
   ],
   "ur": [
     "skipToContent",
@@ -435,6 +441,9 @@
     "pupilDevices",
     "classLinkConfirm",
     "classLinkAlongside",
-    "classLinkYes"
+    "classLinkYes",
+    "offlineBanner",
+    "dismiss",
+    "offlineNeedsInternet"
   ]
 }

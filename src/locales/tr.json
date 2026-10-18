@@ -212,5 +212,8 @@
   "pupilDevices": "Öğrenci cihazlarını ayarla",
   "classLinkConfirm": "Bu cihaz {lang} dilinde “{shelf}” ile başlayacak.",
   "classLinkAlongside": "Yanında {second} ile.",
-  "classLinkYes": "Ayarla"
+  "classLinkYes": "Ayarla",
+  "offlineBanner": "Çevrimdışı. Bu cihazdaki hikâyeler çalışmaya devam eder.",
+  "dismiss": "Kapat",
+  "offlineNeedsInternet": "Bu hikâye internet gerektirir."
 }
