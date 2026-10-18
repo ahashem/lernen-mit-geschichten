@@ -42,6 +42,10 @@ const stories = await Promise.all(
   })
 );
 
+// The line every printed page carries in its bottom margin (ux/03 section 11: the AI-illustration note).
+const note = `${t('siteName')} · ${t('footerArt')}`.replace(/[\\"]/g, '');
+const pageNote = `@page folio { @bottom-left { content: "${note}"; font-size: 8pt; color: #444; width: 84%; text-align: left; } }`;
+
 const groups = (await getSkillsByCategory(locale)).map(group => ({
   ...group,
   skills: group.skills
@@ -52,6 +56,7 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
 ---
 
 <BaseLayout title={t('folioTitle')} locale={locale}>
+  <style is:inline set:html={pageNote}></style>
   <div class="container folio" data-folio>
     <section class="controls">
       <h1>{t('folioTitle')}</h1>
@@ -129,14 +134,24 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
 
           {stories.map(({ item, Content, code, prompts }) => (
             <article class="sheet story-sheet" data-story={item.slug}>
-              <h2 class="story-title">
-                <span class="no">{numberOf(item.storyId)}</span>
-                {item.title}
-              </h2>
-              <p class="meta">
-                {t(SHELF_KEY[item.band as 1 | 2 | 3 | 4])} · {item.minutes} {t('minutes')}
-                {item.skills.length > 0 && <> · {item.skills.map(labelOf).join(' · ')}</>}
-              </p>
+              <div class="story-head">
+                <div>
+                  <h2 class="story-title">
+                    <span class="no">{numberOf(item.storyId)}</span>
+                    {item.title}
+                  </h2>
+                  <p class="meta">
+                    {t(SHELF_KEY[item.band as 1 | 2 | 3 | 4])} · {item.minutes} {t('minutes')}
+                    {item.skills.length > 0 && <> · {item.skills.map(labelOf).join(' · ')}</>}
+                  </p>
+                </div>
+                {code && (
+                  <div class="qr">
+                    <div class="qr-code" set:html={code} aria-hidden="true" />
+                    <p>{t('folioScan')}</p>
+                  </div>
+                )}
+              </div>
               {item.summary && <p class="lead">{item.summary}</p>}
               <div class="body">
                 <Content />
@@ -151,17 +166,6 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
                   </ol>
                 </section>
               )}
-              <footer class="story-foot">
-                {code && (
-                  <div class="qr">
-                    <div class="qr-code" set:html={code} aria-hidden="true" />
-                    <p>{t('folioScan')}</p>
-                  </div>
-                )}
-                <p>
-                  {item.title} · {t('siteName')} · {t('footerArt')}
-                </p>
-              </footer>
             </article>
           ))}
         </div>
@@ -308,16 +312,23 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
   .prompts {
     margin-block-start: var(--s-4);
   }
-  .story-foot {
+  .story-head {
     display: flex;
     gap: var(--s-4);
-    align-items: center;
-    margin-block-start: var(--s-5);
-    font-size: 0.8rem;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .qr {
+    flex: none;
+    inline-size: 24mm;
+    font-size: 0.7rem;
+    line-height: 1.2;
+    text-align: center;
     color: #444;
   }
   .qr-code {
-    inline-size: 22mm;
+    inline-size: 20mm;
+    margin-inline: auto;
   }
   [hidden] {
     display: none !important;
@@ -328,15 +339,16 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
   @page folio {
     size: A4;
     margin: 15mm 12mm 18mm;
-    @bottom-center {
+    @bottom-right {
       content: counter(page);
       font-size: 9pt;
       color: #444;
+      width: 12%;
     }
   }
   @media print {
     body:has([data-folio]) header,
-    body:has([data-folio]) footer:not(.story-foot),
+    body:has([data-folio]) > footer,
     body:has([data-folio]) .controls,
     body:has([data-folio]) [data-offline-bar] {
       display: none !important;
@@ -362,7 +374,7 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
       break-after: avoid;
     }
     [data-folio] .prompts,
-    [data-folio] .story-foot {
+    [data-folio] .qr {
       break-inside: avoid;
     }
     body:has([data-folio]) {
