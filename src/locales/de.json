@@ -180,5 +180,8 @@
   "chapterShort": "Kap. {n} / {total}",
   "chapterDoneNext": "Kapitel {n} geschafft · Weiter: {title}",
   "previousChapter": "Voriges Kapitel",
-  "toCover": "Zum Titelbild"
+  "toCover": "Zum Titelbild",
+  "languageLabel": "Sprache",
+  "storyNotIn": "Diese Geschichte gibt es noch nicht auf {lang}.",
+  "goToHome": "Zur {lang}-Startseite"
 }

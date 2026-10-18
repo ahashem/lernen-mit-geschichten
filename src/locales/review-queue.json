@@ -108,7 +108,12 @@
     "chapterShort",
     "chapterDoneNext",
     "previousChapter",
-    "toCover"
+    "toCover",
+    "languageLabel",
+    "storyNotIn",
+    "goToHome",
+    "notFoundHint",
+    "notFoundBackToStories"
   ],
   "tr": [
     "skipToContent",
@@ -219,7 +224,12 @@
     "chapterShort",
     "chapterDoneNext",
     "previousChapter",
-    "toCover"
+    "toCover",
+    "languageLabel",
+    "storyNotIn",
+    "goToHome",
+    "notFoundHint",
+    "notFoundBackToStories"
   ],
   "ur": [
     "skipToContent",
@@ -330,6 +340,11 @@
     "chapterShort",
     "chapterDoneNext",
     "previousChapter",
-    "toCover"
+    "toCover",
+    "languageLabel",
+    "storyNotIn",
+    "goToHome",
+    "notFoundHint",
+    "notFoundBackToStories"
   ]
 }

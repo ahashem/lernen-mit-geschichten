@@ -177,5 +177,10 @@
   "chapterShort": "Böl. {n} / {total}",
   "chapterDoneNext": "Bölüm {n} bitti · Sıradaki: {title}",
   "previousChapter": "Önceki bölüm",
-  "toCover": "Kapağa dön"
+  "toCover": "Kapağa dön",
+  "languageLabel": "Dil",
+  "storyNotIn": "Bu hikâye henüz {lang} dilinde yok.",
+  "goToHome": "{lang} ana sayfasına git",
+  "notFoundHint": "Aradığın hikâye burada yok.",
+  "notFoundBackToStories": "Hikâyelere dön"
 }
