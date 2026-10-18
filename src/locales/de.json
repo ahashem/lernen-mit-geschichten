@@ -205,5 +205,13 @@
   "classCaptions": "Text ein/aus",
   "classNotes": "Notizen",
   "classBlackout": "Schwarz",
-  "classMark": "Nächster Satz"
+  "classMark": "Nächster Satz",
+  "forEducators": "Für Pädagoginnen und Pädagogen",
+  "printPrep": "Vorbereitungsblatt drucken",
+  "printPack": "Mal- und Gesprächsblätter drucken",
+  "nameLine": "Name:",
+  "pupilDevices": "Geräte der Kinder einrichten",
+  "classLinkConfirm": "Dieses Gerät startet mit „{shelf}“ auf {lang}.",
+  "classLinkAlongside": "Mit {second} daneben.",
+  "classLinkYes": "Einrichten"
 }

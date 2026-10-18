@@ -3,6 +3,7 @@ import '@styles/fonts.css';
 import '@styles/tokens.css';
 import '@styles/global.css';
 import '@styles/rtl.css';
+import ClassLinkCard from '@components/ClassLinkCard.astro';
 import LanguageSelector from '@components/LanguageSelector.astro';
 import GTMTracking from '@components/GTMTracking.astro';
 import type { Locale } from '@utils/i18n';
@@ -166,6 +167,8 @@ const jsonLd =
         </nav>
       </div>
     </header>
+
+    <ClassLinkCard locale={locale} />
 
     <main id="main-content">
       <slot />

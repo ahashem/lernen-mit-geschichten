@@ -204,5 +204,13 @@
   "classCaptions": "النص",
   "classNotes": "ملاحظات",
   "classBlackout": "إظلام",
-  "classMark": "الجملة التالية"
+  "classMark": "الجملة التالية",
+  "forEducators": "للمعلمين والمربين",
+  "printPrep": "اطبع ورقة التحضير",
+  "printPack": "اطبع أوراق التلوين والحوار",
+  "nameLine": "الاسم:",
+  "pupilDevices": "إعداد أجهزة التلاميذ",
+  "classLinkConfirm": "سيبدأ هذا الجهاز بـ «{shelf}» بلغة {lang}.",
+  "classLinkAlongside": "مع {second} بجانبها.",
+  "classLinkYes": "إعداد"
 }

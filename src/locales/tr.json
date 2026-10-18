@@ -204,5 +204,13 @@
   "classCaptions": "Altyazı",
   "classNotes": "Notlar",
   "classBlackout": "Karart",
-  "classMark": "Sonraki cümle"
+  "classMark": "Sonraki cümle",
+  "forEducators": "Eğitimciler için",
+  "printPrep": "Hazırlık sayfasını yazdır",
+  "printPack": "Boyama ve sohbet sayfalarını yazdır",
+  "nameLine": "Ad:",
+  "pupilDevices": "Öğrenci cihazlarını ayarla",
+  "classLinkConfirm": "Bu cihaz {lang} dilinde “{shelf}” ile başlayacak.",
+  "classLinkAlongside": "Yanında {second} ile.",
+  "classLinkYes": "Ayarla"
 }
