@@ -1,0 +1,47 @@
+name: Sync editorial
+
+# Code lands on `main` through pull requests; `editorial` only pulls `main` in when its own
+# workflow runs (a CMS save). This runs right after a code merge instead, so the preview stays
+# current and a merge conflict surfaces while the change is fresh in CI, not at the next
+# editor save. A conflicted merge is never pushed: the run fails and a human resolves it.
+# Pushes made with GITHUB_TOKEN start no workflows, so the Pages deploy is dispatched by hand.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  actions: write
+
+# The same mutex as the publish workflow: only one run at a time may merge into editorial.
+concurrency:
+  group: editorial-publish
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: editorial
+          fetch-depth: 0
+
+      - name: Merge main into editorial
+        id: merge
+        run: |
+          git config user.name "editorial-bot"
+          git config user.email "editorial-bot@users.noreply.github.com"
+          if git merge-base --is-ancestor origin/main HEAD; then
+            echo "editorial already contains main; nothing to merge."
+            exit 0
+          fi
+          git merge --no-edit origin/main
+          git push origin HEAD:editorial
+          echo "merged=true" >> "$GITHUB_OUTPUT"
+
+      - name: Refresh the editorial preview
+        if: steps.merge.outputs.merged == 'true'
+        run: gh workflow run deploy.yml --ref editorial
