@@ -216,5 +216,9 @@
   "classLinkYes": "Einrichten",
   "offlineBanner": "Offline. Geschichten auf diesem Gerät funktionieren weiter.",
   "dismiss": "Schließen",
-  "offlineNeedsInternet": "Diese Geschichte braucht das Internet."
+  "offlineNeedsInternet": "Diese Geschichte braucht das Internet.",
+  "feedbackStory": "Sagen Sie uns etwas zu dieser Geschichte",
+  "feedbackStoryBody": "Was ist Ihnen an dieser Geschichte aufgefallen?",
+  "feedbackAbout": "Sagen Sie uns, was Sie denken",
+  "feedbackAboutBody": "Was können wir besser machen?"
 }

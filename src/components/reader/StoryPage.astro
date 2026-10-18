@@ -18,6 +18,7 @@ import Icon from './Icon.astro';
 import StoryArt from './StoryArt.astro';
 import EducatorTools from './EducatorTools.astro';
 import PrintSheets from './PrintSheets.astro';
+import FeedbackLink from './FeedbackLink.astro';
 
 interface Props {
   story: CollectionEntry<'stories'>;
@@ -222,6 +223,7 @@ const description = summary || `${title} | ${t('siteName')}`;
               >
             </div>
           </details>
+          <FeedbackLink locale={locale} title={title} band={band} />
           {
             otherLanguages.length > 0 && (
               <nav class="other-languages" aria-label={t('alsoAvailableIn')}>

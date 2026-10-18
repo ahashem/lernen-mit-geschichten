@@ -67,6 +67,8 @@ review, which the owner has accepted for interface labels (never for story text)
 `src/locales/review-queue.json` (`{ "ar": ["key", …], "tr": […], "ur": […] }`) and removed once a native speaker
 signs it off. Outside the roadmap work, a change that adds keys still needs a native reviewer on the PR.
 
+**Feedback.** `PUBLIC_FEEDBACK_EMAIL` at build time turns on the "Tell us about this story" `mailto:` link on story pages and About; unset, nothing renders. The address never enters source.
+
 **Offline.** `PUBLIC_OFFLINE=1` at build time registers a service worker (`src/pages/sw.js.ts`) and links a manifest; it ships
 off, and without it `sw.js` removes itself and its `lmg-*` caches. Never enable it in a deploy without the owner.
 

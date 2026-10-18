@@ -215,5 +215,9 @@
   "classLinkYes": "Ayarla",
   "offlineBanner": "Çevrimdışı. Bu cihazdaki hikâyeler çalışmaya devam eder.",
   "dismiss": "Kapat",
-  "offlineNeedsInternet": "Bu hikâye internet gerektirir."
+  "offlineNeedsInternet": "Bu hikâye internet gerektirir.",
+  "feedbackStory": "Bu hikaye hakkında bize yazın",
+  "feedbackStoryBody": "Bu hikayede neyi fark ettiniz?",
+  "feedbackAbout": "Düşüncelerinizi bize yazın",
+  "feedbackAboutBody": "Neyi daha iyi yapabiliriz?"
 }

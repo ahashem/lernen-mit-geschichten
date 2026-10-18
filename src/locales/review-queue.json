@@ -146,7 +146,11 @@
     "classLinkYes",
     "offlineBanner",
     "dismiss",
-    "offlineNeedsInternet"
+    "offlineNeedsInternet",
+    "feedbackStory",
+    "feedbackStoryBody",
+    "feedbackAbout",
+    "feedbackAboutBody"
   ],
   "tr": [
     "skipToContent",
@@ -295,7 +299,11 @@
     "classLinkYes",
     "offlineBanner",
     "dismiss",
-    "offlineNeedsInternet"
+    "offlineNeedsInternet",
+    "feedbackStory",
+    "feedbackStoryBody",
+    "feedbackAbout",
+    "feedbackAboutBody"
   ],
   "ur": [
     "skipToContent",
@@ -444,6 +452,10 @@
     "classLinkYes",
     "offlineBanner",
     "dismiss",
-    "offlineNeedsInternet"
+    "offlineNeedsInternet",
+    "feedbackStory",
+    "feedbackStoryBody",
+    "feedbackAbout",
+    "feedbackAboutBody"
   ]
 }

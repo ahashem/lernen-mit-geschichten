@@ -1,0 +1,37 @@
+---
+import { fmt, getTranslation, type Locale } from '@utils/i18n';
+import { FEEDBACK_EMAIL } from '@utils/site';
+
+interface Props {
+  locale: Locale;
+  /** A story page passes its title and band; About passes neither. */
+  title?: string;
+  band?: number;
+}
+
+const { locale, title, band } = Astro.props;
+const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
+const about = title === undefined;
+const subject = about
+  ? 'Lernen mit Geschichten'
+  : fmt('{title} · {locale} · band {band}', { title, locale, band: band ?? '' });
+const href = FEEDBACK_EMAIL
+  ? `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(t(about ? 'feedbackAboutBody' : 'feedbackStoryBody') + '\n\n')}`
+  : '';
+---
+
+{
+  href && (
+    <p class="feedback">
+      <a href={href}>{t(about ? 'feedbackAbout' : 'feedbackStory')}</a>
+    </p>
+  )
+}
+
+<style>
+  .feedback a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-adult, 44px);
+  }
+</style>

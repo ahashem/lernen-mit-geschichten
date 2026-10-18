@@ -215,5 +215,9 @@
   "classLinkYes": "Set it up",
   "offlineBanner": "Offline. Stories on this device still work.",
   "dismiss": "Dismiss",
-  "offlineNeedsInternet": "This story needs the internet."
+  "offlineNeedsInternet": "This story needs the internet.",
+  "feedbackStory": "Tell us about this story",
+  "feedbackStoryBody": "What did you notice about this story?",
+  "feedbackAbout": "Tell us what you think",
+  "feedbackAboutBody": "What could we do better?"
 }
