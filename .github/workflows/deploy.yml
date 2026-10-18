@@ -78,6 +78,7 @@ jobs:
         if: steps.detect.outputs.has_editorial == 'true'
         working-directory: preview-src
         continue-on-error: true
+        shell: bash
         env:
           SITE_URL: ${{ env.PAGES_URL }}/preview
           NOINDEX: '1'
