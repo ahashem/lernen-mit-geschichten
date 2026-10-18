@@ -215,5 +215,9 @@
   "classLinkYes": "ترتیب دیں",
   "offlineBanner": "آف لائن۔ اس ڈیوائس پر موجود کہانیاں چلتی رہیں گی۔",
   "dismiss": "بند کریں",
-  "offlineNeedsInternet": "اس کہانی کے لیے انٹرنیٹ چاہیے۔"
+  "offlineNeedsInternet": "اس کہانی کے لیے انٹرنیٹ چاہیے۔",
+  "feedbackStory": "اس کہانی کے بارے میں ہمیں بتائیں",
+  "feedbackStoryBody": "آپ نے اس کہانی میں کیا محسوس کیا؟",
+  "feedbackAbout": "ہمیں اپنی رائے بتائیں",
+  "feedbackAboutBody": "ہم کیا بہتر کر سکتے ہیں؟"
 }
