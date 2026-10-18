@@ -112,7 +112,7 @@ const languages: { code: Locale; name: string; dot: string }[] = [
   var code = copy[path] && path !== 'de' ? path : null;
   try {
     code = code || JSON.parse(localStorage.getItem('reader-prefs') || '{}').lang;
-  } catch (e) {}
+  } catch {}
   if (!copy[code]) code = 'de';
   var prefix = code === 'de' ? base : base + '/' + code;
   var rtl = code === 'ar' || code === 'ur';
