@@ -137,6 +137,63 @@ Read: `05-parents-and-educators.md`; `ux/03` §10 (not two-screen mode), §11, �
 
 Not in any run: Class room two-screen mode, My reading list, pre-built PDF class packs, "Read it in my voice".
 
+## Runs 4-8: from "it works" to "they come back"
+
+Ordered by what a child, parent or teacher feels first. Each run is about $9-10, ships one thing a person can name,
+and ends with its tags. The accessibility items run 3 left open ride along with the run that touches the screen.
+The milestone slug tags are placed by the last run that closes their scope: `m2-grows-with-the-child` (Run 6),
+`m3-classroom-and-world` (Run 7), `m1-story-worth-opening` (Run 8).
+
+### Run 4: "I found a story I'll love" (about $10)
+
+Value: a 4-year-old picks by feeling without reading; a parent finds the right story in under 20 seconds.
+
+- Find by feeling and the faces row on Picture home; feeling and format filters in the Library; "Klasse" hint on
+  cards; the first-visit language from `navigator.languages`; the 56 px top bar with the "For grown-ups" menu;
+  skeleton loading states. Skip a filter whose data (`feelings`) does not exist yet instead of stubbing it.
+
+Read: `ux/03` §1b, §2, §3, §14; `ux/07` #11, #15.
+
+### Run 5: "It opens at once, even on kita Wi-Fi" (about $9)
+
+Value: a story is on screen in seconds on a slow tablet, and a teacher can keep tomorrow's stories on it.
+
+- `astro:assets` responsive images (a 1.3 MB colour frame is the heaviest asset), render-blocking CSS, Library
+  and story Lighthouse mobile above 90. Offline stays behind `PUBLIC_OFFLINE`: "Keep on this device", packs, the
+  storage panel, the install card, dimmed unsaved covers.
+
+Read: `ux/03` §12; `06-reach-and-trust.md`; run 3's audit numbers in the Run 3 PR.
+
+### Run 6: "It grows with the child" (about $10)
+
+Value: an 11-year-old reads a chapter story that feels made for them.
+
+- Chapter reader: paginated columns, Listen, think cards, second-language tools, add-to-list, Literata. Think
+  cards and glosses need the owner's CMS data; skip what has none. Closes M2.
+
+Read: `ux/03` §5b, §7c, §8, §16; `ux/05` Dyslexia options.
+
+### Run 7: "A whole lesson, start to finish" (about $10)
+
+Value: Frau Yıldız prepares on Sunday and runs circle time or a lesson on Monday with one tablet.
+
+- Class room: narration toggle, per-page prompts, discussion card `D`. Print: Letter paper, a detail switch, band
+  3-4 pack items, a per-frame colouring page, the circle folder export. Closes M3.
+
+Read: `05-parents-and-educators.md`; `ux/03` §10, §11.
+
+### Run 8: "Bedtime, first taps and the last audit" (about $10)
+
+Value: a parent winds down at night; a pre-reader needs no help; everyone can trust the whole.
+
+- Lamp shelf and Lamp door, "Listen in the dark" for bands 3-4, spoken first-tap labels and the "?" tour, recall
+  and feeling talk cards, an in-app "Less motion" switch, font preload, `skills` into `story-meta`, fold
+  `001-bruno-interactive` into `001-bruno`, remember the language pair per story, remaining hardcoded strings.
+- Final audit: the screen-reader passes, 200% zoom, the Urdu clipping check, Lamp and high-contrast contrast,
+  RTL beyond the Library. Closes M1.
+
+Read: `ux/03` §9, §7; `ux/04`; `ux/05` Screen-reader experience, Pre-reader navigation, Testing checklist.
+
 ## Owner and parallel tasks
 
 - **CMS** (Pages CMS, `03`) is being set up by the owner in parallel and is outside the agent's scope. The schema in
