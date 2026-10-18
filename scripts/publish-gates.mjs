@@ -149,6 +149,10 @@ if (changedRef) {
       need(picked >= 1 && picked <= 3, 'published needs 1 to 3 skills');
       const frames = countFrames(f.fm);
       if (has(f.fm, 'cover')) need(/^\s+alt:/m.test(block(f.fm, 'cover')), 'cover needs alt text');
+      // A picture that was never uploaded would silently fall back to the generated art.
+      for (const src of [...block(f.fm, 'cover').matchAll(/^\s+src:\s*["']?([^"'\r\n]+)/gm), ...block(f.fm, 'frames').matchAll(/^[ \t]+-?\s*src:\s*["']?([^"'\r\n]+)/gm)].map(m => m[1].trim())) {
+        need(existsSync(join('public', src)), `the picture ${src} has not been uploaded`);
+      }
       if (frames) need((block(f.fm, 'frames').match(/^\s+alt:/gm) ?? []).length >= frames, 'every page picture needs alt text');
       if (has(f.fm, 'cover') || frames) {
         const art = block(f.fm, 'art');
