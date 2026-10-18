@@ -48,8 +48,8 @@ const languages: { code: Locale; name: string; dot: string }[] = [
 
       <p class="nf-code" aria-hidden="true">404</p>
 
-      <h1 class="nf-heading">{getTranslation(locale, 'notFoundHeading')}</h1>
-      <p class="nf-hint">{getTranslation(locale, 'notFoundHint')}</p>
+      <h1 class="nf-heading" data-nf="heading">{getTranslation(locale, 'notFoundHeading')}</h1>
+      <p class="nf-hint" data-nf="hint">{getTranslation(locale, 'notFoundHint')}</p>
 
       <ul class="nf-langs">
         {
@@ -74,17 +74,63 @@ const languages: { code: Locale; name: string; dot: string }[] = [
       </ul>
 
       <div class="nf-actions">
-        <a class="nf-btn nf-btn-primary" href={`${base}/`}>
+        <a class="nf-btn nf-btn-primary" data-nf="home" href={`${base}/`}>
           <span class="nf-book-icon" aria-hidden="true"></span>
           {getTranslation(locale, 'notFoundBackToStories')}
         </a>
-        <a class="nf-btn nf-btn-secondary" href={`${base}/about`}
+        <a class="nf-btn nf-btn-secondary" data-nf="library" href={`${base}/library`}
+          >{getTranslation(locale, 'library')}</a
+        >
+        <a class="nf-btn nf-btn-secondary" data-nf="about" href={`${base}/about`}
           >{getTranslation(locale, 'about')}</a
         >
       </div>
     </main>
   </body>
 </html>
+
+<script
+  is:inline
+  define:vars={{
+    base,
+    copy: Object.fromEntries(
+      ['de', 'ar', 'en', 'tr', 'ur'].map(code => [
+        code,
+        {
+          heading: getTranslation(code as Locale, 'notFoundHeading'),
+          hint: getTranslation(code as Locale, 'notFoundHint'),
+          home: getTranslation(code as Locale, 'notFoundBackToStories'),
+          library: getTranslation(code as Locale, 'library'),
+          about: getTranslation(code as Locale, 'about'),
+        },
+      ])
+    ),
+  }}
+>
+  // The language comes from the URL prefix, else the one stored on this device, else German (ux/03 14).
+  var path = location.pathname.slice(base.length).split('/')[1];
+  var code = copy[path] && path !== 'de' ? path : null;
+  try {
+    code = code || JSON.parse(localStorage.getItem('reader-prefs') || '{}').lang;
+  } catch {}
+  if (!copy[code]) code = 'de';
+  var prefix = code === 'de' ? base : base + '/' + code;
+  var rtl = code === 'ar' || code === 'ur';
+  document.documentElement.lang = code;
+  document.documentElement.dir = rtl ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-nf]').forEach(function (el) {
+    var key = el.dataset.nf;
+    var text = copy[code][key];
+    var node = Array.prototype.find.call(el.childNodes, function (n) {
+      return n.nodeType === 3 && n.textContent.trim();
+    });
+    if (node) node.textContent = text;
+    else if (!el.querySelector('*')) el.textContent = text;
+    if (key === 'home') el.href = prefix + '/';
+    if (key === 'library') el.href = prefix + '/library';
+    if (key === 'about') el.href = prefix + '/about';
+  });
+</script>
 
 <style>
   .nf {

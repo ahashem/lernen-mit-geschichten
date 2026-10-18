@@ -177,5 +177,10 @@
   "chapterShort": "باب {n} / {total}",
   "chapterDoneNext": "باب {n} مکمل · اگلا: {title}",
   "previousChapter": "پچھلا باب",
-  "toCover": "سرورق پر واپس"
+  "toCover": "سرورق پر واپس",
+  "languageLabel": "زبان",
+  "storyNotIn": "یہ کہانی ابھی {lang} میں نہیں ہے۔",
+  "goToHome": "{lang} کے ہوم پر جائیں",
+  "notFoundHint": "آپ جو کہانی ڈھونڈ رہے ہیں وہ یہاں نہیں ہے۔",
+  "notFoundBackToStories": "کہانیوں پر واپس"
 }

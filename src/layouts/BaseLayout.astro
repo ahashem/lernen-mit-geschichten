@@ -16,9 +16,11 @@ interface Props {
   locale?: Locale;
   image?: string;
   type?: 'website' | 'article';
+  /** Story pages: the languages this story exists in, for the language switch. */
+  storyLocales?: Locale[];
 }
 
-const { title, description, locale = 'de', image, type = 'website' } = Astro.props;
+const { title, description, locale = 'de', image, type = 'website', storyLocales } = Astro.props;
 const dir = isRTL(locale) ? 'rtl' : 'ltr';
 const siteName = getTranslation(locale, 'siteName');
 const siteUrl = Astro.site?.href.replace(/\/$/, '') ?? '';
@@ -119,7 +121,11 @@ const build = buildMarker();
             >
           </div>
 
-          <LanguageSelector currentLocale={locale} currentPath={Astro.url.pathname} />
+          <LanguageSelector
+            currentLocale={locale}
+            currentPath={Astro.url.pathname}
+            storyLocales={storyLocales}
+          />
         </nav>
       </div>
     </header>

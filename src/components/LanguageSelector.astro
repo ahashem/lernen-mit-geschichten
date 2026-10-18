@@ -1,107 +1,214 @@
 ---
-import type { Locale } from '../utils/i18n';
+import Icon from '@components/reader/Icon.astro';
+import { endonyms, fmt, getTranslation, isRTL, type Locale } from '../utils/i18n';
+import { LOCALES } from '../utils/story-availability';
 import { BASE_PATH as base } from '../utils/site';
 
 interface Props {
   currentLocale: Locale;
   currentPath?: string;
+  /** On a story page: the languages this story exists in. Elsewhere every language is offered. */
+  storyLocales?: Locale[];
 }
 
-const { currentLocale, currentPath = '/' } = Astro.props;
+const { currentLocale, currentPath = '/', storyLocales } = Astro.props;
+const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(currentLocale, key);
 
-// Strip locale prefix and base path from currentPath
+// The page without the base path and the locale prefix; the same page in another language adds its own prefix.
 const cleanPath =
-  currentPath.replace(new RegExp(`^${base}`), '').replace(/^\/(ar|en|tr|ur)/, '') || '/';
+  currentPath.replace(new RegExp(`^${base}`), '').replace(/^\/(ar|en|tr|ur)(?=\/|$)/, '') || '/';
+const pathIn = (code: Locale) =>
+  `${base}${code === 'de' ? '' : `/${code}`}${cleanPath === '/' && code !== 'de' ? '' : cleanPath}` ||
+  '/';
+const homeIn = (code: Locale) => (code === 'de' ? `${base}/` : `${base}/${code}`);
 
-const languages = [
-  { code: 'de' as Locale, name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'ar' as Locale, name: 'العربية', flag: '🇸🇦' },
-  { code: 'en' as Locale, name: 'English', flag: '🇬🇧' },
-  { code: 'tr' as Locale, name: 'Türkçe', flag: '🇹🇷' },
-  { code: 'ur' as Locale, name: 'اردو', flag: '🇵🇰' },
-];
-
-// Check if we're on a story page
-const isStoryPage = cleanPath.startsWith('/stories/');
-
-const getLocalizedPath = (langCode: Locale) => {
-  // On story pages, change UI language only (via query param)
-  if (isStoryPage) {
-    return `${base}${cleanPath}${langCode === 'de' ? '' : `?ui=${langCode}`}`;
-  }
-
-  // On other pages, change page language
-  if (langCode === 'de') {
-    return `${base}${cleanPath}`;
-  }
-  return `${base}/${langCode}${cleanPath}`;
-};
+const rows = LOCALES.map(code => ({
+  code,
+  name: endonyms[code],
+  current: code === currentLocale,
+  missing: !!storyLocales && !storyLocales.includes(code),
+  href: pathIn(code),
+}));
+const available = rows.filter(r => !r.missing);
 ---
 
-<div class="language-selector">
-  <select class="lang-dropdown" aria-label="Select language">
+<div class="language-selector" data-lang-switch>
+  <details>
+    <summary aria-label={`${t('languageLabel')}: ${endonyms[currentLocale]}`}>
+      <Icon name="bubble" size={22} />
+      <span lang={currentLocale} dir={isRTL(currentLocale) ? 'rtl' : 'ltr'}>
+        {endonyms[currentLocale]}
+      </span>
+    </summary>
+    <ul class="panel">
+      {
+        rows.map(r => (
+          <li>
+            <a
+              href={r.href}
+              lang={r.code}
+              dir={isRTL(r.code) ? 'rtl' : 'ltr'}
+              hreflang={r.code}
+              aria-current={r.current ? 'true' : undefined}
+              data-code={r.code}
+              data-missing={r.missing || undefined}
+              data-home={homeIn(r.code)}
+              data-message={r.missing ? fmt(t('storyNotIn'), { lang: r.name }) : undefined}
+              data-home-label={r.missing ? fmt(t('goToHome'), { lang: r.name }) : undefined}
+            >
+              <span>{r.name}</span>
+              {r.current && (
+                <span class="check" aria-hidden="true">
+                  ✓
+                </span>
+              )}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
     {
-      languages.map(lang => (
-        <option value={getLocalizedPath(lang.code)} selected={currentLocale === lang.code}>
-          {lang.flag} {lang.name}
-        </option>
-      ))
+      storyLocales && (
+        <div class="missing" role="status" hidden>
+          <p data-missing-text />
+          <ul>
+            {available
+              .filter(r => !r.current)
+              .map(r => (
+                <li>
+                  <a href={r.href} lang={r.code} dir={isRTL(r.code) ? 'rtl' : 'ltr'}>
+                    {r.name}
+                  </a>
+                </li>
+              ))}
+          </ul>
+          <a data-missing-home href="#" />
+        </div>
+      )
     }
-  </select>
+  </details>
 </div>
 
 <script>
-  document.querySelectorAll('.lang-dropdown').forEach(select => {
-    select.addEventListener('change', e => {
-      const target = e.target as HTMLSelectElement;
-      window.location.href = target.value;
+  import { loadPrefs, savePrefs } from '@components/reader/prefs';
+
+  document.querySelectorAll<HTMLElement>('[data-lang-switch]').forEach(root => {
+    const details = root.querySelector('details')!;
+    const missing = root.querySelector<HTMLElement>('.missing');
+    root.querySelectorAll<HTMLAnchorElement>('.panel a').forEach(a =>
+      a.addEventListener('click', e => {
+        if (a.getAttribute('aria-current') === 'true') return e.preventDefault();
+        e.preventDefault();
+        if (a.dataset.missing && missing) {
+          missing.querySelector('[data-missing-text]')!.textContent = a.dataset.message!;
+          const home = missing.querySelector<HTMLAnchorElement>('[data-missing-home]')!;
+          home.href = a.dataset.home!;
+          home.textContent = a.dataset.homeLabel!;
+          home.lang = a.dataset.code!;
+          missing.hidden = false;
+          return;
+        }
+        // The choice stays on this device; filters in the query string travel with the reader.
+        savePrefs({ ...loadPrefs(), lang: a.dataset.code });
+        location.href = a.href + location.search;
+      })
+    );
+    root
+      .querySelectorAll<HTMLAnchorElement>('.missing a')
+      .forEach(a => a.addEventListener('click', () => savePrefs({ ...loadPrefs(), lang: a.lang })));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && details.open) {
+        details.open = false;
+        details.querySelector('summary')!.focus();
+      }
+    });
+    document.addEventListener('click', e => {
+      if (!root.contains(e.target as Node)) details.open = false;
     });
   });
 </script>
 
 <style>
   .language-selector {
+    position: relative;
+  }
+  summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-block-size: var(--tap-adult);
+    padding: var(--s-1) var(--s-3);
+    border: 2px solid var(--edge);
+    border-radius: var(--r-m);
+    background: var(--card);
+    color: var(--ink);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .panel {
+    position: absolute;
+    inset-inline-end: 0;
+    z-index: 20;
+    min-inline-size: 14rem;
+    margin: var(--s-2) 0 0;
+    padding: var(--s-2);
+    list-style: none;
+    background: var(--card);
+    border-radius: var(--r-l);
+    box-shadow: var(--e-2);
+  }
+  .panel a {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    min-block-size: 56px;
+    padding-inline: var(--s-4);
+    border-radius: var(--r-m);
+    color: var(--ink);
+    font-size: var(--t-ui);
+    text-decoration: none;
   }
-
-  .lang-dropdown {
-    padding: 0.5rem 2rem 0.5rem 0.75rem;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    background: white;
-    color: #333;
-    font-size: 0.95rem;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.5rem center;
-    background-size: 12px;
+  .panel a:hover {
+    background: var(--paper-2);
   }
-
-  .lang-dropdown:hover {
-    border-color: var(--color-primary);
-    background-color: #fff5e6;
+  .panel a[aria-current='true'] {
+    font-weight: 700;
+    background: var(--lagoon-tint);
+    cursor: default;
   }
-
-  .lang-dropdown:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(255, 159, 64, 0.1);
+  .panel a[data-missing] {
+    color: var(--ink-2);
   }
-
-  .lang-dropdown option {
-    padding: 0.5rem;
-    font-size: 1rem;
+  .missing {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-start: calc(100% + var(--s-2) + 18rem);
+    inline-size: 18rem;
+    padding: var(--s-4);
+    border-radius: var(--r-m);
+    background: var(--honey-tint);
+    box-shadow: var(--e-1);
+    z-index: 21;
   }
-
-  @media (max-width: 768px) {
-    .lang-dropdown {
-      font-size: 0.9rem;
-      padding: 0.4rem 1.75rem 0.4rem 0.6rem;
-    }
+  .missing ul {
+    list-style: none;
+    padding: 0;
+    margin: var(--s-2) 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+  .missing a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-adult);
+    font-weight: 600;
+  }
+  .missing[hidden] {
+    display: none;
   }
 </style>

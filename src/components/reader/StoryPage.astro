@@ -95,7 +95,13 @@ const clientData = {
 const description = summary || `${title} | ${t('siteName')}`;
 ---
 
-<BaseLayout title={title} locale={locale} description={description} type="article">
+<BaseLayout
+  title={title}
+  locale={locale}
+  description={description}
+  type="article"
+  storyLocales={[locale, ...otherLanguages.map(l => l.locale)]}
+>
   <div
     class="story-app"
     data-band={band}

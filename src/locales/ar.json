@@ -177,5 +177,10 @@
   "chapterShort": "فصل {n} / {total}",
   "chapterDoneNext": "انتهى الفصل {n} · التالي: {title}",
   "previousChapter": "الفصل السابق",
-  "toCover": "العودة إلى الغلاف"
+  "toCover": "العودة إلى الغلاف",
+  "languageLabel": "اللغة",
+  "storyNotIn": "هذه القصة غير متوفرة بـ {lang} بعد.",
+  "goToHome": "الذهاب إلى الصفحة الرئيسية بـ {lang}",
+  "notFoundHint": "القصة التي تبحث عنها غير موجودة هنا.",
+  "notFoundBackToStories": "العودة إلى القصص"
 }

@@ -1,11 +1,13 @@
 ---
 // One hand-drawn-feel icon set on a 24 grid, 2.25 stroke, round caps (ux/02 Iconography).
 interface Props {
-  name: 'home' | 'play' | 'pause' | 'prev' | 'next' | 'more' | 'moon' | 'repeat' | 'speaker';
+  name:
+    'home' | 'bubble' | 'play' | 'pause' | 'prev' | 'next' | 'more' | 'moon' | 'repeat' | 'speaker';
   size?: number;
 }
 const { name, size = 24 } = Astro.props;
 const paths: Record<string, string> = {
+  bubble: 'M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-5 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z',
   home: 'M4 11.5 12 4l8 7.5M6.5 10v9.5h11V10M10 19.5v-5h4v5',
   play: 'M8 5.5v13l11-6.5z',
   pause: 'M8 5.5v13M16 5.5v13',

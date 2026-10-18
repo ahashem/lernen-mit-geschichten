@@ -177,5 +177,10 @@
   "chapterShort": "Ch. {n} / {total}",
   "chapterDoneNext": "Chapter {n} done · Next: {title}",
   "previousChapter": "Previous chapter",
-  "toCover": "Back to the cover"
+  "toCover": "Back to the cover",
+  "languageLabel": "Language",
+  "storyNotIn": "This story isn't in {lang} yet.",
+  "goToHome": "Go to {lang} home",
+  "notFoundHint": "The story you are looking for isn't here.",
+  "notFoundBackToStories": "Back to the stories"
 }
