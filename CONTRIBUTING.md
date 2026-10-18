@@ -4,6 +4,8 @@ First off, thank you for considering contributing to Lernen mit Geschichten! ðŸŽ
 
 This is a community-driven educational project aimed at helping children learn important values and skills through stories. We welcome contributions from everyone.
 
+> Open pull requests against `main`. The default branch is `editorial`, which the story CMS publishes from, so a pull request merged there goes live.
+
 ## Table of Contents
 
 - [Code of Conduct](#code-of-conduct)
