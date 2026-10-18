@@ -10,6 +10,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse as parseYaml } from 'yaml';
 import { alignTo, paginate } from '../src/utils/story-pages.ts';
+import { say } from './status-messages.mjs';
 
 export const LOCALES = ['de', 'en', 'ar', 'tr', 'ur'];
 const KB = 1024;
@@ -69,79 +70,87 @@ export function readiness(root = '.') {
       }
       const must = [];
       const should = [];
-      const need = (ok, text) => ok || must.push(text);
+      const M = (code, params = {}) => ({ code, params });
+      const need = (ok, item) => ok || must.push(item);
       const { fm } = f;
 
-      need(filled(fm.summary), 'Write the summary (one or two sentences).');
-      need(filled(fm.keyMessage), 'Write the one idea (key message).');
-      need(filled(fm.reviewedBy) && filled(fm.reviewedAt), 'Have someone else read it, then fill "Reviewed by" and the review date.');
+      need(filled(fm.summary), M('summary'));
+      need(filled(fm.keyMessage), M('keyMessage'));
+      need(filled(fm.reviewedBy) && filled(fm.reviewedAt), M('review'));
       if (filled(fm.reviewedBy) && filled(fm.author) && String(fm.reviewedBy).toLowerCase() === String(fm.author).toLowerCase()) {
-        must.push('The reviewer must be a different person from the author.');
+        must.push(M('reviewerIsAuthor'));
       }
 
       if (locale === 'de') {
-        need(filled(fm.band), 'Choose the band.');
-        need(filled(fm.emoji), 'Pick an emoji.');
+        need(filled(fm.band), M('band'));
+        need(filled(fm.emoji), M('emoji'));
         const skills = fm.skills ?? [];
-        need(skills.length >= 1 && skills.length <= 3, 'Pick 1 to 3 skills.');
-        for (const s of skills) if (skillIds.length && !skillIds.includes(s)) must.push(`The skill "${s}" does not exist.`);
+        need(skills.length >= 1 && skills.length <= 3, M('skills'));
+        for (const s of skills) if (skillIds.length && !skillIds.includes(s)) must.push(M('skillUnknown', { id: s }));
         for (const c of fm.cast ?? []) {
-          if (!characters.has(c)) must.push(`The character "${c}" has no sheet yet.`);
-          else if (characters.get(c).status !== 'approved') should.push(`The character sheet of ${characters.get(c).name ?? c} is not approved yet.`);
+          if (!characters.has(c)) must.push(M('castUnknown', { id: c }));
+          else if (characters.get(c).status !== 'approved') should.push(M('castUnapproved', { name: characters.get(c).name ?? c }));
         }
         const pictures = [fm.cover?.src, ...frames.map(x => x.src)].filter(Boolean);
-        if (fm.cover) need(filled(fm.cover.alt), 'Write the alt text of the cover (German).');
-        frames.forEach((x, i) => need(filled(x.alt), `Write the alt text of page picture ${i + 1} (German).`));
+        if (fm.cover) need(filled(fm.cover.alt), M('coverAltDe'));
+        frames.forEach((x, i) => need(filled(x.alt), M('frameAltDe', { i: i + 1 })));
         for (const src of pictures) {
           const path = join(publicDir, src);
           if (!existsSync(path)) {
-            must.push(`The picture ${src} has not been uploaded.`);
+            must.push(M('pictureMissing', { src }));
             continue;
           }
           const name = src.split('/').pop();
           const expected = new RegExp(`^${id}_(cover|frame-\\d\\d_colour|frame-\\d\\d_line)(_\\d+)?\\.(webp|svg)$`);
           if (!expected.test(name)) {
-            should.push(`${name}: the convention is ${id}_cover.webp or ${id}_frame-01_colour.webp (WebP, 1200 px wide).`);
+            should.push(M('pictureName', { name, id }));
           } else if (name.endsWith('.webp') && statSync(path).size > 120 * KB) {
-            should.push(`${name} is ${Math.round(statSync(path).size / KB)} KB; the budget is 120 KB.`);
+            should.push(M('pictureSize', { name, kb: Math.round(statSync(path).size / KB) }));
           }
         }
         if (pictures.length) {
           const art = fm.art ?? {};
-          need(filled(art.generator) && filled(art.reviewedBy), 'Fill in "How the art was made" (tool and who reviewed it).');
+          need(filled(art.generator) && filled(art.reviewedBy), M('artProvenance'));
         }
         if (deBook && band && band <= 2) {
           if (!deBook.explicit) {
-            should.push('Pages are worked out from the paragraphs. Add a horizontal line between pages if you want control; recorded narration only plays with explicit pages.');
+            should.push(M('pagesDerived'));
           }
           if (frames.length > deBook.pages.length) {
-            should.push(`${plural(frames.length, 'page picture')} but only ${plural(deBook.pages.length, 'page')}.`);
+            should.push(M('moreFramesThanPages', { frames: frames.length, pages: deBook.pages.length }));
           }
           const audioDir = join(publicDir, 'assets/audio/de', id);
           if (existsSync(audioDir)) {
             const n = readdirSync(audioDir).filter(x => x.endsWith('.m4a')).length;
-            if (n !== deBook.pages.length) should.push(`${plural(n, 'recording')} for ${plural(deBook.pages.length, 'page')}.`);
+            if (n !== deBook.pages.length) should.push(M('recordings', { n, pages: deBook.pages.length }));
           }
         }
       } else if (de) {
         if (fm.skills && JSON.stringify(fm.skills) !== JSON.stringify(de.fm.skills ?? [])) {
-          should.push('This language has its own skills; leave them empty unless the story really differs.');
+          should.push(M('ownSkills'));
         }
-        if (de.fm.cover) need(filled(fm.coverAlt), 'Write the alt text of the cover in this language.');
+        if (de.fm.cover) need(filled(fm.coverAlt), M('coverAltLocale'));
         if (frames.length) {
-          need((fm.frameAlts ?? []).length >= frames.length, `Write the alt text of ${plural(frames.length, 'page picture')} in this language (${(fm.frameAlts ?? []).length} written so far).`);
+          need((fm.frameAlts ?? []).length >= frames.length, M('frameAltsLocale', { frames: frames.length, have: (fm.frameAlts ?? []).length }));
         }
         if (deBook) {
           const aligned = alignTo(deBook, f.body, locale, band ?? 1, fm.pages);
           if (!aligned) {
             const mine = paginate(f.body, locale, band ?? 1, fm.pages).pages.length;
-            should.push(`Pages do not line up with German (German ${deBook.pages.length}, here ${mine}), so this language cannot be read beside German.`);
+            should.push(M('pagesAlign', { de: deBook.pages.length, here: mine }));
           }
         }
       } else {
-        must.push('There is no German original for this story.');
+        must.push(M('noGerman'));
       }
-      record.locales[locale] = { status: fm.status === 'draft' ? 'draft' : 'published', must, should };
+      // `must` and `should` stay English strings (status.json, the terminal); the items carry the code for other languages.
+      record.locales[locale] = {
+        status: fm.status === 'draft' ? 'draft' : 'published',
+        must: must.map(i => say(i, 'en')),
+        should: should.map(i => say(i, 'en')),
+        mustItems: must,
+        shouldItems: should,
+      };
     }
     out.set(id, record);
   }
