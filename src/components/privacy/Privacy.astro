@@ -41,6 +41,8 @@ const strings = { done: t('forgetDone') };
 </BaseLayout>
 
 <script>
+  import { forgetAllRecordings } from '@components/reader/voice-store';
+
   const root = document.querySelector<HTMLElement>('.privacy')!;
   const s = JSON.parse(root.dataset.strings!);
   const forget = root.querySelector<HTMLButtonElement>('[data-forget]')!;
@@ -65,6 +67,7 @@ const strings = { done: t('forgetDone') };
     } catch {
       /* storage blocked: nothing was stored */
     }
+    await forgetAllRecordings();
     try {
       for (const name of await caches.keys())
         if (name.startsWith('lmg-')) await caches.delete(name);

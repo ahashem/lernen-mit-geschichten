@@ -86,6 +86,30 @@ const keys = [
   'chapterShort',
   'chapterDoneNext',
   'toCover',
+  'dismiss',
+  'previousPage',
+  'nextPage',
+  'voiceOpen',
+  'voiceIntro',
+  'voiceContinue',
+  'voiceRecord',
+  'voiceAgain',
+  'voiceStop',
+  'voicePlay',
+  'voiceKeep',
+  'voiceDelete',
+  'voiceDeleteAll',
+  'voiceConfirm',
+  'voiceConfirmYes',
+  'voiceConfirmNo',
+  'voiceRecorded',
+  'voiceNone',
+  'voiceRecording',
+  'voiceStopped',
+  'voiceSaved',
+  'voiceDeleted',
+  'voiceDenied',
+  'voiceFailed',
 ] as const;
 const strings = Object.fromEntries(keys.map(k => [k, t(k)]));
 const clientData = {
@@ -212,6 +236,13 @@ const description = summary || `${title} | ${t('siteName')}`;
                 (hasBook || chapters.length > 0) && (
                   <button class="btn" type="button" data-action="class-room" data-js-only>
                     {t('classRoom')}
+                  </button>
+                )
+              }
+              {
+                hasBook && (
+                  <button class="btn" type="button" data-action="record-voice" data-js-only hidden>
+                    {t('voiceOpen')}
                   </button>
                 )
               }
@@ -703,6 +734,66 @@ const description = summary || `${title} | ${t('siteName')}`;
     </section>
   </div>
 
+  {
+    hasBook && (
+      <dialog class="voice surface" data-voice aria-labelledby="voice-title">
+        <h2 id="voice-title">{t('voiceOpen')}</h2>
+        <div data-voice-intro>
+          <p>{t('voiceIntro')}</p>
+          <button class="btn btn--primary" type="button" data-voice-continue>
+            {t('voiceContinue')}
+          </button>
+        </div>
+        <div data-voice-main hidden class="voice-main">
+          <p class="meta" data-voice-page />
+          <p class="voice-text" data-voice-text />
+          <p class="meta" data-voice-state />
+          <div class="voice-row">
+            <button class="btn btn--primary voice-record" type="button" data-voice-record>
+              {t('voiceRecord')}
+            </button>
+            <button class="btn btn--primary voice-record" type="button" data-voice-stop hidden>
+              {t('voiceStop')}
+            </button>
+            <button class="btn" type="button" data-voice-play hidden>
+              {t('voicePlay')}
+            </button>
+            <button class="btn btn--primary" type="button" data-voice-keep hidden>
+              {t('voiceKeep')}
+            </button>
+            <button class="btn" type="button" data-voice-delete hidden>
+              {t('voiceDelete')}
+            </button>
+          </div>
+          <div class="voice-row">
+            <button class="btn" type="button" data-voice-prev>
+              {t('previousPage')}
+            </button>
+            <button class="btn" type="button" data-voice-next>
+              {t('nextPage')}
+            </button>
+          </div>
+          <button class="btn" type="button" data-voice-delete-all hidden>
+            {t('voiceDeleteAll')}
+          </button>
+          <div data-voice-confirm hidden class="voice-row">
+            <p>{t('voiceConfirm')}</p>
+            <button class="btn" type="button" data-voice-confirm-yes>
+              {t('voiceConfirmYes')}
+            </button>
+            <button class="btn btn--primary" type="button" data-voice-confirm-no>
+              {t('voiceConfirmNo')}
+            </button>
+          </div>
+        </div>
+        <p class="visually-hidden" role="status" aria-live="polite" data-voice-live />
+        <button class="btn" type="button" data-voice-close>
+          {t('dismiss')}
+        </button>
+      </dialog>
+    )
+  }
+
   <script type="application/json" id="reader-data" set:html={JSON.stringify(clientData)} />
 </BaseLayout>
 
@@ -1005,6 +1096,41 @@ const description = summary || `${title} | ${t('siteName')}`;
     align-items: center;
     font-weight: 700;
     cursor: pointer;
+  }
+
+  .voice {
+    inline-size: min(36rem, calc(100vw - 2 * var(--s-4)));
+    max-block-size: calc(100dvh - 2 * var(--s-4));
+    margin: auto;
+    padding: var(--s-5);
+    border: 0;
+    color: var(--ink);
+    overflow: auto;
+  }
+  .voice::backdrop {
+    background: rgb(0 0 0 / 0.5);
+  }
+  .voice h2 {
+    font-family: var(--font-display);
+    font-size: var(--t-display-2);
+    margin-block-end: var(--s-3);
+  }
+  .voice-main {
+    display: grid;
+    gap: var(--s-3);
+  }
+  .voice-text {
+    font-size: var(--t-prose);
+    line-height: var(--lh-prose);
+  }
+  .voice-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    align-items: center;
+  }
+  .voice-record {
+    min-block-size: var(--tap-child);
   }
 
   .grownups-body {
