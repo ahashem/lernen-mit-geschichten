@@ -67,6 +67,8 @@ review, which the owner has accepted for interface labels (never for story text)
 `src/locales/review-queue.json` (`{ "ar": ["key", …], "tr": […], "ur": […] }`) and removed once a native speaker
 signs it off. Outside the roadmap work, a change that adds keys still needs a native reviewer on the PR.
 
+**Folio.** `/folio` (and `/{locale}/folio`) lays out every published story of that language as A4 sheets for printing: a title page, an index of skills with the story numbers that practise them, then each story with its talk prompts and a QR code. It is built from the same catalogue as the Library, so it needs no upkeep; the browser's print dialog handles single- or double-sided.
+
 **Feedback.** `PUBLIC_FEEDBACK_EMAIL` at build time turns on the "Tell us about this story" `mailto:` link on story pages and About; unset, nothing renders. The address never enters source.
 
 **Own voice.** A grown-up's recordings ("Read it in my voice", bands 1-2) live in the browser's IndexedDB database `lmg-voice`, keyed by story, locale and page with a hash of the page text; a changed text drops the match. They never leave the device, and the privacy page's forget control deletes the database.
