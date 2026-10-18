@@ -204,5 +204,13 @@
   "classCaptions": "کیپشن",
   "classNotes": "نوٹس",
   "classBlackout": "اندھیرا",
-  "classMark": "اگلا جملہ"
+  "classMark": "اگلا جملہ",
+  "forEducators": "معلمین کے لیے",
+  "printPrep": "تیاری کی شیٹ پرنٹ کریں",
+  "printPack": "رنگ بھرنے اور گفتگو کی شیٹس پرنٹ کریں",
+  "nameLine": "نام:",
+  "pupilDevices": "طلبہ کے آلات ترتیب دیں",
+  "classLinkConfirm": "یہ ڈیوائس {lang} میں «{shelf}» کے ساتھ شروع ہوگی۔",
+  "classLinkAlongside": "ساتھ میں {second}۔",
+  "classLinkYes": "ترتیب دیں"
 }

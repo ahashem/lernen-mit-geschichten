@@ -135,7 +135,15 @@
     "classCaptions",
     "classNotes",
     "classBlackout",
-    "classMark"
+    "classMark",
+    "forEducators",
+    "printPrep",
+    "printPack",
+    "nameLine",
+    "pupilDevices",
+    "classLinkConfirm",
+    "classLinkAlongside",
+    "classLinkYes"
   ],
   "tr": [
     "skipToContent",
@@ -273,7 +281,15 @@
     "classCaptions",
     "classNotes",
     "classBlackout",
-    "classMark"
+    "classMark",
+    "forEducators",
+    "printPrep",
+    "printPack",
+    "nameLine",
+    "pupilDevices",
+    "classLinkConfirm",
+    "classLinkAlongside",
+    "classLinkYes"
   ],
   "ur": [
     "skipToContent",
@@ -411,6 +427,14 @@
     "classCaptions",
     "classNotes",
     "classBlackout",
-    "classMark"
+    "classMark",
+    "forEducators",
+    "printPrep",
+    "printPack",
+    "nameLine",
+    "pupilDevices",
+    "classLinkConfirm",
+    "classLinkAlongside",
+    "classLinkYes"
   ]
 }

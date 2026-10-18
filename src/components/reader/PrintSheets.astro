@@ -1,0 +1,174 @@
+---
+import qrcode from 'qrcode-generator';
+import StoryArt from './StoryArt.astro';
+import { getTranslation, type Locale } from '@utils/i18n';
+import type { Picture } from '@utils/story-art';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  summary: string;
+  skills: string[];
+  prompts: string[];
+  /** Absolute URL of the story, derived from the deploy's SITE_URL. */
+  url: string;
+  cover?: Picture;
+  frames: Picture[];
+  emoji: string;
+  palette: [string, string];
+}
+
+const { locale, title, summary, skills, prompts, url, cover, frames, emoji, palette } = Astro.props;
+const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
+const qr = qrcode(0, 'M');
+qr.addData(url);
+qr.make();
+const code = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+---
+
+<div class="print-only" lang={locale}>
+  <section class="sheet" data-sheet="prep">
+    <h1>{title}</h1>
+    {summary && <p class="lead">{summary}</p>}
+    {
+      skills.length > 0 && (
+        <>
+          <h2>{t('skills')}</h2>
+          <p>{skills.join(' · ')}</p>
+        </>
+      )
+    }
+    {
+      prompts.length > 0 && (
+        <>
+          <h2>{t('talkPrompts')}</h2>
+          <ol>
+            {prompts.map(p => (
+              <li>{p}</li>
+            ))}
+          </ol>
+        </>
+      )
+    }
+    <div class="qr">
+      <div class="qr-code" set:html={code} aria-hidden="true" />
+      <p>{url}</p>
+    </div>
+    <p class="foot">{title} · {t('siteName')} · {t('footerArt')}</p>
+  </section>
+
+  <section class="sheet" data-sheet="pack">
+    <h1>{title}</h1>
+    <div class="cover-art"><StoryArt picture={cover} emoji={emoji} palette={palette} /></div>
+    <p class="name">{t('nameLine')} ____________________</p>
+    <p class="foot">{title} · {t('siteName')} · {t('footerArt')}</p>
+  </section>
+  {
+    frames.map(frame => (
+      <section class="sheet colouring" data-sheet="pack">
+        <div class="frame-art">
+          <img src={frame.src} alt="" />
+        </div>
+        <p class="foot">
+          {title} · {t('siteName')} · {t('footerArt')}
+        </p>
+      </section>
+    ))
+  }
+  {
+    prompts.length > 0 && (
+      <section class="sheet" data-sheet="pack">
+        <h1>{t('talkPrompts')}</h1>
+        <ul class="cards">
+          {prompts.map(p => (
+            <li>{p}</li>
+          ))}
+        </ul>
+        <p class="foot">
+          {title} · {t('siteName')} · {t('footerArt')}
+        </p>
+      </section>
+    )
+  }
+</div>
+
+<style is:global>
+  .print-only {
+    display: none;
+  }
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+  @media print {
+    body[data-print] > *:not(main),
+    body[data-print] .story-app > *:not(.print-only) {
+      display: none !important;
+    }
+    body[data-print] .print-only {
+      display: block;
+    }
+    body[data-print='prep'] .sheet:not([data-sheet='prep']),
+    body[data-print='pack'] .sheet:not([data-sheet='pack']) {
+      display: none;
+    }
+    body[data-print] {
+      background: #fff;
+      color: #000;
+    }
+    .print-only .sheet {
+      break-after: page;
+      font-family: var(--font-read);
+      font-size: 12pt;
+    }
+    .print-only .sheet:last-child {
+      break-after: auto;
+    }
+    .print-only h1 {
+      font-family: var(--font-display);
+      font-size: 24pt;
+      margin: 0 0 6mm;
+    }
+    .print-only h2 {
+      font-size: 14pt;
+      margin: 6mm 0 2mm;
+    }
+    .print-only .qr-code {
+      inline-size: 32mm;
+    }
+    .print-only .cover-art,
+    .print-only .frame-art {
+      block-size: 170mm;
+      container-type: inline-size;
+    }
+    .print-only img {
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: contain;
+    }
+    .print-only .art-fallback {
+      background: #fff !important;
+    }
+    .print-only .name {
+      margin-block: 8mm;
+      font-size: 16pt;
+    }
+    .print-only .foot {
+      font-size: 9pt;
+      margin-block-start: 8mm;
+    }
+    .print-only .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .print-only .cards li {
+      border: 1px dashed #000;
+      padding: 8mm;
+      min-block-size: 60mm;
+      font-size: 14pt;
+    }
+  }
+</style>

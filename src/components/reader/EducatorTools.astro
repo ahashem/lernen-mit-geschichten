@@ -1,0 +1,146 @@
+---
+import { getTranslation, endonyms, type Locale } from '@utils/i18n';
+import { LOCALES } from '@utils/story-availability';
+
+interface Props {
+  locale: Locale;
+  /** The story's absolute URL; the class link adds its parameters to it. */
+  url: string;
+  hasPack: boolean;
+}
+
+const { locale, url, hasPack } = Astro.props;
+const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
+const shelves = [
+  ['picture', 'shelfPicture'],
+  ['readalong', 'shelfReadAlong'],
+  ['chapter', 'shelfChapter'],
+  ['long', 'shelfLong'],
+] as const;
+---
+
+<div class="educator" data-educator data-url={url} data-js-only>
+  <h2 class="small-heading">{t('forEducators')}</h2>
+  <div class="tools">
+    <button class="btn" type="button" data-print="prep">{t('printPrep')}</button>
+    {
+      hasPack && (
+        <button class="btn" type="button" data-print="pack">
+          {t('printPack')}
+        </button>
+      )
+    }
+  </div>
+  <details class="class-link">
+    <summary>{t('pupilDevices')}</summary>
+    <label>
+      {t('shelfLabel')}
+      <select data-cl="shelf">
+        {shelves.map(([id, key]) => <option value={id}>{t(key)}</option>)}
+      </select>
+    </label>
+    <label>
+      {t('firstLanguage')}
+      <select data-cl="lang">
+        {
+          LOCALES.map(l => (
+            <option value={l} selected={l === locale}>
+              {endonyms[l]}
+            </option>
+          ))
+        }
+      </select>
+    </label>
+    <label>
+      {t('secondLanguage')}
+      <select data-cl="second">
+        <option value="">—</option>
+        {LOCALES.map(l => <option value={l}>{endonyms[l]}</option>)}
+      </select>
+    </label>
+    <label class="check"><input type="checkbox" data-cl="narration" /> {t('readAloud')}</label>
+    <output data-cl-out class="out"></output>
+    <div data-cl-qr class="qr" aria-hidden="true"></div>
+  </details>
+</div>
+
+<script>
+  import qrcode from 'qrcode-generator';
+
+  document.querySelectorAll<HTMLElement>('[data-educator]').forEach(root => {
+    // Printing shows one sheet; the attribute is what the print stylesheet keys on.
+    root.querySelectorAll<HTMLElement>('[data-print]').forEach(button =>
+      button.addEventListener('click', () => {
+        document.body.dataset.print = button.dataset.print;
+        window.print();
+      })
+    );
+    window.addEventListener('afterprint', () => delete document.body.dataset.print);
+
+    const field = (name: string) => root.querySelector<HTMLInputElement>(`[data-cl="${name}"]`)!;
+    const out = root.querySelector<HTMLElement>('[data-cl-out]')!;
+    const qrBox = root.querySelector<HTMLElement>('[data-cl-qr]')!;
+    function build() {
+      const link = new URL(root.dataset.url!);
+      link.searchParams.set('class', '1');
+      link.searchParams.set('shelf', field('shelf').value);
+      link.searchParams.set('lang', field('lang').value);
+      if (field('second').value) link.searchParams.set('second', field('second').value);
+      if (field('narration').checked) link.searchParams.set('narration', 'on');
+      out.textContent = link.href;
+      const qr = qrcode(0, 'M');
+      qr.addData(link.href);
+      qr.make();
+      qrBox.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+    }
+    root.querySelectorAll('[data-cl]').forEach(el => el.addEventListener('change', build));
+    build();
+  });
+</script>
+
+<style>
+  .educator {
+    display: grid;
+    gap: var(--s-3);
+  }
+  .tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+  .class-link {
+    display: grid;
+    gap: var(--s-2);
+  }
+  .class-link summary {
+    min-block-size: var(--tap-adult);
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .class-link label {
+    display: grid;
+    gap: var(--s-1);
+    margin-block-start: var(--s-2);
+  }
+  .class-link .check {
+    display: flex;
+    gap: var(--s-2);
+    align-items: center;
+  }
+  select {
+    min-block-size: var(--tap-adult);
+    font: inherit;
+  }
+  .out {
+    display: block;
+    margin-block-start: var(--s-3);
+    overflow-wrap: anywhere;
+    font-size: var(--t-ui-sm);
+  }
+  .qr {
+    inline-size: 9rem;
+    margin-block-start: var(--s-2);
+  }
+</style>

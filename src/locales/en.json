@@ -204,5 +204,13 @@
   "classCaptions": "Captions",
   "classNotes": "Notes",
   "classBlackout": "Black out",
-  "classMark": "Next sentence"
+  "classMark": "Next sentence",
+  "forEducators": "For educators",
+  "printPrep": "Print prep sheet",
+  "printPack": "Print colouring and talk sheets",
+  "nameLine": "Name:",
+  "pupilDevices": "Set up pupil devices",
+  "classLinkConfirm": "This device will start with “{shelf}” in {lang}.",
+  "classLinkAlongside": "With {second} alongside.",
+  "classLinkYes": "Set it up"
 }

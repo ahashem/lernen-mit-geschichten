@@ -16,6 +16,8 @@ import {
 import { coverOf, frameFor, narrationFor, paletteFor } from '@utils/story-art';
 import Icon from './Icon.astro';
 import StoryArt from './StoryArt.astro';
+import EducatorTools from './EducatorTools.astro';
+import PrintSheets from './PrintSheets.astro';
 
 interface Props {
   story: CollectionEntry<'stories'>;
@@ -41,6 +43,11 @@ const minutes = readMinutes(story.body);
 const skills = await getSkillsByIds(story.data.skills ?? meta?.skills ?? [], locale);
 const summary = story.data.summary ?? firstSentence(story.body ?? '', locale);
 const prompts = (story.data.discussion ?? story.data.questions?.map(q => q.text) ?? []).slice(0, 3);
+
+const storyUrl = `${Astro.site?.origin ?? ''}${Astro.url.pathname}`;
+const colouring = (meta?.frames ?? [])
+  .map((_, i) => frameFor(meta, i + 1, locale))
+  .filter((p): p is NonNullable<typeof p> => !!p);
 
 const home = locale === 'de' ? `${BASE_PATH}/` : `${BASE_PATH}/${locale}`;
 const siblings = (await getPublishedStories(s => s.data.storyId === storyId)).filter(
@@ -199,6 +206,7 @@ const description = summary || `${title} | ${t('siteName')}`;
                   </>
                 )
               }
+              <EducatorTools locale={locale} url={storyUrl} hasPack={true} />
               {
                 (hasBook || chapters.length > 0) && (
                   <button class="btn" type="button" data-action="class-room" data-js-only>
@@ -652,6 +660,19 @@ const description = summary || `${title} | ${t('siteName')}`;
         </section>
       )
     }
+
+    <PrintSheets
+      locale={locale}
+      title={title}
+      summary={summary}
+      skills={skills.map(s => s.label)}
+      prompts={prompts}
+      url={storyUrl}
+      cover={cover}
+      frames={colouring}
+      emoji={emoji}
+      palette={palette}
+    />
 
     <section class="view text" data-view="text" aria-label={t('fullText')}>
       <div class="container">
