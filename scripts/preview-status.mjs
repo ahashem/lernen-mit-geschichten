@@ -63,6 +63,28 @@ const overview = stories.length
   : '';
 
 mkdirSync(dirname(out), { recursive: true });
+// The same facts as the page, for tools that must not scrape HTML (the story pipeline polls this):
+// `commit` is the editorial commit that was checked, `build` is ok | failed | none.
+writeFileSync(
+  join(dirname(out), 'status.json'),
+  JSON.stringify(
+    {
+      commit: sha ?? null,
+      build,
+      checkedAt: new Date().toISOString(),
+      blocked,
+      problem: buildProblem || null,
+      stories: stories.map(r => ({
+        id: r.id,
+        title: r.title,
+        band: r.band ?? null,
+        locales: Object.fromEntries(LOCALES.map(l => [l, r.locales[l] ?? null])),
+      })),
+    },
+    null,
+    2
+  )
+);
 writeFileSync(
   out,
   `<!doctype html>
