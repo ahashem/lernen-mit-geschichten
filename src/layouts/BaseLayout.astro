@@ -3,12 +3,14 @@ import '@styles/fonts.css';
 import '@styles/tokens.css';
 import '@styles/global.css';
 import '@styles/rtl.css';
+import ClassLinkCard from '@components/ClassLinkCard.astro';
 import LanguageSelector from '@components/LanguageSelector.astro';
 import GTMTracking from '@components/GTMTracking.astro';
 import type { Locale } from '@utils/i18n';
 import { getTranslation, isRTL } from '@utils/i18n';
-import { BASE_PATH as base } from '@utils/site';
+import { BASE_PATH as base, OFFLINE } from '@utils/site';
 import { buildMarker } from '@utils/build-marker';
+import { LOCALES } from '@utils/story-availability';
 
 interface Props {
   title: string;
@@ -16,16 +18,19 @@ interface Props {
   locale?: Locale;
   image?: string;
   type?: 'website' | 'article';
+  /** Story pages: this story's own path in each language it exists in (slugs can differ between translations). */
+  storyHrefs?: Partial<Record<Locale, string>>;
 }
 
-const { title, description, locale = 'de', image, type = 'website' } = Astro.props;
+const { title, description, locale = 'de', image, type = 'website', storyHrefs } = Astro.props;
 const dir = isRTL(locale) ? 'rtl' : 'ltr';
 const siteName = getTranslation(locale, 'siteName');
 const siteUrl = Astro.site?.href.replace(/\/$/, '') ?? '';
 const pageUrl = `${siteUrl}${Astro.url.pathname}`;
 const defaultDescription = getTranslation(locale, 'tagline');
 const ogDescription = description || defaultDescription;
-const ogImage = image || `${siteUrl}${base}/og-image.png`;
+// No default image: a placeholder file would be a broken link, and the site has no art of its own to share.
+const ogImage = image;
 const pageTitle = `${title} | ${siteName}`;
 
 // Google Tag Manager ID from environment variable
@@ -33,6 +38,30 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
 // robots.txt only works at a host root, so staging and the moderators' preview also say it on every page.
 const noindex = ['1', 'true', true].includes(import.meta.env.NOINDEX);
 const build = buildMarker();
+
+// The same page in every language it exists in, for hreflang. German has no prefix.
+const bare =
+  Astro.url.pathname.replace(new RegExp(`^${base}`), '').replace(/^\/(ar|en|tr|ur)(?=\/|$)/, '') ||
+  '/';
+const alternates = LOCALES.filter(code => !storyHrefs || storyHrefs[code]).map(code => ({
+  code,
+  href:
+    `${siteUrl}${storyHrefs?.[code] ?? `${base}${code === 'de' ? '' : `/${code}`}${bare === '/' && code !== 'de' ? '' : bare}`}` ||
+    `${siteUrl}/`,
+}));
+const jsonLd =
+  type === 'article'
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: title,
+        description: ogDescription,
+        inLanguage: locale,
+        isAccessibleForFree: true,
+        ...(image ? { image } : {}),
+        publisher: { '@type': 'Organization', name: siteName },
+      }
+    : null;
 ---
 
 <!doctype html>
@@ -63,7 +92,7 @@ const build = buildMarker();
     <meta property="og:url" content={pageUrl} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={ogDescription} />
-    <meta property="og:image" content={ogImage} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
     <meta
       property="og:locale"
       content={locale === 'de'
@@ -79,14 +108,27 @@ const build = buildMarker();
     <meta property="og:site_name" content={siteName} />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
     <meta property="twitter:url" content={pageUrl} />
     <meta property="twitter:title" content={pageTitle} />
     <meta property="twitter:description" content={ogDescription} />
-    <meta property="twitter:image" content={ogImage} />
+    {ogImage && <meta property="twitter:image" content={ogImage} />}
 
-    <!-- Canonical URL -->
+    <!-- Canonical URL and the page in its other languages -->
     <link rel="canonical" href={pageUrl} />
+    {alternates.map(a => <link rel="alternate" hreflang={a.code} href={a.href} />)}
+    {
+      alternates.length > 1 && (
+        <link
+          rel="alternate"
+          hreflang="x-default"
+          href={(alternates.find(a => a.code === 'de') ?? alternates[0]).href}
+        />
+      )
+    }
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+    {OFFLINE && <link rel="manifest" href={`${base}/manifest.webmanifest`} />}
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
@@ -108,6 +150,9 @@ const build = buildMarker();
             <a href={locale === 'de' ? `${base}/` : `${base}/${locale}`}
               >{getTranslation(locale, 'home')}</a
             >
+            <a href={locale === 'de' ? `${base}/library` : `${base}/${locale}/library`}
+              >{getTranslation(locale, 'library')}</a
+            >
             <a href={locale === 'de' ? `${base}/about` : `${base}/${locale}/about`}
               >{getTranslation(locale, 'about')}</a
             >
@@ -116,10 +161,36 @@ const build = buildMarker();
             >
           </div>
 
-          <LanguageSelector currentLocale={locale} currentPath={Astro.url.pathname} />
+          <LanguageSelector
+            currentLocale={locale}
+            currentPath={Astro.url.pathname}
+            storyHrefs={storyHrefs}
+          />
         </nav>
       </div>
     </header>
+
+    <ClassLinkCard locale={locale} />
+
+    {
+      OFFLINE && (
+        <>
+          <div
+            class="offline-bar notice notice--problem"
+            role="status"
+            hidden
+            data-offline-bar
+            data-sw={`${base}/sw.js`}
+            data-scope={`${base}/`}
+          >
+            <span>{getTranslation(locale, 'offlineBanner')}</span>
+            <button class="btn" type="button" data-offline-dismiss>
+              {getTranslation(locale, 'dismiss')}
+            </button>
+          </div>
+        </>
+      )
+    }
 
     <main id="main-content">
       <slot />
@@ -127,7 +198,13 @@ const build = buildMarker();
 
     <footer>
       <div class="container">
+        <p>{getTranslation(locale, 'footerArt')}</p>
         <p>&copy; {new Date().getFullYear()} {siteName}</p>
+        <p>
+          <a href={locale === 'de' ? `${base}/privacy` : `${base}/${locale}/privacy`}
+            >{getTranslation(locale, 'privacyTitle')}</a
+          >
+        </p>
         <p>
           <a
             href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
@@ -140,7 +217,23 @@ const build = buildMarker();
       </div>
     </footer>
 
+    {OFFLINE && <script src="../scripts/offline.ts" />}
+
     <style>
+      .offline-bar {
+        position: fixed;
+        inset-inline: var(--s-4);
+        inset-block-end: var(--s-4);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--s-3);
+      }
+      .offline-bar[hidden] {
+        display: none;
+      }
+
       header {
         background: var(--card);
         border-block-end: 1px solid var(--rule);
@@ -175,7 +268,8 @@ const build = buildMarker();
 
       .nav-links {
         display: flex;
-        gap: var(--s-5);
+        flex-wrap: wrap;
+        gap: var(--s-1) var(--s-5);
         align-items: center;
       }
 

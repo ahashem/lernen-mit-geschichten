@@ -1,0 +1,118 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { fmt, getTranslation, type Locale } from '@utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
+const stored = [t('privacyStoredPrefs'), t('privacyStoredPlace'), t('privacyStoredLast')];
+const strings = { done: t('forgetDone') };
+---
+
+<BaseLayout title={t('privacyTitle')} locale={locale}>
+  <div class="container privacy" data-strings={JSON.stringify(strings)}>
+    <h1>{t('privacyTitle')}</h1>
+    <p class="lead">{t('privacyLead')}</p>
+
+    <h2>{t('privacyStoredTitle')}</h2>
+    <ul>
+      {stored.map(item => <li>{item}</li>)}
+    </ul>
+    <p>{t('privacyNever')}</p>
+
+    <h2>{t('privacyGtmTitle')}</h2>
+    <p>{t('privacyGtm')}</p>
+
+    <h2>{t('forgetTitle')}</h2>
+    <p>{t('forgetText')}</p>
+    <div class="forget">
+      <button class="btn" type="button" data-forget>{t('forgetButton')}</button>
+      <div class="confirm surface" data-confirm hidden role="group" aria-labelledby="forget-q">
+        <p id="forget-q">{t('forgetConfirm')}</p>
+        <button class="btn btn--primary" type="button" data-yes>{t('forgetYes')}</button>
+        <button class="btn" type="button" data-no>{t('forgetNo')}</button>
+      </div>
+      <p role="status" data-done></p>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  const root = document.querySelector<HTMLElement>('.privacy')!;
+  const s = JSON.parse(root.dataset.strings!);
+  const forget = root.querySelector<HTMLButtonElement>('[data-forget]')!;
+  const confirm = root.querySelector<HTMLElement>('[data-confirm]')!;
+  const done = root.querySelector<HTMLElement>('[data-done]')!;
+
+  forget.addEventListener('click', () => {
+    confirm.hidden = false;
+    root.querySelector<HTMLButtonElement>('[data-no]')!.focus();
+  });
+  root.querySelector('[data-no]')!.addEventListener('click', () => {
+    confirm.hidden = true;
+    forget.focus();
+  });
+  root.querySelector('[data-yes]')!.addEventListener('click', async () => {
+    // Only this site's keys: on staging the origin is shared with other projects.
+    try {
+      for (const key of Object.keys(localStorage))
+        if (key.startsWith('reader-')) localStorage.removeItem(key);
+      for (const key of Object.keys(sessionStorage))
+        if (key.startsWith('reader-')) sessionStorage.removeItem(key);
+    } catch {
+      /* storage blocked: nothing was stored */
+    }
+    try {
+      for (const name of await caches.keys())
+        if (name.startsWith('lmg-')) await caches.delete(name);
+    } catch {
+      /* no Cache API here */
+    }
+    delete document.documentElement.dataset.theme;
+    confirm.hidden = true;
+    done.textContent = s.done;
+    forget.focus();
+  });
+</script>
+
+<style>
+  .privacy {
+    max-inline-size: var(--measure-prose);
+    font-size: var(--t-prose);
+    line-height: var(--lh-prose);
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-size: var(--t-display-1);
+    line-height: var(--lh-display);
+    margin-block-end: var(--s-4);
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-size: var(--t-display-2);
+    margin-block: var(--s-6) var(--s-2);
+  }
+  ul {
+    padding-inline-start: var(--s-5);
+  }
+  .lead {
+    font-weight: 600;
+  }
+  .confirm {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    align-items: center;
+    padding: var(--s-4);
+    margin-block-start: var(--s-3);
+  }
+  .confirm[hidden] {
+    display: none;
+  }
+  .confirm p {
+    flex: 1 1 100%;
+  }
+</style>

@@ -1,0 +1,98 @@
+---
+import { endonyms, getTranslation, type Locale } from '@utils/i18n';
+import { BASE_PATH } from '@utils/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
+const shelfNames: Record<string, string> = {
+  picture: t('shelfPicture'),
+  readalong: t('shelfReadAlong'),
+  chapter: t('shelfChapter'),
+  long: t('shelfLong'),
+};
+const data = {
+  shelfNames,
+  endonyms,
+  text: t('classLinkConfirm'),
+  alongside: t('classLinkAlongside'),
+  base: BASE_PATH,
+};
+---
+
+<dialog
+  class="class-card"
+  data-class-card
+  aria-labelledby="class-card-text"
+  data-info={JSON.stringify(data)}
+>
+  <p id="class-card-text" data-class-text></p>
+  <div class="row">
+    <button class="btn btn--primary" type="button" data-class-yes>{t('classLinkYes')}</button>
+    <button class="btn" type="button" data-class-no>{t('forgetNo')}</button>
+  </div>
+</dialog>
+
+<script>
+  import { loadPrefs, savePrefs } from '@components/reader/prefs';
+
+  // A class link (ux/03 10c) only sets this device's starting preferences, after the reader says yes.
+  const params = new URLSearchParams(location.search);
+  const card = document.querySelector<HTMLDialogElement>('[data-class-card]');
+  if (card && params.get('class') === '1') {
+    const info = JSON.parse(card.dataset.info!);
+    const shelf = params.get('shelf') ?? '';
+    const lang = params.get('lang') ?? '';
+    const second = params.get('second') ?? '';
+    let text = (info.text as string)
+      .replace('{shelf}', info.shelfNames[shelf] ?? shelf)
+      .replace('{lang}', info.endonyms[lang] ?? lang);
+    if (second && info.endonyms[second])
+      text += ' ' + (info.alongside as string).replace('{second}', info.endonyms[second]);
+    card.querySelector('[data-class-text]')!.textContent = text;
+    const leave = () => {
+      const clean = new URL(location.href);
+      for (const key of ['class', 'shelf', 'lang', 'second', 'narration'])
+        clean.searchParams.delete(key);
+      history.replaceState(null, '', clean.pathname + clean.search + clean.hash);
+    };
+    card.querySelector('[data-class-yes]')!.addEventListener('click', () => {
+      const prefs = loadPrefs();
+      if (shelf in info.shelfNames) prefs.shelf = shelf;
+      if (lang in info.endonyms) prefs.lang = lang;
+      prefs.second = second in info.endonyms && second !== lang ? second : undefined;
+      if (params.get('narration') === 'on') prefs.narrate = true;
+      savePrefs(prefs);
+      card.close();
+      leave();
+    });
+    card.querySelector('[data-class-no]')!.addEventListener('click', () => {
+      card.close();
+      leave();
+    });
+    card.showModal();
+  }
+</script>
+
+<style>
+  .class-card {
+    max-inline-size: 28rem;
+    padding: var(--s-5);
+    border: 0;
+    border-radius: var(--r-l);
+    background: var(--card);
+    color: var(--ink);
+    box-shadow: var(--e-2);
+  }
+  .class-card::backdrop {
+    background: rgb(36 33 46 / 0.6);
+  }
+  .row {
+    display: flex;
+    gap: var(--s-3);
+    margin-block-start: var(--s-4);
+  }
+</style>

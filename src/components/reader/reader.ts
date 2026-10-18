@@ -1,5 +1,7 @@
 import { fmt } from '@utils/i18n';
 import { applyTheme, loadPrefs, read, savePrefs, write } from './prefs';
+import { startChapters } from './chapters';
+import { startClassroom } from './classroom';
 
 interface Timing {
   w: number;
@@ -32,6 +34,11 @@ export function startReader() {
   if (!app || !dataEl) return;
   const data: ReaderData = JSON.parse(dataEl.textContent ?? '{}');
   const hasBook = app.dataset.hasBook === 'true';
+  startClassroom(app, data.locale, data.strings);
+  if (!hasBook && app.dataset.chapters) {
+    startChapters(app, data.storyId, data.locale, data.strings);
+    return;
+  }
   const pageRtl = () => (book?.dir || document.documentElement.dir) === 'rtl';
   const isRtl = (locale: string) => locale === 'ar' || locale === 'ur';
   let pair: { first: string; second: string } | null = null;
@@ -39,6 +46,8 @@ export function startReader() {
   const prefs = loadPrefs();
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const resumeKey = `reader-resume:${data.storyId}:${data.locale}`;
+  // The one story the home offers to continue; the home reads it, nothing else does.
+  const LAST_KEY = 'reader-last';
 
   const views = $$(app, '.view');
   const book = $<HTMLElement>(app, '.view.book');
@@ -102,6 +111,7 @@ export function startReader() {
     if (next < 0) return;
     if (next >= pages.length) {
       write(resumeKey, null);
+      write(LAST_KEY, null);
       return showView('end');
     }
     lastTurn = now;
@@ -134,6 +144,7 @@ export function startReader() {
     );
     current = next;
     write(resumeKey, String(current));
+    write(LAST_KEY, `${data.storyId}:${data.locale}`);
     syncPageUi();
     into.focus({ preventScroll: true });
     if (narrating && !keyboardTurn) window.setTimeout(() => startNarration(), 400);

@@ -5,10 +5,19 @@ import { getPublishedStories, getStoryMeta, readMinutes } from '@utils/stories';
 import { endonyms, fmt, getTranslation, isRTL, type Locale } from '@utils/i18n';
 import { getSkillsByIds } from '@utils/skills-taxonomy';
 import { BASE_PATH } from '@utils/site';
-import { alignTo, firstSentence, paginate, wordsOf, type BookPage } from '@utils/story-pages';
+import {
+  alignTo,
+  chapterTitles,
+  firstSentence,
+  paginate,
+  wordsOf,
+  type BookPage,
+} from '@utils/story-pages';
 import { coverOf, frameFor, narrationFor, paletteFor } from '@utils/story-art';
 import Icon from './Icon.astro';
 import StoryArt from './StoryArt.astro';
+import EducatorTools from './EducatorTools.astro';
+import PrintSheets from './PrintSheets.astro';
 
 interface Props {
   story: CollectionEntry<'stories'>;
@@ -25,14 +34,20 @@ const band = meta?.band ?? 1;
 const palette = paletteFor(storyId, meta);
 const { Content } = await render(story);
 const { pages, explicit } = paginate(story.body ?? '', locale, band, story.data.pages);
-// Chapter reader for bands 3-4 is a later milestone; those stories read as full text for now.
 const hasBook = band <= 2 && pages.length > 0;
+// Bands 3-4 read as chapters (the `##` headings); a story without them stays a full text.
+const chapters = band >= 3 ? chapterTitles(story.body ?? '') : [];
 const narration = narrationFor(storyId, locale, pages.length, explicit);
 const cover = coverOf(meta, locale);
 const minutes = readMinutes(story.body);
 const skills = await getSkillsByIds(story.data.skills ?? meta?.skills ?? [], locale);
 const summary = story.data.summary ?? firstSentence(story.body ?? '', locale);
 const prompts = (story.data.discussion ?? story.data.questions?.map(q => q.text) ?? []).slice(0, 3);
+
+const storyUrl = `${Astro.site?.origin ?? ''}${Astro.url.pathname}`;
+const colouring = (meta?.frames ?? [])
+  .map((_, i) => frameFor(meta, i + 1, locale))
+  .filter((p): p is NonNullable<typeof p> => !!p);
 
 const home = locale === 'de' ? `${BASE_PATH}/` : `${BASE_PATH}/${locale}`;
 const siblings = (await getPublishedStories(s => s.data.storyId === storyId)).filter(
@@ -66,6 +81,10 @@ const keys = [
   'theEnd',
   'readAloud',
   'lampTip',
+  'chapterOf',
+  'chapterShort',
+  'chapterDoneNext',
+  'toCover',
 ] as const;
 const strings = Object.fromEntries(keys.map(k => [k, t(k)]));
 const clientData = {
@@ -83,11 +102,22 @@ const clientData = {
 const description = summary || `${title} | ${t('siteName')}`;
 ---
 
-<BaseLayout title={title} locale={locale} description={description} type="article">
+<BaseLayout
+  title={title}
+  locale={locale}
+  description={description}
+  type="article"
+  image={cover ? `${Astro.site?.origin ?? ''}${cover.src}` : undefined}
+  storyHrefs={Object.fromEntries([
+    [locale, Astro.url.pathname],
+    ...otherLanguages.map(l => [l.locale, l.href]),
+  ])}
+>
   <div
     class="story-app"
     data-band={band}
     data-has-book={hasBook}
+    data-chapters={chapters.length || undefined}
     data-view="cover"
     data-story-id={storyId}
   >
@@ -121,6 +151,37 @@ const description = summary || `${title} | ${t('siteName')}`;
               </div>
             )
           }
+          {
+            chapters.length > 0 && (
+              <div class="cover-actions" data-js-only>
+                <button class="btn btn--primary btn--lg" data-action="start-chapters" type="button">
+                  <span
+                    data-resume-label
+                    data-start={t('startReading')}
+                    data-continue={t('continueReading')}
+                  >
+                    {t('startReading')}
+                  </span>
+                </button>
+                <div class="cover-secondary">
+                  <button class="btn" data-action="full-text" type="button">
+                    {t('fullText')}
+                  </button>
+                </div>
+                <h2 class="small-heading">{t('chaptersHeading')}</h2>
+                <ol class="chapter-list">
+                  {chapters.map((c, i) => (
+                    <li>
+                      <button class="chapter-link" type="button" data-chapter={i}>
+                        <span class="chapter-no">{i + 1}</span>
+                        {c}
+                      </button>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )
+          }
           <details class="grownups surface">
             <summary>{t('forGrownUps')}</summary>
             <div class="grownups-body">
@@ -143,6 +204,14 @@ const description = summary || `${title} | ${t('siteName')}`;
                       ))}
                     </ul>
                   </>
+                )
+              }
+              <EducatorTools locale={locale} url={storyUrl} hasPack={true} />
+              {
+                (hasBook || chapters.length > 0) && (
+                  <button class="btn" type="button" data-action="class-room" data-js-only>
+                    {t('classRoom')}
+                  </button>
                 )
               }
               <button
@@ -178,6 +247,7 @@ const description = summary || `${title} | ${t('siteName')}`;
           aria-roledescription="storybook"
           aria-label={title}
         >
+          <h1 class="visually-hidden">{title}</h1>
           <div class="topbar" data-topbar>
             <a class="icon-btn" href={home} aria-label={t('home')}>
               <Icon name="home" size={28} />
@@ -480,8 +550,148 @@ const description = summary || `${title} | ${t('siteName')}`;
       )
     }
 
+    {
+      chapters.length > 0 && (
+        <section class="view chapters" data-view="chapters" hidden tabindex="-1" aria-label={title}>
+          <h1 class="visually-hidden">{title}</h1>
+          <header class="chapter-bar">
+            <button class="btn" type="button" data-action="chapters-back" aria-label={t('toCover')}>
+              <Icon name="prev" size={20} />
+            </button>
+            <span class="chapter-bar-title">{title}</span>
+            <span class="chapter-bar-pos" data-chapter-pos />
+            <button class="btn" type="button" data-text-step="-1" aria-label={t('textSmaller')}>
+              A−
+            </button>
+            <button class="btn" type="button" data-text-step="1" aria-label={t('textLarger')}>
+              A+
+            </button>
+            <button class="btn" type="button" data-action="chapters-lamp" aria-pressed="false">
+              <>
+                <Icon name="moon" size={20} />
+                <span class="visually-hidden">{t('lampMode')}</span>
+              </>
+            </button>
+          </header>
+          <div class="chapter-progress" aria-hidden="true">
+            <div data-chapter-fill />
+          </div>
+          <div class="container chapter-wrap">
+            <div class="chapter-body" data-chapter-body lang={locale} />
+            <nav class="chapter-nav" aria-label={t('chaptersHeading')}>
+              <button class="btn" type="button" data-action="chapter-prev">
+                <>
+                  <Icon name="prev" size={20} />
+                  <span>{t('previousChapter')}</span>
+                </>
+              </button>
+              <button class="btn btn--primary" type="button" data-action="chapter-next">
+                <>
+                  <span data-next-label />
+                  <Icon name="next" size={20} />
+                </>
+              </button>
+            </nav>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      (hasBook || chapters.length > 0) && (
+        <section
+          class="view classroom"
+          data-view="classroom"
+          hidden
+          tabindex="-1"
+          aria-label={t('classRoom')}
+        >
+          <div class="cr-stage" data-stage>
+            <div class="cr-frame" data-frame />
+            <p class="cr-caption" data-caption hidden />
+            <div class="cr-shared" data-shared lang={locale} />
+            <div class="cr-black" data-black hidden />
+          </div>
+          <div
+            class="cr-notes"
+            data-notes
+            hidden
+            role="group"
+            tabindex="0"
+            aria-label={t('classNotes')}
+          >
+            <p class="cr-notes-text" data-notes-text />
+            {prompts.length > 0 && (
+              <>
+                <h2>{t('talkPrompts')}</h2>
+                <ul>
+                  {prompts.map(p => (
+                    <li>{p}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+            <div class="cr-next" data-next-frame aria-hidden="true" />
+          </div>
+          <div class="cr-bar">
+            <button class="btn" type="button" data-action="class-exit">
+              {t('classExit')}
+            </button>
+            <button
+              class="btn"
+              type="button"
+              data-action="class-prev"
+              aria-label={t('previousPage')}
+            >
+              <Icon name="prev" size={24} />
+            </button>
+            <span class="cr-pos" data-pos aria-live="polite" />
+            <button class="btn" type="button" data-action="class-next" aria-label={t('nextPage')}>
+              <Icon name="next" size={24} />
+            </button>
+            {hasBook && (
+              <button class="btn" type="button" data-action="class-captions">
+                {t('classCaptions')}
+              </button>
+            )}
+            {!hasBook && (
+              <button class="btn" type="button" data-action="class-mark">
+                {t('classMark')}
+              </button>
+            )}
+            <button class="btn" type="button" data-action="class-notes">
+              {t('classNotes')}
+            </button>
+            <button class="btn" type="button" data-action="class-black">
+              {t('classBlackout')}
+            </button>
+          </div>
+        </section>
+      )
+    }
+
+    <PrintSheets
+      locale={locale}
+      title={title}
+      summary={summary}
+      skills={skills.map(s => s.label)}
+      prompts={prompts}
+      url={storyUrl}
+      cover={cover}
+      frames={colouring}
+      emoji={emoji}
+      palette={palette}
+    />
+
     <section class="view text" data-view="text" aria-label={t('fullText')}>
       <div class="container">
+        {
+          chapters.length > 0 && (
+            <button class="btn" type="button" data-action="chapters-back" data-js-only>
+              {t('toCover')}
+            </button>
+          )
+        }
         <article class="story-content" lang={locale}>
           <Content />
         </article>
@@ -495,12 +705,6 @@ const description = summary || `${title} | ${t('siteName')}`;
 
 <script>
   import { startReader } from './reader';
-  import {
-    exportAsBooklet,
-    showExportProgress,
-    hideExportProgress,
-    detectOrientation,
-  } from '@utils/booklet-export';
 
   startReader();
 
@@ -519,6 +723,9 @@ const description = summary || `${title} | ${t('siteName')}`;
       const wasHidden = view.hidden;
       view.hidden = false;
       const locale = (button.dataset.locale ?? 'en') as keyof typeof booklet;
+      // The PDF libraries are most of this page's script; they load only when a grown-up asks for the booklet.
+      const { exportAsBooklet, showExportProgress, hideExportProgress, detectOrientation } =
+        await import('@utils/booklet-export');
       const overlay = showExportProgress(booklet[locale] ?? booklet.en);
       try {
         await exportAsBooklet(content, {
@@ -543,6 +750,216 @@ const description = summary || `${title} | ${t('siteName')}`;
 
   /* Without JS the cover and the full text are all there is; the book needs scripts. */
   .story-app:not([data-ready]) [data-js-only] {
+    display: none;
+  }
+
+  .view.classroom {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    background: #000;
+    color: #fff;
+  }
+  .view.classroom[hidden] {
+    display: none;
+  }
+  .cr-stage {
+    position: relative;
+    flex: 1;
+    min-block-size: 0;
+    display: grid;
+  }
+  .cr-frame {
+    container-type: inline-size;
+    display: grid;
+    place-items: center;
+    min-block-size: 0;
+    filter: contrast(1.05);
+  }
+  .cr-frame :global(img),
+  .cr-frame :global(.art-fallback) {
+    max-inline-size: 100%;
+    max-block-size: 100%;
+    block-size: 100%;
+    inline-size: 100%;
+    object-fit: contain;
+  }
+  .cr-caption {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    padding: var(--s-4) var(--s-6);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-read);
+    font-size: clamp(28px, 4.5vw, 56px);
+    line-height: 1.4;
+  }
+  .cr-shared {
+    display: none;
+    overflow-y: auto;
+    padding: var(--s-6);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-read);
+    font-size: clamp(28px, 3.6vw, 40px);
+    line-height: 1.5;
+  }
+  .cr-shared :global(h2) {
+    font-family: var(--font-display);
+    margin-block-end: var(--s-4);
+  }
+  .cr-shared :global(p) {
+    max-inline-size: 50ch;
+    margin: 0 0 0.8em;
+  }
+  .cr-shared :global(.is-marked) {
+    background: var(--mark);
+    color: var(--mark-ink);
+  }
+  .view.classroom[data-mode='shared'] .cr-shared {
+    display: block;
+  }
+  .view.classroom[data-mode='shared'] .cr-frame {
+    display: none;
+  }
+  .cr-black {
+    position: absolute;
+    inset: 0;
+    background: #000;
+  }
+  .cr-notes {
+    max-block-size: 40%;
+    overflow-y: auto;
+    padding: var(--s-4) var(--s-5);
+    background: var(--card);
+    color: var(--ink);
+    display: grid;
+    gap: var(--s-2);
+  }
+  .cr-notes[hidden] {
+    display: none;
+  }
+  .cr-next {
+    inline-size: 8rem;
+    aspect-ratio: 4 / 3;
+    container-type: inline-size;
+    overflow: hidden;
+  }
+  .cr-next :global(img),
+  .cr-next :global(.art-fallback) {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+  }
+  .cr-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-2) var(--s-4);
+    background: var(--card);
+    color: var(--ink);
+  }
+  .cr-pos {
+    min-inline-size: 5rem;
+    text-align: center;
+    font-weight: 700;
+  }
+  .chapter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--s-2);
+  }
+  .chapter-link {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    inline-size: 100%;
+    min-block-size: var(--tap-adult);
+    padding: var(--s-2) var(--s-3);
+    border: 2px solid var(--rule);
+    border-radius: var(--r-m);
+    background: var(--card);
+    color: var(--ink);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+  .chapter-no {
+    display: grid;
+    place-items: center;
+    inline-size: 2rem;
+    block-size: 2rem;
+    border-radius: var(--r-round);
+    background: var(--lagoon-tint);
+    font-weight: 700;
+  }
+  .chapter-bar {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-block-size: 48px;
+    padding: var(--s-1) var(--gutter);
+    background: var(--card);
+    border-block-end: 1px solid var(--rule);
+  }
+  .chapter-bar-title {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 700;
+  }
+  .chapter-bar-pos {
+    color: var(--ink-2);
+    font-size: var(--t-ui-sm);
+    white-space: nowrap;
+  }
+  .chapter-progress {
+    block-size: 4px;
+    background: var(--paper-2);
+  }
+  .chapter-progress div {
+    block-size: 100%;
+    inline-size: 0;
+    background: var(--lagoon);
+  }
+  .chapter-wrap {
+    padding-block: var(--s-6);
+  }
+  .chapter-body {
+    max-inline-size: var(--measure-prose);
+    margin-inline: auto;
+    font-family: var(--font-read);
+    font-size: calc(var(--t-prose) * (1 + var(--text-step, 0) * 0.1));
+    line-height: var(--lh-prose);
+  }
+  .chapter-body :global(h2) {
+    font-family: var(--font-display);
+    font-size: var(--t-display-2);
+    line-height: var(--lh-display);
+    margin-block-end: var(--s-5);
+  }
+  .chapter-body :global(p) {
+    margin-block: 0 0.8em;
+  }
+  .chapter-nav {
+    max-inline-size: var(--measure-prose);
+    margin: var(--s-6) auto 0;
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-3);
+  }
+  .chapter-nav [hidden] {
     display: none;
   }
 

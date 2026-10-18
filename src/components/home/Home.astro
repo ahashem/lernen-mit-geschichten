@@ -1,0 +1,424 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import StoryTile from '@components/StoryTile.astro';
+import StoryArt from '@components/reader/StoryArt.astro';
+import Icon from '@components/reader/Icon.astro';
+import { getCatalogue, SHELF_KEY, type CatalogueItem } from '@utils/catalogue';
+import { getSkillsByIds, getSkills } from '@utils/skills-taxonomy';
+import { coverOf, paletteFor } from '@utils/story-art';
+import { fmt, getTranslation, type Locale } from '@utils/i18n';
+import { BASE_PATH } from '@utils/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
+const items = await getCatalogue(locale);
+const prefix = locale === 'de' ? BASE_PATH : `${BASE_PATH}/${locale}`;
+const library = `${prefix}/library`;
+const storyHref = (i: CatalogueItem) => `${prefix}/stories/${i.slug}`;
+
+// Four shelves in band order; the last cover of each is the first story of the next shelf ("moving up").
+const shelves = ([1, 2, 3, 4] as const)
+  .map(band => {
+    const own = items.filter(i => i.band === band);
+    const up = items.find(i => i.band === band + 1);
+    return { band, own, picks: [...own.slice(0, up ? 5 : 6), ...(own.length && up ? [up] : [])] };
+  })
+  .filter(s => s.own.length > 0);
+
+// Skills the shelves actually have stories for, most used first: "Find by situation" never leads to an empty library.
+const counts = new Map<string, number>();
+for (const i of items) for (const id of i.skills) counts.set(id, (counts.get(id) ?? 0) + 1);
+const known = await getSkillsByIds(
+  (await getSkills()).map(s => s.id),
+  locale
+);
+const situations = known
+  .filter(s => counts.has(s.id))
+  .sort((a, b) => counts.get(b.id)! - counts.get(a.id)! || a.label.localeCompare(b.label, locale))
+  .slice(0, 6);
+
+const small = items.filter(i => i.band <= 2);
+const heroItem = small[0];
+const more = [
+  ...small.slice(1, 5),
+  ...(items.find(i => i.band === 3) ? [items.find(i => i.band === 3)!] : []),
+].slice(0, 5);
+const hasPictures = small.length > 0;
+
+const clientItems = Object.fromEntries(
+  items.map(i => [
+    `${i.storyId}:${locale}`,
+    { title: i.title, href: storyHref(i), pages: i.pageCount, band: i.band },
+  ])
+);
+const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf') };
+---
+
+<BaseLayout title={t('home')} locale={locale} description={t('tagline')}>
+  <div
+    class="container home"
+    data-home="reader"
+    data-items={JSON.stringify(clientItems)}
+    data-strings={JSON.stringify(strings)}
+  >
+    <h1 class="visually-hidden">{t('siteName')}</h1>
+
+    <section class="continue surface" data-continue hidden aria-labelledby="continue-title">
+      <p id="continue-title" class="continue-title" data-continue-title></p>
+      <p class="continue-page" data-continue-page></p>
+      <a class="btn btn--primary" data-continue-link href="#">{t('continueReading')}</a>
+    </section>
+
+    <div data-body="reader">
+      {
+        hasPictures && (
+          <button class="door surface" type="button" data-set-home="picture">
+            <span class="door-faces" aria-hidden="true">
+              {small.slice(0, 3).map(i => (
+                <span class="door-face">{i.emoji ?? i.meta?.emoji ?? '📖'}</span>
+              ))}
+            </span>
+            <span class="door-label">{t('pictureDoor')}</span>
+          </button>
+        )
+      }
+
+      <div class="shelves">
+        {
+          shelves.map(shelf => (
+            <section class="shelf" data-shelf={shelf.band} aria-labelledby={`shelf-${shelf.band}`}>
+              <div class="shelf-head">
+                <h2 id={`shelf-${shelf.band}`}>{t(SHELF_KEY[shelf.band])}</h2>
+                <a href={`${library}?shelf=${shelf.band}`}>
+                  {t('seeAll')}
+                  <span class="visually-hidden"> {t(SHELF_KEY[shelf.band])}</span>
+                </a>
+              </div>
+              <ul class="tiles">
+                {shelf.picks.map(i => (
+                  <li>
+                    <StoryTile
+                      locale={locale}
+                      slug={i.slug}
+                      storyId={i.storyId}
+                      title={i.title}
+                      meta={i.meta}
+                      emoji={i.emoji}
+                      minutes={i.minutes}
+                      shelf={
+                        i.band !== shelf.band ? t(SHELF_KEY[i.band as 1 | 2 | 3 | 4]) : undefined
+                      }
+                    />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))
+        }
+      </div>
+
+      {
+        situations.length > 0 && (
+          <section class="situations" aria-labelledby="situations-title">
+            <h2 id="situations-title">{t('findBySituation')}</h2>
+            <ul class="chips">
+              {situations.map(s => (
+                <li>
+                  <a class="chip" href={`${library}?skill=${s.id}`}>
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+    </div>
+
+    {
+      heroItem && (
+        <div data-body="picture" hidden>
+          <section class="hero" aria-labelledby="hero-title">
+            <h2 id="hero-title" class="hero-heading">
+              {t('yourStory')}
+            </h2>
+            <a
+              class="hero-cover"
+              href={storyHref(heroItem)}
+              aria-label={fmt(t('openStoryNamed'), { title: heroItem.title })}
+            >
+              <StoryArt
+                picture={coverOf(heroItem.meta, locale)}
+                emoji={heroItem.emoji ?? heroItem.meta?.emoji ?? '📖'}
+                palette={paletteFor(heroItem.storyId, heroItem.meta)}
+                eager
+              />
+              <span class="play" aria-hidden="true">
+                <Icon name="play" size={40} />
+              </span>
+            </a>
+            <p class="hero-title">{heroItem.title}</p>
+          </section>
+
+          <section class="shelf" aria-labelledby="more-title">
+            <h2 id="more-title">{t('moreStories')}</h2>
+            <ul class="tiles">
+              {more.map(i => (
+                <li>
+                  <StoryTile
+                    locale={locale}
+                    slug={i.slug}
+                    storyId={i.storyId}
+                    title={i.title}
+                    meta={i.meta}
+                    emoji={i.emoji}
+                  />
+                </li>
+              ))}
+              <li>
+                <button class="all-tile surface" type="button" data-set-home="reader">
+                  {t('allStories')}
+                </button>
+              </li>
+            </ul>
+          </section>
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<script>
+  import { loadPrefs, savePrefs, read } from '@components/reader/prefs';
+
+  const root = document.querySelector<HTMLElement>('.home')!;
+  const items = JSON.parse(root.dataset.items!);
+  const s = JSON.parse(root.dataset.strings!);
+  const prefs = loadPrefs();
+  const hasPicture = !!root.querySelector('[data-body="picture"]');
+
+  // Explicit choice wins; otherwise a device set up for picture books opens on them.
+  function show(home: 'reader' | 'picture') {
+    const target = home === 'picture' && hasPicture ? 'picture' : 'reader';
+    root.dataset.home = target;
+    root
+      .querySelectorAll<HTMLElement>('[data-body]')
+      .forEach(el => (el.hidden = el.dataset.body !== target));
+  }
+  show(prefs.home ?? (prefs.shelf === 'picture' ? 'picture' : 'reader'));
+
+  root.querySelectorAll<HTMLElement>('[data-set-home]').forEach(button =>
+    button.addEventListener('click', () => {
+      const home = button.dataset.setHome as 'reader' | 'picture';
+      savePrefs({ ...loadPrefs(), home });
+      show(home);
+      root
+        .querySelector<HTMLElement>(`[data-body="${home}"] a, [data-body="${home}"] button`)
+        ?.focus();
+      window.scrollTo(0, 0);
+    })
+  );
+
+  // The device's preferred shelf comes first.
+  const order = { picture: 1, readalong: 2, chapter: 3, long: 4 } as Record<string, number>;
+  const preferred = order[prefs.shelf ?? ''];
+  const shelves = root.querySelector<HTMLElement>('.shelves');
+  if (shelves && preferred) {
+    shelves.style.display = 'flex';
+    shelves.style.flexDirection = 'column';
+    shelves.querySelectorAll<HTMLElement>('.shelf').forEach(el => {
+      el.style.order = Number(el.dataset.shelf) === preferred ? '-1' : '0';
+    });
+  }
+
+  // Continue: the one story the reader left mid-way on this device.
+  const last = read('reader-last');
+  const found = last ? items[last] : undefined;
+  const chaptered = !!found && found.band >= 3;
+  const saved = last ? read(`${chaptered ? 'reader-chapter' : 'reader-resume'}:${last}`) : null;
+  const page = Number(saved?.split(':')[0]);
+  if (found && saved !== null && (chaptered || page > 0)) {
+    const card = root.querySelector<HTMLElement>('[data-continue]')!;
+    card.querySelector('[data-continue-title]')!.textContent = found.title;
+    card.querySelector('[data-continue-page]')!.textContent = (chaptered ? s.chapterOf : s.pageOf)
+      .replace('{n}', String(page + 1))
+      .replace('{total}', String(found.pages));
+    card.querySelector<HTMLAnchorElement>('[data-continue-link]')!.href = found.href;
+    card.hidden = false;
+  }
+</script>
+
+<style>
+  .home {
+    display: grid;
+    gap: var(--s-6);
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-size: var(--t-display-2);
+    line-height: var(--lh-display);
+  }
+  [hidden] {
+    display: none !important;
+  }
+  .continue {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2) var(--s-4);
+    padding: var(--s-4);
+  }
+  .continue-title {
+    font-weight: 700;
+    flex: 1 1 12rem;
+  }
+  .continue-page {
+    color: var(--ink-2);
+  }
+  .door {
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+    inline-size: 100%;
+    min-block-size: var(--tap-child);
+    padding: var(--s-4);
+    border: 0;
+    background: var(--honey-tint);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 700;
+    text-align: start;
+    cursor: pointer;
+    margin-block-end: var(--s-6);
+  }
+  .door-faces {
+    display: flex;
+    gap: var(--s-2);
+  }
+  .door-face {
+    display: grid;
+    place-items: center;
+    inline-size: 48px;
+    block-size: 48px;
+    border-radius: var(--r-round);
+    background: var(--card);
+    font-size: 28px;
+  }
+  .shelves {
+    display: grid;
+    gap: var(--s-6);
+  }
+  .shelf-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--s-4);
+    margin-block-end: var(--s-3);
+  }
+  .shelf-head a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-adult);
+    font-weight: 600;
+  }
+  .tiles {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--s-4);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 9rem), 1fr));
+  }
+  .situations {
+    margin-block-start: var(--s-6);
+  }
+  .situations h2 {
+    margin-block-end: var(--s-3);
+  }
+  .chips {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-adult);
+    padding: var(--s-1) var(--s-4);
+    border: 2px solid var(--edge);
+    border-radius: var(--r-round);
+    background: var(--card);
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .hero {
+    display: grid;
+    gap: var(--s-3);
+    margin-block-end: var(--s-6);
+  }
+  .hero-cover {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    max-inline-size: 36rem;
+    border-radius: var(--r-l);
+    overflow: hidden;
+    box-shadow: var(--e-2);
+    container-type: inline-size;
+  }
+  .play {
+    position: absolute;
+    inset-block-end: var(--s-4);
+    inset-inline-end: var(--s-4);
+    display: grid;
+    place-items: center;
+    inline-size: 96px;
+    block-size: 96px;
+    border-radius: var(--r-round);
+    background: var(--lagoon);
+    color: var(--on-accent);
+    box-shadow: var(--e-1);
+  }
+  .hero-cover:focus-visible {
+    outline: 4px solid var(--focus);
+    outline-offset: 3px;
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: var(--t-display-2);
+    line-height: var(--lh-display);
+  }
+  .hero-heading {
+    font-size: var(--t-ui);
+    color: var(--ink-2);
+  }
+  .all-tile {
+    inline-size: 100%;
+    min-block-size: var(--tap-child);
+    block-size: 100%;
+    border: 0;
+    background: var(--plum-tint);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  @media (min-width: 900px) {
+    .hero {
+      grid-template-columns: minmax(0, 36rem) 1fr;
+      align-items: center;
+      gap: var(--s-6);
+    }
+    .hero-heading {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

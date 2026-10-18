@@ -121,3 +121,9 @@ export function firstSentence(body: string, locale: Locale): string {
   const { pages } = paginate(body, locale, 1);
   return pages[0]?.sentences[0] ?? '';
 }
+
+/** Chapter titles of a band 3-4 story: its `##` headings. Fewer than two means it is not chaptered. */
+export function chapterTitles(rawBody: string): string[] {
+  const titles = [...rawBody.matchAll(/^## +(.+?)\s*$/gm)].map(m => plain(m[1]));
+  return titles.length >= 2 ? titles : [];
+}

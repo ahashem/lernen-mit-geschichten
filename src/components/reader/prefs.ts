@@ -9,6 +9,9 @@ export interface Prefs {
   theme: 'day' | 'lamp';
   narrate: boolean;
   voice: 'both' | 'first' | 'second';
+  /** Which home this device shows; unset follows the shelf chosen in Settings. */
+  home?: 'reader' | 'picture';
+  shelf?: string;
   lang?: string;
   second?: string;
 }

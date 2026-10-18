@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { matchesFilter, filterStories, type StoryFilterData } from './filter-stories';
+import {
+  matchesFilter,
+  filterStories,
+  mostRestrictiveFilter,
+  type StoryFilterData,
+} from './filter-stories';
 
 describe('matchesFilter', () => {
   const testStories: StoryFilterData[] = [
@@ -231,5 +236,37 @@ describe('filterStories', () => {
       selectedLanguages: ['ar'],
     });
     expect(result).toHaveLength(0);
+  });
+});
+
+describe('shelf, length, diacritics and removal suggestion', () => {
+  const stories: StoryFilterData[] = [
+    {
+      title: 'Türkische Nacht',
+      skills: ['a'],
+      languages: ['de'],
+      band: 1,
+      minutes: 4,
+      text: 'Mond',
+    },
+    { title: 'Long one', skills: ['b'], languages: ['de', 'en'], band: 4, minutes: 40, text: '' },
+  ];
+
+  it('finds a title regardless of diacritics', () => {
+    expect(matchesFilter(stories[0], { searchQuery: 'turkische' })).toBe(true);
+    expect(matchesFilter(stories[0], { searchQuery: 'mond' })).toBe(true);
+  });
+
+  it('filters by shelf and length, OR within each and AND between them', () => {
+    expect(filterStories(stories, { selectedBands: [1, 2] })).toHaveLength(1);
+    expect(filterStories(stories, { selectedLengths: ['5', '30+'] })).toHaveLength(2);
+    expect(filterStories(stories, { selectedBands: [4], selectedLengths: ['5'] })).toHaveLength(0);
+  });
+
+  it('suggests the filter whose removal restores the most stories', () => {
+    expect(mostRestrictiveFilter(stories, { selectedBands: [4], selectedLengths: ['5'] })).toBe(
+      'selectedBands'
+    );
+    expect(mostRestrictiveFilter(stories, {})).toBeNull();
   });
 });
