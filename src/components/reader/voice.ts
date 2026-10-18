@@ -58,6 +58,7 @@ export function startVoice(
     for (const u of urls) if (u) URL.revokeObjectURL(u);
     urls = saved.map(b => (b ? URL.createObjectURL(b) : undefined));
     onChange(urls);
+    render();
   }
 
   loadRecordings(storyId, locale, texts)
@@ -79,9 +80,11 @@ export function startVoice(
     $(dialog, '[data-voice-text]').textContent = texts[page];
     const recording = !!recorder;
     const has = !!saved[page];
-    btn('record').hidden = recording || !!pending;
+    // After a take, "Record again" stays beside Keep; Keep is then the one primary action.
+    btn('record').hidden = recording;
     btn('record').disabled = denied;
-    btn('record').textContent = has ? t.voiceAgain : t.voiceRecord;
+    btn('record').classList.toggle('btn--primary', !pending);
+    btn('record').textContent = has || pending ? t.voiceAgain : t.voiceRecord;
     btn('stop').hidden = !recording;
     btn('play').hidden = recording || !blobOfPage();
     btn('keep').hidden = !pending;
@@ -90,6 +93,10 @@ export function startVoice(
     btn('next').disabled = recording || !!pending || page === texts.length - 1;
     if (!recording) state.textContent = pending ? '' : has ? t.voiceRecorded : t.voiceNone;
     btn('delete-all').hidden = !saved.some(Boolean);
+    // The cover's "no recorded voice" note is about bundled narration; it must not outlive a parent's own.
+    document
+      .querySelectorAll<HTMLElement>('[data-no-voice]')
+      .forEach(el => (el.hidden = saved.some(Boolean)));
   }
 
   function stopTracks() {
@@ -100,6 +107,8 @@ export function startVoice(
 
   async function record() {
     if (denied) return;
+    pending = null;
+    player.pause();
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch {

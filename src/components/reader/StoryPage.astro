@@ -218,7 +218,13 @@ const description = summary || `${title} | ${t('siteName')}`;
                 {minutes}
                 {t('minutes')} · {t('ageGroup')}: {story.data.ageGroup}
               </p>
-              {!narration && <p class="meta">{t('noRecordedVoice')}</p>}
+              {
+                !narration && (
+                  <p class="meta" data-no-voice>
+                    {t('noRecordedVoice')}
+                  </p>
+                )
+              }
               {
                 prompts.length > 0 && (
                   <>
@@ -746,7 +752,7 @@ const description = summary || `${title} | ${t('siteName')}`;
         </div>
         <div data-voice-main hidden class="voice-main">
           <p class="meta" data-voice-page />
-          <p class="voice-text" data-voice-text />
+          <p class="voice-text" data-voice-text tabindex="0" />
           <p class="meta" data-voice-state />
           <div class="voice-row">
             <button class="btn btn--primary voice-record" type="button" data-voice-record>
@@ -765,7 +771,7 @@ const description = summary || `${title} | ${t('siteName')}`;
               {t('voiceDelete')}
             </button>
           </div>
-          <div class="voice-row">
+          <div class="voice-row voice-nav">
             <button class="btn" type="button" data-voice-prev>
               {t('previousPage')}
             </button>
@@ -1119,15 +1125,29 @@ const description = summary || `${title} | ${t('siteName')}`;
     display: grid;
     gap: var(--s-3);
   }
+  .voice > * + * {
+    margin-block-start: var(--s-4);
+  }
   .voice-text {
     font-size: var(--t-prose);
     line-height: var(--lh-prose);
+    max-block-size: 30dvh;
+    overflow: auto;
   }
   .voice-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-2);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-3);
     align-items: center;
+  }
+  .voice-nav {
+    grid-template-columns: 1fr 1fr;
+  }
+  .voice-row > p {
+    grid-column: 1 / -1;
+  }
+  .voice .btn {
+    inline-size: 100%;
   }
   .voice-record {
     min-block-size: var(--tap-child);
