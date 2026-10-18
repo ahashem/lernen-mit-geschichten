@@ -135,7 +135,54 @@ Value: Thomas and Frau Yıldız can use it in class, and everyone can trust it.
 Read: `05-parents-and-educators.md`; `ux/03` §10 (not two-screen mode), §11, §12; `ux/05` Testing checklist;
 `06-reach-and-trust.md`; `01-vision.md` quality bars.
 
-Not in any run: Class room two-screen mode, My reading list, pre-built PDF class packs, "Read it in my voice".
+Not in any run: Class room two-screen mode, My reading list, pre-built PDF class packs.
+
+## Runs 4-6: the five test families (about $10 each)
+
+Five test families use the site today, so these runs favour what they feel first and what lets the owner and
+moderators fill the library. The CMS v1 is live; art, bands and `feelings` data are not. Each run still ends with
+its tags. The milestone slugs wait until M1-M3 scope is closed.
+
+### Run 4: "Tell us, and the library can grow"
+
+Value: a family can tell the owner what to fix in two taps; moderators see what each story lacks and have the fields
+the CMS needs next.
+
+- **Feedback loop.** A "Tell us about this story" `mailto:` on every story page and on About, prefilled with the
+  story title, locale and band (`07`). The address comes from `PUBLIC_FEEDBACK_EMAIL` at build time (never in
+  source); with no address the link is not rendered. Never a third-party widget.
+- **Moderator tooling.** Extend `scripts/publish-gates.mjs` to report per story what it lacks: band, summary,
+  `keyMessage`, `reviewedBy`, and narration per locale. Add optional schema fields, each with `.describe()`:
+  `feelings` (the six faces of `ux/07` #11), an editor's pick, curated situations, vocabulary glosses, think cards
+  (`discussion` already exists). Say in the PR which fields to mirror in `.pages.yml`. No UI consumes them yet.
+- Remaining hardcoded UI strings (`about`, `settings`, the booklet progress text) move to the locale files.
+
+Read: `07-community-and-growth.md` Feedback loop; `03` Workflow; `02` Schema; `ux/03` §4, §7.
+
+### Run 5: "The first tap speaks"
+
+Value: a pre-reader hears what a control does and can ask for the tour; the Library opens faster.
+
+- Spoken first-tap labels and the "?" tour on Picture home (`ux/05` Pre-reader navigation, `ux/03` §1b), spoken by
+  the device voice: no audio files are added. Hide the "?" bubble in a locale where the device has no voice.
+- Library performance: remove render-blocking CSS and unneeded work. Images stay as authored (responsive images
+  wait for the art pipeline).
+
+Read: `ux/05` Screen-reader experience, Pre-reader navigation; `ux/03` §1b; `ux/04` Gestures and input.
+
+### Run 6: "Read it in my voice"
+
+Value: a parent or grandparent records a story in the family language on the tablet; the child hears that voice.
+
+- Record per page and locale on the device (`ux/04` "Recording your own voice"), stored in IndexedDB, never
+  uploaded, played instead of the device voice. Rewrite `utils/voice-recorder.ts` from `catchup/44-commits`; never
+  merge it.
+
+Read: `ux/04` Sound, Recording your own voice; `ux/05` Screen-reader experience; `ux/07` #7, #17.
+
+Blocked, do not start: Find by feeling and feeling filters (no `feelings` data), chapter-reader depth and shared
+reading (no band 3-4 story), responsive images (no art pipeline), reviewer credit, skills wishlist and partner
+handout (no reviewers or partners yet).
 
 ## Owner and parallel tasks
 
