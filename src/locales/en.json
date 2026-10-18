@@ -145,5 +145,22 @@
     "social": "Social Skills",
     "cognitive": "Cognitive Skills",
     "behavioral": "Behavioral Skills"
-  }
+  },
+  "library": "Library",
+  "searchStories": "Search stories",
+  "searchWord": "Search",
+  "filterButton": "Filter",
+  "filterWithCount": "Filter ({n})",
+  "shelfLabel": "Shelf",
+  "lengthLabel": "Length",
+  "lengthUpTo": "up to {n} min",
+  "lengthOver": "over {n} min",
+  "allSkills": "All skills",
+  "availableInLabel": "Available in",
+  "clearFilters": "Clear",
+  "libraryCount": "{n} stories",
+  "libraryCountOne": "1 story",
+  "noStoryFits": "No story fits all of these.",
+  "removeFilterName": "Remove filter: {name}",
+  "removeFilterNamed": "Remove {name}"
 }

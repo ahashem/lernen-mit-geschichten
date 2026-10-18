@@ -148,5 +148,22 @@
     "social": "Soziale Fähigkeiten",
     "cognitive": "Kognitive Fähigkeiten",
     "behavioral": "Verhaltensfähigkeiten"
-  }
+  },
+  "library": "Bibliothek",
+  "searchStories": "Geschichten suchen",
+  "searchWord": "Suchen",
+  "filterButton": "Filter",
+  "filterWithCount": "Filter ({n})",
+  "shelfLabel": "Regal",
+  "lengthLabel": "Länge",
+  "lengthUpTo": "bis {n} Min.",
+  "lengthOver": "über {n} Min.",
+  "allSkills": "Alle Fähigkeiten",
+  "availableInLabel": "Verfügbar auf",
+  "clearFilters": "Zurücksetzen",
+  "libraryCount": "{n} Geschichten",
+  "libraryCountOne": "1 Geschichte",
+  "noStoryFits": "Keine Geschichte passt zu allem.",
+  "removeFilterName": "Filter entfernen: {name}",
+  "removeFilterNamed": "{name} entfernen"
 }
