@@ -3,7 +3,7 @@ title: "Lina und der große Keks"
 emoji: "🍪"
 skills: ["impulse-control", "decision-making", "patience"]
 ageGroup: "3-7"
-band: 1
+band: "1"
 storyId: "003-lina"
 difficulty: "beginner"
 publishDate: 2024-01-15

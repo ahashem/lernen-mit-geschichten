@@ -3,7 +3,7 @@ title: "Fritz der Flamingo lernt Ordnung"
 emoji: "🦩"
 skills: ["organization", "responsibility"]
 ageGroup: "3-7"
-band: 1
+band: "1"
 storyId: "007-fritz-flamingo"
 publishDate: 2024-01-15
 difficulty: "beginner"

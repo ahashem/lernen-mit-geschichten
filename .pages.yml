@@ -3,7 +3,8 @@
 # language file carries its own text and its own alt text (coverAlt, frameAlts).
 
 settings:
-  content: true # keep frontmatter the forms do not show (palette, legacy fields)
+  content:
+    merge: true # a save keeps every frontmatter key its form does not show (the CMS rewrites the file otherwise)
   commit:
     identity: app # the repo is public: never put a moderator's email in git history
     templates:

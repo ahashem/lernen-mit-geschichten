@@ -3,7 +3,7 @@ title: "Timmi denkt nach, bevor er handelt"
 emoji: "🧠"
 skills: ["critical-thinking", "decision-making"]
 ageGroup: "3-7"
-band: 1
+band: "1"
 storyId: "020-timmi-denkt"
 publishDate: 2024-01-15
 difficulty: "beginner"

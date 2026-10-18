@@ -3,7 +3,7 @@ title: "Dino Dino und das große Warten"
 emoji: "🦕"
 skills: ["patience", "delayed-gratification"]
 ageGroup: "3-7"
-band: 1
+band: "1"
 storyId: "008-dino"
 publishDate: 2024-01-15
 difficulty: "beginner"

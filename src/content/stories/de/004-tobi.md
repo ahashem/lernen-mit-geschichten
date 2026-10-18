@@ -3,7 +3,7 @@ title: "Tobi und der große Apfelkuchen"
 emoji: "🦔"
 skills: ["cooperation", "effective-communication", "problem-solving"]
 ageGroup: "3-7"
-band: 1
+band: "1"
 storyId: "004-tobi"
 difficulty: "beginner"
 publishDate: 2024-01-15
