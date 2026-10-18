@@ -100,7 +100,11 @@ const description = summary || `${title} | ${t('siteName')}`;
   locale={locale}
   description={description}
   type="article"
-  storyLocales={[locale, ...otherLanguages.map(l => l.locale)]}
+  image={cover ? `${Astro.site?.origin ?? ''}${cover.src}` : undefined}
+  storyHrefs={Object.fromEntries([
+    [locale, Astro.url.pathname],
+    ...otherLanguages.map(l => [l.locale, l.href]),
+  ])}
 >
   <div
     class="story-app"

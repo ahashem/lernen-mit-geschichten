@@ -7,11 +7,11 @@ import { BASE_PATH as base } from '../utils/site';
 interface Props {
   currentLocale: Locale;
   currentPath?: string;
-  /** On a story page: the languages this story exists in. Elsewhere every language is offered. */
-  storyLocales?: Locale[];
+  /** On a story page: this story's path in each language it exists in. Elsewhere every language is offered. */
+  storyHrefs?: Partial<Record<Locale, string>>;
 }
 
-const { currentLocale, currentPath = '/', storyLocales } = Astro.props;
+const { currentLocale, currentPath = '/', storyHrefs } = Astro.props;
 const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(currentLocale, key);
 
 // The page without the base path and the locale prefix; the same page in another language adds its own prefix.
@@ -26,8 +26,8 @@ const rows = LOCALES.map(code => ({
   code,
   name: endonyms[code],
   current: code === currentLocale,
-  missing: !!storyLocales && !storyLocales.includes(code),
-  href: pathIn(code),
+  missing: !!storyHrefs && !storyHrefs[code],
+  href: storyHrefs ? (storyHrefs[code] ?? homeIn(code)) : pathIn(code),
 }));
 const available = rows.filter(r => !r.missing);
 ---
@@ -68,7 +68,7 @@ const available = rows.filter(r => !r.missing);
       }
     </ul>
     {
-      storyLocales && (
+      storyHrefs && (
         <div class="missing" role="status" hidden>
           <p data-missing-text />
           <ul>

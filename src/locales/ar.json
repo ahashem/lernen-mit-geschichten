@@ -182,5 +182,21 @@
   "storyNotIn": "هذه القصة غير متوفرة بـ {lang} بعد.",
   "goToHome": "الذهاب إلى الصفحة الرئيسية بـ {lang}",
   "notFoundHint": "القصة التي تبحث عنها غير موجودة هنا.",
-  "notFoundBackToStories": "العودة إلى القصص"
+  "notFoundBackToStories": "العودة إلى القصص",
+  "privacyTitle": "الخصوصية",
+  "privacyLead": "لا نخزّن أي شيء عنك. لا توجد حسابات ولا ملفات تعريف ارتباط ولا إعلانات.",
+  "privacyStoredTitle": "ما يتذكره هذا الجهاز",
+  "privacyStoredPrefs": "إعداداتك: حجم النص ووضع المصباح واللغات والرف.",
+  "privacyStoredPlace": "المكان الذي توقفت عنده في القصة.",
+  "privacyStoredLast": "آخر قصة قرأتها، لنعرض لك «تابع القراءة».",
+  "privacyNever": "كل هذا يبقى على هذا الجهاز ولا يُرسل إلى أي مكان.",
+  "privacyGtmTitle": "Google Tag Manager",
+  "privacyGtm": "في الموقع الفعلي يُحمَّل Google Tag Manager من خوادم Google عند إعداده. هذا هو الاتصال الوحيد بطرف ثالث، ونخطط لاستبداله. لا تستخدمه المواقع التجريبية.",
+  "forgetTitle": "انسَ هذا الجهاز",
+  "forgetText": "يمحو كل ما تذكره هذا الجهاز.",
+  "forgetButton": "انسَ هذا الجهاز",
+  "forgetConfirm": "هل تريد مسح كل شيء على هذا الجهاز؟",
+  "forgetYes": "نعم، امسح",
+  "forgetNo": "إلغاء",
+  "forgetDone": "تم. نسي هذا الجهاز كل شيء."
 }

@@ -182,5 +182,21 @@
   "storyNotIn": "Bu hikâye henüz {lang} dilinde yok.",
   "goToHome": "{lang} ana sayfasına git",
   "notFoundHint": "Aradığın hikâye burada yok.",
-  "notFoundBackToStories": "Hikâyelere dön"
+  "notFoundBackToStories": "Hikâyelere dön",
+  "privacyTitle": "Gizlilik",
+  "privacyLead": "Senin hakkında hiçbir şey saklamıyoruz. Hesap, çerez ve reklam yok.",
+  "privacyStoredTitle": "Bu cihazın hatırladıkları",
+  "privacyStoredPrefs": "Ayarların: yazı boyutu, lamba modu, diller ve raf.",
+  "privacyStoredPlace": "Bir hikâyede nerede kaldığın.",
+  "privacyStoredLast": "En son hangi hikâyeyi okuduğun; böylece “Devam et” sunabiliriz.",
+  "privacyNever": "Bunların hepsi bu cihazda kalır ve hiçbir yere gönderilmez.",
+  "privacyGtmTitle": "Google Tag Manager",
+  "privacyGtm": "Canlı sitede, kurulduğunda Google Tag Manager Google sunucularından yüklenir. Üçüncü tarafa tek bağlantı budur ve onu değiştirmeyi planlıyoruz. Test sitelerinde kullanılmaz.",
+  "forgetTitle": "Bu cihazı unut",
+  "forgetText": "Bu cihazın hatırladığı her şeyi siler.",
+  "forgetButton": "Bu cihazı unut",
+  "forgetConfirm": "Bu cihazdaki her şey silinsin mi?",
+  "forgetYes": "Evet, sil",
+  "forgetNo": "Vazgeç",
+  "forgetDone": "Bitti. Bu cihaz her şeyi unuttu."
 }

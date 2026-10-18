@@ -26,6 +26,7 @@ export const GET: APIRoute = async ({ site }) => {
     { path: '', priority: '1.0' },
     { path: 'about', priority: '0.8' },
     { path: 'library', priority: '0.8' },
+    { path: 'privacy', priority: '0.5' },
   ];
 
   let sitemap = `<?xml version="1.0" encoding="UTF-8"?>

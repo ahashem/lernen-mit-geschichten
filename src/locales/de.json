@@ -183,5 +183,21 @@
   "toCover": "Zum Titelbild",
   "languageLabel": "Sprache",
   "storyNotIn": "Diese Geschichte gibt es noch nicht auf {lang}.",
-  "goToHome": "Zur {lang}-Startseite"
+  "goToHome": "Zur {lang}-Startseite",
+  "privacyTitle": "Datenschutz",
+  "privacyLead": "Wir speichern nichts über dich. Es gibt keine Konten, keine Cookies und keine Werbung.",
+  "privacyStoredTitle": "Was dieses Gerät sich merkt",
+  "privacyStoredPrefs": "Deine Einstellungen: Textgröße, Lampenmodus, Sprachen und Regal.",
+  "privacyStoredPlace": "Wo du in einer Geschichte aufgehört hast.",
+  "privacyStoredLast": "Welche Geschichte du zuletzt gelesen hast, damit wir „Weiterlesen“ anbieten können.",
+  "privacyNever": "Das alles bleibt auf diesem Gerät und wird nie gesendet.",
+  "privacyGtmTitle": "Google Tag Manager",
+  "privacyGtm": "Auf der Live-Seite lädt Google Tag Manager von Servern von Google, wenn er eingerichtet ist. Das ist die einzige Verbindung zu Dritten. Wir wollen sie ersetzen. Auf Testseiten ist er nicht aktiv.",
+  "forgetTitle": "Dieses Gerät vergessen lassen",
+  "forgetText": "Löscht alles, was dieses Gerät sich gemerkt hat.",
+  "forgetButton": "Dieses Gerät vergessen",
+  "forgetConfirm": "Alles auf diesem Gerät löschen?",
+  "forgetYes": "Ja, löschen",
+  "forgetNo": "Abbrechen",
+  "forgetDone": "Erledigt. Dieses Gerät hat alles vergessen."
 }
