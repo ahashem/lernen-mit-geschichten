@@ -15,7 +15,8 @@ const quizQuestionSchema = z.object({
     .describe('Input style. Nothing is scored; reflection questions have no wrong answer.'),
   correctAnswer: z
     .union([z.string(), z.array(z.string())])
-    .describe('The answer the story supports, for recall questions.'),
+    .optional()
+    .describe('The answer the story supports, for recall questions. Talk questions have none.'),
   options: z.array(z.string()).optional().describe('Choices for multiplechoice.'),
 });
 
@@ -82,6 +83,36 @@ const storiesCollection = defineCollection({
       .array(z.string())
       .optional()
       .describe('SHARED, German file only. 1-3 ids of files in src/content/skills.'),
+    feelings: z
+      .array(z.enum(['happy', 'angry', 'sad', 'scared', 'calm', 'proud']))
+      .optional()
+      .describe('SHARED, German file only. The feelings this story helps with; Find by feeling will read them.'),
+    editorsPick: z
+      .boolean()
+      .optional()
+      .describe('SHARED, German file only. Ranks the story first within its feeling and shelf.'),
+    situations: z
+      .array(z.string())
+      .optional()
+      .describe("This locale's curated situation words, e.g. 'new at school'. Examples, not a taxonomy."),
+    glossary: z
+      .array(
+        z.object({
+          word: z.string().describe('The word as it appears in the story.'),
+          meaning: z.string().describe('Its short meaning in this locale, written by a translator.'),
+        })
+      )
+      .optional()
+      .describe("Vocabulary glosses for bands 3-4, 5-10 per chapter, in this locale. Never machine-written."),
+    thinkCards: z
+      .array(z.string())
+      .max(5)
+      .optional()
+      .describe('Bands 3-4: at most 5 short reflection prompts, one per screen. No wrong answers.'),
+    cast: z
+      .array(z.string())
+      .optional()
+      .describe('SHARED, German file only. Ids of the characters in this story: files in src/content/characters.'),
     ageGroup: z.string().default('3-7').describe('Guidance for adults only; never shown to children.'),
     status: z
       .enum(['draft', 'published'])
@@ -115,8 +146,33 @@ const skillsCollection = defineCollection({
   }),
 });
 
+const charactersCollection = defineCollection({
+  // Files starting with an underscore are ignored, so a moderator can keep a template beside the real ones.
+  loader: glob({ pattern: '[^_]*.yaml', base: './src/content/characters' }),
+  schema: z.object({
+    id: z.string().describe('Lowercase slug; the file name and the id stories list in cast. Never change it once a story uses it.'),
+    name: z.string().describe('The name as shown in stories.'),
+    status: z
+      .enum(['draft', 'approved'])
+      .default('draft')
+      .describe("'approved' only after a second moderator has signed the sheet (docs/roadmap/03)."),
+    descriptor: z
+      .string()
+      .describe('The fixed descriptor, pasted verbatim into every image prompt (docs/roadmap/ux/06 section 2).'),
+    colourRecipe: z.string().describe('Body, accent and signature-item colours as named tokens or hex values.'),
+    never: z.array(z.string()).optional().describe('What must never change or appear, e.g. never without the scarf.'),
+    references: z
+      .array(z.string())
+      .optional()
+      .describe('File names of the reference images, e.g. bruno_b1_front.png. They live in art/characters/{id}/ or in your own storage; they are never published.'),
+    approvedBy: z.string().optional().describe('The second moderator who signed the sheet.'),
+    approvedAt: z.date().optional().describe('When they signed it.'),
+  }),
+});
+
 export const collections = {
   stories: storiesCollection,
   skills: skillsCollection,
+  characters: charactersCollection,
 };
 

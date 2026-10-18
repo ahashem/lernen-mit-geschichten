@@ -135,7 +135,54 @@ Value: Thomas and Frau Yıldız can use it in class, and everyone can trust it.
 Read: `05-parents-and-educators.md`; `ux/03` §10 (not two-screen mode), §11, §12; `ux/05` Testing checklist;
 `06-reach-and-trust.md`; `01-vision.md` quality bars.
 
-Not in any run: Class room two-screen mode, My reading list, pre-built PDF class packs, "Read it in my voice".
+Not in any run: Class room two-screen mode, My reading list, pre-built PDF class packs.
+
+## Runs 4-6: the five test families (about $10 each)
+
+Five test families use the site today, so these runs favour what they feel first and what lets the owner and
+moderators fill the library. The CMS v1 is live; art, bands and `feelings` data are not. Each run still ends with
+its tags. The milestone slugs wait until M1-M3 scope is closed.
+
+### Run 4: "Tell us, and the library can grow"
+
+Value: a family can tell the owner what to fix in two taps; moderators see what each story lacks and have the fields
+the CMS needs next.
+
+- **Feedback loop.** A "Tell us about this story" `mailto:` on every story page and on About, prefilled with the
+  story title, locale and band (`07`). The address comes from `PUBLIC_FEEDBACK_EMAIL` at build time (never in
+  source); with no address the link is not rendered. Never a third-party widget.
+- **Moderator tooling.** Extend `scripts/publish-gates.mjs` to report per story what it lacks: band, summary,
+  `keyMessage`, `reviewedBy`, and narration per locale. Add optional schema fields, each with `.describe()`:
+  `feelings` (the six faces of `ux/07` #11), an editor's pick, curated situations, vocabulary glosses, think cards
+  (`discussion` already exists). Say in the PR which fields to mirror in `.pages.yml`. No UI consumes them yet.
+- Remaining hardcoded UI strings (`about`, `settings`, the booklet progress text) move to the locale files.
+
+Read: `07-community-and-growth.md` Feedback loop; `03` Workflow; `02` Schema; `ux/03` §4, §7.
+
+### Run 5: "The first tap speaks"
+
+Value: a pre-reader hears what a control does and can ask for the tour; the Library opens faster.
+
+- Spoken first-tap labels and the "?" tour on Picture home (`ux/05` Pre-reader navigation, `ux/03` §1b), spoken by
+  the device voice: no audio files are added. Hide the "?" bubble in a locale where the device has no voice.
+- Library performance: remove render-blocking CSS and unneeded work. Images stay as authored (responsive images
+  wait for the art pipeline).
+
+Read: `ux/05` Screen-reader experience, Pre-reader navigation; `ux/03` §1b; `ux/04` Gestures and input.
+
+### Run 6: "Read it in my voice"
+
+Value: a parent or grandparent records a story in the family language on the tablet; the child hears that voice.
+
+- Record per page and locale on the device (`ux/04` "Recording your own voice"), stored in IndexedDB, never
+  uploaded, played instead of the device voice. Rewrite `utils/voice-recorder.ts` from `catchup/44-commits`; never
+  merge it.
+
+Read: `ux/04` Sound, Recording your own voice; `ux/05` Screen-reader experience; `ux/07` #7, #17.
+
+Blocked, do not start: Find by feeling and feeling filters (no `feelings` data), chapter-reader depth and shared
+reading (no band 3-4 story), responsive images (no art pipeline), reviewer credit, skills wishlist and partner
+handout (no reviewers or partners yet).
 
 ## Owner and parallel tasks
 
@@ -158,11 +205,11 @@ Not in any run: Class room two-screen mode, My reading list, pre-built PDF class
 
 ## Next
 
-Run 3 shipped the privacy page, the single-screen Class room, print and class links, offline behind a flag, and an accessibility pass. Nothing is left of the three planned runs except what is listed here. In order:
+Runs 4-6 shipped the feedback link, the moderator gates and schema fields, the spoken first tap and "?" tour on Picture home, and "Read it in my voice" for bands 1-2. In order:
 
-1. **Owner, content and review.** As before: `---` page breaks for `de/001-bruno`, alt text review, paragraph structure matching `de`, a band 3-4 story to see the chapter reader and shared reading live, `summary` and `keyMessage` for the Library and cards. Native review of `src/locales/review-queue.json` (about 70 keys per language by now); the **privacy text needs a native and a legal read**.
-2. **Owner, release.** Push the local tags the sandbox could not (the SHAs are in the Run 3 PR). Decide whether to build any deploy with `PUBLIC_OFFLINE=1`; it needs a trial on a real kita Wi-Fi first. Staging and production still carry Google Tag Manager: pick a replacement (the privacy page says it plainly).
-3. **Owner, CMS.** Schema fields and `.pages.yml` entries for what has no data yet: `feelings`, an editor's pick, curated situations, vocabulary glosses (5-10 per chapter), per-chapter discussion cards and think cards, key words and a follow-up activity for the prep sheet.
-4. **Next engineering, discovery.** Find by feeling and the faces row; feeling and format filters; Klasse hint; language default from `navigator.languages`; the 56 px top bar and "For grown-ups" menu; skeleton loading states; Library performance (Lighthouse mobile 72).
-5. **Next engineering, reading.** Chapter reader: paginated columns, Listen, think cards, second-language tools, add-to-list, Literata. Class room: narration toggle, per-page prompts, discussion card `D`. Print: Letter paper, detail switch, band 3-4 pack items, per-frame colouring page, circle folder export. Offline: "Keep on this device", packs, storage panel, install card, dimmed unsaved covers. Images: `astro:assets` responsive images (covers are shipped as authored; a 1.3 MB colour PNG frame is the heaviest asset).
-6. **M1 leftovers (small).** Spoken first-tap labels and the "?" tour; recall and feeling talk cards; the Lamp shelf and Lamp door; "Listen in the dark" for bands 3-4; an in-app "Less motion" switch; preload the reading font; move `skills` into `story-meta`; fold `001-bruno-interactive` into `001-bruno`; remember the language pair per story; remaining hardcoded UI strings (`about` and `settings` page copy, the booklet progress text).
+1. **Owner, release.** Push the local tags the sandbox could not (SHAs in the Runs 4-6 PR). Set `PUBLIC_FEEDBACK_EMAIL` in the deploys that should show the "Tell us about this story" link. Mirror the new schema fields in `.pages.yml`: `feelings`, `editorsPick`, `situations`, `glossary`, `thinkCards`. Decide whether to build any deploy with `PUBLIC_OFFLINE=1`; it needs a trial on real kita Wi-Fi first. Staging and production still carry Google Tag Manager.
+2. **Owner, content and review.** `---` page breaks for `de/001-bruno`, a band 3-4 story, `summary` and `keyMessage`, bands, `feelings` and the first `thinkCards`. Run `node scripts/publish-gates.mjs --stories` to see what each story lacks. Native review of `src/locales/review-queue.json`; the privacy text needs a native and a legal read. The About page copy is stale (it still describes standard and interactive formats and old features): rewrite it, then move it to the locale files. The cover's grown-ups panel sits under the heading "Für Pädagoginnen und Pädagogen" although parents use it too; give it a parent group of its own.
+3. **Try with the five families.** Hear "Read it in my voice" on a real tablet (only Chromium with a fake microphone was tested) and the first-tap labels with real device voices in `ar`, `tr` and `ur`.
+4. **Next engineering, once the data exists.** Find by feeling and the faces row (needs `feelings`); the Library feeling and format filters; Klasse hint; language default from `navigator.languages`; the 56 px top bar and "For grown-ups" menu; skeleton loading states. Chapter reader: paginated columns, Listen, think cards, glosses, second-language tools, add-to-list, Literata; "Read it in my voice" for bands 3-4 (it covers bands 1-2 only).
+5. **Library performance.** Lighthouse mobile was 72 in Run 3; it could not be re-measured in Runs 4-6 (no Lighthouse in the sandbox), so nothing was changed. The page ships two small stylesheets and three small scripts; measure on a compressed server before changing anything. Responsive images wait for the art pipeline.
+6. **Class room, print, offline depth** and **M1 leftovers**, as before: narration toggle, per-page prompts, discussion card `D`; Letter paper, detail switch, band 3-4 pack items, per-frame colouring page, circle folder export; "Keep on this device", packs, storage panel, install card; recall and feeling talk cards, the Lamp shelf and door, "Listen in the dark", an in-app "Less motion" switch, preload the reading font, `skills` into `story-meta`, fold `001-bruno-interactive` into `001-bruno`, remember the language pair per story.

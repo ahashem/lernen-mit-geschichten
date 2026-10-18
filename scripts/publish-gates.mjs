@@ -9,15 +9,17 @@
  * since <ref> that is `published` must be complete and reviewed by someone other than its author, or the run
  * fails. Untouched files are never held to it, so existing stories stay as they are.
  */
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { parse as parseYaml } from 'yaml';
 import { join } from 'node:path';
 
 const STORIES = 'src/content/stories';
-const SHARED = ['band', 'cover', 'frames', 'palette', 'art'];
+const SHARED = ['band', 'cover', 'frames', 'palette', 'art', 'feelings', 'editorsPick', 'cast'];
 const SKILLS = 'src/content/skills';
+const CHARACTERS = 'src/content/characters';
 const strict = process.env.CONTENT_STRICT === '1';
+const listStories = process.argv.includes('--stories');
 const changedRef = process.argv.find(a => a.startsWith('--changed='))?.slice('--changed='.length);
 
 const head = text => text.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
@@ -49,7 +51,18 @@ const skillsOf = fm => [...(fm.match(/^skills:\s*\[(.*?)\]/m)?.[1] ?? '').matchA
 // A translation may carry its own skills when its story really differs from the German one; the report lists them.
 const overrides = [];
 const lacking = { skillLabels: {}, band: {}, summary: {}, keyMessage: {}, reviewedBy: {}, coverAlt: {}, frameAlts: {} };
-const note = (field, locale) => (lacking[field][locale] = (lacking[field][locale] ?? 0) + 1);
+const perStory = new Map();
+let current = '';
+const note = (field, locale) => {
+  lacking[field][locale] = (lacking[field][locale] ?? 0) + 1;
+  perStory.set(current, [...(perStory.get(current) ?? []), field]);
+};
+// Recorded narration is reported but never counted towards CONTENT_STRICT: bands 3-4 may publish text first (ux/07 #4).
+const unnarrated = {};
+const hasRecording = (locale, id) => {
+  const dir = `public/assets/audio/${locale}/${id}`;
+  return existsSync(dir) && readdirSync(dir).some(x => x.endsWith('.m4a'));
+};
 const hard = [];
 
 for (const f of files) {
@@ -57,6 +70,11 @@ for (const f of files) {
   for (const key of keysOf(f.fm)) if (!form.includes(key)) hard.push(`${f.locale}/${f.file}: "${key}" is not a field of the ${f.locale} form in .pages.yml, so the CMS would drop it on save`);
   for (const id of skillsOf(f.fm)) if (!taxonomy.includes(id)) hard.push(`${f.locale}/${f.file}: skill "${id}" is not a file in ${SKILLS}`);
   if (f.draft) continue;
+  current = `${f.locale}/${f.file}`;
+  if (!hasRecording(f.locale, f.id)) {
+    unnarrated[f.locale] = (unnarrated[f.locale] ?? 0) + 1;
+    perStory.set(current, [...(perStory.get(current) ?? []), 'narration']);
+  }
   const de = source.get(f.id);
   if (!de) hard.push(`${f.locale}/${f.file}: no German source file for storyId ${f.id}`);
   if (f.locale !== 'de') {
@@ -68,6 +86,35 @@ for (const f of files) {
   } else if (!has(f.fm, 'band')) note('band', f.locale);
   for (const field of ['summary', 'keyMessage']) if (!has(f.fm, field)) note(field, f.locale);
 }
+
+// Characters are small sheets (docs/roadmap/ux/06 section 2). A malformed sheet or a story that lists a character
+// with no sheet fails; a missing reference image or an unapproved sheet is only reported.
+const characterFiles = existsSync(CHARACTERS) ? readdirSync(CHARACTERS).filter(f => f.endsWith('.yaml') && !f.startsWith('_')) : [];
+const characterIds = characterFiles.map(f => f.replace(/\.yaml$/, ''));
+const unapproved = [];
+for (const f of characterFiles) {
+  const id = f.replace(/\.yaml$/, '');
+  let sheet;
+  try {
+    sheet = parseYaml(readFileSync(join(CHARACTERS, f), 'utf8')) ?? {};
+  } catch (error) {
+    hard.push(`${CHARACTERS}/${f}: not valid YAML (${error.message.split('\n')[0]})`);
+    continue;
+  }
+  if (sheet.id !== id) hard.push(`${CHARACTERS}/${f}: id is "${sheet.id}", expected "${id}"`);
+  for (const field of ['name', 'descriptor', 'colourRecipe']) if (!String(sheet[field] ?? '').trim()) hard.push(`${CHARACTERS}/${f}: needs ${field}`);
+  if (sheet.status === 'approved' && !String(sheet.approvedBy ?? '').trim()) hard.push(`${CHARACTERS}/${f}: an approved character needs approvedBy`);
+  if (sheet.status !== 'approved') unapproved.push(id);
+  for (const ref of sheet.references ?? []) {
+    if (!existsSync(join('art/characters', id, ref))) console.log(`character ${id}: reference image art/characters/${id}/${ref} is not in the repo (fine if you keep references in your own storage)`);
+  }
+}
+for (const f of files) {
+  if (f.locale !== 'de') continue;
+  const cast = parseYaml(f.fm)?.cast ?? [];
+  for (const id of cast) if (!characterIds.includes(id)) hard.push(`${f.locale}/${f.file}: character "${id}" is not a file in ${CHARACTERS}`);
+}
+console.log(`characters: ${characterIds.length} sheet(s), ${characterIds.length - unapproved.length} approved`);
 
 for (const id of taxonomy) {
   const file = readFileSync(join(SKILLS, `${id}.yaml`), 'utf8');
@@ -87,6 +134,14 @@ for (const [field, byLocale] of Object.entries(lacking)) {
   missing += total;
   const detail = Object.entries(byLocale).map(([l, n]) => `${l} ${n}`).join(', ');
   console.log(`${field}: ${total} published file(s) lack it${total ? ` (${detail})` : ''}`);
+}
+const narrationTotal = Object.values(unnarrated).reduce((a, b) => a + b, 0);
+console.log(
+  `narration: ${narrationTotal} published file(s) have no recording (${Object.entries(unnarrated).map(([l, n]) => `${l} ${n}`).join(', ')}); not counted for CONTENT_STRICT`
+);
+if (listStories) {
+  console.log('\nper story:');
+  for (const [file, fields] of [...perStory].sort(([a], [b]) => a.localeCompare(b))) console.log(`  ${file}: lacks ${fields.join(', ')}`);
 }
 if (overrides.length) console.log(`skills overridden in a translation (its story may differ from the German one): ${overrides.join(', ')}`);
 for (const line of hard) console.error(`FAIL ${line}`);
@@ -124,6 +179,10 @@ if (changedRef) {
       need(picked >= 1 && picked <= 3, 'published needs 1 to 3 skills');
       const frames = countFrames(f.fm);
       if (has(f.fm, 'cover')) need(/^\s+alt:/m.test(block(f.fm, 'cover')), 'cover needs alt text');
+      // A picture that was never uploaded would silently fall back to the generated art.
+      for (const src of [...block(f.fm, 'cover').matchAll(/^\s+src:\s*["']?([^"'\r\n]+)/gm), ...block(f.fm, 'frames').matchAll(/^[ \t]+-?\s*src:\s*["']?([^"'\r\n]+)/gm)].map(m => m[1].trim())) {
+        need(existsSync(join('public', src)), `the picture ${src} has not been uploaded`);
+      }
       if (frames) need((block(f.fm, 'frames').match(/^\s+alt:/gm) ?? []).length >= frames, 'every page picture needs alt text');
       if (has(f.fm, 'cover') || frames) {
         const art = block(f.fm, 'art');

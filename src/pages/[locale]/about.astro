@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import FeedbackLink from '../../components/reader/FeedbackLink.astro';
 import type { Locale } from '../../utils/i18n';
 import { getTranslation } from '../../utils/i18n';
 
@@ -308,6 +309,7 @@ const description = pageContent.mission.text;
           </a>.
         </p>
       </section>
+      <FeedbackLink locale={locale} />
     </article>
   </div>
 </BaseLayout>

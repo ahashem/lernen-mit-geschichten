@@ -2,6 +2,7 @@ import { fmt } from '@utils/i18n';
 import { applyTheme, loadPrefs, read, savePrefs, write } from './prefs';
 import { startChapters } from './chapters';
 import { startClassroom } from './classroom';
+import { startVoice } from './voice';
 
 interface Timing {
   w: number;
@@ -58,6 +59,8 @@ export function startReader() {
   let lastTurn = 0;
   let talked = false;
   let wakeLock: WakeLockSentinel | null = null;
+  // Recordings made on this device (voice.ts); they win over the bundled narration and the device voice.
+  let own: (string | undefined)[] = [];
 
   app.dataset.ready = '';
 
@@ -240,7 +243,11 @@ export function startReader() {
       status(t.noSoundNow);
       setNarrating(false);
     });
-    if (!timings) return;
+    if (!timings) {
+      // No word timings: the whole page is lit instead.
+      $$(block(current, data.locale), '.s').forEach(el => el.classList.add('is-on'));
+      return;
+    }
     const tick = () => {
       const at = audio.currentTime;
       const active = timings.find(x => at >= x.start && at < x.end);
@@ -313,9 +320,10 @@ export function startReader() {
       if (n >= order.length) return pageDone(mine);
       sentenceIndex = 0;
       const locale = order[n];
-      const src = locale === data.locale ? data.audio?.[current] : undefined;
+      const mineSrc = locale === data.locale ? own[current] : undefined;
+      const src = mineSrc ?? (locale === data.locale ? data.audio?.[current] : undefined);
       const next = () => speak(n + 1);
-      if (src) playRecording(src, data.timings?.[current] ?? null, mine, next);
+      if (src) playRecording(src, mineSrc ? null : (data.timings?.[current] ?? null), mine, next);
       else speakSentences(mine, locale, next);
     };
     speak(0);
@@ -337,7 +345,7 @@ export function startReader() {
           audio.volume = 1;
         }
       }, 200);
-      if (!data.audio?.[current]) {
+      if (!own[current] && !data.audio?.[current]) {
         window.clearInterval(fade);
         stopNarration();
       }
@@ -685,6 +693,18 @@ export function startReader() {
       showView(initial === 'cards' ? 'cover' : initial, false);
       if (initial === 'book') syncPageUi();
     } else showView('cover', false);
+    startVoice(
+      app,
+      {
+        storyId: data.storyId,
+        locale: data.locale,
+        strings: t,
+        texts: pages.map((_, i) =>
+          ($(block(i, data.locale), '.story-text').textContent ?? '').replace(/\s+/g, ' ').trim()
+        ),
+      },
+      urls => (own = urls)
+    );
   } else {
     for (const v of views) v.hidden = v.dataset.view !== 'cover' && v.dataset.view !== 'text';
   }

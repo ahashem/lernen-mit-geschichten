@@ -67,6 +67,26 @@ setting for devices where the OS setting is not reachable (shared kita tablets).
 - **Pauses:** 400 ms after a page settles before narration starts, and 700 ms between sentences in
   band 1 (the aligner can insert silence), so children can look at the picture.
 
+### Recording your own voice
+
+A grown-up records a story in the family language so the child hears that voice. It lives in the grown-ups panel
+on the cover, never on a child screen, and works per locale.
+
+- **Before the first recording** one card: "This stays on this device. Nothing is uploaded. Anyone using this
+  device can hear it; you can delete it any time." Only then does the browser ask for the microphone. If it is
+  refused, say so plainly and stop; no retry loop.
+- **One page at a time.** The page text sits above a 64 px record button. While recording: a stop button, an
+  elapsed time in text (no pulsing, no level meter), at most 3 minutes per page. After stopping: Play, Keep, Record
+  again. Then the next page.
+- **Pages.** A recording belongs to the page it was made against. If the story's text later changes, that page
+  falls back to the device voice. Recordings are used only for pages they match, which settles `07` #17 for a
+  parent's own voice.
+- **Playback.** A recording replaces the device voice for that page on this device. There are no word timings, so
+  the page is highlighted but not the words. A missing page falls back to the device voice.
+- **Delete.** Per page and for the whole story, with one confirm. There are no counts, scores or praise copy.
+- **Accessibility.** The record button names its state; a live region announces "Recording", "Saved" and errors;
+  Space and Enter work; under reduced motion nothing animates.
+
 ### Ambient, music and effects
 
 - **Bands 1-2 (Day):** an optional, story-specific music bed at least 18 LU below narration. It

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import FeedbackLink from '../components/reader/FeedbackLink.astro';
 
 const locale = 'de';
 const description =
@@ -120,6 +121,7 @@ const description =
           </a>. Das bedeutet: Kostenlose Nutzung für nicht-kommerzielle Zwecke mit Namensnennung.
         </p>
       </section>
+      <FeedbackLink locale={locale} />
     </article>
   </div>
 </BaseLayout>
