@@ -109,6 +109,10 @@ const storiesCollection = defineCollection({
       .max(5)
       .optional()
       .describe('Bands 3-4: at most 5 short reflection prompts, one per screen. No wrong answers.'),
+    cast: z
+      .array(z.string())
+      .optional()
+      .describe('SHARED, German file only. Ids of the characters in this story: files in src/content/characters.'),
     ageGroup: z.string().default('3-7').describe('Guidance for adults only; never shown to children.'),
     status: z
       .enum(['draft', 'published'])
@@ -142,8 +146,33 @@ const skillsCollection = defineCollection({
   }),
 });
 
+const charactersCollection = defineCollection({
+  // Files starting with an underscore are ignored, so a moderator can keep a template beside the real ones.
+  loader: glob({ pattern: '[^_]*.yaml', base: './src/content/characters' }),
+  schema: z.object({
+    id: z.string().describe('Lowercase slug; the file name and the id stories list in cast. Never change it once a story uses it.'),
+    name: z.string().describe('The name as shown in stories.'),
+    status: z
+      .enum(['draft', 'approved'])
+      .default('draft')
+      .describe("'approved' only after a second moderator has signed the sheet (docs/roadmap/03)."),
+    descriptor: z
+      .string()
+      .describe('The fixed descriptor, pasted verbatim into every image prompt (docs/roadmap/ux/06 section 2).'),
+    colourRecipe: z.string().describe('Body, accent and signature-item colours as named tokens or hex values.'),
+    never: z.array(z.string()).optional().describe('What must never change or appear, e.g. never without the scarf.'),
+    references: z
+      .array(z.string())
+      .optional()
+      .describe('File names of the reference images, e.g. bruno_b1_front.png. They live in art/characters/{id}/ or in your own storage; they are never published.'),
+    approvedBy: z.string().optional().describe('The second moderator who signed the sheet.'),
+    approvedAt: z.date().optional().describe('When they signed it.'),
+  }),
+});
+
 export const collections = {
   stories: storiesCollection,
   skills: skillsCollection,
+  characters: charactersCollection,
 };
 

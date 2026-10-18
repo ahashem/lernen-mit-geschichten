@@ -15,8 +15,9 @@ import { parse as parseYaml } from 'yaml';
 import { join } from 'node:path';
 
 const STORIES = 'src/content/stories';
-const SHARED = ['band', 'cover', 'frames', 'palette', 'art', 'feelings', 'editorsPick'];
+const SHARED = ['band', 'cover', 'frames', 'palette', 'art', 'feelings', 'editorsPick', 'cast'];
 const SKILLS = 'src/content/skills';
+const CHARACTERS = 'src/content/characters';
 const strict = process.env.CONTENT_STRICT === '1';
 const listStories = process.argv.includes('--stories');
 const changedRef = process.argv.find(a => a.startsWith('--changed='))?.slice('--changed='.length);
@@ -85,6 +86,35 @@ for (const f of files) {
   } else if (!has(f.fm, 'band')) note('band', f.locale);
   for (const field of ['summary', 'keyMessage']) if (!has(f.fm, field)) note(field, f.locale);
 }
+
+// Characters are small sheets (docs/roadmap/ux/06 section 2). A malformed sheet or a story that lists a character
+// with no sheet fails; a missing reference image or an unapproved sheet is only reported.
+const characterFiles = existsSync(CHARACTERS) ? readdirSync(CHARACTERS).filter(f => f.endsWith('.yaml') && !f.startsWith('_')) : [];
+const characterIds = characterFiles.map(f => f.replace(/\.yaml$/, ''));
+const unapproved = [];
+for (const f of characterFiles) {
+  const id = f.replace(/\.yaml$/, '');
+  let sheet;
+  try {
+    sheet = parseYaml(readFileSync(join(CHARACTERS, f), 'utf8')) ?? {};
+  } catch (error) {
+    hard.push(`${CHARACTERS}/${f}: not valid YAML (${error.message.split('\n')[0]})`);
+    continue;
+  }
+  if (sheet.id !== id) hard.push(`${CHARACTERS}/${f}: id is "${sheet.id}", expected "${id}"`);
+  for (const field of ['name', 'descriptor', 'colourRecipe']) if (!String(sheet[field] ?? '').trim()) hard.push(`${CHARACTERS}/${f}: needs ${field}`);
+  if (sheet.status === 'approved' && !String(sheet.approvedBy ?? '').trim()) hard.push(`${CHARACTERS}/${f}: an approved character needs approvedBy`);
+  if (sheet.status !== 'approved') unapproved.push(id);
+  for (const ref of sheet.references ?? []) {
+    if (!existsSync(join('art/characters', id, ref))) console.log(`character ${id}: reference image art/characters/${id}/${ref} is not in the repo (fine if you keep references in your own storage)`);
+  }
+}
+for (const f of files) {
+  if (f.locale !== 'de') continue;
+  const cast = parseYaml(f.fm)?.cast ?? [];
+  for (const id of cast) if (!characterIds.includes(id)) hard.push(`${f.locale}/${f.file}: character "${id}" is not a file in ${CHARACTERS}`);
+}
+console.log(`characters: ${characterIds.length} sheet(s), ${characterIds.length - unapproved.length} approved`);
 
 for (const id of taxonomy) {
   const file = readFileSync(join(SKILLS, `${id}.yaml`), 'utf8');

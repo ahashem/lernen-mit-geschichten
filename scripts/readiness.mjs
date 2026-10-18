@@ -33,6 +33,14 @@ export function readiness(root = '.') {
         .map(f => f.replace(/\.yaml$/, ''))
     : [];
 
+  const charDir = join(root, 'src/content/characters');
+  const characters = new Map();
+  if (existsSync(charDir)) {
+    for (const f of readdirSync(charDir).filter(x => x.endsWith('.yaml') && !x.startsWith('_'))) {
+      characters.set(f.replace(/\.yaml$/, ''), parseYaml(readFileSync(join(charDir, f), 'utf8')) ?? {});
+    }
+  }
+
   const files = [];
   for (const locale of LOCALES) {
     const dir = join(storiesDir, locale);
@@ -77,6 +85,10 @@ export function readiness(root = '.') {
         const skills = fm.skills ?? [];
         need(skills.length >= 1 && skills.length <= 3, 'Pick 1 to 3 skills.');
         for (const s of skills) if (skillIds.length && !skillIds.includes(s)) must.push(`The skill "${s}" does not exist.`);
+        for (const c of fm.cast ?? []) {
+          if (!characters.has(c)) must.push(`The character "${c}" has no sheet yet.`);
+          else if (characters.get(c).status !== 'approved') should.push(`The character sheet of ${characters.get(c).name ?? c} is not approved yet.`);
+        }
         const pictures = [fm.cover?.src, ...frames.map(x => x.src)].filter(Boolean);
         if (fm.cover) need(filled(fm.cover.alt), 'Write the alt text of the cover (German).');
         frames.forEach((x, i) => need(filled(x.alt), `Write the alt text of page picture ${i + 1} (German).`));
