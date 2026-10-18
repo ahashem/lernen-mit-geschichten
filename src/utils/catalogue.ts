@@ -5,7 +5,7 @@ import {
   readMinutes,
   type StoryMeta,
 } from './stories';
-import { firstSentence } from './story-pages';
+import { firstSentence, paginate } from './story-pages';
 import type { Locale } from './i18n';
 
 export interface CatalogueItem {
@@ -15,6 +15,8 @@ export interface CatalogueItem {
   summary: string;
   band: number;
   minutes: number;
+  /** Storybook pages (bands 1-2), for "Page 5 of 10" on the continue card. */
+  pageCount: number;
   languages: Locale[];
   skills: string[];
   emoji?: string;
@@ -35,6 +37,7 @@ export async function getCatalogue(locale: Locale): Promise<CatalogueItem[]> {
       summary: s.data.summary ?? firstSentence(s.body ?? '', locale),
       band: meta?.band ?? 1,
       minutes: readMinutes(s.body),
+      pageCount: paginate(s.body ?? '', locale, meta?.band ?? 1, s.data.pages).pages.length,
       languages: availability.get(s.data.storyId) ?? [locale],
       skills: s.data.skills ?? meta?.skills ?? [],
       emoji: s.data.emoji ?? meta?.emoji,

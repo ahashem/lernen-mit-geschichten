@@ -130,6 +130,7 @@ const build = buildMarker();
 
     <footer>
       <div class="container">
+        <p>{getTranslation(locale, 'footerArt')}</p>
         <p>&copy; {new Date().getFullYear()} {siteName}</p>
         <p>
           <a
@@ -178,7 +179,8 @@ const build = buildMarker();
 
       .nav-links {
         display: flex;
-        gap: var(--s-5);
+        flex-wrap: wrap;
+        gap: var(--s-1) var(--s-5);
         align-items: center;
       }
 

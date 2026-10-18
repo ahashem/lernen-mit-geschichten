@@ -9,7 +9,7 @@
   "filterBySkill": "Filter by Skill",
   "filterByLanguage": "Filter by Language",
   "alsoAvailableIn": "Also available in",
-  "allStories": "All Stories",
+  "allStories": "All stories",
   "noMatchingStories": "No stories match your filters.",
   "readStory": "Read Story",
   "keyMessage": "Key Message",
@@ -162,5 +162,13 @@
   "libraryCountOne": "1 story",
   "noStoryFits": "No story fits all of these.",
   "removeFilterName": "Remove filter: {name}",
-  "removeFilterNamed": "Remove {name}"
+  "removeFilterNamed": "Remove {name}",
+  "continueReading": "Continue",
+  "pictureDoor": "Picture books: for listening and looking",
+  "seeAll": "See all",
+  "findBySituation": "Find by situation",
+  "yourStory": "Your story",
+  "moreStories": "More stories",
+  "openStoryNamed": "Open {title}",
+  "footerArt": "Illustrations are made with AI tools and checked by people."
 }

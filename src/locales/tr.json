@@ -9,7 +9,7 @@
   "filterBySkill": "Beceriye Göre Filtrele",
   "filterByLanguage": "Dile Göre Filtrele",
   "alsoAvailableIn": "Ayrıca şu dilde mevcut",
-  "allStories": "Tüm Hikayeler",
+  "allStories": "Tüm hikâyeler",
   "noMatchingStories": "Filtrelerinize uyan hikaye yok.",
   "readStory": "Hikayeyi Oku",
   "keyMessage": "Ana Mesaj",
@@ -162,5 +162,13 @@
   "libraryCountOne": "1 hikâye",
   "noStoryFits": "Bunların hepsine uyan hikâye yok.",
   "removeFilterName": "Filtreyi kaldır: {name}",
-  "removeFilterNamed": "{name} kaldır"
+  "removeFilterNamed": "{name} kaldır",
+  "continueReading": "Devam et",
+  "pictureDoor": "Resimli kitaplar: dinlemek ve bakmak için",
+  "seeAll": "Tümünü gör",
+  "findBySituation": "Duruma göre bul",
+  "yourStory": "Senin hikâyen",
+  "moreStories": "Daha fazla hikâye",
+  "openStoryNamed": "{title} aç",
+  "footerArt": "İllüstrasyonlar yapay zekâ araçlarıyla yapılır ve insanlar tarafından kontrol edilir."
 }

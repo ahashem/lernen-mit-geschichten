@@ -39,6 +39,8 @@ export function startReader() {
   const prefs = loadPrefs();
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const resumeKey = `reader-resume:${data.storyId}:${data.locale}`;
+  // The one story the home offers to continue; the home reads it, nothing else does.
+  const LAST_KEY = 'reader-last';
 
   const views = $$(app, '.view');
   const book = $<HTMLElement>(app, '.view.book');
@@ -102,6 +104,7 @@ export function startReader() {
     if (next < 0) return;
     if (next >= pages.length) {
       write(resumeKey, null);
+      write(LAST_KEY, null);
       return showView('end');
     }
     lastTurn = now;
@@ -134,6 +137,7 @@ export function startReader() {
     );
     current = next;
     write(resumeKey, String(current));
+    write(LAST_KEY, `${data.storyId}:${data.locale}`);
     syncPageUi();
     into.focus({ preventScroll: true });
     if (narrating && !keyboardTurn) window.setTimeout(() => startNarration(), 400);
