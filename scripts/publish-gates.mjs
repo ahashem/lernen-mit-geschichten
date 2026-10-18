@@ -106,7 +106,7 @@ for (const f of characterFiles) {
   if (sheet.status === 'approved' && !String(sheet.approvedBy ?? '').trim()) hard.push(`${CHARACTERS}/${f}: an approved character needs approvedBy`);
   if (sheet.status !== 'approved') unapproved.push(id);
   for (const ref of sheet.references ?? []) {
-    if (!existsSync(join('art/characters', id, ref))) console.log(`character ${id}: reference image art/characters/${id}/${ref} is not in the repo`);
+    if (!existsSync(join('art/characters', id, ref))) console.log(`character ${id}: reference image art/characters/${id}/${ref} is not in the repo (fine if you keep references in your own storage)`);
   }
 }
 for (const f of files) {

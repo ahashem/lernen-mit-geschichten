@@ -164,7 +164,7 @@ const charactersCollection = defineCollection({
     references: z
       .array(z.string())
       .optional()
-      .describe('File names of the reference images under art/characters/{id}/, e.g. bruno_b1_front.png.'),
+      .describe('File names of the reference images, e.g. bruno_b1_front.png. They live in art/characters/{id}/ or in your own storage; they are never published.'),
     approvedBy: z.string().optional().describe('The second moderator who signed the sheet.'),
     approvedAt: z.date().optional().describe('When they signed it.'),
   }),
