@@ -15,7 +15,8 @@ const quizQuestionSchema = z.object({
     .describe('Input style. Nothing is scored; reflection questions have no wrong answer.'),
   correctAnswer: z
     .union([z.string(), z.array(z.string())])
-    .describe('The answer the story supports, for recall questions.'),
+    .optional()
+    .describe('The answer the story supports, for recall questions. Talk questions have none.'),
   options: z.array(z.string()).optional().describe('Choices for multiplechoice.'),
 });
 
