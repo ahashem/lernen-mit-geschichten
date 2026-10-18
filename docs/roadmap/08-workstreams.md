@@ -135,64 +135,54 @@ Value: Thomas and Frau Yıldız can use it in class, and everyone can trust it.
 Read: `05-parents-and-educators.md`; `ux/03` §10 (not two-screen mode), §11, §12; `ux/05` Testing checklist;
 `06-reach-and-trust.md`; `01-vision.md` quality bars.
 
-Not in any run: Class room two-screen mode, My reading list, pre-built PDF class packs, "Read it in my voice".
+Not in any run: Class room two-screen mode, My reading list, pre-built PDF class packs.
 
-## Runs 4-8: from "it works" to "they come back"
+## Runs 4-6: the five test families (about $10 each)
 
-Ordered by what a child, parent or teacher feels first. Each run is about $9-10, ships one thing a person can name,
-and ends with its tags. The accessibility items run 3 left open ride along with the run that touches the screen.
-The milestone slug tags are placed by the last run that closes their scope: `m2-grows-with-the-child` (Run 6),
-`m3-classroom-and-world` (Run 7), `m1-story-worth-opening` (Run 8).
+Five test families use the site today, so these runs favour what they feel first and what lets the owner and
+moderators fill the library. The CMS v1 is live; art, bands and `feelings` data are not. Each run still ends with
+its tags. The milestone slugs wait until M1-M3 scope is closed.
 
-### Run 4: "I found a story I'll love" (about $10)
+### Run 4: "Tell us, and the library can grow"
 
-Value: a 4-year-old picks by feeling without reading; a parent finds the right story in under 20 seconds.
+Value: a family can tell the owner what to fix in two taps; moderators see what each story lacks and have the fields
+the CMS needs next.
 
-- Find by feeling and the faces row on Picture home; feeling and format filters in the Library; "Klasse" hint on
-  cards; the first-visit language from `navigator.languages`; the 56 px top bar with the "For grown-ups" menu;
-  skeleton loading states. Skip a filter whose data (`feelings`) does not exist yet instead of stubbing it.
+- **Feedback loop.** A "Tell us about this story" `mailto:` on every story page and on About, prefilled with the
+  story title, locale and band (`07`). The address comes from `PUBLIC_FEEDBACK_EMAIL` at build time (never in
+  source); with no address the link is not rendered. Never a third-party widget.
+- **Moderator tooling.** Extend `scripts/publish-gates.mjs` to report per story what it lacks: band, summary,
+  `keyMessage`, `reviewedBy`, and narration per locale. Add optional schema fields, each with `.describe()`:
+  `feelings` (the six faces of `ux/07` #11), an editor's pick, curated situations, vocabulary glosses, think cards
+  (`discussion` already exists). Say in the PR which fields to mirror in `.pages.yml`. No UI consumes them yet.
+- Remaining hardcoded UI strings (`about`, `settings`, the booklet progress text) move to the locale files.
 
-Read: `ux/03` §1b, §2, §3, §14; `ux/07` #11, #15.
+Read: `07-community-and-growth.md` Feedback loop; `03` Workflow; `02` Schema; `ux/03` §4, §7.
 
-### Run 5: "It opens at once, even on kita Wi-Fi" (about $9)
+### Run 5: "The first tap speaks"
 
-Value: a story is on screen in seconds on a slow tablet, and a teacher can keep tomorrow's stories on it.
+Value: a pre-reader hears what a control does and can ask for the tour; the Library opens faster.
 
-- `astro:assets` responsive images (a 1.3 MB colour frame is the heaviest asset), render-blocking CSS, Library
-  and story Lighthouse mobile above 90. Offline stays behind `PUBLIC_OFFLINE`: "Keep on this device", packs, the
-  storage panel, the install card, dimmed unsaved covers.
+- Spoken first-tap labels and the "?" tour on Picture home (`ux/05` Pre-reader navigation, `ux/03` §1b), spoken by
+  the device voice: no audio files are added. Hide the "?" bubble in a locale where the device has no voice.
+- Library performance: remove render-blocking CSS and unneeded work. Images stay as authored (responsive images
+  wait for the art pipeline).
 
-Read: `ux/03` §12; `06-reach-and-trust.md`; run 3's audit numbers in the Run 3 PR.
+Read: `ux/05` Screen-reader experience, Pre-reader navigation; `ux/03` §1b; `ux/04` Gestures and input.
 
-### Run 6: "It grows with the child" (about $10)
+### Run 6: "Read it in my voice"
 
-Value: an 11-year-old reads a chapter story that feels made for them.
+Value: a parent or grandparent records a story in the family language on the tablet; the child hears that voice.
 
-- Chapter reader: paginated columns, Listen, think cards, second-language tools, add-to-list, Literata. Think
-  cards and glosses need the owner's CMS data; skip what has none. Closes M2.
+- Record per page and locale on the device (`ux/04` "Recording your own voice"), stored in IndexedDB, never
+  uploaded, played instead of the device voice. Rewrite `utils/voice-recorder.ts` from `catchup/44-commits`; never
+  merge it.
 
-Read: `ux/03` §5b, §7c, §8, §16; `ux/05` Dyslexia options.
+Read: `ux/04` Sound, Recording your own voice; `ux/05` Screen-reader experience; `ux/07` #7, #17.
 
-### Run 7: "A whole lesson, start to finish" (about $10)
-
-Value: Frau Yıldız prepares on Sunday and runs circle time or a lesson on Monday with one tablet.
-
-- Class room: narration toggle, per-page prompts, discussion card `D`. Print: Letter paper, a detail switch, band
-  3-4 pack items, a per-frame colouring page, the circle folder export. Closes M3.
-
-Read: `05-parents-and-educators.md`; `ux/03` §10, §11.
-
-### Run 8: "Bedtime, first taps and the last audit" (about $10)
-
-Value: a parent winds down at night; a pre-reader needs no help; everyone can trust the whole.
-
-- Lamp shelf and Lamp door, "Listen in the dark" for bands 3-4, spoken first-tap labels and the "?" tour, recall
-  and feeling talk cards, an in-app "Less motion" switch, font preload, `skills` into `story-meta`, fold
-  `001-bruno-interactive` into `001-bruno`, remember the language pair per story, remaining hardcoded strings.
-- Final audit: the screen-reader passes, 200% zoom, the Urdu clipping check, Lamp and high-contrast contrast,
-  RTL beyond the Library. Closes M1.
-
-Read: `ux/03` §9, §7; `ux/04`; `ux/05` Screen-reader experience, Pre-reader navigation, Testing checklist.
+Blocked, do not start: Find by feeling and feeling filters (no `feelings` data), chapter-reader depth and shared
+reading (no band 3-4 story), responsive images (no art pipeline), reviewer credit, skills wishlist and partner
+handout (no reviewers or partners yet).
 
 ## Owner and parallel tasks
 
