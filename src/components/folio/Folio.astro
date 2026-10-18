@@ -1,0 +1,372 @@
+---
+import { render } from 'astro:content';
+import qrcode from 'qrcode-generator';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getCatalogue, SHELF_KEY } from '@utils/catalogue';
+import { getPublishedStories } from '@utils/stories';
+import { getSkillsByCategory } from '@utils/skills-taxonomy';
+import { getTranslation, type Locale } from '@utils/i18n';
+import { BASE_PATH } from '@utils/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
+const prefix = locale === 'de' ? BASE_PATH : `${BASE_PATH}/${locale}`;
+
+const catalogue = (await getCatalogue(locale)).sort((a, b) => a.storyId.localeCompare(b.storyId));
+const entries = await getPublishedStories(({ id }) => id.startsWith(`${locale}/`));
+// The number printed in the index is the one in the story id (001, 002...), the same in every language.
+const numberOf = (storyId: string) => storyId.split('-')[0];
+
+const stories = await Promise.all(
+  catalogue.map(async item => {
+    const entry = entries.find(e => e.id === `${locale}/${item.slug}`)!;
+    const { Content } = await render(entry);
+    const origin = Astro.site?.origin;
+    let code = '';
+    if (origin) {
+      const url = `${origin}${prefix}/stories/${item.slug}`;
+      const qr = qrcode(0, 'M');
+      qr.addData(url);
+      qr.make();
+      code = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+    }
+    const prompts = (entry.data.discussion ?? entry.data.questions?.map(q => q.text) ?? []).slice(
+      0,
+      4
+    );
+    return { item, Content, code, prompts };
+  })
+);
+
+const groups = (await getSkillsByCategory(locale)).map(group => ({
+  ...group,
+  skills: group.skills
+    .map(skill => ({ ...skill, stories: catalogue.filter(i => i.skills.includes(skill.id)) }))
+    .filter(skill => skill.stories.length > 0),
+}));
+const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id === id)?.label ?? id;
+---
+
+<BaseLayout title={t('folioTitle')} locale={locale}>
+  <div class="container folio" data-folio>
+    <section class="controls">
+      <h1>{t('folioTitle')}</h1>
+      <p class="lead">{t('folioLead')}</p>
+      {
+        stories.length === 0 ? (
+          <p>{t('folioNoStories')}</p>
+        ) : (
+          <>
+            <fieldset>
+              <legend>{t('folioSelect')}</legend>
+              <ul class="picks">
+                {catalogue.map(item => (
+                  <li>
+                    <label>
+                      <input type="checkbox" checked data-pick={item.slug} />
+                      {numberOf(item.storyId)} {item.title}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </fieldset>
+            <button class="btn btn--primary" type="button" data-print hidden>
+              {t('folioPrint')}
+            </button>
+          </>
+        )
+      }
+    </section>
+
+    {
+      stories.length > 0 && (
+        <div class="sheets" lang={locale}>
+          <section class="sheet title-sheet">
+            <p class="site">{t('siteName')}</p>
+            <h2 class="title">{t('folioTitle')}</h2>
+            <p>{t('tagline')}</p>
+            <p class="art-note">{t('footerArt')}</p>
+          </section>
+
+          <section class="sheet index-sheet">
+            <h2>{t('folioIndex')}</h2>
+            <h3>{t('stories')}</h3>
+            <ol class="overview">
+              {catalogue.map(item => (
+                <li data-story={item.slug}>
+                  <span class="no">{numberOf(item.storyId)}</span>
+                  <span class="name">{item.title}</span>
+                  <span class="meta">
+                    {t(SHELF_KEY[item.band as 1 | 2 | 3 | 4])} · {item.minutes} {t('minutes')}
+                  </span>
+                </li>
+              ))}
+            </ol>
+            {groups
+              .filter(g => g.skills.length > 0)
+              .map(group => (
+                <div class="group">
+                  <h3>{group.label}</h3>
+                  <ul>
+                    {group.skills.map(skill => (
+                      <li data-skill>
+                        <span class="skill">{skill.label}</span>
+                        <span class="where">
+                          {skill.stories.map(s => (
+                            <span data-story={s.slug}>{numberOf(s.storyId)}</span>
+                          ))}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+          </section>
+
+          {stories.map(({ item, Content, code, prompts }) => (
+            <article class="sheet story-sheet" data-story={item.slug}>
+              <h2 class="story-title">
+                <span class="no">{numberOf(item.storyId)}</span>
+                {item.title}
+              </h2>
+              <p class="meta">
+                {t(SHELF_KEY[item.band as 1 | 2 | 3 | 4])} · {item.minutes} {t('minutes')}
+                {item.skills.length > 0 && <> · {item.skills.map(labelOf).join(' · ')}</>}
+              </p>
+              {item.summary && <p class="lead">{item.summary}</p>}
+              <div class="body">
+                <Content />
+              </div>
+              {prompts.length > 0 && (
+                <section class="prompts">
+                  <h3>{t('talkPrompts')}</h3>
+                  <ol>
+                    {prompts.map(p => (
+                      <li>{p}</li>
+                    ))}
+                  </ol>
+                </section>
+              )}
+              <footer class="story-foot">
+                {code && (
+                  <div class="qr">
+                    <div class="qr-code" set:html={code} aria-hidden="true" />
+                    <p>{t('folioScan')}</p>
+                  </div>
+                )}
+                <p>
+                  {item.title} · {t('siteName')} · {t('footerArt')}
+                </p>
+              </footer>
+            </article>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-folio]');
+  if (root) {
+    const picks = [...root.querySelectorAll<HTMLInputElement>('[data-pick]')];
+    const sync = () => {
+      const on = new Set(picks.filter(p => p.checked).map(p => p.dataset.pick));
+      root
+        .querySelectorAll<HTMLElement>('[data-story]')
+        .forEach(el => (el.hidden = !on.has(el.dataset.story)));
+      // A skill none of the chosen stories practise drops out of the index.
+      root.querySelectorAll<HTMLElement>('[data-skill]').forEach(row => {
+        row.hidden = ![...row.querySelectorAll<HTMLElement>('[data-story]')].some(s => !s.hidden);
+      });
+    };
+    picks.forEach(p => p.addEventListener('change', sync));
+    const print = root.querySelector<HTMLButtonElement>('[data-print]');
+    if (print) {
+      print.hidden = false;
+      print.addEventListener('click', () => window.print());
+    }
+  }
+</script>
+
+<style>
+  .folio {
+    display: grid;
+    gap: var(--s-6);
+  }
+  .controls h1 {
+    font-family: var(--font-display);
+    font-size: var(--t-display-1);
+    line-height: var(--lh-display);
+    margin-block-end: var(--s-3);
+  }
+  fieldset {
+    border: 2px solid var(--ink);
+    padding: var(--s-3) var(--s-4);
+    margin-block: var(--s-4);
+  }
+  legend {
+    font-weight: 700;
+    padding-inline: var(--s-2);
+  }
+  .picks {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--s-1);
+  }
+  .picks label {
+    display: flex;
+    gap: var(--s-2);
+    align-items: center;
+    min-block-size: var(--tap-adult);
+  }
+  .controls .btn {
+    margin-block-start: var(--s-3);
+  }
+
+  /* The sheets are shown on screen as a preview of what prints. */
+  .sheet {
+    background: #fff;
+    color: #000;
+    border: 2px solid var(--ink);
+    padding: var(--s-5);
+    margin-block-end: var(--s-4);
+  }
+  .site,
+  .art-note,
+  .meta {
+    color: #444;
+  }
+  .title-sheet .title {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    margin-block: var(--s-3);
+  }
+  .no {
+    display: inline-block;
+    min-inline-size: 2.6em;
+    font-weight: 700;
+  }
+  .overview {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--s-1);
+    margin-block-end: var(--s-4);
+  }
+  .overview li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    align-items: baseline;
+  }
+  .overview .meta {
+    margin-inline-start: auto;
+  }
+  .group {
+    margin-block-start: var(--s-4);
+  }
+  .group ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--s-1);
+  }
+  .group li {
+    display: flex;
+    gap: var(--s-3);
+    justify-content: space-between;
+    border-block-end: 1px solid #ccc;
+    padding-block: 2px;
+  }
+  .where {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+  .story-title {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    line-height: 1.2;
+    margin-block-end: var(--s-1);
+  }
+  .body :global(h2) {
+    font-size: 1.2rem;
+    margin-block: var(--s-4) var(--s-2);
+  }
+  .body :global(p),
+  .body :global(li) {
+    line-height: 1.6;
+  }
+  .prompts {
+    margin-block-start: var(--s-4);
+  }
+  .story-foot {
+    display: flex;
+    gap: var(--s-4);
+    align-items: center;
+    margin-block-start: var(--s-5);
+    font-size: 0.8rem;
+    color: #444;
+  }
+  .qr-code {
+    inline-size: 22mm;
+  }
+  [hidden] {
+    display: none !important;
+  }
+</style>
+
+<style is:global>
+  @page folio {
+    size: A4;
+    margin: 15mm 12mm 18mm;
+    @bottom-center {
+      content: counter(page);
+      font-size: 9pt;
+      color: #444;
+    }
+  }
+  @media print {
+    body:has([data-folio]) header,
+    body:has([data-folio]) footer:not(.story-foot),
+    body:has([data-folio]) .controls,
+    body:has([data-folio]) [data-offline-bar] {
+      display: none !important;
+    }
+    [data-folio] {
+      page: folio;
+      display: block;
+    }
+    [data-folio] .sheet {
+      border: 0;
+      padding: 0;
+      margin: 0;
+      break-after: page;
+    }
+    [data-folio] .sheet:last-child {
+      break-after: auto;
+    }
+    [data-folio] .story-sheet {
+      break-before: page;
+    }
+    [data-folio] .story-sheet h2,
+    [data-folio] .story-sheet h3 {
+      break-after: avoid;
+    }
+    [data-folio] .prompts,
+    [data-folio] .story-foot {
+      break-inside: avoid;
+    }
+    body:has([data-folio]) {
+      background: #fff;
+    }
+  }
+</style>

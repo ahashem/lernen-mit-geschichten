@@ -243,5 +243,12 @@
   "voiceSaved": "Gespeichert",
   "voiceDeleted": "Gelöscht",
   "voiceDenied": "Das Mikrofon ist nicht verfügbar. Es wurde nichts aufgenommen.",
-  "voiceFailed": "Die Aufnahme konnte auf diesem Gerät nicht gespeichert werden."
+  "voiceFailed": "Die Aufnahme konnte auf diesem Gerät nicht gespeichert werden.",
+  "folioTitle": "Geschichten-Mappe",
+  "folioLead": "Eine Mappe im A4-Format mit den Geschichten in dieser Sprache: Titelseite, ein Index der Fähigkeiten mit den Geschichten, die sie üben, und dann jede Geschichte. Zum Ausdrucken, ein- oder doppelseitig.",
+  "folioSelect": "Geschichten in der Mappe",
+  "folioPrint": "Mappe drucken",
+  "folioIndex": "Index: Fähigkeiten und Geschichten",
+  "folioNoStories": "In dieser Sprache gibt es noch keine Geschichten.",
+  "folioScan": "Zum Öffnen scannen"
 }
