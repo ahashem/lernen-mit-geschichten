@@ -1,6 +1,7 @@
 import { fmt } from '@utils/i18n';
 import { applyTheme, loadPrefs, read, savePrefs, write } from './prefs';
 import { startChapters } from './chapters';
+import { startClassroom } from './classroom';
 
 interface Timing {
   w: number;
@@ -33,6 +34,7 @@ export function startReader() {
   if (!app || !dataEl) return;
   const data: ReaderData = JSON.parse(dataEl.textContent ?? '{}');
   const hasBook = app.dataset.hasBook === 'true';
+  startClassroom(app, data.locale, data.strings);
   if (!hasBook && app.dataset.chapters) {
     startChapters(app, data.storyId, data.locale, data.strings);
     return;

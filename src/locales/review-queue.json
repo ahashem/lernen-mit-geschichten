@@ -129,7 +129,13 @@
     "forgetConfirm",
     "forgetYes",
     "forgetNo",
-    "forgetDone"
+    "forgetDone",
+    "classRoom",
+    "classExit",
+    "classCaptions",
+    "classNotes",
+    "classBlackout",
+    "classMark"
   ],
   "tr": [
     "skipToContent",
@@ -261,7 +267,13 @@
     "forgetConfirm",
     "forgetYes",
     "forgetNo",
-    "forgetDone"
+    "forgetDone",
+    "classRoom",
+    "classExit",
+    "classCaptions",
+    "classNotes",
+    "classBlackout",
+    "classMark"
   ],
   "ur": [
     "skipToContent",
@@ -393,6 +405,12 @@
     "forgetConfirm",
     "forgetYes",
     "forgetNo",
-    "forgetDone"
+    "forgetDone",
+    "classRoom",
+    "classExit",
+    "classCaptions",
+    "classNotes",
+    "classBlackout",
+    "classMark"
   ]
 }

@@ -198,5 +198,11 @@
   "forgetConfirm": "Clear everything on this device?",
   "forgetYes": "Yes, clear it",
   "forgetNo": "Cancel",
-  "forgetDone": "Done. This device has forgotten everything."
+  "forgetDone": "Done. This device has forgotten everything.",
+  "classRoom": "Class room",
+  "classExit": "Exit",
+  "classCaptions": "Captions",
+  "classNotes": "Notes",
+  "classBlackout": "Black out",
+  "classMark": "Next sentence"
 }

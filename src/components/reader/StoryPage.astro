@@ -199,6 +199,13 @@ const description = summary || `${title} | ${t('siteName')}`;
                   </>
                 )
               }
+              {
+                (hasBook || chapters.length > 0) && (
+                  <button class="btn" type="button" data-action="class-room" data-js-only>
+                    {t('classRoom')}
+                  </button>
+                )
+              }
               <button
                 class="btn export-booklet-btn"
                 type="button"
@@ -580,6 +587,72 @@ const description = summary || `${title} | ${t('siteName')}`;
       )
     }
 
+    {
+      (hasBook || chapters.length > 0) && (
+        <section
+          class="view classroom"
+          data-view="classroom"
+          hidden
+          tabindex="-1"
+          aria-label={t('classRoom')}
+        >
+          <div class="cr-stage" data-stage>
+            <div class="cr-frame" data-frame />
+            <p class="cr-caption" data-caption hidden />
+            <div class="cr-shared" data-shared lang={locale} />
+            <div class="cr-black" data-black hidden />
+          </div>
+          <aside class="cr-notes" data-notes hidden aria-label={t('classNotes')}>
+            <p class="cr-notes-text" data-notes-text />
+            {prompts.length > 0 && (
+              <>
+                <h2>{t('talkPrompts')}</h2>
+                <ul>
+                  {prompts.map(p => (
+                    <li>{p}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+            <div class="cr-next" data-next-frame aria-hidden="true" />
+          </aside>
+          <div class="cr-bar">
+            <button class="btn" type="button" data-action="class-exit">
+              {t('classExit')}
+            </button>
+            <button
+              class="btn"
+              type="button"
+              data-action="class-prev"
+              aria-label={t('previousPage')}
+            >
+              <Icon name="prev" size={24} />
+            </button>
+            <span class="cr-pos" data-pos aria-live="polite" />
+            <button class="btn" type="button" data-action="class-next" aria-label={t('nextPage')}>
+              <Icon name="next" size={24} />
+            </button>
+            {hasBook && (
+              <button class="btn" type="button" data-action="class-captions">
+                {t('classCaptions')}
+              </button>
+            )}
+            {!hasBook && (
+              <button class="btn" type="button" data-action="class-mark">
+                {t('classMark')}
+              </button>
+            )}
+            <button class="btn" type="button" data-action="class-notes">
+              {t('classNotes')}
+            </button>
+            <button class="btn" type="button" data-action="class-black">
+              {t('classBlackout')}
+            </button>
+          </div>
+        </section>
+      )
+    }
+
     <section class="view text" data-view="text" aria-label={t('fullText')}>
       <div class="container">
         {
@@ -653,6 +726,121 @@ const description = summary || `${title} | ${t('siteName')}`;
     display: none;
   }
 
+  .view.classroom {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    background: #000;
+    color: #fff;
+  }
+  .view.classroom[hidden] {
+    display: none;
+  }
+  .cr-stage {
+    position: relative;
+    flex: 1;
+    min-block-size: 0;
+    display: grid;
+  }
+  .cr-frame {
+    container-type: inline-size;
+    display: grid;
+    place-items: center;
+    min-block-size: 0;
+    filter: contrast(1.05);
+  }
+  .cr-frame :global(img),
+  .cr-frame :global(.art-fallback) {
+    max-inline-size: 100%;
+    max-block-size: 100%;
+    block-size: 100%;
+    inline-size: 100%;
+    object-fit: contain;
+  }
+  .cr-caption {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    padding: var(--s-4) var(--s-6);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-read);
+    font-size: clamp(28px, 4.5vw, 56px);
+    line-height: 1.4;
+  }
+  .cr-shared {
+    display: none;
+    overflow-y: auto;
+    padding: var(--s-6);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-read);
+    font-size: clamp(28px, 3.6vw, 40px);
+    line-height: 1.5;
+  }
+  .cr-shared :global(h2) {
+    font-family: var(--font-display);
+    margin-block-end: var(--s-4);
+  }
+  .cr-shared :global(p) {
+    max-inline-size: 50ch;
+    margin: 0 0 0.8em;
+  }
+  .cr-shared :global(.is-marked) {
+    background: var(--mark);
+    color: var(--mark-ink);
+  }
+  .view.classroom[data-mode='shared'] .cr-shared {
+    display: block;
+  }
+  .view.classroom[data-mode='shared'] .cr-frame {
+    display: none;
+  }
+  .cr-black {
+    position: absolute;
+    inset: 0;
+    background: #000;
+  }
+  .cr-notes {
+    max-block-size: 40%;
+    overflow-y: auto;
+    padding: var(--s-4) var(--s-5);
+    background: var(--card);
+    color: var(--ink);
+    display: grid;
+    gap: var(--s-2);
+  }
+  .cr-notes[hidden] {
+    display: none;
+  }
+  .cr-next {
+    inline-size: 8rem;
+    aspect-ratio: 4 / 3;
+    container-type: inline-size;
+    overflow: hidden;
+  }
+  .cr-next :global(img),
+  .cr-next :global(.art-fallback) {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+  }
+  .cr-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-2) var(--s-4);
+    background: var(--card);
+    color: var(--ink);
+  }
+  .cr-pos {
+    min-inline-size: 5rem;
+    text-align: center;
+    font-weight: 700;
+  }
   .chapter-list {
     list-style: none;
     padding: 0;
