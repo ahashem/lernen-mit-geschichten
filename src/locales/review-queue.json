@@ -150,7 +150,9 @@
     "feedbackStory",
     "feedbackStoryBody",
     "feedbackAbout",
-    "feedbackAboutBody"
+    "feedbackAboutBody",
+    "tourButton",
+    "tourText"
   ],
   "tr": [
     "skipToContent",
@@ -303,7 +305,9 @@
     "feedbackStory",
     "feedbackStoryBody",
     "feedbackAbout",
-    "feedbackAboutBody"
+    "feedbackAboutBody",
+    "tourButton",
+    "tourText"
   ],
   "ur": [
     "skipToContent",
@@ -456,6 +460,8 @@
     "feedbackStory",
     "feedbackStoryBody",
     "feedbackAbout",
-    "feedbackAboutBody"
+    "feedbackAboutBody",
+    "tourButton",
+    "tourText"
   ]
 }
