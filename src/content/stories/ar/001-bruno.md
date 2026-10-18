@@ -1,7 +1,5 @@
 ---
 title: "مَشَاعِرُ بْرُونُو الْمُلَوَّنَةُ"
-emoji: "🐻"
-skills: ["self-awareness", "emotional-regulation"]
 ageGroup: "3-7"
 storyId: "001-bruno"
 publishDate: 2024-01-15

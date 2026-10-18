@@ -1,7 +1,5 @@
 ---
 title: "تِمِّي وَالسَّاعَةُ السِّحْرِيَّةُ"
-emoji: "⏰"
-skills: ["time-management", "organization"]
 ageGroup: "3-7"
 storyId: "018-timmi-zauberuhr"
 publishDate: 2024-01-15

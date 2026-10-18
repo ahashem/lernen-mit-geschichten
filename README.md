@@ -95,7 +95,7 @@ npm run preview   # Preview production build locally
 │   │   ├── ar.json
 │   │   └── ...
 │   └── utils/
-│       ├── skills-taxonomy.ts
+│       ├── skills-taxonomy.ts      # groups the skill files in src/content/skills
 │       └── i18n.ts
 ├── public/                  # Static assets
 ├── .github/workflows/       # GitHub Actions

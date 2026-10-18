@@ -34,11 +34,16 @@ export async function getStoryAvailability() {
   return localesByStoryId(await getPublishedStories());
 }
 
+/** The skills taxonomy files (src/content/skills); read here because this is the one module allowed to read collections. */
+export const getSkillEntries = () => getCollection('skills');
+
 type Alt = Record<string, string>;
 
 /** Language-neutral part of a story, assembled from its German source file; alt text comes from each locale's own file. */
 export interface StoryMeta {
   band: number;
+  emoji?: string;
+  skills?: string[];
   cover?: { src: string; alt: Alt };
   frames?: { src: string; alt: Alt; pageRef?: number }[];
   palette?: [string, string];
@@ -65,6 +70,8 @@ function buildMeta(entries: Story[]): Map<string, StoryMeta> {
     };
     out.set(storyId, {
       band: d.band ?? 1,
+      emoji: d.emoji,
+      skills: d.skills,
       palette: d.palette,
       art: d.art,
       cover: d.cover && {
@@ -81,13 +88,18 @@ function buildMeta(entries: Story[]): Map<string, StoryMeta> {
   return out;
 }
 
+/** Every story's shared fields at once, for list pages that need an emoji and skills for each card. */
+export async function getStoryMetaMap(): Promise<Map<string, StoryMeta>> {
+  metaByStory ??= getCollection('stories').then(buildMeta);
+  return metaByStory;
+}
+
 /**
- * Shared fields (band, art) of a story, or undefined when it has no German source file.
+ * Shared fields (band, skills, art) of a story, or undefined when it has no German source file.
  * Reads drafts too: an unpublished German file must not strip the art from a published translation.
  */
 export async function getStoryMeta(storyId: string): Promise<StoryMeta | undefined> {
-  metaByStory ??= getCollection('stories').then(buildMeta);
-  return (await metaByStory).get(storyId);
+  return (await getStoryMetaMap()).get(storyId);
 }
 
 /** Derived from the text, never hand-entered: 150 words a minute for a child being read to. */

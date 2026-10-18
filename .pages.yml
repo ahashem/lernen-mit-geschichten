@@ -27,46 +27,6 @@ media:
     rename: false
 
 components:
-  skills:
-    type: select
-    label: Skills
-    required: true
-    description: Pick 1 to 3.
-    options:
-      multiple: true
-      min: 1
-      max: 3
-      values:
-        - self-awareness
-        - emotional-regulation
-        - empathy
-        - patience
-        - impulse-control
-        - anger-management
-        - emotional-expression
-        - courage
-        - self-confidence
-        - effective-communication
-        - cooperation
-        - conflict-resolution
-        - leadership
-        - respect
-        - sharing
-        - generosity
-        - problem-solving
-        - decision-making
-        - critical-thinking
-        - adaptability
-        - goal-setting
-        - focus
-        - responsibility
-        - honesty
-        - persistence
-        - self-discipline
-        - time-management
-        - motivation
-        - delayed-gratification
-        - organization
   questions:
     type: object
     label: Questions
@@ -152,7 +112,19 @@ content:
           required: true,
           default: '📖',
         }
-      - { name: skills, component: skills }
+      - name: skills
+        type: reference
+        label: Skills
+        required: true
+        description: Pick 1 to 3. They apply to every language of the story.
+        options:
+          collection: skills
+          multiple: true
+          min: 1
+          max: 3
+          search: fields.name
+          value: '{fields.id}'
+          label: '{fields.name}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
@@ -245,14 +217,17 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
-      - {
-          name: emoji,
-          type: string,
-          label: Emoji (shown when there is no picture),
-          required: true,
-          default: '📖',
-        }
-      - { name: skills, component: skills }
+      - name: skills
+        type: reference
+        label: Skills (only if this language's story differs)
+        description: Leave empty to use the German story's skills.
+        options:
+          collection: skills
+          multiple: true
+          max: 3
+          search: fields.name
+          value: '{fields.id}'
+          label: '{fields.name}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
@@ -308,14 +283,17 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
-      - {
-          name: emoji,
-          type: string,
-          label: Emoji (shown when there is no picture),
-          required: true,
-          default: '📖',
-        }
-      - { name: skills, component: skills }
+      - name: skills
+        type: reference
+        label: Skills (only if this language's story differs)
+        description: Leave empty to use the German story's skills.
+        options:
+          collection: skills
+          multiple: true
+          max: 3
+          search: fields.name
+          value: '{fields.id}'
+          label: '{fields.name}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
@@ -371,14 +349,17 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
-      - {
-          name: emoji,
-          type: string,
-          label: Emoji (shown when there is no picture),
-          required: true,
-          default: '📖',
-        }
-      - { name: skills, component: skills }
+      - name: skills
+        type: reference
+        label: Skills (only if this language's story differs)
+        description: Leave empty to use the German story's skills.
+        options:
+          collection: skills
+          multiple: true
+          max: 3
+          search: fields.name
+          value: '{fields.id}'
+          label: '{fields.name}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
@@ -434,14 +415,17 @@ content:
         options:
           values: [draft, published]
       - { name: title, type: string, label: Title, required: true }
-      - {
-          name: emoji,
-          type: string,
-          label: Emoji (shown when there is no picture),
-          required: true,
-          default: '📖',
-        }
-      - { name: skills, component: skills }
+      - name: skills
+        type: reference
+        label: Skills (only if this language's story differs)
+        description: Leave empty to use the German story's skills.
+        options:
+          collection: skills
+          multiple: true
+          max: 3
+          search: fields.name
+          value: '{fields.id}'
+          label: '{fields.name}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
@@ -461,3 +445,41 @@ content:
       - { name: narration, component: narration }
       - { name: reviewedBy, type: string, label: Reviewed by (a native speaker) }
       - { name: reviewedAt, type: date, label: Reviewed on }
+  - name: skills
+    label: Skills
+    type: collection
+    path: src/content/skills
+    filename: '{id}.yaml'
+    subfolders: false
+    operations:
+      create: true
+      rename: false
+      delete: false
+    view:
+      fields: [name, category, id]
+      primary: name
+      search: [name, id]
+      sort: [name, category]
+      default:
+        sort: name
+        order: asc
+    fields:
+      - name: id
+        type: string
+        label: Id
+        required: true
+        description: Lowercase words joined by dashes. Never change it once a story uses it.
+        pattern:
+          regex: '^[a-z]+(-[a-z]+)*$'
+          message: 'Use lowercase words joined by dashes, e.g. self-confidence'
+      - name: category
+        type: select
+        label: Group in the filter
+        required: true
+        options:
+          values: [emotional, social, cognitive, behavioral]
+      - name: name
+        type: string
+        label: Name (German)
+        required: true
+        description: The other languages are translated with the interface texts (src/locales), not here.

@@ -1,7 +1,5 @@
 ---
 title: "میلو ڈھلنا سیکھتا ہے"
-emoji: "🐨"
-skills: ["adaptability"]
 ageGroup: "3-7"
 storyId: "009-milo"
 publishDate: 2024-01-15
