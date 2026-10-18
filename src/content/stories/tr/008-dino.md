@@ -1,7 +1,5 @@
 ---
 title: "Dino Dino ve Büyük Bekleyiş"
-emoji: "🦕"
-skills: ["patience", "delayed-gratification"]
 ageGroup: "3-7"
 storyId: "008-dino"
 publishDate: 2024-01-15

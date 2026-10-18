@@ -1,5 +1,9 @@
+import { getSkillEntries } from './stories';
+import type { Locale } from './i18n';
+
 export interface Skill {
   id: string;
+  category: string;
   de: string;
   ar: string;
   en: string;
@@ -7,96 +11,20 @@ export interface Skill {
   ur: string;
 }
 
-export interface SkillCategory {
-  de: string;
-  ar: string;
-  en: string;
-  tr: string;
-  ur: string;
+export interface SkillCategory extends Record<Locale, string> {
+  id: string;
   skills: Skill[];
 }
 
-export const skillsCategories: Record<string, SkillCategory> = {
+// The four groups are structure, not content: they change with the design, so they live here. The skills
+// themselves (ids and labels in all five languages) are files in src/content/skills, which the CMS edits.
+const CATEGORIES: Record<string, Record<Locale, string>> = {
   emotional: {
     de: 'Emotionale Fähigkeiten',
     ar: 'المهارات العاطفية',
     en: 'Emotional Skills',
     tr: 'Duygusal Beceriler',
     ur: 'جذباتی مہارتیں',
-    skills: [
-      {
-        id: 'self-awareness',
-        de: 'Selbstbewusstsein',
-        ar: 'الوعي الذاتي',
-        en: 'Self-Awareness',
-        tr: 'Öz farkındalık',
-        ur: 'خود آگاہی',
-      },
-      {
-        id: 'emotional-regulation',
-        de: 'Emotionskontrolle',
-        ar: 'التحكم في الانفعالات',
-        en: 'Emotional Regulation',
-        tr: 'Duygu kontrolü',
-        ur: 'جذباتی ضبط',
-      },
-      {
-        id: 'empathy',
-        de: 'Empathie',
-        ar: 'التعاطف',
-        en: 'Empathy',
-        tr: 'Empati',
-        ur: 'ہمدردی',
-      },
-      {
-        id: 'patience',
-        de: 'Geduld',
-        ar: 'الصبر والتحمل',
-        en: 'Patience',
-        tr: 'Sabır',
-        ur: 'صبر',
-      },
-      {
-        id: 'impulse-control',
-        de: 'Impulskontrolle',
-        ar: 'ضبط الاندفاعية',
-        en: 'Impulse Control',
-        tr: 'Dürtü kontrolü',
-        ur: 'جذباتی قابو',
-      },
-      {
-        id: 'anger-management',
-        de: 'Umgang mit Wut',
-        ar: 'إدارة الغضب',
-        en: 'Anger Management',
-        tr: 'Öfke yönetimi',
-        ur: 'غصے پر قابو',
-      },
-      {
-        id: 'emotional-expression',
-        de: 'Gefühle ausdrücken',
-        ar: 'التعبير عن المشاعر',
-        en: 'Emotional Expression',
-        tr: 'Duyguları ifade etme',
-        ur: 'جذبات کا اظہار',
-      },
-      {
-        id: 'courage',
-        de: 'Mut',
-        ar: 'الشجاعة',
-        en: 'Courage',
-        tr: 'Cesaret',
-        ur: 'ہمت',
-      },
-      {
-        id: 'self-confidence',
-        de: 'Selbstvertrauen',
-        ar: 'الثقة بالنفس',
-        en: 'Self-Confidence',
-        tr: 'Özgüven',
-        ur: 'خود اعتمادی',
-      },
-    ],
   },
   social: {
     de: 'Soziale Fähigkeiten',
@@ -104,64 +32,6 @@ export const skillsCategories: Record<string, SkillCategory> = {
     en: 'Social Skills',
     tr: 'Sosyal Beceriler',
     ur: 'سماجی مہارتیں',
-    skills: [
-      {
-        id: 'effective-communication',
-        de: 'Kommunikation',
-        ar: 'التواصل الفعال',
-        en: 'Effective Communication',
-        tr: 'Etkili iletişim',
-        ur: 'موثر رابطہ',
-      },
-      {
-        id: 'cooperation',
-        de: 'Zusammenarbeit',
-        ar: 'التعاون',
-        en: 'Cooperation',
-        tr: 'İşbirliği',
-        ur: 'تعاون',
-      },
-      {
-        id: 'conflict-resolution',
-        de: 'Konfliktlösung',
-        ar: 'حل النزاعات',
-        en: 'Conflict Resolution',
-        tr: 'Çatışma çözümü',
-        ur: 'تنازعات کا حل',
-      },
-      {
-        id: 'leadership',
-        de: 'Führung',
-        ar: 'القيادة',
-        en: 'Leadership',
-        tr: 'Liderlik',
-        ur: 'قیادت',
-      },
-      {
-        id: 'respect',
-        de: 'Respekt',
-        ar: 'الاحترام',
-        en: 'Respect',
-        tr: 'Saygı',
-        ur: 'احترام',
-      },
-      {
-        id: 'sharing',
-        de: 'Teilen',
-        ar: 'المشاركة',
-        en: 'Sharing',
-        tr: 'Paylaşma',
-        ur: 'بانٹنا',
-      },
-      {
-        id: 'generosity',
-        de: 'Großzügigkeit',
-        ar: 'الكرم',
-        en: 'Generosity',
-        tr: 'Cömertlik',
-        ur: 'سخاوت',
-      },
-    ],
   },
   cognitive: {
     de: 'Kognitive Fähigkeiten',
@@ -169,56 +39,6 @@ export const skillsCategories: Record<string, SkillCategory> = {
     en: 'Cognitive Skills',
     tr: 'Bilişsel Beceriler',
     ur: 'ذہنی مہارتیں',
-    skills: [
-      {
-        id: 'problem-solving',
-        de: 'Problemlösung',
-        ar: 'حل المشكلات',
-        en: 'Problem-Solving',
-        tr: 'Problem çözme',
-        ur: 'مسئلہ حل کرنا',
-      },
-      {
-        id: 'decision-making',
-        de: 'Entscheidungsfindung',
-        ar: 'اتخاذ القرار',
-        en: 'Decision-Making',
-        tr: 'Karar verme',
-        ur: 'فیصلہ سازی',
-      },
-      {
-        id: 'critical-thinking',
-        de: 'Kritisches Denken',
-        ar: 'التفكير النقدي',
-        en: 'Critical Thinking',
-        tr: 'Eleştirel düşünme',
-        ur: 'تنقیدی سوچ',
-      },
-      {
-        id: 'adaptability',
-        de: 'Anpassungsfähigkeit',
-        ar: 'التكيف مع التغيير',
-        en: 'Adaptability',
-        tr: 'Uyum yeteneği',
-        ur: 'موافقت',
-      },
-      {
-        id: 'goal-setting',
-        de: 'Zielsetzung',
-        ar: 'تحديد الأهداف',
-        en: 'Goal-Setting',
-        tr: 'Hedef belirleme',
-        ur: 'مقصد مقرر کرنا',
-      },
-      {
-        id: 'focus',
-        de: 'Konzentration',
-        ar: 'التركيز',
-        en: 'Focus',
-        tr: 'Odaklanma',
-        ur: 'توجہ',
-      },
-    ],
   },
   behavioral: {
     de: 'Verhaltensfähigkeiten',
@@ -226,83 +46,29 @@ export const skillsCategories: Record<string, SkillCategory> = {
     en: 'Behavioral Skills',
     tr: 'Davranışsal Beceriler',
     ur: 'رویہ کی مہارتیں',
-    skills: [
-      {
-        id: 'responsibility',
-        de: 'Verantwortung',
-        ar: 'المسؤولية',
-        en: 'Responsibility',
-        tr: 'Sorumluluk',
-        ur: 'ذمہ داری',
-      },
-      {
-        id: 'honesty',
-        de: 'Ehrlichkeit',
-        ar: 'الصدق',
-        en: 'Honesty',
-        tr: 'Dürüstlük',
-        ur: 'ایمانداری',
-      },
-      {
-        id: 'persistence',
-        de: 'Durchhaltevermögen',
-        ar: 'المثابرة',
-        en: 'Persistence',
-        tr: 'Sebat',
-        ur: 'استقامت',
-      },
-      {
-        id: 'self-discipline',
-        de: 'Selbstdisziplin',
-        ar: 'الانضباط الذاتي',
-        en: 'Self-Discipline',
-        tr: 'Öz disiplin',
-        ur: 'خود نظم و ضبط',
-      },
-      {
-        id: 'time-management',
-        de: 'Zeitmanagement',
-        ar: 'إدارة الوقت',
-        en: 'Time Management',
-        tr: 'Zaman yönetimi',
-        ur: 'وقت کا انتظام',
-      },
-      {
-        id: 'motivation',
-        de: 'Motivation',
-        ar: 'الدافعية',
-        en: 'Motivation',
-        tr: 'Motivasyon',
-        ur: 'ترغیب',
-      },
-      {
-        id: 'delayed-gratification',
-        de: 'Belohnungsaufschub',
-        ar: 'تأجيل الإشباع',
-        en: 'Delayed Gratification',
-        tr: 'Ödülü erteleme',
-        ur: 'خواہش کو مؤخر کرنا',
-      },
-      {
-        id: 'organization',
-        de: 'Organisation',
-        ar: 'التنظيم',
-        en: 'Organization',
-        tr: 'Düzen',
-        ur: 'ترتیب',
-      },
-    ],
   },
 };
 
-export function getAllSkills(): Skill[] {
-  return Object.values(skillsCategories).flatMap(category => category.skills);
+let all: Promise<Skill[]> | undefined;
+
+/** Every skill, from src/content/skills. */
+export function getSkills(): Promise<Skill[]> {
+  all ??= getSkillEntries().then(entries => entries.map(e => e.data as Skill));
+  return all;
 }
 
-export function getSkillById(id: string): Skill | undefined {
-  return getAllSkills().find(skill => skill.id === id);
+/** Skills grouped by category, in category order and alphabetical by English label within one. */
+export async function getSkillsByCategory(): Promise<SkillCategory[]> {
+  const skills = await getSkills();
+  return Object.entries(CATEGORIES).map(([id, labels]) => ({
+    id,
+    ...labels,
+    skills: skills.filter(s => s.category === id).sort((a, b) => a.en.localeCompare(b.en)),
+  }));
 }
 
-export function getSkillsByIds(ids: string[]): Skill[] {
-  return ids.map(id => getSkillById(id)).filter((skill): skill is Skill => skill !== undefined);
+/** The skills for a list of ids; unknown ids are dropped. */
+export async function getSkillsByIds(ids: string[]): Promise<Skill[]> {
+  const skills = await getSkills();
+  return ids.map(id => skills.find(s => s.id === id)).filter((s): s is Skill => s !== undefined);
 }

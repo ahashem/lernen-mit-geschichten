@@ -1,7 +1,5 @@
 ---
 title: "قِصَّةُ فْرِيتْسْشِن وَالسِّنجابِ الغاضِبِ"
-emoji: "🐿️"
-skills: ["impulse-control", "anger-management"]
 ageGroup: "3-7"
 storyId: "002-fritz"
 publishDate: 2024-01-15

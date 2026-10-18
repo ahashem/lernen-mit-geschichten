@@ -1,7 +1,5 @@
 ---
 title: "Bruno's Colorful Feelings"
-emoji: "🐻"
-skills: ["self-awareness", "emotional-regulation"]
 ageGroup: "3-7"
 # Alt text is an agent draft from the images, for moderator review.
 coverAlt: "A line drawing of a worried bear sitting under a tree with a hand on his tummy, a heart in a thought cloud above him, and an owl watching from a branch."

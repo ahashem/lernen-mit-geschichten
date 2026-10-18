@@ -40,9 +40,8 @@ Moderators work in the CMS on the `editorial` branch and never see git. Steps 1 
    drawings and SVG vectorising are an owner job for later and are optional.
 5. **Audio (optional).** One recording per page, trimmed and named `01.m4a`, `02.m4a`. Word timings are optional and
    need a technical tool; without them the reader highlights sentences.
-6. **German entry.** In the CMS: Stories (German), New. Fill `storyId`, title, emoji, skills, band, summary, key
-   message. For picture books add one list item per page (page _n_ pairs with picture _n_ and recording _n_); for
-   chapter stories write the body. Add questions and the grown-up prompts. `status` is `draft`.
+6. **German entry.** In the CMS: Stories (German), New. Fill `storyId`, title, emoji, skills (pick from the list), band, summary, key
+   message. Skills and emoji are set here only; translations inherit them. Write the text in the editor like a document; a horizontal line starts a new page (page _n_ pairs with picture _n_ and recording _n_). Chapter stories use headings instead. Add questions and the grown-up prompts. `status` is `draft`.
 7. **Art and audio.** Upload the cover and page pictures to `assets/stories/023-nora/` and the recordings to
    `assets/audio/de/023-nora/`, choose them in the Cover and Page pictures fields, and write the German alt text.
    Fill "How the art was made" (tool, model, who reviewed it).

@@ -9,14 +9,13 @@
  * since <ref> that is `published` must be complete and reviewed by someone other than its author, or the run
  * fails. Untouched files are never held to it, so existing stories stay as they are.
  */
-import { readdirSync, readFileSync, existsSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 
 const STORIES = 'src/content/stories';
-const SHARED = ['band', 'cover', 'frames', 'palette', 'art'];
-const TAXONOMY = 'src/utils/skills-taxonomy.ts';
-const CMS_CONFIG = '.pages.yml';
+const SHARED = ['band', 'cover', 'frames', 'palette', 'art', 'skills', 'emoji'];
+const SKILLS = 'src/content/skills';
 const strict = process.env.CONTENT_STRICT === '1';
 const changedRef = process.argv.find(a => a.startsWith('--changed='))?.slice('--changed='.length);
 
@@ -35,15 +34,17 @@ for (const locale of readdirSync(STORIES)) {
 }
 const source = new Map(files.filter(f => f.locale === 'de').map(f => [f.id, f]));
 
-// Skills: every id a story uses must exist in the taxonomy, and the CMS dropdown must offer exactly those ids.
-const taxonomy = [...readFileSync(TAXONOMY, 'utf8').matchAll(/^\s{8}id: '([^']+)'/gm)].map(m => m[1]);
+// Skills are files in src/content/skills; every id a story uses must be one of them, and each file's id must match its name.
+const taxonomy = readdirSync(SKILLS)
+  .filter(f => f.endsWith('.yaml'))
+  .map(f => f.replace(/\.yaml$/, ''));
 const skillsOf = fm => [...(fm.match(/^skills:\s*\[(.*?)\]/m)?.[1] ?? '').matchAll(/"([^"]+)"/g)].map(m => m[1]);
 const lacking = { band: {}, summary: {}, keyMessage: {}, reviewedBy: {}, coverAlt: {}, frameAlts: {} };
 const note = (field, locale) => (lacking[field][locale] = (lacking[field][locale] ?? 0) + 1);
 const hard = [];
 
 for (const f of files) {
-  for (const id of skillsOf(f.fm)) if (!taxonomy.includes(id)) hard.push(`${f.locale}/${f.file}: skill "${id}" is not in ${TAXONOMY}`);
+  for (const id of skillsOf(f.fm)) if (!taxonomy.includes(id)) hard.push(`${f.locale}/${f.file}: skill "${id}" is not a file in ${SKILLS}`);
   if (f.draft) continue;
   const de = source.get(f.id);
   if (!de) hard.push(`${f.locale}/${f.file}: no German source file for storyId ${f.id}`);
@@ -56,12 +57,9 @@ for (const f of files) {
   for (const field of ['summary', 'keyMessage']) if (!has(f.fm, field)) note(field, f.locale);
 }
 
-if (existsSync(CMS_CONFIG)) {
-  const cms = readFileSync(CMS_CONFIG, 'utf8');
-  const block = cms.match(/^ {2}skills:\n([\s\S]*?)^ {2}questions:/m)?.[1] ?? '';
-  const offered = [...block.matchAll(/^\s{8}- ([a-z-]+)\s*$/gm)].map(m => m[1]);
-  const off = [...taxonomy.filter(i => !offered.includes(i)), ...offered.filter(i => !taxonomy.includes(i))];
-  if (off.length) hard.push(`${CMS_CONFIG}: skills dropdown out of step with the taxonomy (${off.join(', ')})`);
+for (const id of taxonomy) {
+  const declared = readFileSync(join(SKILLS, `${id}.yaml`), 'utf8').match(/^id:\s*(\S+)/m)?.[1];
+  if (declared !== id) hard.push(`${SKILLS}/${id}.yaml: id is "${declared}", expected "${id}"`);
 }
 
 let missing = 0;
@@ -90,6 +88,9 @@ if (changedRef) {
     need(!by || !author || by !== author, 'reviewedBy must be someone other than author');
     if (f.locale === 'de') {
       need(has(f.fm, 'band'), 'published needs band');
+      need(has(f.fm, 'emoji'), 'published needs emoji');
+      const picked = skillsOf(f.fm).length;
+      need(picked >= 1 && picked <= 3, 'published needs 1 to 3 skills');
       const frames = countFrames(f.fm);
       if (has(f.fm, 'cover')) need(/^\s+alt:/m.test(block(f.fm, 'cover')), 'cover needs alt text');
       if (frames) need((block(f.fm, 'frames').match(/^\s+alt:/gm) ?? []).length >= frames, 'every page picture needs alt text');

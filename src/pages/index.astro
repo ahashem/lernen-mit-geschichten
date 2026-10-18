@@ -3,11 +3,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import StoryCard from '../components/StoryCard.astro';
 import SearchBar from '../components/SearchBar.astro';
 import FilterSidebar from '../components/FilterSidebar.astro';
-import { getPublishedStories, getStoryAvailability, readMinutes } from '@utils/stories';
+import {
+  getPublishedStories,
+  getStoryAvailability,
+  getStoryMetaMap,
+  readMinutes,
+} from '@utils/stories';
 import { getTranslation } from '@utils/i18n';
 
 const locale = 'de';
 const stories = await getPublishedStories(({ id }) => id.startsWith('de/'));
+const metas = await getStoryMetaMap();
 const description =
   'Entdecke spannende Geschichten, die Kindern wichtige Werte und Fähigkeiten vermitteln. Für Eltern, Lehrer und Erzieher.';
 
@@ -52,8 +58,8 @@ const availability = await getStoryAvailability();
               {stories.map(story => (
                 <StoryCard
                   title={story.data.title}
-                  emoji={story.data.emoji}
-                  skills={story.data.skills}
+                  emoji={story.data.emoji ?? metas.get(story.data.storyId)?.emoji ?? '📖'}
+                  skills={story.data.skills ?? metas.get(story.data.storyId)?.skills ?? []}
                   availableLocales={availability.get(story.data.storyId) ?? [locale]}
                   storyId={story.data.storyId}
                   estimatedReadTime={readMinutes(story.body)}

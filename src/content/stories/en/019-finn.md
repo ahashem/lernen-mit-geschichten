@@ -1,7 +1,5 @@
 ---
 title: "Finn and the Giant Nut"
-emoji: "🌰"
-skills: ["cooperation"]
 ageGroup: "3-7"
 storyId: "019-finn"
 publishDate: 2024-01-15

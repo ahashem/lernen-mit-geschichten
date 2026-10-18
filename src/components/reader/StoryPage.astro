@@ -17,9 +17,10 @@ interface Props {
 const { story } = Astro.props;
 const locale = story.id.split('/')[0] as Locale;
 const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
-const { storyId, title, emoji } = story.data;
+const { storyId, title } = story.data;
 
 const meta = await getStoryMeta(storyId);
+const emoji = story.data.emoji ?? meta?.emoji ?? '📖';
 const band = meta?.band ?? 1;
 const palette = paletteFor(storyId, meta);
 const { Content } = await render(story);
@@ -29,7 +30,7 @@ const hasBook = band <= 2 && pages.length > 0;
 const narration = narrationFor(storyId, locale, pages.length, explicit);
 const cover = coverOf(meta, locale);
 const minutes = readMinutes(story.body);
-const skills = getSkillsByIds(story.data.skills);
+const skills = await getSkillsByIds(story.data.skills ?? meta?.skills ?? []);
 const summary = story.data.summary ?? firstSentence(story.body ?? '', locale);
 const prompts = (story.data.discussion ?? story.data.questions?.map(q => q.text) ?? []).slice(0, 3);
 

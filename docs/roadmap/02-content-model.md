@@ -5,7 +5,7 @@ migrated to it; they do not constrain it.
 
 ## Shape
 
-A **story** is language-neutral: its identity, cast, skills, and **all art** (no image carries text, so the same
+A **story** is language-neutral: its identity, cast, skills, emoji, and **all art** (no image carries text, so the same
 picture serves every locale and RTL). A **translation** is one language's text, audio and questions, reviewed by a
 human. Both live in the same per-locale Markdown frontmatter, joined by `storyId`, but the language-neutral
 fields are written **only in the German source file** (`de/{storyId}.md`) and read from there by `getStoryMeta()`.
@@ -18,7 +18,8 @@ The CMS (`/.pages.yml`) shows the shared fields only in the German collection.
 | Field                     | Req            | Notes                                                                                                                                                                                                                                                                                                                                   |
 | ------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `storyId`                 | yes            | Slug, immutable once published                                                                                                                                                                                                                                                                                                          |
-| `skills`                  | yes            | 1–3 ids from `skills-taxonomy.ts`; build validates                                                                                                                                                                                                                                                                                      |
+| `skills`                  | yes            | 1–3 ids of files in `src/content/skills`; the gate fails on any other id. German file only                                                                                                                                                                                                                                              |
+| `emoji`                   | yes            | Fallback identity when there is no cover. German file only                                                                                                                                                                                                                                                                              |
 | `band`                    | yes            | `1` Picture books (≈3–5), `2` Read-along (≈6–7), `3` Chapter stories (≈8–9), `4` Long reads (≈10–12). Set by editors from the length and density table in `ux/01`; same across locales (a translator may flag "harder in my language"). Drives reader layout, type, narration default and question style. Ages are shown to adults only |
 | `feelings` / `situations` | no             | Parent-language intents for find-by-feeling (e.g. angry, new sibling, first day)                                                                                                                                                                                                                                                        |
 | `characters`              | no             | Ids into a character registry (name, species, art reference); keeps the cast consistent                                                                                                                                                                                                                                                 |
@@ -41,7 +42,6 @@ The CMS (`/.pages.yml`) shows the shared fields only in the German collection.
 | `summary`                  | yes                        | 1–2 sentences for cards, previews and SEO                                                                              |
 | `keyMessage`               | yes                        | The one idea (BR-3); shown at the end                                                                                  |
 | body or `pages[]`          | yes                        | Standard: Markdown. Interactive: pages of text; picture comes from `frames[]`                                          |
-| `emoji`                    | yes                        | Fallback identity when there is no cover                                                                               |
 | `questions[]`              | no (≥2 advised)            | Reflection and talk prompts, comprehension for bands 3–4; nothing is scored; reflection questions have no wrong answer |
 | `discussion[]`             | no                         | Prompts for the adult reading along                                                                                    |
 | `narration`                | no                         | `audio` file, `narrator` credit, `consent` note, optional `timing` (word offsets) for highlight sync                   |
@@ -101,5 +101,6 @@ screen-reader user, not a caption, stored in the file of the language it is writ
 ## Migration
 
 Done: `band` and the Bruno art moved into the German files, `title*`, `languages[]`, read time and
-`characterType` dropped, and a before/after build of the whole site is byte-identical. Skills and emoji are still
-written in every language file; making them German-only is a possible follow-up.
+`characterType` dropped, and a before/after build of the whole site is byte-identical. Skills and emoji are now German-only too, and the
+skills taxonomy is one YAML file per skill in `src/content/skills` with its label in all five languages, edited in
+the CMS. Four stories had translations tagged with different skills than the German original; the German ones won.

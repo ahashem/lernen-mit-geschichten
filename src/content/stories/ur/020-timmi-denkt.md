@@ -1,7 +1,5 @@
 ---
 title: "ٹِمّی پہلے سوچتا ہے پھر کرتا ہے"
-emoji: "🧠"
-skills: ["critical-thinking", "decision-making"]
 ageGroup: "3-7"
 storyId: "020-timmi-denkt"
 publishDate: 2024-01-15

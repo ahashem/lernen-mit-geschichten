@@ -40,7 +40,7 @@ const isNew = publishDate
   ? (Date.now() - publishDate.getTime()) / (1000 * 60 * 60 * 24) <= 7
   : false;
 
-const skillObjects = getSkillsByIds(skills);
+const skillObjects = await getSkillsByIds(skills);
 const storyUrl = locale === 'de' ? `${base}/stories/${slug}` : `${base}/${locale}/stories/${slug}`;
 ---
 

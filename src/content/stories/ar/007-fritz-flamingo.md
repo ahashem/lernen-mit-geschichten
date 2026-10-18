@@ -1,7 +1,5 @@
 ---
 title: "فْرِيتْسُ الفْلامِنْغُو يَتَعَلَّمُ التَّنْظِيمَ"
-emoji: "🦩"
-skills: ["organization", "responsibility"]
 ageGroup: "3-7"
 storyId: "007-fritz-flamingo"
 publishDate: 2024-01-15

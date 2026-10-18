@@ -3,7 +3,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import StoryCard from '../../components/StoryCard.astro';
 import SearchBar from '../../components/SearchBar.astro';
 import FilterSidebar from '../../components/FilterSidebar.astro';
-import { getPublishedStories, getStoryAvailability, readMinutes } from '@utils/stories';
+import {
+  getPublishedStories,
+  getStoryAvailability,
+  getStoryMetaMap,
+  readMinutes,
+} from '@utils/stories';
 import type { Locale } from '../../utils/i18n';
 import { getTranslation } from '../../utils/i18n';
 
@@ -18,6 +23,7 @@ export async function getStaticPaths() {
 
 const { locale } = Astro.params as { locale: Locale };
 const stories = await getPublishedStories(({ id }) => id.startsWith(`${locale}/`));
+const metas = await getStoryMetaMap();
 
 // Get filter params from URL
 const urlSkills = Astro.url.searchParams.get('skills')?.split(',').filter(Boolean) || [];
@@ -89,8 +95,8 @@ const description = hero.text;
               {stories.map(story => (
                 <StoryCard
                   title={story.data.title}
-                  emoji={story.data.emoji}
-                  skills={story.data.skills}
+                  emoji={story.data.emoji ?? metas.get(story.data.storyId)?.emoji ?? '📖'}
+                  skills={story.data.skills ?? metas.get(story.data.storyId)?.skills ?? []}
                   availableLocales={availability.get(story.data.storyId) ?? [locale]}
                   storyId={story.data.storyId}
                   estimatedReadTime={readMinutes(story.body)}
