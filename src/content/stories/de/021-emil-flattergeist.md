@@ -1,7 +1,7 @@
 ---
 title: "Emil und dem Flattergeist"
 emoji: "👻"
-skills: ["focus", "attention"]
+skills: ["focus"]
 ageGroup: "3-7"
 band: 2
 storyId: "021-emil-flattergeist"

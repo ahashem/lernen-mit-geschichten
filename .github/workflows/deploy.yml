@@ -50,8 +50,7 @@ jobs:
         env:
           SITE_URL: ${{ env.PAGES_URL }}
           NOINDEX: '1'
-          GITHUB_SHA: ''
-        run: npm run build
+        run: BUILD_SHA=$(git rev-parse --short HEAD) npm run build
 
       - name: Detect the editorial branch
         id: detect
@@ -83,10 +82,9 @@ jobs:
           SITE_URL: ${{ env.PAGES_URL }}/preview
           NOINDEX: '1'
           SHOW_DRAFTS: '1'
-          GITHUB_SHA: ''
         run: |
           npm ci
-          npm run build 2>&1 | tee "$GITHUB_WORKSPACE/preview-build.txt"
+          BUILD_SHA=$(git rev-parse --short HEAD) npm run build 2>&1 | tee "$GITHUB_WORKSPACE/preview-build.txt"
 
       - name: Assemble the site
         run: |
