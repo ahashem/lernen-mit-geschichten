@@ -5,9 +5,10 @@
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { readiness, LOCALES } from './readiness.mjs';
+
 
 const [out, build, sha, gateFile, storiesDir] = process.argv.slice(2);
+const LOCALES = ['de', 'en', 'ar', 'tr', 'ur'];
 const gate = (gateFile && existsSync(gateFile) ? readFileSync(gateFile, 'utf8') : '').replace(/\u001b\[[0-9;]*m/g, '').trim();
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const blocked = gate.split('\n').filter(l => l.startsWith('BLOCKED') || l.startsWith('FAIL'));
@@ -35,6 +36,8 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 const root = storiesDir ? join(storiesDir, '../../..') : '';
 let stories = [];
 try {
+  // Loaded here so a problem in the checklist can never take the whole status page down.
+  const { readiness } = await import('./readiness.mjs');
   if (root && existsSync(storiesDir)) stories = [...readiness(root).values()];
 } catch (error) {
   console.error(`readiness failed: ${error.message}`);
