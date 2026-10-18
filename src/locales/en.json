@@ -242,5 +242,12 @@
   "voiceSaved": "Saved",
   "voiceDeleted": "Deleted",
   "voiceDenied": "The microphone is not available. Nothing was recorded.",
-  "voiceFailed": "Could not save the recording on this device."
+  "voiceFailed": "Could not save the recording on this device.",
+  "folioTitle": "Story folio",
+  "folioLead": "An A4 folio of the stories in this language: a title page, an index of skills with the stories that practise them, then each story. Print it single-sided or double-sided.",
+  "folioSelect": "Stories in the folio",
+  "folioPrint": "Print the folio",
+  "folioIndex": "Index: skills and stories",
+  "folioNoStories": "There are no stories in this language yet.",
+  "folioScan": "Scan to open"
 }

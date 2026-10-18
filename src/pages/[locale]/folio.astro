@@ -1,0 +1,12 @@
+---
+import Folio from '@components/folio/Folio.astro';
+import type { Locale } from '@utils/i18n';
+
+export function getStaticPaths() {
+  return ['ar', 'en', 'tr', 'ur'].map(locale => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+---
+
+<Folio locale={locale} />

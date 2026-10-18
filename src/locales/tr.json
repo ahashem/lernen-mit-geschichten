@@ -242,5 +242,12 @@
   "voiceSaved": "Saklandı",
   "voiceDeleted": "Silindi",
   "voiceDenied": "Mikrofon kullanılamıyor. Hiçbir şey kaydedilmedi.",
-  "voiceFailed": "Kayıt bu cihaza kaydedilemedi."
+  "voiceFailed": "Kayıt bu cihaza kaydedilemedi.",
+  "folioTitle": "Hikaye dosyası",
+  "folioLead": "Bu dildeki hikâyelerin A4 dosyası: bir kapak sayfası, becerilerin ve onları çalıştıran hikâyelerin dizini, ardından her hikâye. Tek ya da çift taraflı yazdırılabilir.",
+  "folioSelect": "Dosyadaki hikâyeler",
+  "folioPrint": "Dosyayı yazdır",
+  "folioIndex": "Dizin: beceriler ve hikâyeler",
+  "folioNoStories": "Bu dilde henüz hikâye yok.",
+  "folioScan": "Açmak için tara"
 }

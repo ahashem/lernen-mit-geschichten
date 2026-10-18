@@ -173,7 +173,14 @@
     "voiceSaved",
     "voiceDeleted",
     "voiceDenied",
-    "voiceFailed"
+    "voiceFailed",
+    "folioTitle",
+    "folioLead",
+    "folioSelect",
+    "folioPrint",
+    "folioIndex",
+    "folioNoStories",
+    "folioScan"
   ],
   "tr": [
     "skipToContent",
@@ -349,7 +356,14 @@
     "voiceSaved",
     "voiceDeleted",
     "voiceDenied",
-    "voiceFailed"
+    "voiceFailed",
+    "folioTitle",
+    "folioLead",
+    "folioSelect",
+    "folioPrint",
+    "folioIndex",
+    "folioNoStories",
+    "folioScan"
   ],
   "ur": [
     "skipToContent",
@@ -525,6 +539,13 @@
     "voiceSaved",
     "voiceDeleted",
     "voiceDenied",
-    "voiceFailed"
+    "voiceFailed",
+    "folioTitle",
+    "folioLead",
+    "folioSelect",
+    "folioPrint",
+    "folioIndex",
+    "folioNoStories",
+    "folioScan"
   ]
 }

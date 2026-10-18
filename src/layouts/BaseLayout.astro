@@ -201,6 +201,11 @@ const jsonLd =
         <p>{getTranslation(locale, 'footerArt')}</p>
         <p>&copy; {new Date().getFullYear()} {siteName}</p>
         <p>
+          <a href={locale === 'de' ? `${base}/folio` : `${base}/${locale}/folio`}
+            >{getTranslation(locale, 'folioTitle')}</a
+          >
+        </p>
+        <p>
           <a href={locale === 'de' ? `${base}/privacy` : `${base}/${locale}/privacy`}
             >{getTranslation(locale, 'privacyTitle')}</a
           >
