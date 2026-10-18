@@ -165,5 +165,13 @@
   "libraryCountOne": "1 Geschichte",
   "noStoryFits": "Keine Geschichte passt zu allem.",
   "removeFilterName": "Filter entfernen: {name}",
-  "removeFilterNamed": "{name} entfernen"
+  "removeFilterNamed": "{name} entfernen",
+  "continueReading": "Weiterlesen",
+  "pictureDoor": "Bilderbücher: zum Zuhören und Anschauen",
+  "seeAll": "Alle ansehen",
+  "findBySituation": "Nach Situation finden",
+  "yourStory": "Deine Geschichte",
+  "moreStories": "Mehr Geschichten",
+  "openStoryNamed": "{title} öffnen",
+  "footerArt": "Illustrationen entstehen mit KI-Werkzeugen und werden von Menschen geprüft."
 }

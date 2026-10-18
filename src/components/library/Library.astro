@@ -286,7 +286,7 @@ const strings = {
     const c = read();
     writeUrl(c);
     const shown = data.map((d: never) => matchesFilter(d, c));
-    tiles.forEach((li, i) => (li.hidden = !shown[Number(li.dataset.i)]));
+    tiles.forEach(li => (li.hidden = !shown[Number(li.dataset.i)]));
     const n = shown.filter(Boolean).length;
     count.textContent = fmt(n === 1 ? s.countOne : s.count, { n });
     grid.hidden = n === 0;

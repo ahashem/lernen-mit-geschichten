@@ -162,5 +162,13 @@
   "libraryCountOne": "1 کہانی",
   "noStoryFits": "ان سب پر پوری اترنے والی کوئی کہانی نہیں۔",
   "removeFilterName": "فلٹر ہٹائیں: {name}",
-  "removeFilterNamed": "{name} ہٹائیں"
+  "removeFilterNamed": "{name} ہٹائیں",
+  "continueReading": "پڑھنا جاری رکھیں",
+  "pictureDoor": "تصویری کتابیں: سننے اور دیکھنے کے لیے",
+  "seeAll": "سب دیکھیں",
+  "findBySituation": "موقع کے مطابق تلاش کریں",
+  "yourStory": "آپ کی کہانی",
+  "moreStories": "مزید کہانیاں",
+  "openStoryNamed": "{title} کھولیں",
+  "footerArt": "تصاویر اے آئی ٹولز سے بنائی جاتی ہیں اور انسان ان کی جانچ کرتے ہیں۔"
 }

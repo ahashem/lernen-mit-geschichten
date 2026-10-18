@@ -9,7 +9,7 @@
   "filterBySkill": "تصفية حسب المهارة",
   "filterByLanguage": "تصفية حسب اللغة",
   "alsoAvailableIn": "متوفرة أيضاً بـ",
-  "allStories": "جميع القصص",
+  "allStories": "كل القصص",
   "noMatchingStories": "لا توجد قصص تطابق عوامل التصفية.",
   "readStory": "اقرأ القصة",
   "keyMessage": "الرسالة",
@@ -162,5 +162,13 @@
   "libraryCountOne": "قصة واحدة",
   "noStoryFits": "لا توجد قصة تناسب كل هذه الخيارات.",
   "removeFilterName": "إزالة التصفية: {name}",
-  "removeFilterNamed": "إزالة {name}"
+  "removeFilterNamed": "إزالة {name}",
+  "continueReading": "تابع القراءة",
+  "pictureDoor": "كتب مصورة: للاستماع والمشاهدة",
+  "seeAll": "عرض الكل",
+  "findBySituation": "ابحث حسب الموقف",
+  "yourStory": "قصتك",
+  "moreStories": "المزيد من القصص",
+  "openStoryNamed": "افتح {title}",
+  "footerArt": "الرسوم مصنوعة بأدوات الذكاء الاصطناعي ويراجعها بشر."
 }
