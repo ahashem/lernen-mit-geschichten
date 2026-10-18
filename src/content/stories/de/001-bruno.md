@@ -3,7 +3,7 @@ title: "Brunos bunte Gefühle"
 emoji: "🐻"
 skills: ["self-awareness", "emotional-regulation"]
 ageGroup: "3-7"
-band: 1
+band: "1"
 cover:
   src: /assets/stories/001-bruno/001-bruno_cover.webp
 frames:

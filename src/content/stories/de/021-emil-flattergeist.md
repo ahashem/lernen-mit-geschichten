@@ -3,7 +3,7 @@ title: "Emil und dem Flattergeist"
 emoji: "👻"
 skills: ["focus"]
 ageGroup: "3-7"
-band: 2
+band: "2"
 storyId: "021-emil-flattergeist"
 publishDate: 2024-01-15
 difficulty: "beginner"
