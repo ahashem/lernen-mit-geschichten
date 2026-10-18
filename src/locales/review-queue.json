@@ -101,7 +101,14 @@
     "moreStories",
     "allStories",
     "openStoryNamed",
-    "footerArt"
+    "footerArt",
+    "startReading",
+    "chaptersHeading",
+    "chapterOf",
+    "chapterShort",
+    "chapterDoneNext",
+    "previousChapter",
+    "toCover"
   ],
   "tr": [
     "skipToContent",
@@ -205,7 +212,14 @@
     "moreStories",
     "allStories",
     "openStoryNamed",
-    "footerArt"
+    "footerArt",
+    "startReading",
+    "chaptersHeading",
+    "chapterOf",
+    "chapterShort",
+    "chapterDoneNext",
+    "previousChapter",
+    "toCover"
   ],
   "ur": [
     "skipToContent",
@@ -309,6 +323,13 @@
     "moreStories",
     "allStories",
     "openStoryNamed",
-    "footerArt"
+    "footerArt",
+    "startReading",
+    "chaptersHeading",
+    "chapterOf",
+    "chapterShort",
+    "chapterDoneNext",
+    "previousChapter",
+    "toCover"
   ]
 }

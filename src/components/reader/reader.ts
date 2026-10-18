@@ -1,5 +1,6 @@
 import { fmt } from '@utils/i18n';
 import { applyTheme, loadPrefs, read, savePrefs, write } from './prefs';
+import { startChapters } from './chapters';
 
 interface Timing {
   w: number;
@@ -32,6 +33,10 @@ export function startReader() {
   if (!app || !dataEl) return;
   const data: ReaderData = JSON.parse(dataEl.textContent ?? '{}');
   const hasBook = app.dataset.hasBook === 'true';
+  if (!hasBook && app.dataset.chapters) {
+    startChapters(app, data.storyId, data.locale, data.strings);
+    return;
+  }
   const pageRtl = () => (book?.dir || document.documentElement.dir) === 'rtl';
   const isRtl = (locale: string) => locale === 'ar' || locale === 'ur';
   let pair: { first: string; second: string } | null = null;

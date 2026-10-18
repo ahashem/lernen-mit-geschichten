@@ -170,5 +170,12 @@
   "yourStory": "قصتك",
   "moreStories": "المزيد من القصص",
   "openStoryNamed": "افتح {title}",
-  "footerArt": "الرسوم مصنوعة بأدوات الذكاء الاصطناعي ويراجعها بشر."
+  "footerArt": "الرسوم مصنوعة بأدوات الذكاء الاصطناعي ويراجعها بشر.",
+  "startReading": "ابدأ القراءة",
+  "chaptersHeading": "الفصول",
+  "chapterOf": "الفصل {n} من {total}",
+  "chapterShort": "فصل {n} / {total}",
+  "chapterDoneNext": "انتهى الفصل {n} · التالي: {title}",
+  "previousChapter": "الفصل السابق",
+  "toCover": "العودة إلى الغلاف"
 }

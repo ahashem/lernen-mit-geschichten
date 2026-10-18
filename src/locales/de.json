@@ -173,5 +173,12 @@
   "yourStory": "Deine Geschichte",
   "moreStories": "Mehr Geschichten",
   "openStoryNamed": "{title} öffnen",
-  "footerArt": "Illustrationen entstehen mit KI-Werkzeugen und werden von Menschen geprüft."
+  "footerArt": "Illustrationen entstehen mit KI-Werkzeugen und werden von Menschen geprüft.",
+  "startReading": "Lesen",
+  "chaptersHeading": "Kapitel",
+  "chapterOf": "Kapitel {n} von {total}",
+  "chapterShort": "Kap. {n} / {total}",
+  "chapterDoneNext": "Kapitel {n} geschafft · Weiter: {title}",
+  "previousChapter": "Voriges Kapitel",
+  "toCover": "Zum Titelbild"
 }
