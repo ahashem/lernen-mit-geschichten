@@ -199,5 +199,11 @@
   "forgetConfirm": "Alles auf diesem Gerät löschen?",
   "forgetYes": "Ja, löschen",
   "forgetNo": "Abbrechen",
-  "forgetDone": "Erledigt. Dieses Gerät hat alles vergessen."
+  "forgetDone": "Erledigt. Dieses Gerät hat alles vergessen.",
+  "classRoom": "Klassenzimmer",
+  "classExit": "Beenden",
+  "classCaptions": "Text ein/aus",
+  "classNotes": "Notizen",
+  "classBlackout": "Schwarz",
+  "classMark": "Nächster Satz"
 }

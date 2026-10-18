@@ -198,5 +198,11 @@
   "forgetConfirm": "Bu cihazdaki her şey silinsin mi?",
   "forgetYes": "Evet, sil",
   "forgetNo": "Vazgeç",
-  "forgetDone": "Bitti. Bu cihaz her şeyi unuttu."
+  "forgetDone": "Bitti. Bu cihaz her şeyi unuttu.",
+  "classRoom": "Sınıf odası",
+  "classExit": "Çık",
+  "classCaptions": "Altyazı",
+  "classNotes": "Notlar",
+  "classBlackout": "Karart",
+  "classMark": "Sonraki cümle"
 }

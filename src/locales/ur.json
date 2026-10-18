@@ -198,5 +198,11 @@
   "forgetConfirm": "اس ڈیوائس پر سب کچھ مٹا دیں؟",
   "forgetYes": "ہاں، مٹا دیں",
   "forgetNo": "منسوخ کریں",
-  "forgetDone": "ہو گیا۔ اس ڈیوائس نے سب کچھ بھلا دیا۔"
+  "forgetDone": "ہو گیا۔ اس ڈیوائس نے سب کچھ بھلا دیا۔",
+  "classRoom": "کلاس روم",
+  "classExit": "باہر نکلیں",
+  "classCaptions": "کیپشن",
+  "classNotes": "نوٹس",
+  "classBlackout": "اندھیرا",
+  "classMark": "اگلا جملہ"
 }

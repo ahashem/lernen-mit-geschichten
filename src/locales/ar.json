@@ -198,5 +198,11 @@
   "forgetConfirm": "هل تريد مسح كل شيء على هذا الجهاز؟",
   "forgetYes": "نعم، امسح",
   "forgetNo": "إلغاء",
-  "forgetDone": "تم. نسي هذا الجهاز كل شيء."
+  "forgetDone": "تم. نسي هذا الجهاز كل شيء.",
+  "classRoom": "غرفة الصف",
+  "classExit": "خروج",
+  "classCaptions": "النص",
+  "classNotes": "ملاحظات",
+  "classBlackout": "إظلام",
+  "classMark": "الجملة التالية"
 }
