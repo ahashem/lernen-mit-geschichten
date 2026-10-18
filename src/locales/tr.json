@@ -219,5 +219,7 @@
   "feedbackStory": "Bu hikaye hakkında bize yazın",
   "feedbackStoryBody": "Bu hikayede neyi fark ettiniz?",
   "feedbackAbout": "Düşüncelerinizi bize yazın",
-  "feedbackAboutBody": "Neyi daha iyi yapabiliriz?"
+  "feedbackAboutBody": "Neyi daha iyi yapabiliriz?",
+  "tourButton": "Burada neye dokunabilirim?",
+  "tourText": "Adını duymak için bir resme bir kez dokun. Hikayeyi açmak için bir kez daha dokun."
 }

@@ -55,7 +55,7 @@ const clientItems = Object.fromEntries(
     { title: i.title, href: storyHref(i), pages: i.pageCount, band: i.band },
   ])
 );
-const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf') };
+const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourText'), locale };
 ---
 
 <BaseLayout title={t('home')} locale={locale} description={t('tagline')}>
@@ -142,6 +142,9 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf') };
     {
       heroItem && (
         <div data-body="picture" hidden>
+          <button class="tour" type="button" data-tour hidden aria-label={t('tourButton')}>
+            <span aria-hidden="true">?</span>
+          </button>
           <section class="hero" aria-labelledby="hero-title">
             <h2 id="hero-title" class="hero-heading">
               {t('yourStory')}
@@ -222,6 +225,46 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf') };
       window.scrollTo(0, 0);
     })
   );
+
+  // Picture home: a cover says its name on the first touch and opens on the second. The device voice does the
+  // talking, so with no voice for this language nothing changes and the "?" stays hidden.
+  const picture = root.querySelector<HTMLElement>('[data-body="picture"]');
+  if (picture && typeof speechSynthesis !== 'undefined') {
+    const findVoice = () =>
+      speechSynthesis
+        .getVoices()
+        .find(v => v.lang.toLowerCase().replace('_', '-').split('-')[0] === s.locale) ?? null;
+    const tour = picture.querySelector<HTMLButtonElement>('[data-tour]')!;
+    let armed: Element | null = null;
+    let timer = 0;
+    let pointer = '';
+    const say = (text: string) => {
+      const voice = findVoice();
+      if (!voice) return;
+      const u = new SpeechSynthesisUtterance(text);
+      u.voice = voice;
+      u.lang = voice.lang;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(u);
+    };
+    const ready = () => (tour.hidden = !findVoice());
+    ready();
+    speechSynthesis.addEventListener('voiceschanged', ready);
+    tour.addEventListener('click', () => say(s.tour));
+    picture.addEventListener('pointerdown', e => (pointer = e.pointerType));
+    picture.addEventListener('click', e => {
+      const hit = (e.target as Element).closest('.hero-cover, .tile-cover, .tile-title a');
+      // A keyboard or screen-reader activation (detail 0) and a mouse act at once: they already hear or see the name.
+      if (!hit || e.detail === 0 || pointer === 'mouse' || !findVoice()) return;
+      const card = hit.closest('.hero, .tile')!;
+      if (armed === card) return;
+      e.preventDefault();
+      armed = card;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => (armed = null), 8000);
+      say(card.querySelector('.hero-title, .tile-title')?.textContent?.trim() ?? '');
+    });
+  }
 
   // The device's preferred shelf comes first.
   const order = { picture: 1, readalong: 2, chapter: 3, long: 4 } as Record<string, number>;
@@ -399,6 +442,22 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf') };
   .hero-heading {
     font-size: var(--t-ui);
     color: var(--ink-2);
+  }
+  .tour {
+    justify-self: end;
+    inline-size: var(--tap-child);
+    block-size: var(--tap-child);
+    border: 0;
+    border-radius: 50%;
+    background: var(--plum-tint);
+    color: var(--ink);
+    font: inherit;
+    font-size: 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .tour[hidden] {
+    display: none;
   }
   .all-tile {
     inline-size: 100%;

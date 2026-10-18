@@ -220,5 +220,7 @@
   "feedbackStory": "Sagen Sie uns etwas zu dieser Geschichte",
   "feedbackStoryBody": "Was ist Ihnen an dieser Geschichte aufgefallen?",
   "feedbackAbout": "Sagen Sie uns, was Sie denken",
-  "feedbackAboutBody": "Was können wir besser machen?"
+  "feedbackAboutBody": "Was können wir besser machen?",
+  "tourButton": "Was kann ich hier tippen?",
+  "tourText": "Tippe einmal auf ein Bild, dann hörst du seinen Namen. Tippe noch einmal, dann geht die Geschichte auf."
 }
