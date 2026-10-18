@@ -5,7 +5,14 @@ import { getPublishedStories, getStoryMeta, readMinutes } from '@utils/stories';
 import { endonyms, fmt, getTranslation, isRTL, type Locale } from '@utils/i18n';
 import { getSkillsByIds } from '@utils/skills-taxonomy';
 import { BASE_PATH } from '@utils/site';
-import { alignTo, firstSentence, paginate, wordsOf, type BookPage } from '@utils/story-pages';
+import {
+  alignTo,
+  chapterTitles,
+  firstSentence,
+  paginate,
+  wordsOf,
+  type BookPage,
+} from '@utils/story-pages';
 import { coverOf, frameFor, narrationFor, paletteFor } from '@utils/story-art';
 import Icon from './Icon.astro';
 import StoryArt from './StoryArt.astro';
@@ -25,8 +32,9 @@ const band = meta?.band ?? 1;
 const palette = paletteFor(storyId, meta);
 const { Content } = await render(story);
 const { pages, explicit } = paginate(story.body ?? '', locale, band, story.data.pages);
-// Chapter reader for bands 3-4 is a later milestone; those stories read as full text for now.
 const hasBook = band <= 2 && pages.length > 0;
+// Bands 3-4 read as chapters (the `##` headings); a story without them stays a full text.
+const chapters = band >= 3 ? chapterTitles(story.body ?? '') : [];
 const narration = narrationFor(storyId, locale, pages.length, explicit);
 const cover = coverOf(meta, locale);
 const minutes = readMinutes(story.body);
@@ -66,6 +74,10 @@ const keys = [
   'theEnd',
   'readAloud',
   'lampTip',
+  'chapterOf',
+  'chapterShort',
+  'chapterDoneNext',
+  'toCover',
 ] as const;
 const strings = Object.fromEntries(keys.map(k => [k, t(k)]));
 const clientData = {
@@ -88,6 +100,7 @@ const description = summary || `${title} | ${t('siteName')}`;
     class="story-app"
     data-band={band}
     data-has-book={hasBook}
+    data-chapters={chapters.length || undefined}
     data-view="cover"
     data-story-id={storyId}
   >
@@ -118,6 +131,37 @@ const description = summary || `${title} | ${t('siteName')}`;
                     {t('fullText')}
                   </button>
                 </div>
+              </div>
+            )
+          }
+          {
+            chapters.length > 0 && (
+              <div class="cover-actions" data-js-only>
+                <button class="btn btn--primary btn--lg" data-action="start-chapters" type="button">
+                  <span
+                    data-resume-label
+                    data-start={t('startReading')}
+                    data-continue={t('continueReading')}
+                  >
+                    {t('startReading')}
+                  </span>
+                </button>
+                <div class="cover-secondary">
+                  <button class="btn" data-action="full-text" type="button">
+                    {t('fullText')}
+                  </button>
+                </div>
+                <h2 class="small-heading">{t('chaptersHeading')}</h2>
+                <ol class="chapter-list">
+                  {chapters.map((c, i) => (
+                    <li>
+                      <button class="chapter-link" type="button" data-chapter={i}>
+                        <span class="chapter-no">{i + 1}</span>
+                        {c}
+                      </button>
+                    </li>
+                  ))}
+                </ol>
               </div>
             )
           }
@@ -480,8 +524,61 @@ const description = summary || `${title} | ${t('siteName')}`;
       )
     }
 
+    {
+      chapters.length > 0 && (
+        <section class="view chapters" data-view="chapters" hidden tabindex="-1" aria-label={title}>
+          <header class="chapter-bar">
+            <button class="btn" type="button" data-action="chapters-back" aria-label={t('toCover')}>
+              <Icon name="prev" size={20} />
+            </button>
+            <span class="chapter-bar-title">{title}</span>
+            <span class="chapter-bar-pos" data-chapter-pos />
+            <button class="btn" type="button" data-text-step="-1" aria-label={t('textSmaller')}>
+              A−
+            </button>
+            <button class="btn" type="button" data-text-step="1" aria-label={t('textLarger')}>
+              A+
+            </button>
+            <button class="btn" type="button" data-action="chapters-lamp" aria-pressed="false">
+              <>
+                <Icon name="moon" size={20} />
+                <span class="visually-hidden">{t('lampMode')}</span>
+              </>
+            </button>
+          </header>
+          <div class="chapter-progress" aria-hidden="true">
+            <div data-chapter-fill />
+          </div>
+          <div class="container chapter-wrap">
+            <div class="chapter-body" data-chapter-body lang={locale} />
+            <nav class="chapter-nav" aria-label={t('chaptersHeading')}>
+              <button class="btn" type="button" data-action="chapter-prev">
+                <>
+                  <Icon name="prev" size={20} />
+                  <span>{t('previousChapter')}</span>
+                </>
+              </button>
+              <button class="btn btn--primary" type="button" data-action="chapter-next">
+                <>
+                  <span data-next-label />
+                  <Icon name="next" size={20} />
+                </>
+              </button>
+            </nav>
+          </div>
+        </section>
+      )
+    }
+
     <section class="view text" data-view="text" aria-label={t('fullText')}>
       <div class="container">
+        {
+          chapters.length > 0 && (
+            <button class="btn" type="button" data-action="chapters-back" data-js-only>
+              {t('toCover')}
+            </button>
+          )
+        }
         <article class="story-content" lang={locale}>
           <Content />
         </article>
@@ -543,6 +640,101 @@ const description = summary || `${title} | ${t('siteName')}`;
 
   /* Without JS the cover and the full text are all there is; the book needs scripts. */
   .story-app:not([data-ready]) [data-js-only] {
+    display: none;
+  }
+
+  .chapter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--s-2);
+  }
+  .chapter-link {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    inline-size: 100%;
+    min-block-size: var(--tap-adult);
+    padding: var(--s-2) var(--s-3);
+    border: 2px solid var(--rule);
+    border-radius: var(--r-m);
+    background: var(--card);
+    color: var(--ink);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+  .chapter-no {
+    display: grid;
+    place-items: center;
+    inline-size: 2rem;
+    block-size: 2rem;
+    border-radius: var(--r-round);
+    background: var(--lagoon-tint);
+    font-weight: 700;
+  }
+  .chapter-bar {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-block-size: 48px;
+    padding: var(--s-1) var(--gutter);
+    background: var(--card);
+    border-block-end: 1px solid var(--rule);
+  }
+  .chapter-bar-title {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 700;
+  }
+  .chapter-bar-pos {
+    color: var(--ink-2);
+    font-size: var(--t-ui-sm);
+    white-space: nowrap;
+  }
+  .chapter-progress {
+    block-size: 4px;
+    background: var(--paper-2);
+  }
+  .chapter-progress div {
+    block-size: 100%;
+    inline-size: 0;
+    background: var(--lagoon);
+  }
+  .chapter-wrap {
+    padding-block: var(--s-6);
+  }
+  .chapter-body {
+    max-inline-size: var(--measure-prose);
+    margin-inline: auto;
+    font-family: var(--font-read);
+    font-size: calc(var(--t-prose) * (1 + var(--text-step, 0) * 0.1));
+    line-height: var(--lh-prose);
+  }
+  .chapter-body :global(h2) {
+    font-family: var(--font-display);
+    font-size: var(--t-display-2);
+    line-height: var(--lh-display);
+    margin-block-end: var(--s-5);
+  }
+  .chapter-body :global(p) {
+    margin-block: 0 0.8em;
+  }
+  .chapter-nav {
+    max-inline-size: var(--measure-prose);
+    margin: var(--s-6) auto 0;
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-3);
+  }
+  .chapter-nav [hidden] {
     display: none;
   }
 

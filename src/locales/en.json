@@ -170,5 +170,12 @@
   "yourStory": "Your story",
   "moreStories": "More stories",
   "openStoryNamed": "Open {title}",
-  "footerArt": "Illustrations are made with AI tools and checked by people."
+  "footerArt": "Illustrations are made with AI tools and checked by people.",
+  "startReading": "Start reading",
+  "chaptersHeading": "Chapters",
+  "chapterOf": "Chapter {n} of {total}",
+  "chapterShort": "Ch. {n} / {total}",
+  "chapterDoneNext": "Chapter {n} done · Next: {title}",
+  "previousChapter": "Previous chapter",
+  "toCover": "Back to the cover"
 }

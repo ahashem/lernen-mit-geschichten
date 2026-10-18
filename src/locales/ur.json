@@ -170,5 +170,12 @@
   "yourStory": "آپ کی کہانی",
   "moreStories": "مزید کہانیاں",
   "openStoryNamed": "{title} کھولیں",
-  "footerArt": "تصاویر اے آئی ٹولز سے بنائی جاتی ہیں اور انسان ان کی جانچ کرتے ہیں۔"
+  "footerArt": "تصاویر اے آئی ٹولز سے بنائی جاتی ہیں اور انسان ان کی جانچ کرتے ہیں۔",
+  "startReading": "پڑھنا شروع کریں",
+  "chaptersHeading": "ابواب",
+  "chapterOf": "باب {n} از {total}",
+  "chapterShort": "باب {n} / {total}",
+  "chapterDoneNext": "باب {n} مکمل · اگلا: {title}",
+  "previousChapter": "پچھلا باب",
+  "toCover": "سرورق پر واپس"
 }

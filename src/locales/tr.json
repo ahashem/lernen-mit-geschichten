@@ -170,5 +170,12 @@
   "yourStory": "Senin hikâyen",
   "moreStories": "Daha fazla hikâye",
   "openStoryNamed": "{title} aç",
-  "footerArt": "İllüstrasyonlar yapay zekâ araçlarıyla yapılır ve insanlar tarafından kontrol edilir."
+  "footerArt": "İllüstrasyonlar yapay zekâ araçlarıyla yapılır ve insanlar tarafından kontrol edilir.",
+  "startReading": "Okumaya başla",
+  "chaptersHeading": "Bölümler",
+  "chapterOf": "Bölüm {n} / {total}",
+  "chapterShort": "Böl. {n} / {total}",
+  "chapterDoneNext": "Bölüm {n} bitti · Sıradaki: {title}",
+  "previousChapter": "Önceki bölüm",
+  "toCover": "Kapağa dön"
 }

@@ -55,7 +55,7 @@ const clientItems = Object.fromEntries(
     { title: i.title, href: storyHref(i), pages: i.pageCount, band: i.band },
   ])
 );
-const strings = { pageOf: t('pageOf') };
+const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf') };
 ---
 
 <BaseLayout title={t('home')} locale={locale} description={t('tagline')}>
@@ -238,11 +238,13 @@ const strings = { pageOf: t('pageOf') };
   // Continue: the one story the reader left mid-way on this device.
   const last = read('reader-last');
   const found = last ? items[last] : undefined;
-  const page = last ? Number(read(`reader-resume:${last}`)) : 0;
-  if (found && page > 0) {
+  const chaptered = !!found && found.band >= 3;
+  const saved = last ? read(`${chaptered ? 'reader-chapter' : 'reader-resume'}:${last}`) : null;
+  const page = Number(saved?.split(':')[0]);
+  if (found && saved !== null && (chaptered || page > 0)) {
     const card = root.querySelector<HTMLElement>('[data-continue]')!;
     card.querySelector('[data-continue-title]')!.textContent = found.title;
-    card.querySelector('[data-continue-page]')!.textContent = s.pageOf
+    card.querySelector('[data-continue-page]')!.textContent = (chaptered ? s.chapterOf : s.pageOf)
       .replace('{n}', String(page + 1))
       .replace('{total}', String(found.pages));
     card.querySelector<HTMLAnchorElement>('[data-continue-link]')!.href = found.href;
