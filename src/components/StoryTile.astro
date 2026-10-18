@@ -1,0 +1,149 @@
+---
+import StoryArt from '@components/reader/StoryArt.astro';
+import { coverOf, paletteFor } from '@utils/story-art';
+import { endonyms, getTranslation, type Locale } from '@utils/i18n';
+import type { StoryMeta } from '@utils/stories';
+import { BASE_PATH } from '@utils/site';
+
+interface Props {
+  locale: Locale;
+  slug: string;
+  storyId: string;
+  title: string;
+  meta?: StoryMeta;
+  emoji?: string;
+  /** One line under the title; omitted on the home shelves. */
+  summary?: string;
+  skillLabels?: string[];
+  minutes?: number;
+  languages?: Locale[];
+  /** Shown instead of the languages: "Chapter story" etc. */
+  shelf?: string;
+}
+
+const {
+  locale,
+  slug,
+  storyId,
+  title,
+  meta,
+  emoji,
+  summary,
+  skillLabels,
+  minutes,
+  languages,
+  shelf,
+} = Astro.props;
+const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
+const href =
+  locale === 'de' ? `${BASE_PATH}/stories/${slug}` : `${BASE_PATH}/${locale}/stories/${slug}`;
+---
+
+<article class="tile">
+  <a class="tile-cover" href={href} tabindex="-1" aria-hidden="true">
+    <StoryArt
+      picture={coverOf(meta, locale)}
+      emoji={emoji ?? meta?.emoji ?? '📖'}
+      palette={paletteFor(storyId, meta)}
+    />
+  </a>
+  <div class="tile-body">
+    <h3 class="tile-title"><a href={href}>{title}</a></h3>
+    {summary && <p class="tile-summary">{summary}</p>}
+    <p class="tile-meta">
+      {shelf && <span>{shelf}</span>}
+      {
+        minutes && (
+          <span>
+            {minutes} {t('minutes')}
+          </span>
+        )
+      }
+      {
+        skillLabels && skillLabels.length > 0 && (
+          <span>
+            {skillLabels[0]}
+            {skillLabels.length > 1 && ` +${skillLabels.length - 1}`}
+          </span>
+        )
+      }
+    </p>
+    {
+      languages && languages.length > 0 && (
+        <p class="tile-langs">
+          {languages.map(l => (
+            <span lang={l} dir={l === 'ar' || l === 'ur' ? 'rtl' : 'ltr'}>
+              {endonyms[l]}
+            </span>
+          ))}
+        </p>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .tile {
+    display: flex;
+    flex-direction: column;
+    background: var(--card);
+    border-radius: var(--r-l);
+    box-shadow: var(--e-1);
+    overflow: hidden;
+    container-type: inline-size;
+  }
+  .tile:hover {
+    box-shadow: var(--e-2);
+  }
+  .tile-cover {
+    display: block;
+    aspect-ratio: 4 / 3;
+    background: var(--paper-2);
+  }
+  .tile-body {
+    padding: var(--s-4);
+    display: grid;
+    gap: var(--s-2);
+  }
+  .tile-title {
+    font-family: var(--font-display);
+    font-size: var(--t-ui);
+    line-height: var(--lh-display);
+  }
+  /* The whole card is the target, but only the title is a link for assistive technology. */
+  .tile-title a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .tile-title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .tile {
+    position: relative;
+  }
+  .tile-summary {
+    font-size: var(--t-ui-sm);
+    color: var(--ink-2);
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .tile-meta,
+  .tile-langs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-1) var(--s-3);
+    font-size: var(--t-ui-sm);
+    color: var(--ink-2);
+  }
+  .tile-langs {
+    font-size: 13px;
+  }
+  .tile:focus-within {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+</style>

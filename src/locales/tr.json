@@ -145,5 +145,22 @@
     "social": "Sosyal Beceriler",
     "cognitive": "Bilişsel Beceriler",
     "behavioral": "Davranışsal Beceriler"
-  }
+  },
+  "library": "Kütüphane",
+  "searchStories": "Hikâye ara",
+  "searchWord": "Ara",
+  "filterButton": "Filtre",
+  "filterWithCount": "Filtre ({n})",
+  "shelfLabel": "Raf",
+  "lengthLabel": "Uzunluk",
+  "lengthUpTo": "en çok {n} dk",
+  "lengthOver": "{n} dk üzeri",
+  "allSkills": "Tüm beceriler",
+  "availableInLabel": "Mevcut diller",
+  "clearFilters": "Temizle",
+  "libraryCount": "{n} hikâye",
+  "libraryCountOne": "1 hikâye",
+  "noStoryFits": "Bunların hepsine uyan hikâye yok.",
+  "removeFilterName": "Filtreyi kaldır: {name}",
+  "removeFilterNamed": "{name} kaldır"
 }

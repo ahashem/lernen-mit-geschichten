@@ -1,0 +1,512 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import StoryTile from '@components/StoryTile.astro';
+import { getCatalogue, SHELF_KEY } from '@utils/catalogue';
+import { getSkillsByIds, getSkills } from '@utils/skills-taxonomy';
+import { endonyms, fmt, getTranslation, type Locale } from '@utils/i18n';
+import { LOCALES } from '@utils/story-availability';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
+const items = await getCatalogue(locale);
+const allSkills = await getSkillsByIds(
+  (await getSkills()).map(s => s.id),
+  locale
+);
+const label = new Map(allSkills.map(s => [s.id, s.label]));
+
+const counts = new Map<string, number>();
+for (const item of items) for (const id of item.skills) counts.set(id, (counts.get(id) ?? 0) + 1);
+const collator = new Intl.Collator(locale);
+const used = allSkills
+  .filter(s => counts.has(s.id))
+  .sort((a, b) => counts.get(b.id)! - counts.get(a.id)! || collator.compare(a.label, b.label));
+const topSkills = used.slice(0, 8);
+const moreSkills = used.slice(8).sort((a, b) => collator.compare(a.label, b.label));
+
+const bands = [1, 2, 3, 4].filter(b => items.some(i => i.band === b));
+const lengths = [
+  { id: '5', text: fmt(t('lengthUpTo'), { n: 5 }) },
+  { id: '15', text: fmt(t('lengthUpTo'), { n: 15 }) },
+  { id: '30', text: fmt(t('lengthUpTo'), { n: 30 }) },
+  { id: '30+', text: fmt(t('lengthOver'), { n: 30 }) },
+];
+const languages = LOCALES.filter(l => items.some(i => i.languages.includes(l)));
+
+const data = items.map(i => ({
+  title: i.title,
+  text: `${i.summary} ${i.skills.map(id => label.get(id) ?? '').join(' ')}`,
+  skills: i.skills,
+  languages: i.languages,
+  band: i.band,
+  minutes: i.minutes,
+}));
+const strings = {
+  count: t('libraryCount'),
+  countOne: t('libraryCountOne'),
+  filterWith: t('filterWithCount'),
+  filter: t('filterButton'),
+  noFit: t('noStoryFits'),
+  remove: t('removeFilterName'),
+  removeNamed: t('removeFilterNamed'),
+  searchWord: t('searchWord'),
+  shelfLabel: t('shelfLabel'),
+  lengthLabel: t('lengthLabel'),
+  skills: t('skills'),
+  availableIn: t('availableInLabel'),
+};
+---
+
+<BaseLayout title={t('library')} locale={locale}>
+  <div class="container library" data-strings={JSON.stringify(strings)}>
+    <h1>{t('library')}</h1>
+
+    <form class="search" role="search" method="get" data-search>
+      <label class="visually-hidden" for="q">{t('searchStories')}</label>
+      <input id="q" name="q" type="search" autocomplete="off" placeholder={t('searchStories')} />
+      <button class="btn btn--primary" type="submit">{t('searchWord')}</button>
+    </form>
+
+    <div class="layout">
+      <details class="filters" open data-filters>
+        <summary data-filter-summary>{t('filterButton')}</summary>
+        <div class="filter-groups">
+          <fieldset>
+            <legend>{t('skills')}</legend>
+            <div class="chips">
+              {
+                topSkills.map(s => (
+                  <label class="chip">
+                    <input type="checkbox" name="skill" value={s.id} />
+                    <span>{s.label}</span>
+                  </label>
+                ))
+              }
+            </div>
+            {
+              moreSkills.length > 0 && (
+                <details class="all-skills">
+                  <summary>{t('allSkills')}</summary>
+                  <div class="chips">
+                    {moreSkills.map(s => (
+                      <label class="chip">
+                        <input type="checkbox" name="skill" value={s.id} />
+                        <span>{s.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </details>
+              )
+            }
+          </fieldset>
+
+          {
+            bands.length > 1 && (
+              <fieldset>
+                <legend>{t('shelfLabel')}</legend>
+                <div class="chips">
+                  {bands.map(b => (
+                    <label class="chip">
+                      <input type="checkbox" name="shelf" value={b} />
+                      <span>{t(SHELF_KEY[b as 1 | 2 | 3 | 4])}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )
+          }
+
+          <fieldset>
+            <legend>{t('lengthLabel')}</legend>
+            <div class="chips">
+              {
+                lengths.map(l => (
+                  <label class="chip">
+                    <input type="checkbox" name="length" value={l.id} />
+                    <span>{l.text}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>{t('availableInLabel')}</legend>
+            <div class="chips">
+              {
+                languages.map(l => (
+                  <label class="chip">
+                    <input type="checkbox" name="lang" value={l} />
+                    <span lang={l}>{endonyms[l]}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+        </div>
+      </details>
+
+      <section class="results" aria-labelledby="results-heading">
+        <h2 id="results-heading" class="visually-hidden">{t('library')}</h2>
+        <div class="bar">
+          <p class="count" role="status" data-count>
+            {
+              fmt(items.length === 1 ? t('libraryCountOne') : t('libraryCount'), {
+                n: items.length,
+              })
+            }
+          </p>
+          <button class="btn" type="button" data-clear hidden>{t('clearFilters')}</button>
+        </div>
+        <ul class="active" aria-label={t('filterButton')} data-active hidden></ul>
+
+        <ul class="grid-tiles" data-grid>
+          {
+            items.map((item, i) => (
+              <li data-i={i}>
+                <StoryTile
+                  locale={locale}
+                  slug={item.slug}
+                  storyId={item.storyId}
+                  title={item.title}
+                  meta={item.meta}
+                  emoji={item.emoji}
+                  summary={item.summary}
+                  skillLabels={item.skills.map(id => label.get(id)).filter((x): x is string => !!x)}
+                  minutes={item.minutes}
+                  shelf={t(SHELF_KEY[item.band as 1 | 2 | 3 | 4])}
+                  languages={item.languages}
+                />
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="empty surface" data-empty hidden>
+          <p data-empty-text></p>
+          <button class="btn btn--primary" type="button" data-empty-remove hidden></button>
+        </div>
+      </section>
+    </div>
+    <script type="application/json" id="library-data" set:html={JSON.stringify(data)} />
+  </div>
+</BaseLayout>
+
+<script>
+  import {
+    LENGTH_BUCKETS,
+    matchesFilter,
+    mostRestrictiveFilter,
+    type FilterCriteria,
+    type FilterKey,
+    type LengthBucket,
+  } from '@utils/filter-stories';
+
+  const root = document.querySelector<HTMLElement>('.library')!;
+  const s = JSON.parse(root.dataset.strings!);
+  const data = JSON.parse(document.getElementById('library-data')!.textContent!);
+  const form = root.querySelector<HTMLFormElement>('[data-search]')!;
+  const q = form.elements.namedItem('q') as HTMLInputElement;
+  const boxes = [...root.querySelectorAll<HTMLInputElement>('.filters input[type="checkbox"]')];
+  const tiles = [...root.querySelectorAll<HTMLElement>('[data-grid] > li')];
+  const count = root.querySelector<HTMLElement>('[data-count]')!;
+  const clear = root.querySelector<HTMLButtonElement>('[data-clear]')!;
+  const active = root.querySelector<HTMLElement>('[data-active]')!;
+  const empty = root.querySelector<HTMLElement>('[data-empty]')!;
+  const emptyText = root.querySelector<HTMLElement>('[data-empty-text]')!;
+  const emptyRemove = root.querySelector<HTMLButtonElement>('[data-empty-remove]')!;
+  const grid = root.querySelector<HTMLElement>('[data-grid]')!;
+  const panel = root.querySelector<HTMLDetailsElement>('[data-filters]')!;
+  const panelTitle = root.querySelector<HTMLElement>('[data-filter-summary]')!;
+  const fmt = (text: string, v: Record<string, string | number>) =>
+    text.replace(/\{(\w+)\}/g, (_, k) => String(v[k] ?? ''));
+
+  const names: Record<FilterKey, string> = {
+    searchQuery: s.searchWord,
+    selectedSkills: s.skills,
+    selectedBands: s.shelfLabel,
+    selectedLengths: s.lengthLabel,
+    selectedLanguages: s.availableIn,
+  };
+  const keyOf: Record<string, FilterKey> = {
+    skill: 'selectedSkills',
+    shelf: 'selectedBands',
+    length: 'selectedLengths',
+    lang: 'selectedLanguages',
+  };
+
+  const values = (name: string) =>
+    boxes.filter(b => b.name === name && b.checked).map(b => b.value);
+  const read = (): FilterCriteria => ({
+    searchQuery: q.value,
+    selectedSkills: values('skill'),
+    selectedBands: values('shelf').map(Number),
+    selectedLengths: values('length') as LengthBucket[],
+    selectedLanguages: values('lang'),
+  });
+
+  // The URL is the state, so a shared link reproduces the view. replaceState keeps Back from stepping through every tick.
+  function writeUrl(c: FilterCriteria) {
+    const p = new URLSearchParams();
+    if (c.searchQuery?.trim()) p.set('q', c.searchQuery.trim());
+    if (c.selectedSkills?.length) p.set('skill', c.selectedSkills.join(','));
+    if (c.selectedBands?.length) p.set('shelf', c.selectedBands.join(','));
+    if (c.selectedLengths?.length) p.set('length', c.selectedLengths.join(','));
+    if (c.selectedLanguages?.length) p.set('lang', c.selectedLanguages.join(','));
+    const query = p.toString();
+    history.replaceState(null, '', location.pathname + (query ? `?${query}` : ''));
+  }
+
+  function fromUrl() {
+    const p = new URLSearchParams(location.search);
+    q.value = p.get('q') ?? '';
+    const sets: Record<string, string[]> = {
+      skill: (p.get('skill') ?? '').split(','),
+      shelf: (p.get('shelf') ?? '').split(','),
+      length: (p.get('length') ?? '')
+        .split(',')
+        .filter(v => (LENGTH_BUCKETS as string[]).includes(v)),
+      lang: (p.get('lang') ?? '').split(','),
+    };
+    for (const b of boxes) b.checked = sets[b.name].includes(b.value);
+    // A skill in the URL that sits behind "All skills" must be visible.
+    if (boxes.some(b => b.checked && b.closest('.all-skills')))
+      root.querySelector<HTMLDetailsElement>('.all-skills')!.open = true;
+  }
+
+  function chipLabel(b: HTMLInputElement) {
+    return b.parentElement!.querySelector('span')!.textContent!;
+  }
+
+  function render() {
+    const c = read();
+    writeUrl(c);
+    const shown = data.map((d: never) => matchesFilter(d, c));
+    tiles.forEach((li, i) => (li.hidden = !shown[Number(li.dataset.i)]));
+    const n = shown.filter(Boolean).length;
+    count.textContent = fmt(n === 1 ? s.countOne : s.count, { n });
+    grid.hidden = n === 0;
+
+    const set = boxes.filter(b => b.checked);
+    const query = c.searchQuery?.trim() ?? '';
+    const total = set.length + (query ? 1 : 0);
+    clear.hidden = total === 0;
+    panelTitle.textContent = total ? fmt(s.filterWith, { n: total }) : s.filter;
+
+    active.replaceChildren();
+    const addChip = (text: string, onRemove: () => void) => {
+      const li = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'removable';
+      button.textContent = text;
+      button.setAttribute('aria-label', fmt(s.remove, { name: text }));
+      button.addEventListener('click', () => {
+        onRemove();
+        render();
+      });
+      li.append(button);
+      active.append(li);
+    };
+    if (query)
+      addChip(`“${query}”`, () => {
+        q.value = '';
+      });
+    for (const b of set)
+      addChip(chipLabel(b), () => {
+        b.checked = false;
+      });
+    active.hidden = total === 0;
+
+    empty.hidden = n > 0;
+    if (n === 0) {
+      const key = mostRestrictiveFilter(data, c);
+      emptyRemove.hidden = !key;
+      if (key) {
+        emptyText.textContent = s.noFit;
+        emptyRemove.textContent = fmt(s.removeNamed, { name: names[key] });
+        emptyRemove.onclick = () => {
+          if (key === 'searchQuery') q.value = '';
+          else for (const b of boxes) if (keyOf[b.name] === key) b.checked = false;
+          render();
+        };
+      } else emptyText.textContent = s.noFit;
+    }
+  }
+
+  fromUrl();
+  // Phones start with the filters folded away unless some are set.
+  if (matchMedia('(max-width: 899px)').matches && !location.search) panel.open = false;
+  render();
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    render();
+  });
+  boxes.forEach(b => b.addEventListener('change', render));
+  clear.addEventListener('click', () => {
+    q.value = '';
+    boxes.forEach(b => (b.checked = false));
+    render();
+  });
+  window.addEventListener('popstate', () => {
+    fromUrl();
+    render();
+  });
+</script>
+
+<style>
+  h1 {
+    font-family: var(--font-display);
+    font-size: var(--t-display-2);
+    line-height: var(--lh-display);
+    margin-block-end: var(--s-5);
+  }
+  .search {
+    display: flex;
+    gap: var(--s-3);
+    margin-block-end: var(--s-5);
+  }
+  .search input {
+    flex: 1;
+    min-inline-size: 0;
+    min-block-size: var(--tap-adult);
+    padding-inline: var(--s-4);
+    border: 2px solid var(--edge);
+    border-radius: var(--r-m);
+    background: var(--card);
+    color: var(--ink);
+    font: inherit;
+  }
+  .layout {
+    display: grid;
+    gap: var(--s-5);
+    align-items: start;
+  }
+  .filters {
+    background: var(--card);
+    border-radius: var(--r-l);
+    box-shadow: var(--e-1);
+    padding: var(--s-3) var(--s-4);
+  }
+  .filters > summary,
+  .all-skills > summary {
+    min-block-size: var(--tap-adult);
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .filter-groups {
+    display: grid;
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+  }
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-inline-size: 0;
+  }
+  legend {
+    font-weight: 700;
+    margin-block-end: var(--s-2);
+    padding: 0;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+  .chip {
+    position: relative;
+    display: inline-flex;
+  }
+  .chip input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .chip span,
+  .removable {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-adult);
+    padding: var(--s-1) var(--s-4);
+    border: 2px solid var(--edge);
+    border-radius: var(--r-round);
+    background: var(--card);
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--t-ui-sm);
+  }
+  .chip input:checked + span {
+    background: var(--lagoon);
+    border-color: var(--lagoon);
+    color: var(--on-accent);
+  }
+  .chip input:focus-visible + span,
+  .removable:focus-visible,
+  .search input:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .removable {
+    cursor: pointer;
+    background: var(--honey-tint);
+  }
+  .removable::after {
+    content: '×';
+    margin-inline-start: var(--s-2);
+    font-weight: 700;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    margin-block-end: var(--s-3);
+  }
+  .count {
+    font-weight: 700;
+  }
+  .active {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--s-4);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+  .active[hidden],
+  .grid-tiles[hidden] {
+    display: none;
+  }
+  .grid-tiles {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--s-5);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  }
+  .grid-tiles > li[hidden] {
+    display: none;
+  }
+  .empty {
+    padding: var(--s-5);
+    display: grid;
+    gap: var(--s-4);
+    justify-items: start;
+  }
+  @media (min-width: 900px) {
+    .layout {
+      grid-template-columns: 18rem 1fr;
+    }
+  }
+</style>

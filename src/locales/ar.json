@@ -145,5 +145,22 @@
     "social": "المهارات الاجتماعية",
     "cognitive": "المهارات المعرفية",
     "behavioral": "المهارات السلوكية"
-  }
+  },
+  "library": "المكتبة",
+  "searchStories": "ابحث عن قصة",
+  "searchWord": "بحث",
+  "filterButton": "تصفية",
+  "filterWithCount": "تصفية ({n})",
+  "shelfLabel": "الرف",
+  "lengthLabel": "الطول",
+  "lengthUpTo": "حتى {n} دقيقة",
+  "lengthOver": "أكثر من {n} دقيقة",
+  "allSkills": "كل المهارات",
+  "availableInLabel": "متوفرة بـ",
+  "clearFilters": "مسح",
+  "libraryCount": "{n} قصة",
+  "libraryCountOne": "قصة واحدة",
+  "noStoryFits": "لا توجد قصة تناسب كل هذه الخيارات.",
+  "removeFilterName": "إزالة التصفية: {name}",
+  "removeFilterNamed": "إزالة {name}"
 }

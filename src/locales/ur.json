@@ -145,5 +145,22 @@
     "social": "سماجی مہارتیں",
     "cognitive": "ذہنی مہارتیں",
     "behavioral": "رویہ کی مہارتیں"
-  }
+  },
+  "library": "لائبریری",
+  "searchStories": "کہانی تلاش کریں",
+  "searchWord": "تلاش",
+  "filterButton": "فلٹر",
+  "filterWithCount": "فلٹر ({n})",
+  "shelfLabel": "شیلف",
+  "lengthLabel": "دورانیہ",
+  "lengthUpTo": "زیادہ سے زیادہ {n} منٹ",
+  "lengthOver": "{n} منٹ سے زیادہ",
+  "allSkills": "تمام مہارتیں",
+  "availableInLabel": "دستیاب زبانیں",
+  "clearFilters": "صاف کریں",
+  "libraryCount": "{n} کہانیاں",
+  "libraryCountOne": "1 کہانی",
+  "noStoryFits": "ان سب پر پوری اترنے والی کوئی کہانی نہیں۔",
+  "removeFilterName": "فلٹر ہٹائیں: {name}",
+  "removeFilterNamed": "{name} ہٹائیں"
 }
