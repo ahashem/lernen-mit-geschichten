@@ -51,8 +51,8 @@
     "node": ">=24.0.0"
   },
   "dependencies": {
-    "@astrojs/mdx": "^8.0.0",
-    "@astrojs/partytown": "^2.1.7",
+    "@astrojs/mdx": "^8.1.0",
+    "@astrojs/partytown": "^2.1.8",
     "@astrojs/react": "^6.0.5",
     "@astrojs/sitemap": "^3.7.4",
     "@fontsource-variable/fraunces": "^5.3.0",
@@ -62,17 +62,17 @@
     "@fontsource/gulzar": "^5.3.0",
     "@fontsource/noto-naskh-arabic": "^5.3.0",
     "@fontsource/noto-nastaliq-urdu": "^5.3.0",
-    "astro": "^7.3.8",
+    "astro": "^7.4.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "qrcode-generator": "^2.0.4",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "swiper": "^14.2.0"
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "swiper": "^14.3.0"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.62.5",
-    "@rollup/rollup-linux-x64-musl": "^4.62.5"
+    "@rollup/rollup-linux-x64-gnu": "^4.64.7",
+    "@rollup/rollup-linux-x64-musl": "^4.64.7"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.69.0",
