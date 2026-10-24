@@ -1,7 +1,7 @@
 ---
 title: "Moritz, der kleinen Maus"
 emoji: "🐭"
-skills: ["courage", "self-confidence"]
+skills: ["empathy", "self-confidence"]
 ageGroup: "3-7"
 band: "1"
 storyId: "006-moritz"
