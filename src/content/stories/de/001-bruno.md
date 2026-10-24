@@ -1,18 +1,25 @@
 ---
-title: "Brunos bunte Gefühle"
-emoji: "🐻"
-skills: ["self-awareness", "emotional-regulation"]
-ageGroup: "3-7"
+title: Brunos bunte Gefühle
+emoji: 🐻
+skills:
+  - self-awareness
+  - emotional-regulation
+ageGroup: 3-7
 band: "1"
 cover:
   src: /assets/stories/001-bruno/001-bruno_cover.webp
 frames:
   - src: /assets/stories/001-bruno/001-bruno_frame-01_colour.png
-storyId: "001-bruno"
-difficulty: "beginner"
+storyId: 001-bruno
+difficulty: beginner
 publishDate: 2024-01-15
+status: published
+art:
+  reviewedAt: 2026-10-23
+  aiGenerated: false
+narration:
+  timing: false
 ---
-
 ## Die Geschichte
 
 Es war einmal ein kleiner Bär namens Bruno. Bruno liebte Honig, Spielen im Wald und – ganz besonders – Klettern auf Bäume.
@@ -40,3 +47,4 @@ Und so schlief Bruno zufrieden ein – mit einem breiten Honiglächeln.
 - Wenn ich auf meinen Körper achte (mein Herz klopft, mein Bauch kribbelt …), dann merke ich: Ich fühle etwas.
 - Wenn ich das Gefühl benenne (ängstlich, wütend, glücklich …), dann kann ich besser entscheiden, was ich tun möchte.
 - So werde ich ein kleiner Experte für mich selbst – das ist Selbstbewusstsein!
+
