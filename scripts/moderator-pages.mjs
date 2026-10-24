@@ -15,6 +15,8 @@ const ROOT = 'en';
 const folderOf = lang => (lang === ROOT ? '' : `${lang}/`);
 const NAMES = { de: 'Deutsch', ar: 'العربية', en: 'English' };
 const cms = process.env.CMS_URL?.trim();
+// Mirrors the publishing gate: without STRICT_PUBLISHING a review is advice, so the guide says so.
+const strictPublishing = ['1', 'true'].includes(process.env.STRICT_PUBLISHING ?? '');
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 const STYLE = `body{font:18px/1.55 system-ui,sans-serif;max-width:46rem;margin:1.5rem auto;padding:0 1rem;color:#24212e;background:#fbf5ea}
@@ -42,7 +44,11 @@ function guide(lang) {
   const fill = s => s.replaceAll('{up}', up).replaceAll('{l}', l).replaceAll('{cms}', cmsLink);
   const toc = ui.sections.map(([h], i) => `<li><a href="#s${i + 1}">${h}</a></li>`).join('');
   const body = ui.sections
-    .map(([h, items], i) => `<h2 id="s${i + 1}">${i + 1}. ${h}</h2><ul>${items.map(x => `<li>${fill(x)}</li>`).join('')}</ul>`)
+    .map(([h, items], i) => {
+      // Section 5 is "Reviewing and signing".
+      const note = i === 4 && !strictPublishing ? `<p><strong>${ui.reviewOptional}</strong></p>` : '';
+      return `<h2 id="s${i + 1}">${i + 1}. ${h}</h2>${note}<ul>${items.map(x => `<li>${fill(x)}</li>`).join('')}</ul>`;
+    })
     .join('');
   return shell(lang, ui.title, `<h1>${ui.title}</h1><p>${ui.intro}</p><ol>${toc}</ol>${body}`);
 }

@@ -11,6 +11,7 @@ export const GUIDE = {
     title: 'Anleitung für Moderatorinnen und Moderatoren',
     intro: 'Alles, was du für eine Geschichte brauchst, vom ersten Entwurf bis zur Veröffentlichung. Diese Seiten sind nur für das Team und erscheinen nicht in Suchmaschinen.',
     cmsFallback: 'die CMS-Adresse, die du bekommen hast',
+    reviewOptional: 'Zurzeit ist eine Prüfung nicht vorgeschrieben: Eine Datei mit dem Status <em>published</em> geht live. Prüft trotzdem, wann immer es geht, und tragt es ein.',
     sections: [
       [
         'Deine Seiten',
@@ -84,6 +85,7 @@ export const GUIDE = {
     title: 'Guide for moderators',
     intro: 'Everything you need for a story, from first draft to publishing. These pages are for the team only and do not appear in search engines.',
     cmsFallback: 'the CMS address you were given',
+    reviewOptional: 'For now a review is not required: a file set to <em>published</em> goes live. Review whenever you can anyway, and record it.',
     sections: [
       [
         'Your pages',
@@ -157,6 +159,7 @@ export const GUIDE = {
     title: 'دليل المشرفين',
     intro: 'كل ما تحتاجونه لقصة، من المسودة الأولى حتى النشر. هذه الصفحات للفريق فقط ولا تظهر في محركات البحث.',
     cmsFallback: 'عنوان نظام إدارة المحتوى الذي حصلتم عليه',
+    reviewOptional: 'حاليًا المراجعة ليست إلزامية: الملف الذي حالته <em>published</em> يُنشر. راجعوا متى أمكن مع ذلك وسجّلوا المراجعة.',
     sections: [
       [
         'صفحاتكم',
