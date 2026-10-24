@@ -3,6 +3,7 @@ import {
   matchesFilter,
   filterStories,
   mostRestrictiveFilter,
+  skillsForAreas,
   type StoryFilterData,
 } from './filter-stories';
 
@@ -268,5 +269,31 @@ describe('shelf, length, diacritics and removal suggestion', () => {
       'selectedBands'
     );
     expect(mostRestrictiveFilter(stories, {})).toBeNull();
+  });
+});
+
+describe('skillsForAreas', () => {
+  const areaOf = { patience: 'emotions', 'impulse-control': 'emotions', empathy: 'social' };
+
+  it('stands for every skill of a ticked area', () => {
+    expect(skillsForAreas(['emotions'], [], areaOf).sort()).toEqual([
+      'impulse-control',
+      'patience',
+    ]);
+  });
+
+  it('narrows an area to its ticked skills', () => {
+    expect(skillsForAreas(['emotions'], ['patience'], areaOf)).toEqual(['patience']);
+  });
+
+  it('keeps a ticked skill whose area is not ticked, and other areas whole', () => {
+    expect(skillsForAreas(['social'], ['patience'], areaOf).sort()).toEqual([
+      'empathy',
+      'patience',
+    ]);
+  });
+
+  it('is empty when nothing is ticked', () => {
+    expect(skillsForAreas([], [], areaOf)).toEqual([]);
   });
 });

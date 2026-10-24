@@ -2,7 +2,7 @@
 import { render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { getPublishedStories, getStoryMeta, readMinutes } from '@utils/stories';
-import { endonyms, fmt, getTranslation, isRTL, type Locale } from '@utils/i18n';
+import { endonyms, fmt, getTranslation, isRTL, skillGroupLabel, type Locale } from '@utils/i18n';
 import { getSkillsByIds } from '@utils/skills-taxonomy';
 import { BASE_PATH } from '@utils/site';
 import {
@@ -42,6 +42,8 @@ const narration = narrationFor(storyId, locale, pages.length, explicit);
 const cover = coverOf(meta, locale);
 const minutes = readMinutes(story.body);
 const skills = await getSkillsByIds(story.data.skills ?? meta?.skills ?? [], locale);
+// The first skill is the story's main one; its area names the part of the skills tree the story belongs to.
+const area = skills[0] && skillGroupLabel(locale, skills[0].category);
 const summary = story.data.summary ?? firstSentence(story.body ?? '', locale);
 const prompts = (story.data.discussion ?? story.data.questions?.map(q => q.text) ?? []).slice(0, 3);
 
@@ -210,6 +212,7 @@ const description = summary || `${title} | ${t('siteName')}`;
           <details class="grownups surface">
             <summary>{t('forGrownUps')}</summary>
             <div class="grownups-body">
+              {area && <p class="area">{area}</p>}
               <ul class="chips" aria-label={t('skills')}>
                 {skills.map(skill => <li>{skill.label}</li>)}
               </ul>
@@ -1168,6 +1171,13 @@ const description = summary || `${title} | ${t('siteName')}`;
     flex-wrap: wrap;
     gap: var(--s-2);
     list-style: none;
+  }
+
+  .area {
+    margin-block-end: var(--s-1);
+    font-size: var(--t-ui-sm);
+    font-weight: 700;
+    color: var(--ink-2);
   }
 
   .chips li {

@@ -14,6 +14,7 @@ interface Props {
   emoji?: string;
   /** One line under the title; omitted on the home shelves. */
   summary?: string;
+  /** The first is the story's main skill; only it is shown. */
   skillLabels?: string[];
   minutes?: number;
   /** The shelf name, e.g. "Chapter stories". */
@@ -49,14 +50,7 @@ const href =
           </span>
         )
       }
-      {
-        skillLabels && skillLabels.length > 0 && (
-          <span>
-            {skillLabels[0]}
-            {skillLabels.length > 1 && ` +${skillLabels.length - 1}`}
-          </span>
-        )
-      }
+      {skillLabels && skillLabels.length > 0 && <span>{skillLabels[0]}</span>}
     </p>
   </div>
 </article>
