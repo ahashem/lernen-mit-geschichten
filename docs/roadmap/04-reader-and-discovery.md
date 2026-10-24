@@ -27,7 +27,7 @@ verify in a browser.
 | Shelves           | Curated rows: new, series, seasonal/occasion, short for bedtime, with a colouring page                                                                   | Shelves populate from content; empty shelves do not render                                  |
 | Shelves and grade | Browse by shelf (band) and Klasse hint (Kita, 1–6) for adults; show a story's format honestly                                                            | A Klasse 5 reader is never served only toddler stories, nor a 4-year-old only chapter books |
 | Search and filter | Diacritic-insensitive across languages, skills/age/length filters, removable chips, URL state                                                            | Shared URLs reproduce the view; no-result state suggests alternatives                       |
-| Availability      | Show which languages exist for each story; offer the reader's language first                                                                             | Language badges reflect reviewed translations only                                          |
+| Availability      | Show which languages exist for each story; offer the reader's language first                                                                             | The language filter and links reflect reviewed translations only                            |
 | Bookmark and list | Bookmark per story (`{storyId, locale, chapter, offset}`) and an optional reading list the reader makes (bands 3–4). No counts, totals, dates or streaks | Works with no login; "forget this device" clears everything                                 |
 
 ## Content states the UI must handle

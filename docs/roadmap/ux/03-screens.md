@@ -49,11 +49,11 @@ for little ones.
 2. **Continue:** if there is a bookmark, show one horizontal card with the cover thumbnail, title,
    "Chapter 3 of 6" or "Page 5 of 10", and a Continue button. Hidden otherwise.
 3. **Picture books door:** a full-width honey-tint band showing three band-1 character faces and
-   the label "Picture books: for listening and looking". It switches to Picture home and is
+   the label "For little ones: listen and look" (not "Picture books", which is the first shelf's name). It switches to Picture home and is
    remembered. It is shown prominently because a pre-reader cannot find a text link.
 4. **Shelves:** four labelled sections in band order, but the device's preferred shelf comes first.
-   Each shows 4-6 covers in a row (wrapping on phone, not a carousel) and a "See all" link. The last
-   cover in each shelf is a story from the next shelf (01, moving up).
+   Each shows 4-6 covers in a row (wrapping on phone, not a carousel) and a "See all" link. No
+   "moving up" cover here: the next shelf is on the same page, so it only repeats a story.
 5. **Find by situation:** chips (as in the Library) using words, not faces: "Friendship trouble",
    "Being fair", "Big feelings", "New at school", "Making mistakes", "Online" and so on. These are
    editor-curated examples, not a taxonomy.
@@ -67,9 +67,9 @@ an age.
 │ Lernen mit Geschichten   [⌕ Search] [💬 Deutsch] [For grown-ups]│
 ├──────────────────────────────────────────────────────┤
 │ [▣] The Note in the Locker · Chapter 3 of 6  [Continue]│
-│ ▓▓ (face)(face)(face)  Picture books: listen & look ▓▓│
+│ ▓▓ (face)(face)(face)  For little ones: listen, look ▓│
 │ Chapter stories                              See all │
-│ [cov][cov][cov][cov][cov][+ Long read]               │
+│ [cov][cov][cov][cov][cov][cov]                       │
 │ Long reads                                   See all │
 │ [cov][cov][cov][cov]                                 │
 │ Read-along / Picture books …                         │
@@ -161,7 +161,8 @@ child's name.
    logic is OR, and across types it is AND. A "Clear" button appears as soon as any filter is set.
 4. **Result count:** "12 stories" in a polite live region.
 5. **Results grid:** cover cards with title, a 1-line summary, a skill tag (1 shown, "+2" for more),
-   shelf name, minutes, and language endonyms in small type. A saved-offline indicator is a filled dot
+   shelf name and minutes. No language endonyms: most stories exist in most languages, so the row
+   repeats on every card; "Available in…" and the story page's language links answer that question. A saved-offline indicator is a filled dot
    with the label "On this device".
 
 **States:** with no results, the screen says "No story fits all of these. Remove _Long reads_?" and offers

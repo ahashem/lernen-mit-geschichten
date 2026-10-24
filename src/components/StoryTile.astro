@@ -1,7 +1,7 @@
 ---
 import StoryArt from '@components/reader/StoryArt.astro';
 import { coverOf, paletteFor } from '@utils/story-art';
-import { endonyms, getTranslation, type Locale } from '@utils/i18n';
+import { getTranslation, type Locale } from '@utils/i18n';
 import type { StoryMeta } from '@utils/stories';
 import { BASE_PATH } from '@utils/site';
 
@@ -16,24 +16,12 @@ interface Props {
   summary?: string;
   skillLabels?: string[];
   minutes?: number;
-  languages?: Locale[];
-  /** Shown instead of the languages: "Chapter story" etc. */
+  /** The shelf name, e.g. "Chapter stories". */
   shelf?: string;
 }
 
-const {
-  locale,
-  slug,
-  storyId,
-  title,
-  meta,
-  emoji,
-  summary,
-  skillLabels,
-  minutes,
-  languages,
-  shelf,
-} = Astro.props;
+const { locale, slug, storyId, title, meta, emoji, summary, skillLabels, minutes, shelf } =
+  Astro.props;
 const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
 const href =
   locale === 'de' ? `${BASE_PATH}/stories/${slug}` : `${BASE_PATH}/${locale}/stories/${slug}`;
@@ -68,17 +56,6 @@ const href =
         )
       }
     </p>
-    {
-      languages && languages.length > 0 && (
-        <p class="tile-langs">
-          {languages.map(l => (
-            <span lang={l} dir={l === 'ar' || l === 'ur' ? 'rtl' : 'ltr'}>
-              {endonyms[l]}
-            </span>
-          ))}
-        </p>
-      )
-    }
   </div>
 </article>
 
@@ -131,16 +108,12 @@ const href =
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .tile-meta,
-  .tile-langs {
+  .tile-meta {
     display: flex;
     flex-wrap: wrap;
     gap: var(--s-1) var(--s-3);
     font-size: var(--t-ui-sm);
     color: var(--ink-2);
-  }
-  .tile-langs {
-    font-size: 13px;
   }
   .tile:focus-within {
     outline: 3px solid var(--focus);
