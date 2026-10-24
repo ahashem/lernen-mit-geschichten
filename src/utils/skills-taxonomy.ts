@@ -19,8 +19,8 @@ export interface SkillGroup {
   skills: LabeledSkill[];
 }
 
-// The four groups are structure, not content; they change with the design.
-const GROUPS = ['emotional', 'social', 'cognitive', 'behavioral'];
+// The six areas are structure, not content; they change with the design.
+const GROUPS = ['self', 'emotions', 'thinking', 'everyday', 'social', 'responsibility'];
 
 let all: Promise<Skill[]> | undefined;
 

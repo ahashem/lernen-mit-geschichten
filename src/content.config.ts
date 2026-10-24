@@ -138,7 +138,7 @@ const skillsCollection = defineCollection({
   schema: z.object({
     id: z.string().describe('Slug; the file name and the id stories use. Never change it once a story uses it.'),
     category: z
-      .enum(['emotional', 'social', 'cognitive', 'behavioral'])
+      .enum(['self', 'emotions', 'thinking', 'everyday', 'social', 'responsibility'])
       .describe('The group it appears under in the filter.'),
     name: z
       .string()

@@ -1,7 +1,7 @@
 ---
 title: "Fritzchen und dem wütenden Eichhörnchen"
 emoji: "🐿️"
-skills: ["patience", "empathy", "emotional-regulation"]
+skills: ["impulse-control", "patience", "empathy"]
 ageGroup: "3-7"
 band: "1"
 storyId: "002-fritz"
