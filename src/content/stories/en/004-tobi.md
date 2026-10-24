@@ -5,6 +5,7 @@ skills: ["sharing", "generosity"]
 storyId: "004-tobi"
 publishDate: 2024-01-15
 difficulty: "beginner"
+status: published
 ---
 
 📖 Story: Tobi and the Big Apple Pie

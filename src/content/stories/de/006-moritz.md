@@ -48,6 +48,7 @@ questions:
       - "Die kleine Maus mit dem großen Herzen"
       - "Die Maus mit den schnellen Füßen"
     correctAnswer: "Die kleine Maus mit dem großen Herzen"
+status: published
 ---
 
 ## Die Geschichte

@@ -62,6 +62,7 @@ questions:
       - "میلا کیا کھیلنا چاہتی تھی؟"
       - "کہانی کا پیغام کیا ہے؟"
     correctAnswer: ""
+status: published
 ---
 
 ## کہانی

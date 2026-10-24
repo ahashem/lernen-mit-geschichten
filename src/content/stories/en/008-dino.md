@@ -77,6 +77,7 @@ questions:
       - "That cold cookies don't taste good."
       - "That patience is worth it."
     correctAnswer: "That patience is worth it."
+status: published
 ---
 
 ## The Story

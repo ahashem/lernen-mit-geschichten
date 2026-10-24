@@ -41,6 +41,7 @@ questions:
       - "Bir şey işe yaramazsa, farklı düşünmelisin"
       - "Hep eskisi gibi yapmalısın"
     correctAnswer: "Bir şey işe yaramazsa, farklı düşünmelisin"
+status: published
 ---
 
 ## Hikâye

@@ -44,6 +44,7 @@ questions:
       - "Man kann sich anpassen und neue Lieblingssachen finden"
       - "Das alte Haus war besser"
     correctAnswer: "Man kann sich anpassen und neue Lieblingssachen finden"
+status: published
 ---
 
 ## Die Geschichte

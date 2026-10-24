@@ -44,6 +44,7 @@ questions:
       - "Wenn etwas nicht klappt, muss man anders denken"
       - "Man sollte immer alles genauso machen wie früher"
     correctAnswer: "Wenn etwas nicht klappt, muss man anders denken"
+status: published
 ---
 
 ## Die Geschichte

@@ -41,6 +41,7 @@ questions:
       - "Yemek yemek"
       - "Dans etmek"
     correctAnswer: "Dans etmek"
+status: published
 ---
 
 ## Hikâye

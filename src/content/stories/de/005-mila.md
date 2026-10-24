@@ -72,6 +72,7 @@ questions:
       - "Mila wollte Fangen spielen."
       - "Die Botschaft: Man soll Wünsche und Gefühle klar und freundlich sagen."
     correctAnswer: ""
+status: published
 ---
 
 ## Die Geschichte

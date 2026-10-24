@@ -4,6 +4,7 @@ ageGroup: "3-7"
 storyId: "006-moritz"
 publishDate: 2024-01-15
 difficulty: "beginner"
+status: published
 ---
 
 ## The Story
