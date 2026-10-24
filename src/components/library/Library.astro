@@ -179,7 +179,6 @@ const strings = {
                   skillLabels={item.skills.map(id => label.get(id)).filter((x): x is string => !!x)}
                   minutes={item.minutes}
                   shelf={t(SHELF_KEY[item.band as 1 | 2 | 3 | 4])}
-                  languages={item.languages}
                 />
               </li>
             ))

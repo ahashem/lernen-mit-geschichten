@@ -20,14 +20,10 @@ const prefix = locale === 'de' ? BASE_PATH : `${BASE_PATH}/${locale}`;
 const library = `${prefix}/library`;
 const storyHref = (i: CatalogueItem) => `${prefix}/stories/${i.slug}`;
 
-// Four shelves in band order; the last cover of each is the first story of the next shelf ("moving up").
+// Shelves in band order. No "moving up" cover from the next shelf: that shelf is right below, so it read as a duplicate.
 const shelves = ([1, 2, 3, 4] as const)
-  .map(band => {
-    const own = items.filter(i => i.band === band);
-    const up = items.find(i => i.band === band + 1);
-    return { band, own, picks: [...own.slice(0, up ? 5 : 6), ...(own.length && up ? [up] : [])] };
-  })
-  .filter(s => s.own.length > 0);
+  .map(band => ({ band, picks: items.filter(i => i.band === band).slice(0, 6) }))
+  .filter(s => s.picks.length > 0);
 
 // Skills the shelves actually have stories for, most used first: "Find by situation" never leads to an empty library.
 const counts = new Map<string, number>();
@@ -109,9 +105,6 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
                       meta={i.meta}
                       emoji={i.emoji}
                       minutes={i.minutes}
-                      shelf={
-                        i.band !== shelf.band ? t(SHELF_KEY[i.band as 1 | 2 | 3 | 4]) : undefined
-                      }
                     />
                   </li>
                 ))}
