@@ -78,6 +78,8 @@ export default [
       'public/',
       // Read-only reference exports live here; linting them floods the report.
       'tmp/',
+      // Third-party WebP encoder, vendored unmodified.
+      'scripts/vendor/',
       '*.config.js',
       '*.config.mjs',
     ],
