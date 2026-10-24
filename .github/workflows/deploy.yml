@@ -111,6 +111,7 @@ jobs:
           node site/scripts/preview-status.mjs out/preview/status/index.html "$BUILD" "$SHA" gate.txt "$STORIES"
           # The reviewers' sheet reads the same stories; a failure here must not stop the deploy.
           node site/scripts/review-sheet.mjs out/preview/review "$STORIES" || echo "review sheet failed"
+          CMS_URL="${{ vars.CMS_URL }}" node site/scripts/moderator-pages.mjs out/preview || echo "moderator pages failed"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5

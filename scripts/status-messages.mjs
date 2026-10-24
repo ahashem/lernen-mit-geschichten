@@ -157,6 +157,8 @@ export const UI = {
     published: 'published',
     open: 'Open the preview',
     reviewSheet: 'Open the review sheet',
+    guide: 'Guide for moderators',
+    art: 'Prepare pictures',
     buildProblem: (file, problems) => `The story file ${file} has a field the site cannot read${problems ? ` (${problems})` : ''}. Fix that field in the CMS and save again.`,
   },
   de: {
@@ -182,6 +184,8 @@ export const UI = {
     published: 'veröffentlicht',
     open: 'Vorschau öffnen',
     reviewSheet: 'Prüfbogen öffnen',
+    guide: 'Anleitung',
+    art: 'Bilder vorbereiten',
     buildProblem: (file, problems) => `Die Geschichtsdatei ${file} enthält ein Feld, das die Seite nicht lesen kann${problems ? ` (${problems})` : ''}. Das Feld im CMS korrigieren und erneut speichern.`,
   },
   ar: {
@@ -207,6 +211,8 @@ export const UI = {
     published: 'منشورة',
     open: 'افتحوا المعاينة',
     reviewSheet: 'افتحوا ورقة المراجعة',
+    guide: 'دليل المشرفين',
+    art: 'تجهيز الصور',
     buildProblem: (file, problems) => `ملف القصة ${file} فيه حقل لا يستطيع الموقع قراءته${problems ? ` (${problems})` : ''}. صحّحوا الحقل في نظام إدارة المحتوى واحفظوا من جديد.`,
   },
 };

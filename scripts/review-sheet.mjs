@@ -2,7 +2,7 @@
 /**
  * Writes the reviewers' sheet: per story, every language side by side page by page, with the pictures, alt texts,
  * what is still needed and the review checklists (docs/roadmap/03). Preview only, like preview-status.mjs: production
- * never runs this. German at <out>/, Arabic at <out>/ar/, English at <out>/en/, one folder per story under each.
+ * never runs this. English at <out>/, Arabic at <out>/ar/, German at <out>/de/, one folder per story under each.
  * Usage: review-sheet.mjs <out dir> [stories dir]
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -16,6 +16,9 @@ import { REVIEW } from './review-messages.mjs';
 const [out, storiesDir = 'src/content/stories'] = process.argv.slice(2);
 const root = join(storiesDir, '../../..');
 const LANGS = ['de', 'ar', 'en'];
+// The interface language at the folder itself; the others sit in ar/ and de/.
+const ROOT = 'en';
+const folderOf = lang => (lang === ROOT ? '' : `${lang}/`);
 const NAMES = { de: 'Deutsch', ar: 'العربية', en: 'English', tr: 'Türkçe', ur: 'اردو' };
 const RTL = new Set(['ar', 'ur']);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -181,11 +184,11 @@ document.querySelectorAll('input[data-key]').forEach(b => {
   try { b.checked = localStorage.getItem(k) === '1'; } catch (e) {}
   b.addEventListener('change', () => { try { b.checked ? localStorage.setItem(k, '1') : localStorage.removeItem(k); } catch (e) {} });
 });
-// The same page in another language: German has no prefix, the others add ar/ or en/ after review/.
+// The same page in another language: English has no prefix, the others add ar/ or de/ after review/.
 document.querySelectorAll('a[data-lang]').forEach(a => {
-  const rest = location.pathname.replace(/^(.*\\/review\\/)(?:(?:ar|en)\\/)?/, '');
+  const rest = location.pathname.replace(/^(.*\\/review\\/)(?:(?:ar|de)\\/)?/, '');
   const base = location.pathname.match(/^(.*\\/review\\/)/)[1];
-  a.href = base + (a.dataset.lang === 'de' ? '' : a.dataset.lang + '/') + rest;
+  a.href = base + (a.dataset.lang === '${ROOT}' ? '' : a.dataset.lang + '/') + rest;
 });
 </script></body></html>
 `;
@@ -207,14 +210,14 @@ function index(lang, up) {
     lang,
     ui.title,
     `<h1>${ui.title}</h1><p>${esc(ui.intro)}</p><p><small>● ${ui.published} · ○ ${ui.notReviewed}</small></p>
-<p><a href="${up}status/${lang === 'de' ? '' : `${lang}/`}">${ui.status}</a></p><h2>${ui.stories}</h2><ul>${rows}</ul>`
+<p><a href="${up}status/${folderOf(lang)}">${ui.status}</a> · <a href="${up}guide/${folderOf(lang)}">${ui.guide}</a></p><h2>${ui.stories}</h2><ul>${rows}</ul>`
   );
 }
 
 for (const lang of LANGS) {
-  const dir = lang === 'de' ? out : join(out, lang);
+  const dir = lang === ROOT ? out : join(out, lang);
   // From <out>/ the preview root is ../; from <out>/<lang>/ it is ../../; a story folder adds one more level.
-  const up = lang === 'de' ? '../' : '../../';
+  const up = lang === ROOT ? '../' : '../../';
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, 'index.html'), index(lang, up));
   for (const [id, group] of stories) {
