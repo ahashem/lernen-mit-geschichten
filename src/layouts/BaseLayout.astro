@@ -6,6 +6,7 @@ import '@styles/rtl.css';
 import ClassLinkCard from '@components/ClassLinkCard.astro';
 import LanguageSelector from '@components/LanguageSelector.astro';
 import GTMTracking from '@components/GTMTracking.astro';
+import ConsentBanner from '@components/ConsentBanner.astro';
 import type { Locale } from '@utils/i18n';
 import { getTranslation, isRTL } from '@utils/i18n';
 import { BASE_PATH as base, OFFLINE } from '@utils/site';
@@ -33,8 +34,6 @@ const ogDescription = description || defaultDescription;
 const ogImage = image;
 const pageTitle = `${title} | ${siteName}`;
 
-// Google Tag Manager ID from environment variable
-const gtmId = import.meta.env.PUBLIC_GTM_ID;
 // robots.txt only works at a host root, so staging and the moderators' preview also say it on every page.
 const noindex = ['1', 'true', true].includes(import.meta.env.NOINDEX);
 const build = buildMarker();
@@ -80,7 +79,7 @@ const jsonLd =
       } catch (e) {}
     </script>
 
-    <GTMTracking gtmId={gtmId} />
+    <GTMTracking />
 
     <!-- Primary Meta Tags -->
     <title>{pageTitle}</title>
@@ -221,6 +220,8 @@ const jsonLd =
         </p>
       </div>
     </footer>
+
+    <ConsentBanner locale={locale} />
 
     {OFFLINE && <script src="../scripts/offline.ts" />}
 

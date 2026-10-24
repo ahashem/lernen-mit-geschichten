@@ -73,6 +73,12 @@ signs it off. Outside the roadmap work, a change that adds keys still needs a na
 
 **Own voice.** A grown-up's recordings ("Read it in my voice", bands 1-2) live in the browser's IndexedDB database `lmg-voice`, keyed by story, locale and page with a hash of the page text; a changed text drops the match. They never leave the device, and the privacy page's forget control deletes the database.
 
+**Analytics.** `PUBLIC_GTM_ID` at build time enables Google Analytics through Google Tag Manager, behind a consent
+gate (`ConsentBanner.astro`, `GTMTracking.astro`, `utils/consent.ts`): nothing loads from Google until a grown-up
+allows it, the choice (`reader-consent`) is changed on the privacy page and cleared by "Forget this device", and the
+banner never shows over a story being read. Only analytics storage is granted; advertising signals stay denied. The
+GTM container itself must hold only the GA4 tag.
+
 **Offline.** `PUBLIC_OFFLINE=1` at build time registers a service worker (`src/pages/sw.js.ts`) and links a manifest; it ships
 off, and without it `sw.js` removes itself and its `lmg-*` caches. Never enable it in a deploy without the owner.
 
@@ -175,5 +181,4 @@ Node >= 24.
 ## Known gaps
 
 - Legacy `locale === 'de' ? …` ternaries still hold UI text in a few components.
-- `GTMTracking.astro` is wired into `BaseLayout.astro` with no consent gate. It stays until a replacement is chosen.
 - `de/001-bruno-interactive.md` is a draft with placeholder image URLs and its own page text; it is not folded into `001-bruno` yet.

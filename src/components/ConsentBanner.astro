@@ -1,0 +1,87 @@
+---
+import { getTranslation, type Locale } from '@utils/i18n';
+import { BASE_PATH } from '@utils/site';
+import { gtmId } from '@utils/consent';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
+const privacy = locale === 'de' ? `${BASE_PATH}/privacy` : `${BASE_PATH}/${locale}/privacy`;
+---
+
+{
+  gtmId() && (
+    <section class="consent surface" aria-labelledby="consent-title" hidden data-consent>
+      <h2 id="consent-title">{t('consentLabel')}</h2>
+      <p>
+        {t('consentText')} <a href={privacy}>{t('consentMore')}</a>
+      </p>
+      {/* Both answers look the same: saying no must be as easy as saying yes. */}
+      <div class="choices">
+        <button class="btn" type="button" data-choice="granted">
+          {t('consentYes')}
+        </button>
+        <button class="btn" type="button" data-choice="denied">
+          {t('consentNo')}
+        </button>
+      </div>
+    </section>
+  )
+}
+
+<script>
+  import { readConsent, setConsent, type Consent } from '@utils/consent';
+
+  const banner = document.querySelector<HTMLElement>('[data-consent]');
+  if (banner) {
+    banner.hidden = readConsent() !== null;
+    banner.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach(b =>
+      b.addEventListener('click', () => {
+        setConsent(b.dataset.choice as Consent);
+        banner.hidden = true;
+      })
+    );
+    // The privacy page and "Forget this device" can change the choice while the page is open.
+    document.addEventListener('lmg-consent', () => (banner.hidden = readConsent() !== null));
+  }
+</script>
+
+<style>
+  .consent {
+    position: fixed;
+    inset-inline: var(--s-3);
+    inset-block-end: var(--s-3);
+    z-index: 1500;
+    max-inline-size: 36rem;
+    margin-inline: auto;
+    padding: var(--s-4);
+    display: grid;
+    gap: var(--s-3);
+    box-shadow: var(--e-2);
+  }
+  .consent[hidden] {
+    display: none;
+  }
+  h2 {
+    font-size: var(--t-ui);
+  }
+  p {
+    font-size: var(--t-ui-sm);
+  }
+  .choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+  .choices .btn {
+    flex: 1 1 8rem;
+    justify-content: center;
+  }
+  /* A grown-up's decision: never over a story a child is reading. */
+  :global(body[data-reading='true']) .consent {
+    display: none;
+  }
+</style>

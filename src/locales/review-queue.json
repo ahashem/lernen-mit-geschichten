@@ -180,7 +180,16 @@
     "folioPrint",
     "folioIndex",
     "folioNoStories",
-    "folioScan"
+    "folioScan",
+    "consentLabel",
+    "consentText",
+    "consentMore",
+    "consentYes",
+    "consentNo",
+    "consentStateGranted",
+    "consentStateDenied",
+    "consentStateUnset",
+    "privacyStoredConsent"
   ],
   "tr": [
     "skipToContent",
@@ -363,7 +372,16 @@
     "folioPrint",
     "folioIndex",
     "folioNoStories",
-    "folioScan"
+    "folioScan",
+    "consentLabel",
+    "consentText",
+    "consentMore",
+    "consentYes",
+    "consentNo",
+    "consentStateGranted",
+    "consentStateDenied",
+    "consentStateUnset",
+    "privacyStoredConsent"
   ],
   "ur": [
     "skipToContent",
@@ -546,6 +564,15 @@
     "folioPrint",
     "folioIndex",
     "folioNoStories",
-    "folioScan"
+    "folioScan",
+    "consentLabel",
+    "consentText",
+    "consentMore",
+    "consentYes",
+    "consentNo",
+    "consentStateGranted",
+    "consentStateDenied",
+    "consentStateUnset",
+    "privacyStoredConsent"
   ]
 }
