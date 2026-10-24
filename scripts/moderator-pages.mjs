@@ -2,11 +2,14 @@
 /**
  * Writes the moderators' guide (<preview>/guide/) and the art-prep page (<preview>/art/), English at the folder,
  * Arabic at ar/, German at de/. Preview only, like preview-status.mjs: production never runs this.
- * The art-prep page works entirely in the browser (canvas to WebP, a stored ZIP); nothing is uploaded anywhere.
+ * The art-prep page works entirely in the browser (canvas to WebP, a stored ZIP); nothing is uploaded anywhere. Where the
+ * browser cannot write WebP (Safari, so every browser on iPad and iPhone) it loads the vendored libwebp in scripts/vendor/webp.
  * Usage: moderator-pages.mjs <preview dir>     CMS_URL in the environment links the CMS; no address is in source.
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { defaultOptions as WEBP } from './vendor/webp/meta.js';
 import { GUIDE, ART } from './moderator-messages.mjs';
 
 const [preview] = process.argv.slice(2);
@@ -69,6 +72,7 @@ function art(lang) {
   // Runs in the moderator's browser. Kept dependency-free: a stored (uncompressed) ZIP needs only CRC-32,
   // and WebP is already compressed.
   const script = `<script>
+const WEBP = ${JSON.stringify(WEBP)}, ENCODER = '${lang === ROOT ? '' : '../'}webp/webp_enc.js';
 const S = ${JSON.stringify(strings)};
 const MAX_W = 1200, MAX_BYTES = 120 * 1024;
 const $ = id => document.getElementById(id);
@@ -117,6 +121,19 @@ function render() {
   $('zip').hidden = !items.length || items.some(i => !i.out);
 }
 
+// Safari asked for WebP silently returns PNG, so after the first such answer every picture goes through libwebp.
+let wasm = null;
+async function webp(c, q) {
+  if (!wasm) {
+    const blob = await new Promise(r => c.toBlob(r, 'image/webp', q));
+    if (blob && blob.type === 'image/webp') return blob;
+    wasm = import(ENCODER).then(m => m.default({ noInitialRun: true }));
+  }
+  const out = (await wasm).encode(c.getContext('2d').getImageData(0, 0, c.width, c.height).data, c.width, c.height, { ...WEBP, quality: q * 100 });
+  if (!out) throw new Error('WebP encoding failed');
+  return new Blob([out], { type: 'image/webp' });
+}
+
 async function convert() {
   for (const it of items) {
     const bmp = await createImageBitmap(it.file);
@@ -125,8 +142,7 @@ async function convert() {
     c.getContext('2d').drawImage(bmp, 0, 0, w, h);
     let blob = null;
     for (const q of [0.85, 0.78, 0.7, 0.62, 0.55, 0.48, 0.4]) {
-      blob = await new Promise(r => c.toBlob(r, 'image/webp', q));
-      if (!blob || blob.type !== 'image/webp') { $('nowebp').hidden = false; return; }
+      try { blob = await webp(c, q); } catch (e) { $('nowebp').hidden = false; return; }
       if (blob.size <= MAX_BYTES) break;
     }
     it.out = blob;
@@ -173,6 +189,9 @@ $('zip').onclick = zip;
   return shell(lang, ui.title, body, script);
 }
 
+const vendor = fileURLToPath(new URL('./vendor/webp/', import.meta.url));
+mkdirSync(join(preview, 'art', 'webp'), { recursive: true });
+for (const f of ['webp_enc.js', 'webp_enc.wasm', 'LICENSE', 'LICENSE.codec.md']) copyFileSync(join(vendor, f), join(preview, 'art', 'webp', f));
 for (const lang of LANGS) {
   for (const [folder, make] of [['guide', guide], ['art', art]]) {
     const dir = join(preview, folder, lang === ROOT ? '' : lang);

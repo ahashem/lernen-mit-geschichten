@@ -88,7 +88,8 @@ The moderators' pages open in English, with Arabic in `ar/` and German in `de/`.
 `scripts/review-messages.mjs`, same three languages, preview only) is the reviewers' sheet: per story, every language side
 by side page by page with the pictures, alt texts, what is still needed and the review checklists from `03`.
 `preview/guide/` (the moderators' guide) and `preview/art/` (pictures to 1200 px WebP with the right names, done in the
-browser, nothing uploaded) come from `scripts/moderator-pages.mjs`, wording in `scripts/moderator-messages.mjs`; the
+browser, nothing uploaded; Safari, and so every iPad and iPhone browser, cannot write WebP from a canvas, so the page then
+loads libwebp vendored in `scripts/vendor/webp/`) come from `scripts/moderator-pages.mjs`, wording in `scripts/moderator-messages.mjs`; the
 guide links the CMS from the `CMS_URL` repository variable and must change with the CMS labels in `.pages.yml`.
 
 ## Verifying a build
