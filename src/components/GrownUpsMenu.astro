@@ -1,0 +1,115 @@
+---
+import Icon from '@components/reader/Icon.astro';
+import { getTranslation, type Locale } from '@utils/i18n';
+import { BASE_PATH as base } from '@utils/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
+const prefix = locale === 'de' ? base : `${base}/${locale}`;
+const links = [
+  { href: `${prefix}/about`, label: t('about') },
+  { href: `${prefix}/settings`, label: t('settings') },
+  { href: `${prefix}/folio`, label: t('folioTitle') },
+  { href: `${prefix}/privacy`, label: t('privacyTitle') },
+];
+---
+
+<div class="grownups" data-menu>
+  <details>
+    <summary aria-label={t('forGrownUps')}>
+      <span class="wide">{t('forGrownUps')}</span>
+      <span class="narrow"><Icon name="more" size={24} /></span>
+    </summary>
+    <ul class="panel">
+      {
+        links.map(l => (
+          <li>
+            <a href={l.href}>{l.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </details>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-menu]').forEach(root => {
+    const details = root.querySelector('details')!;
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && details.open) {
+        details.open = false;
+        details.querySelector('summary')!.focus();
+      }
+    });
+    document.addEventListener('click', e => {
+      if (!root.contains(e.target as Node)) details.open = false;
+    });
+  });
+</script>
+
+<style>
+  .grownups {
+    position: relative;
+  }
+  summary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: var(--tap-adult);
+    min-inline-size: var(--tap-adult);
+    padding: var(--s-1) var(--s-3);
+    border: 2px solid var(--edge);
+    border-radius: var(--r-m);
+    background: var(--card);
+    color: var(--ink);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .narrow {
+    display: none;
+  }
+  .panel {
+    position: absolute;
+    inset-inline-end: 0;
+    z-index: 20;
+    min-inline-size: 14rem;
+    margin: var(--s-2) 0 0;
+    padding: var(--s-2);
+    list-style: none;
+    background: var(--card);
+    border-radius: var(--r-l);
+    box-shadow: var(--e-2);
+  }
+  .panel a {
+    display: flex;
+    align-items: center;
+    min-block-size: 56px;
+    padding-inline: var(--s-4);
+    border-radius: var(--r-m);
+    color: var(--ink);
+    font-size: var(--t-ui);
+    text-decoration: none;
+  }
+  .panel a:hover {
+    background: var(--paper-2);
+  }
+  @media (max-width: 599px) {
+    summary {
+      padding: var(--s-1);
+    }
+    .wide {
+      display: none;
+    }
+    .narrow {
+      display: inline-flex;
+    }
+  }
+</style>

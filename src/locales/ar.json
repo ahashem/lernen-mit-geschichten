@@ -249,5 +249,9 @@
   "folioPrint": "طباعة الملف",
   "folioIndex": "الفهرس: المهارات والقصص",
   "folioNoStories": "لا توجد قصص بهذه اللغة بعد.",
-  "folioScan": "مسح الرمز لفتح القصة"
+  "folioScan": "مسح الرمز لفتح القصة",
+  "mainNav": "التنقل الرئيسي",
+  "closeLabel": "إغلاق",
+  "showStories": "عرض النتائج ({n})",
+  "showStoriesOne": "عرض النتائج (1)"
 }

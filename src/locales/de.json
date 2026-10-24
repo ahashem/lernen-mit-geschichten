@@ -250,5 +250,9 @@
   "folioPrint": "Mappe drucken",
   "folioIndex": "Index: Fähigkeiten und Geschichten",
   "folioNoStories": "In dieser Sprache gibt es noch keine Geschichten.",
-  "folioScan": "Zum Öffnen scannen"
+  "folioScan": "Zum Öffnen scannen",
+  "mainNav": "Hauptnavigation",
+  "closeLabel": "Schließen",
+  "showStories": "{n} Geschichten zeigen",
+  "showStoriesOne": "1 Geschichte zeigen"
 }

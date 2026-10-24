@@ -249,5 +249,9 @@
   "folioPrint": "Print the folio",
   "folioIndex": "Index: skills and stories",
   "folioNoStories": "There are no stories in this language yet.",
-  "folioScan": "Scan to open"
+  "folioScan": "Scan to open",
+  "mainNav": "Main navigation",
+  "closeLabel": "Close",
+  "showStories": "Show {n} stories",
+  "showStoriesOne": "Show 1 story"
 }
