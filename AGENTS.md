@@ -56,7 +56,9 @@ node scripts/content-report.mjs            # which stories are missing which lan
 node scripts/content-report.mjs --matrix   # the full per-story grid
 ```
 
-**Publishing is opt-in.** Only a story file with `status: published` goes live; a missing status is a
+**Publishing is opt-in, and `published` means live.** The publishing gate on `editorial` blocks only a save that would
+lose a field (or a build that fails); review and completeness are advice until the owner sets the
+`STRICT_PUBLISHING` repository variable to `1`. Only a story file with `status: published` goes live; a missing status is a
 draft and gets no page, no listing and no sitemap entry in production. Each locale's file carries its own status. Read the collection through `getPublishedStories()` in `src/utils/stories.ts`;
 calling `getCollection('stories')` directly bypasses the gate and leaks a draft into one surface
 while the others hide it.

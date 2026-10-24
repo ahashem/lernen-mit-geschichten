@@ -7,9 +7,11 @@ no content, no product.
 
 - **Git stays the source of truth.** Every edit is a commit; history is the audit log. No separate database.
 - **Moderators never see git.** They use a CMS with an email invite; the CMS commits on their behalf.
-- **A second pair of eyes before anything is public, enforced by data.** Moderators save on the `editorial` branch. A
-  story goes live only when it is `published`, complete, and `reviewedBy` is someone other than `author`; CI checks
-  that on every changed file and publishes automatically when it passes. No admin merge, no waiting.
+- **`published` means live.** Moderators save on the `editorial` branch; a file set to `published` goes live a few
+  minutes later. While there are no reviewers, review and completeness are advice on the status page. Once the owner
+  sets the `STRICT_PUBLISHING` repository variable to `1`, a second pair of eyes is enforced by data: a story goes live
+  only when it is complete and `reviewedBy` is someone other than `author`. Either way CI checks every changed file
+  and publishes automatically. No admin merge, no waiting.
 - **Nothing machine-made ships unreviewed**: text, translations and images all have a named human reviewer.
 
 ## The join key
@@ -84,8 +86,8 @@ Moderators work in the CMS on the `editorial` branch and never see git. Steps 1 
   requests with secrets or write access, and `editorial-publish.yml` listens to pushes only. Merging a pull request
   into `editorial` publishes it, so merge outside contributions into `main` instead.
 - **Why a moderator can't do harm.** The CMS only edits the configured story and media folders, not workflows. A
-  malformed file fails the checks and never reaches `main`; an incomplete or unreviewed published story is blocked
-  by the gate; a bad story is fixed by setting it to `draft`.
+  malformed file fails the checks and never reaches `main`; with `STRICT_PUBLISHING` on, an incomplete or unreviewed
+  published story is blocked by the gate; a bad story is fixed by setting it to `draft`.
 - **The CMS rewrites a file from its form** unless `settings.content.merge` is on (it is; the setting is that exact
   key, and a plain `content: true` is silently ignored). With it a save keeps every key the form does not show.
   Without it, a frontmatter key that is not a field of the form is dropped on the next
