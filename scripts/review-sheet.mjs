@@ -57,6 +57,8 @@ function afterword(body) {
   });
 }
 
+const chip = (ui, f) => (f.status === 'published' ? `<span class="chip pub">${ui.published}</span>` : `<span class="chip">${ui.draft}</span>`);
+
 function storyPage(id, group, lang, up) {
   const ui = REVIEW[lang];
   const de = group.de;
@@ -76,78 +78,53 @@ function storyPage(id, group, lang, up) {
     if (!aligned) notes[l] = ui.notAligned(deBook.pages.length, own.length);
   }
   const rows = Math.max(0, ...present.map(l => pagesOf[l].length));
-  const cell = (l, html) => `<td data-l="${l}" lang="${l}" dir="${RTL.has(l) ? 'rtl' : 'ltr'}">${html}</td>`;
-  // Interface words inside a column keep the interface's own direction, so German text in an Arabic column reads right.
+  // Interface words inside a box keep the interface's own direction, so German text in an Arabic box reads right.
   const ui_ = `lang="${lang}" dir="${ui.dir}"`;
   const missing = `<em class="missing" ${ui_}>${ui.missing}</em>`;
-  const field = v => (v ? esc(v) : missing);
+  const label = text => `<span class="label" ${ui_}>${text}</span>`;
   const preview = l => `${up}${l === 'de' ? '' : `${l}/`}stories/${group[l].slug}/`;
-  const alt = (l, i) => {
-    const text = l === 'de' ? frames[i]?.alt : group[l].fm.frameAlts?.[i];
-    return altBlock(text);
-  };
-  const altBlock = text => `<div class="alt"><span class="label" ${ui_}>${ui.altText}</span>${text ? esc(text) : `<em class="missing" ${ui_}>${ui.noAlt}</em>`}</div>`;
+  const altBlock = text => `<div class="alt">${label(ui.altText)}${text ? esc(text) : `<em class="missing" ${ui_}>${ui.noAlt}</em>`}</div>`;
   const imgSrc = src => (src ? `${up}${String(src).replace(/^\//, '')}` : '');
+  // One box per language; the boxes sit side by side and wrap on narrow screens.
+  const boxes = f => `<div class="boxes">${present.map(l => `<div class="box" lang="${l}" dir="${RTL.has(l) ? 'rtl' : 'ltr'}"><span class="tag">${NAMES[l]}</span>${f(l)}</div>`).join('')}</div>`;
 
-  const head = `<tr><th></th>${present
-    .map(l => {
-      const f = group[l].fm;
-      const status = f.status === 'published' ? `<span class="chip pub">${ui.published}</span>` : `<span class="chip">${ui.draft}</span>`;
-      const reviewed = !strictPublishing ? '' : `<br><small>${f.reviewedBy ? ui.reviewed(esc(f.reviewedBy), day(f.reviewedAt)) : ui.notReviewed}</small>`;
-      const note = notes[l] ? `<br><small class="note" ${ui_}>${esc(notes[l])}</small>` : '';
-      return `<th scope="col" data-l="${l}" lang="${l}">${NAMES[l]} ${status}${reviewed}${note}<br><a href="${preview(l)}">${ui.open}</a></th>`;
-    })
-    .join('')}</tr>`;
-  const meta = [
-    ['title', '', l => `<strong>${esc(group[l].fm.title)}</strong>`],
-    ['summary', ui.summary, l => field(group[l].fm.summary)],
-    ['keyMessage', ui.keyMessage, l => field(group[l].fm.keyMessage)],
-  ]
-    .map(([, label, f]) => `<tr><th scope="row">${label}</th>${present.map(l => cell(l, f(l))).join('')}</tr>`)
-    .join('');
+  const languages = LOCALES.map(l => {
+    const f = group[l]?.fm;
+    if (!f) return `<li><strong lang="${l}">${NAMES[l]}</strong> <span class="chip none">${ui.noFile}</span></li>`;
+    const v = r?.locales[l];
+    const list = (items, text) => (items?.length ? `<details><summary>${text} (${items.length})</summary><ul>${items.map(i => `<li>${esc(say(i, lang))}</li>`).join('')}</ul></details>` : '');
+    const should = strictPublishing ? v?.shouldItems : v?.shouldItems.filter(i => i.code !== 'review');
+    const reviewed = strictPublishing ? ` · <small>${f.reviewedBy ? ui.reviewed(esc(f.reviewedBy), day(f.reviewedAt)) : ui.notReviewed}</small>` : '';
+    const note = notes[l] ? `<br><small class="note">${esc(notes[l])}</small>` : '';
+    return `<li><strong lang="${l}">${NAMES[l]}</strong> ${chip(ui, f)}${reviewed} · <a href="${preview(l)}">${ui.open}</a>${note}${list(v?.mustItems, ui.needs)}${list(should, ui.worth)}</li>`;
+  }).join('');
+  const about = boxes(l => {
+    const f = group[l].fm;
+    return `<p><strong>${esc(f.title)}</strong></p>${label(ui.summary)}<p>${f.summary ? esc(f.summary) : missing}</p>${label(ui.keyMessage)}<p>${f.keyMessage ? esc(f.keyMessage) : missing}</p>`;
+  });
   const cover = de?.fm.cover?.src
-    ? `<tr><th scope="row">${ui.picture}<img src="${imgSrc(de.fm.cover.src)}" alt="" loading="lazy"></th>${present
-        .map(l => cell(l, altBlock(l === 'de' ? de.fm.cover.alt : group[l].fm.coverAlt)))
-        .join('')}</tr>`
+    ? `<section class="page"><h3>${ui.picture}</h3><img src="${imgSrc(de.fm.cover.src)}" alt="" loading="lazy">${boxes(l => altBlock(l === 'de' ? de.fm.cover.alt : group[l].fm.coverAlt))}</section>`
     : '';
   const pages = Array.from({ length: rows }, (_, i) => {
     const frame = frames.find(fr => fr.pageRef === i + 1) ?? frames[i];
     const fi = frame ? frames.indexOf(frame) : -1;
     const pic = frame ? `<img src="${imgSrc(frame.src)}" alt="" loading="lazy">` : '';
-    return `<tr><th scope="row">${ui.page(i + 1)}${pic}</th>${present
-      .map(l => {
-        const text = (pagesOf[l][i]?.sentences ?? []).map(esc).join(' ');
-        const altLine = fi >= 0 ? alt(l, fi) : '';
-        return cell(l, `${text || '&ndash;'}${altLine}`);
-      })
-      .join('')}</tr>`;
+    return `<section class="page"><h3>${ui.page(i + 1)}</h3>${pic}${boxes(l => {
+      const text = (pagesOf[l][i]?.sentences ?? []).map(esc).join(' ');
+      const alt = fi >= 0 ? altBlock(l === 'de' ? frames[fi]?.alt : group[l].fm.frameAlts?.[fi]) : '';
+      return `<p>${text || '&ndash;'}</p>${alt}`;
+    })}</section>`;
   }).join('');
   const rest = present.some(l => afterword(group[l].body).length)
-    ? `<tr><th scope="row">${ui.afterword}</th>${present
-        .map(l => cell(l, afterword(group[l].body).map(p => (p.startsWith('## ') ? `<h4>${esc(p.slice(3))}</h4>` : `<p>${esc(p)}</p>`)).join('')))
-        .join('')}</tr>`
+    ? `<details class="more"><summary>${ui.afterword}</summary>${boxes(l => afterword(group[l].body).map(p => (p.startsWith('## ') ? `<h4>${esc(p.slice(3))}</h4>` : `<p>${esc(p)}</p>`)).join('') || '&ndash;')}</details>`
     : '';
   const qs = present.some(l => group[l].fm.questions?.length || group[l].fm.discussion?.length)
-    ? `<tr><th scope="row">${ui.questions}</th>${present
-        .map(l => {
-          const f = group[l].fm;
-          const items = [...(f.questions ?? []).map(q => q.text ?? q.question ?? ''), ...(f.discussion ?? [])].filter(Boolean);
-          return cell(l, items.length ? `<ul>${items.map(q => `<li>${esc(q)}</li>`).join('')}</ul>` : '&ndash;');
-        })
-        .join('')}</tr>`
+    ? `<details class="more"><summary>${ui.questions}</summary>${boxes(l => {
+        const f = group[l].fm;
+        const items = [...(f.questions ?? []).map(q => q.text ?? q.question ?? ''), ...(f.discussion ?? [])].filter(Boolean);
+        return items.length ? `<ul>${items.map(q => `<li>${esc(q)}</li>`).join('')}</ul>` : '&ndash;';
+      })}</details>`
     : '';
-  const needs = r
-    ? `<tr><th scope="row">${ui.needs} / ${ui.worth}</th>${present
-        .map(l => {
-          const v = r.locales[l];
-          if (!v) return cell(l, '&ndash;');
-          const list = (items, label) => (items.length ? `<details><summary>${label} (${items.length})</summary><ul>${items.map(i => `<li>${esc(say(i, lang))}</li>`).join('')}</ul></details>` : '');
-          const should = strictPublishing ? v.shouldItems : v.shouldItems.filter(i => i.code !== 'review');
-          return cell(l, list(v.mustItems, ui.needs) + list(should, ui.worth) || ui.nothing);
-        })
-        .join('')}</tr>`
-    : '';
-  const absent = LOCALES.filter(l => !group[l]);
   const checklists = Object.entries(ui.lists)
     .map(
       ([key, [title, items]]) =>
@@ -157,13 +134,15 @@ function storyPage(id, group, lang, up) {
     )
     .join('');
   const name = (de ?? group[present[0]]).fm.title ?? id;
+  const emoji = de?.fm.emoji ? `${esc(de.fm.emoji)} ` : '';
   return page(
     lang,
     `${esc(name)} · ${ui.title}`,
-    `<p><a href="../">${ui.back}</a></p><h1><bdi dir="ltr">${esc(id)}</bdi> <bdi>${esc(name)}</bdi></h1>
-<p>${esc(strictPublishing ? ui.intro : ui.introNoReview)}</p>${absent.length ? `<p>${absent.map(l => `${NAMES[l]}: ${ui.noFile}`).join(' · ')}</p>` : ''}
-<p class="pick" role="group" aria-label="${ui.show}">${ui.show}: ${present.map(l => `<label><input type="checkbox" data-col="${l}" checked> <span lang="${l}">${NAMES[l]}</span></label>`).join('')}</p>
-<div class="scroll"><table class="compare" style="min-width:${9 + present.length * 14}rem"><thead>${head}</thead><tbody>${meta}${cover}${pages}${rest}${qs}${needs}</tbody></table></div>
+    `<p><a href="../">${ui.back}</a></p><h1>${emoji}<bdi>${esc(name)}</bdi> <small class="id">${esc(id)}</small></h1>
+<p>${esc(strictPublishing ? ui.intro : ui.introNoReview)}</p>
+<h2>${ui.languages}</h2><ul class="langs">${languages}</ul>
+<h2>${ui.about}</h2>${about}
+${cover}${pages}${rest}${qs}
 <h2>${ui.checklists}</h2><div class="lists">${checklists}</div>`
   );
 }
@@ -174,22 +153,26 @@ function page(lang, title, main) {
 <html lang="${lang}" dir="${ui.dir}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex"><title>${title}</title>
 <style>body{font:16px/1.55 system-ui,sans-serif;margin:1.5rem auto;padding:0 1rem;max-width:110rem;color:#24212e;background:#fbf5ea}
-a{color:#2f6f62}h1{font-size:1.5rem}nav{margin-bottom:1rem}
-.scroll{overflow:auto;max-height:calc(100vh - 2rem);border:1px solid #e2d6c1;border-radius:10px;background:#fff}
-table{border-collapse:separate;border-spacing:0;min-width:100%}th,td{padding:.6rem .8rem;vertical-align:top;text-align:start;border-bottom:1px solid #e2d6c1;border-inline-start:1px solid #e2d6c1}
-.compare{table-layout:fixed;width:100%}.compare thead th:first-child{width:9rem}thead th{position:sticky;top:0;z-index:2;background:#f2e8d6}
-tbody th{position:sticky;inset-inline-start:0;z-index:1;width:9rem;min-width:9rem;background:#f8f1e4;font-weight:600}thead th:first-child{inset-inline-start:0;z-index:3}
-th img{display:block;width:100%;margin-top:.4rem;border-radius:6px}td[dir=rtl]{font-size:1.1em;line-height:1.8}
-.index td{min-width:6rem;max-width:none}.index tbody th{width:auto;min-width:14rem}.index tbody tr:hover>*{background:#fffaf1}.none{color:#8a8494}
+a{color:#2f6f62}h1{font-size:1.5rem;margin:.5rem 0}h2{font-size:1.2rem;margin:2rem 0 .7rem}h3{font-size:1rem;margin:0 0 .6rem}h4{margin:.6rem 0 .2rem}nav{margin-bottom:1rem}
+.id{font:600 .8rem ui-monospace,monospace;color:#5b5566;direction:ltr;unicode-bidi:isolate}
 .chip{display:inline-block;font-size:.78rem;font-weight:600;padding:.1rem .5rem;border-radius:999px;background:#fbe6c4;color:#7a4800}.chip.pub{background:#dcefe2;color:#1d5e36}
-.missing{color:#a02c1c}.note{color:#7a4800;font-weight:400}.alt{margin-top:.5rem;padding:.4rem .6rem;border-radius:6px;background:#fbf5ea;font-size:.88rem;color:#5b5566}
-.label{display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}summary{cursor:pointer;font-weight:600}h4{margin:.6rem 0 .2rem}
+.chip.none{background:none;border:1px dashed #cfc3ad;color:#6b6577;font-weight:500}
+.langs{list-style:none;padding:0;margin:0;display:grid;gap:.5rem}.langs>li{padding:.6rem .8rem;background:#fff;border:1px solid #e2d6c1;border-radius:10px}
+.langs details{margin-top:.3rem}summary{cursor:pointer;font-weight:600}
+.page{margin:1.2rem 0;padding:1rem;background:#fff;border:1px solid #e2d6c1;border-radius:12px}.page>img{display:block;width:100%;max-width:16rem;margin-bottom:.8rem;border-radius:8px;border:1px solid #e2d6c1}
+.boxes{display:grid;gap:.7rem;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}.box{padding:.7rem .8rem;border:1px solid #e2d6c1;border-radius:10px;background:#fffdf8}
+.box p{margin:0 0 .4rem}.box[dir=rtl]{font-size:1.1em;line-height:1.8}
+.tag{display:block;margin-bottom:.3rem;font-size:.75rem;font-weight:700;color:#2f6f62}
+.label{display:block;margin-top:.3rem;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#5b5566}
+.missing{color:#a02c1c}.note{color:#7a4800}.alt{margin-top:.5rem;padding:.4rem .6rem;border-radius:6px;background:#fbf5ea;font-size:.88rem;color:#5b5566}.alt .label{margin-top:0}
+.more{margin:1.2rem 0;padding:1rem;background:#fff;border:1px solid #e2d6c1;border-radius:12px}.more>summary{font-size:1.05rem}.more .boxes{margin-top:.8rem}
+.cards{list-style:none;padding:0;margin:0;display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr))}
+.card{padding:1rem;background:#fff;border:1px solid #e2d6c1;border-radius:12px}.card>a{display:flex;gap:.6rem;align-items:flex-start;color:#24212e;text-decoration:none;margin-bottom:.6rem}
+.card>a:hover b{text-decoration:underline}.card .emoji{font-size:1.6rem;line-height:1}.card b{display:block}
+.status{list-style:none;padding:0;margin:0}.status li{display:flex;justify-content:space-between;align-items:center;padding:.2rem 0;border-top:1px solid #f0e8da;font-size:.92rem}
 .lists{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}fieldset{border:1px solid #e2d6c1;border-radius:10px;background:#fff}
 label{display:flex;gap:.5rem;align-items:flex-start;min-height:44px;padding:.2rem 0}input{width:22px;height:22px;flex:none}ul{padding-inline-start:1.2rem;margin:.2rem 0}
-.pick{display:flex;flex-wrap:wrap;gap:.2rem 1rem;align-items:center}.pick label{display:inline-flex;align-items:center}
-${LOCALES.map(l => `.hide-${l} [data-l=${l}]`).join(',')}{display:none}
-@media (max-width:44rem){.compare thead th:first-child{width:6rem}.scroll{max-height:none}}
-@media print{.scroll{max-height:none;overflow:visible;border:0}thead th,tbody th{position:static}}</style></head>
+@media print{.more{break-inside:auto}.page{break-inside:avoid}}</style></head>
 <body><main><nav aria-label="Language">${LANGS.map(l => (l === lang ? `<strong>${NAMES[l]}</strong>` : `<a data-lang="${l}" lang="${l}" href="#">${NAMES[l]}</a>`)).join(' · ')}</nav>${main}</main>
 <script>
 // Ticks are a personal aid while reading; they never leave this device and are not a review record.
@@ -198,31 +181,6 @@ document.querySelectorAll('input[data-key]').forEach(b => {
   try { b.checked = localStorage.getItem(k) === '1'; } catch (e) {}
   b.addEventListener('change', () => { try { b.checked ? localStorage.setItem(k, '1') : localStorage.removeItem(k); } catch (e) {} });
 });
-// Which languages the comparison shows, remembered on this device. On a small screen it starts with German and one
-// other language, since five columns do not fit.
-const table = document.querySelector('table.compare');
-const cols = [...document.querySelectorAll('input[data-col]')];
-if (table && cols.length) {
-  let hidden = null;
-  try { hidden = JSON.parse(localStorage.getItem('review-hidden')); } catch (e) {}
-  if (!Array.isArray(hidden)) {
-    const present = cols.map(b => b.dataset.col);
-    const other = present.includes('${lang}') && '${lang}' !== 'de' ? '${lang}' : present.find(l => l !== 'de');
-    hidden = matchMedia('(max-width: 60rem)').matches ? present.filter(l => l !== 'de' && l !== other) : [];
-  }
-  const apply = () => {
-    cols.forEach(b => table.classList.toggle('hide-' + b.dataset.col, !b.checked));
-    table.style.minWidth = 9 + cols.filter(b => b.checked).length * 14 + 'rem';
-  };
-  cols.forEach(b => {
-    b.checked = !hidden.includes(b.dataset.col);
-    b.addEventListener('change', () => {
-      apply();
-      try { localStorage.setItem('review-hidden', JSON.stringify(cols.filter(c => !c.checked).map(c => c.dataset.col))); } catch (e) {}
-    });
-  });
-  apply();
-}
 // The same page in another language: English has no prefix, the others add ar/ or de/ after review/.
 document.querySelectorAll('a[data-lang]').forEach(a => {
   const rest = location.pathname.replace(/^(.*\\/review\\/)(?:(?:ar|de)\\/)?/, '');
@@ -235,25 +193,25 @@ document.querySelectorAll('a[data-lang]').forEach(a => {
 
 function index(lang, up) {
   const ui = REVIEW[lang];
-  const rows = [...stories.entries()]
+  const cards = [...stories.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([id, group]) => {
       const name = (group.de ?? Object.values(group)[0]).fm.title ?? id;
-      const cells = LOCALES.map(l => {
+      const status = LOCALES.map(l => {
         const f = group[l]?.fm;
-        if (!f) return '<td class="none">&ndash;</td>';
-        const status = f.status === 'published' ? `<span class="chip pub">${ui.published}</span>` : `<span class="chip">${ui.draft}</span>`;
-        return `<td>${status}${strictPublishing && f.reviewedBy ? ' ✓' : ''}</td>`;
+        const right = f ? `${chip(ui, f)}${strictPublishing && f.reviewedBy ? ' ✓' : ''}` : `<span class="chip none">${ui.noFile}</span>`;
+        return `<li><span lang="${l}">${NAMES[l]}</span>${right}</li>`;
       }).join('');
-      return `<tr><th scope="row"><a href="${esc(id)}/"><bdi>${esc(name)}</bdi></a><br><small dir="ltr">${esc(id)}</small></th>${cells}</tr>`;
+      const emoji = group.de?.fm.emoji ? `<span class="emoji" aria-hidden="true">${esc(group.de.fm.emoji)}</span>` : '';
+      return `<li class="card"><a href="${esc(id)}/">${emoji}<span><b><bdi>${esc(name)}</bdi></b><small class="id">${esc(id)}</small></span></a><ul class="status">${status}</ul></li>`;
     })
     .join('');
   return page(
     lang,
     ui.title,
-    `<h1>${ui.title}</h1><p>${esc(strictPublishing ? ui.intro : ui.introNoReview)}</p><p><small>${strictPublishing ? `✓ = ${ui.reviewed('…', '')} · ` : ''}&ndash; = ${ui.noFile}</small></p>
+    `<h1>${ui.title}</h1><p>${esc(strictPublishing ? ui.intro : ui.introNoReview)}</p>${strictPublishing ? `<p><small>✓ = ${ui.reviewed('…', '')}</small></p>` : ''}
 <p><a href="${up}status/${folderOf(lang)}">${ui.status}</a> · <a href="${up}guide/${folderOf(lang)}">${ui.guide}</a></p>
-<div class="scroll"><table class="index"><thead><tr><th scope="col">${ui.stories}</th>${LOCALES.map(l => `<th scope="col" lang="${l}">${NAMES[l]}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`
+<h2>${ui.stories}</h2><ul class="cards">${cards}</ul>`
   );
 }
 

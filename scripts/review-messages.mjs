@@ -10,7 +10,8 @@ export const REVIEW = {
     intro:
       'Every language of a story side by side, with the pictures and the checklists. Read the real page in the preview too, then fill reviewedBy and reviewedAt for that language in the CMS. Ticks stay on this device only.',
     introNoReview: 'Every language of a story side by side, with the pictures and the checklists. Read the real page in the preview too. Ticks stay on this device only.',
-    show: 'Show',
+    languages: 'Languages',
+    about: 'About the story',
     stories: 'Stories',
     back: 'All stories',
     status: 'Status overview',
@@ -48,7 +49,8 @@ export const REVIEW = {
     intro:
       'Alle Sprachen einer Geschichte nebeneinander, mit Bildern und Checklisten. Die echte Seite auch in der Vorschau lesen, dann reviewedBy und reviewedAt für diese Sprache im CMS ausfüllen. Häkchen bleiben nur auf diesem Gerät.',
     introNoReview: 'Alle Sprachen einer Geschichte nebeneinander, mit Bildern und Checklisten. Die echte Seite auch in der Vorschau lesen. Häkchen bleiben nur auf diesem Gerät.',
-    show: 'Zeigen',
+    languages: 'Sprachen',
+    about: 'Über die Geschichte',
     stories: 'Geschichten',
     back: 'Alle Geschichten',
     status: 'Statusübersicht',
@@ -86,7 +88,8 @@ export const REVIEW = {
     intro:
       'كل لغات القصة جنبًا إلى جنب، مع الصور وقوائم الفحص. اقرؤوا الصفحة الحقيقية في المعاينة أيضًا، ثم املؤوا reviewedBy وreviewedAt لهذه اللغة في نظام إدارة المحتوى. علامات الفحص تبقى على هذا الجهاز فقط.',
     introNoReview: 'كل لغات القصة جنبًا إلى جنب، مع الصور وقوائم الفحص. اقرؤوا الصفحة الحقيقية في المعاينة أيضًا. علامات الفحص تبقى على هذا الجهاز فقط.',
-    show: 'إظهار',
+    languages: 'اللغات',
+    about: 'عن القصة',
     stories: 'القصص',
     back: 'كل القصص',
     status: 'نظرة عامة على الحالة',
