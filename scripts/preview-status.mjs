@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Writes the moderators' check-result page so nobody needs GitHub to learn why a save is or is not live, in the
- * languages they work in: German at preview/status/ (the default), Arabic at ar/, English at en/, plus status.json for
+ * languages they work in: English at preview/status/ (the default), Arabic at ar/, German at de/, plus status.json for
  * tools. Preview only: production never runs this (it builds `main` with `npm run build` and nothing else).
  * Usage: preview-status.mjs <out.html> <build: ok|failed|none> <sha> <gate.txt> [stories dir]
  */
@@ -37,17 +37,19 @@ const toFix = r => Object.values(r.locales).reduce((n, v) => n + (v ? v.must.len
 const sorted = [...stories].sort((a, b) => toFix(a) - toFix(b) || a.id.localeCompare(b.id));
 
 const NAMES = { de: 'Deutsch', ar: 'العربية', en: 'English' };
-const PATHS = { de: '', ar: 'ar/', en: 'en/' };
+const PATHS = { en: '', ar: 'ar/', de: 'de/' };
 
 function render(lang) {
   const ui = UI[lang];
   const verdict = build === 'none' ? ui.nothingYet : build !== 'ok' ? ui.buildFailed : blocked.length ? ui.blocked : ui.ok;
-  const base = lang === 'de' ? './' : '../';
+  const base = lang === 'en' ? './' : '../';
   const switcher = LANGS.map(l =>
     l === lang ? `<strong>${NAMES[l]}</strong>` : `<a href="${base}${PATHS[l]}" hreflang="${l}" lang="${l}">${NAMES[l]}</a>`
   ).join(' · ');
-  // The reviewers' sheet sits beside this page: preview/review/ (German) or preview/review/<lang>/.
-  const review = lang === 'de' ? '../review/' : `../../review/${lang}/`;
+  // The other moderator pages sit beside this one: preview/<page>/ (English) or preview/<page>/<lang>/.
+  const up = lang === 'en' ? '../' : '../../';
+  const folder = PATHS[lang];
+  const review = `${up}review/${folder}`;
   const cell = v => (v ? `${ui[v.status]}<br>${v.must.length ? ui.toDo(v.must.length) : ui.ready}` : '&ndash;');
   const list = (items, label) =>
     items.length ? `<p><strong>${label}</strong></p><ul>${items.map(i => `<li>${esc(say(i, lang))}</li>`).join('')}</ul>` : '';
@@ -75,14 +77,14 @@ ${problem ? `<p><strong>${esc(problem)}</strong></p>` : ''}
 <p>${esc(ui.checked(sha ?? '?', new Date().toISOString()))}</p>
 ${gate ? `<h2>${ui.details}</h2><pre>${esc(gate)}</pre>` : ''}
 ${overview}
-<p><a href="${lang === 'de' ? '../' : '../../'}">${ui.open}</a> · <a href="${lang === 'de' ? '../' : '../../'}guide/${lang === 'de' ? '' : `${lang}/`}">${ui.guide}</a> · <a href="${lang === 'de' ? '../' : '../../'}art/${lang === 'de' ? '' : `${lang}/`}">${ui.art}</a></p></main></body></html>
+<p><a href="${up}">${ui.open}</a> · <a href="${up}guide/${folder}">${ui.guide}</a> · <a href="${up}art/${folder}">${ui.art}</a></p></main></body></html>
 `;
 }
 
 const dir = dirname(out);
 mkdirSync(dir, { recursive: true });
-writeFileSync(out, render('de'));
-for (const lang of ['ar', 'en']) {
+writeFileSync(out, render('en'));
+for (const lang of ['ar', 'de']) {
   mkdirSync(join(dir, lang), { recursive: true });
   writeFileSync(join(dir, lang, 'index.html'), render(lang));
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Writes the moderators' guide (<preview>/guide/) and the art-prep page (<preview>/art/), German at the folder,
- * Arabic at ar/, English at en/. Preview only, like preview-status.mjs: production never runs this.
+ * Writes the moderators' guide (<preview>/guide/) and the art-prep page (<preview>/art/), English at the folder,
+ * Arabic at ar/, German at de/. Preview only, like preview-status.mjs: production never runs this.
  * The art-prep page works entirely in the browser (canvas to WebP, a stored ZIP); nothing is uploaded anywhere.
  * Usage: moderator-pages.mjs <preview dir>     CMS_URL in the environment links the CMS; no address is in source.
  */
@@ -11,6 +11,8 @@ import { GUIDE, ART } from './moderator-messages.mjs';
 
 const [preview] = process.argv.slice(2);
 const LANGS = ['de', 'ar', 'en'];
+const ROOT = 'en';
+const folderOf = lang => (lang === ROOT ? '' : `${lang}/`);
 const NAMES = { de: 'Deutsch', ar: 'العربية', en: 'English' };
 const cms = process.env.CMS_URL?.trim();
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -21,9 +23,9 @@ a{color:#0b6b62}nav{margin-bottom:1rem}button,input,select,.btn{font:inherit;min
 
 function shell(lang, title, body, script = '') {
   const ui = GUIDE[lang];
-  const here = lang === 'de' ? '' : `${lang}/`;
+  const here = folderOf(lang);
   const switcher = LANGS.map(l =>
-    l === lang ? `<strong>${NAMES[l]}</strong>` : `<a href="${lang === 'de' ? '' : '../'}${l === 'de' ? '' : `${l}/`}" lang="${l}">${NAMES[l]}</a>`
+    l === lang ? `<strong>${NAMES[l]}</strong>` : `<a href="${lang === ROOT ? '' : '../'}${folderOf(l)}" lang="${l}">${NAMES[l]}</a>`
   ).join(' · ');
   return `<!doctype html>
 <html lang="${lang}" dir="${ui.dir}" data-here="${here}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -34,8 +36,8 @@ function shell(lang, title, body, script = '') {
 
 function guide(lang) {
   const ui = GUIDE[lang];
-  const up = lang === 'de' ? '../' : '../../';
-  const l = lang === 'de' ? '' : `${lang}/`;
+  const up = lang === ROOT ? '../' : '../../';
+  const l = folderOf(lang);
   const cmsLink = cms ? `<a href="${esc(cms)}">${esc(cms.replace(/^https?:\/\//, ''))}</a>` : esc(ui.cmsFallback);
   const fill = s => s.replaceAll('{up}', up).replaceAll('{l}', l).replaceAll('{cms}', cmsLink);
   const toc = ui.sections.map(([h], i) => `<li><a href="#s${i + 1}">${h}</a></li>`).join('');
@@ -54,7 +56,7 @@ function art(lang) {
 <ol id="list"></ol>
 <p id="dup" role="alert" hidden>${ui.duplicate}</p><p id="nowebp" role="alert" hidden>${ui.noWebp}</p>
 <p><button id="convert" type="button" disabled>${ui.convert}</button> <button id="zip" type="button" hidden>${ui.downloadAll}</button></p>
-<p>${ui.next} <a href="../${lang === 'de' ? '' : '../'}guide/${lang === 'de' ? '' : `${lang}/`}#s3">${ui.guide}</a></p>
+<p>${ui.next} <a href="../${lang === ROOT ? '' : '../'}guide/${folderOf(lang)}#s3">${ui.guide}</a></p>
 <style>.drop{display:block;padding:2rem 1rem;border:2px dashed #24212e;border-radius:12px;text-align:center;cursor:pointer;background:#fff}
 .drop.over{background:#e6f4f1}.drop input{display:block;margin:.8rem auto 0}#list li{margin:.8rem 0;padding:.6rem;background:#fff;border-radius:10px}
 #list img{max-width:8rem;max-height:6rem;vertical-align:middle;border-radius:6px}.warn{color:#a02c1c}.name{direction:ltr;unicode-bidi:isolate;font-family:monospace}</style>`;
@@ -167,7 +169,7 @@ $('zip').onclick = zip;
 
 for (const lang of LANGS) {
   for (const [folder, make] of [['guide', guide], ['art', art]]) {
-    const dir = join(preview, folder, lang === 'de' ? '' : lang);
+    const dir = join(preview, folder, lang === ROOT ? '' : lang);
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, 'index.html'), make(lang));
   }

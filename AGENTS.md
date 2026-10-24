@@ -82,7 +82,7 @@ GTM container itself must hold only the GA4 tag.
 **Offline.** `PUBLIC_OFFLINE=1` at build time registers a service worker (`src/pages/sw.js.ts`) and links a manifest; it ships
 off, and without it `sw.js` removes itself and its `lmg-*` caches. Never enable it in a deploy without the owner.
 
-The moderators' status page (`preview/status/` in German, `ar/` in Arabic, `en/` in English; built from `editorial` by `scripts/preview-status.mjs`, preview only, never in production; the wording is in `scripts/status-messages.mjs`) has a machine-readable twin, `preview/status/status.json`: the checked `commit`, the `build` result and, per story and language, its `status` with `must` (needed before it can go live) and `should` items. Tools read that, never the HTML. Beside it, `preview/review/` (`scripts/review-sheet.mjs`, wording in
+The moderators' pages open in English, with Arabic in `ar/` and German in `de/`. The status page (`preview/status/`; built from `editorial` by `scripts/preview-status.mjs`, preview only, never in production; the wording is in `scripts/status-messages.mjs`) has a machine-readable twin, `preview/status/status.json`: the checked `commit`, the `build` result and, per story and language, its `status` with `must` (needed before it can go live) and `should` items. Tools read that, never the HTML. Beside it, `preview/review/` (`scripts/review-sheet.mjs`, wording in
 `scripts/review-messages.mjs`, same three languages, preview only) is the reviewers' sheet: per story, every language side
 by side page by page with the pictures, alt texts, what is still needed and the review checklists from `03`.
 `preview/guide/` (the moderators' guide) and `preview/art/` (pictures to 1200 px WebP with the right names, done in the

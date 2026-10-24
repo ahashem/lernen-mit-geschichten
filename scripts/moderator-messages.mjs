@@ -1,8 +1,8 @@
 /**
  * Wording for the moderators' guide and the art-prep page (moderator-pages.mjs), in the languages the moderators work
- * in. German is the main language for moderators; English is the reference for developers; Arabic is a draft for the
+ * in. English is the main language (the pages open in it) and the reference; German and Arabic are drafts for the
  * moderators to correct. Keep the guide in step with docs/roadmap/03 and the CMS labels in .pages.yml.
- * `{up}` is the preview root, `{l}` the language folder (empty for German, `ar/`, `en/`).
+ * `{up}` is the preview root, `{l}` the language folder (empty for English, `ar/`, `de/`).
  * `{cms}` is replaced by the CMS address from the CMS_URL variable, or by a neutral phrase when it is not set.
  */
 export const GUIDE = {
