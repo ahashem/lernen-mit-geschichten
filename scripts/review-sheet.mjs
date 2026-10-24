@@ -82,16 +82,18 @@ function storyPage(id, group, lang, up) {
   const preview = l => `${up}${l === 'de' ? '' : `${l}/`}stories/${group[l].slug}/`;
   const alt = (l, i) => {
     const text = l === 'de' ? frames[i]?.alt : group[l].fm.frameAlts?.[i];
-    return text ? esc(text) : `<em class="missing" ${ui_}>${ui.noAlt}</em>`;
+    return altBlock(text);
   };
+  const altBlock = text => `<div class="alt"><span class="label" ${ui_}>${ui.altText}</span>${text ? esc(text) : `<em class="missing" ${ui_}>${ui.noAlt}</em>`}</div>`;
   const imgSrc = src => (src ? `${up}${String(src).replace(/^\//, '')}` : '');
 
   const head = `<tr><th></th>${present
     .map(l => {
       const f = group[l].fm;
-      const status = f.status === 'published' ? ui.published : ui.draft;
+      const status = f.status === 'published' ? `<span class="chip pub">${ui.published}</span>` : `<span class="chip">${ui.draft}</span>`;
       const reviewed = f.reviewedBy ? ui.reviewed(esc(f.reviewedBy), day(f.reviewedAt)) : ui.notReviewed;
-      return `<th scope="col" lang="${l}">${NAMES[l]}<br><small>${status} · ${reviewed}</small><br><a href="${preview(l)}">${ui.open}</a></th>`;
+      const note = notes[l] ? `<br><small class="note" ${ui_}>${esc(notes[l])}</small>` : '';
+      return `<th scope="col" lang="${l}">${NAMES[l]} ${status}<br><small>${reviewed}</small>${note}<br><a href="${preview(l)}">${ui.open}</a></th>`;
     })
     .join('')}</tr>`;
   const meta = [
@@ -103,7 +105,7 @@ function storyPage(id, group, lang, up) {
     .join('');
   const cover = de?.fm.cover?.src
     ? `<tr><th scope="row">${ui.picture}<img src="${imgSrc(de.fm.cover.src)}" alt="" loading="lazy"></th>${present
-        .map(l => cell(l, `<small ${ui_}>${ui.altText}:</small> ${(l === 'de' ? de.fm.cover.alt : group[l].fm.coverAlt) ? esc(l === 'de' ? de.fm.cover.alt : group[l].fm.coverAlt) : `<em class="missing" ${ui_}>${ui.noAlt}</em>`}`))
+        .map(l => cell(l, altBlock(l === 'de' ? de.fm.cover.alt : group[l].fm.coverAlt)))
         .join('')}</tr>`
     : '';
   const pages = Array.from({ length: rows }, (_, i) => {
@@ -113,7 +115,7 @@ function storyPage(id, group, lang, up) {
     return `<tr><th scope="row">${ui.page(i + 1)}${pic}</th>${present
       .map(l => {
         const text = (pagesOf[l][i]?.sentences ?? []).map(esc).join(' ');
-        const altLine = fi >= 0 ? `<p class="alt"><small ${ui_}>${ui.altText}:</small> ${alt(l, fi)}</p>` : '';
+        const altLine = fi >= 0 ? alt(l, fi) : '';
         return cell(l, `${text || '&ndash;'}${altLine}`);
       })
       .join('')}</tr>`;
@@ -137,13 +139,10 @@ function storyPage(id, group, lang, up) {
         .map(l => {
           const v = r.locales[l];
           if (!v) return cell(l, '&ndash;');
-          const list = (items, label) => (items.length ? `<p><strong>${label}</strong></p><ul>${items.map(i => `<li>${esc(say(i, lang))}</li>`).join('')}</ul>` : '');
+          const list = (items, label) => (items.length ? `<details><summary>${label} (${items.length})</summary><ul>${items.map(i => `<li>${esc(say(i, lang))}</li>`).join('')}</ul></details>` : '');
           return cell(l, list(v.mustItems, ui.needs) + list(v.shouldItems, ui.worth) || ui.nothing);
         })
         .join('')}</tr>`
-    : '';
-  const noteRow = Object.keys(notes).length
-    ? `<tr><th scope="row"></th>${present.map(l => cell(l, notes[l] ? `<p class="note" ${ui_}>${esc(notes[l])}</p>` : '')).join('')}</tr>`
     : '';
   const absent = LOCALES.filter(l => !group[l]);
   const checklists = Object.entries(ui.lists)
@@ -160,7 +159,7 @@ function storyPage(id, group, lang, up) {
     `${esc(name)} · ${ui.title}`,
     `<p><a href="../">${ui.back}</a></p><h1><bdi dir="ltr">${esc(id)}</bdi> <bdi>${esc(name)}</bdi></h1>
 <p>${esc(ui.intro)}</p>${absent.length ? `<p>${absent.map(l => `${NAMES[l]}: ${ui.noFile}`).join(' · ')}</p>` : ''}
-<div class="scroll"><table><thead>${head}</thead><tbody>${meta}${noteRow}${cover}${pages}${rest}${qs}${needs}</tbody></table></div>
+<div class="scroll"><table class="compare" style="min-width:${9 + present.length * 14}rem"><thead>${head}</thead><tbody>${meta}${cover}${pages}${rest}${qs}${needs}</tbody></table></div>
 <h2>${ui.checklists}</h2><div class="lists">${checklists}</div>`
   );
 }
@@ -170,12 +169,21 @@ function page(lang, title, main) {
   return `<!doctype html>
 <html lang="${lang}" dir="${ui.dir}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex"><title>${title}</title>
-<style>body{font:17px/1.5 system-ui,sans-serif;margin:1.5rem auto;padding:0 1rem;max-width:110rem;color:#24212e;background:#fbf5ea}
-.scroll{overflow-x:auto}table{border-collapse:collapse;min-width:100%}th,td{border:1px solid #24212e;padding:.5rem .7rem;vertical-align:top;min-width:15rem;max-width:28rem;text-align:start}
-thead th{position:sticky;top:0;background:#f2e8d6}tbody th{min-width:9rem;width:9rem;background:#f2e8d6}th img{display:block;width:100%;margin-top:.4rem;border-radius:6px}
-td[dir=rtl]{font-size:1.1em}.missing{color:#a02c1c}.alt,.note{color:#5b5566;margin:.4rem 0 0}h1{font-size:1.5rem}h4{margin:.6rem 0 .2rem}
-.lists{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}fieldset{border:1px solid #24212e;border-radius:8px}
-label{display:flex;gap:.5rem;align-items:flex-start;min-height:44px;padding:.2rem 0}input{width:22px;height:22px;flex:none}nav{margin-bottom:1rem}ul{padding-inline-start:1.2rem;margin:.2rem 0}</style></head>
+<style>body{font:16px/1.55 system-ui,sans-serif;margin:1.5rem auto;padding:0 1rem;max-width:110rem;color:#24212e;background:#fbf5ea}
+a{color:#2f6f62}h1{font-size:1.5rem}nav{margin-bottom:1rem}
+.scroll{overflow:auto;max-height:calc(100vh - 2rem);border:1px solid #e2d6c1;border-radius:10px;background:#fff}
+table{border-collapse:separate;border-spacing:0;min-width:100%}th,td{padding:.6rem .8rem;vertical-align:top;text-align:start;border-bottom:1px solid #e2d6c1;border-inline-start:1px solid #e2d6c1}
+.compare{table-layout:fixed;width:100%}.compare thead th:first-child{width:9rem}thead th{position:sticky;top:0;z-index:2;background:#f2e8d6}
+tbody th{position:sticky;inset-inline-start:0;z-index:1;width:9rem;min-width:9rem;background:#f8f1e4;font-weight:600}thead th:first-child{inset-inline-start:0;z-index:3}
+th img{display:block;width:100%;margin-top:.4rem;border-radius:6px}td[dir=rtl]{font-size:1.1em;line-height:1.8}
+.index td{min-width:6rem;max-width:none}.index tbody th{width:auto;min-width:14rem}.index tbody tr:hover>*{background:#fffaf1}.none{color:#8a8494}
+.chip{display:inline-block;font-size:.78rem;font-weight:600;padding:.1rem .5rem;border-radius:999px;background:#fbe6c4;color:#7a4800}.chip.pub{background:#dcefe2;color:#1d5e36}
+.missing{color:#a02c1c}.note{color:#7a4800;font-weight:400}.alt{margin-top:.5rem;padding:.4rem .6rem;border-radius:6px;background:#fbf5ea;font-size:.88rem;color:#5b5566}
+.label{display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}summary{cursor:pointer;font-weight:600}h4{margin:.6rem 0 .2rem}
+.lists{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}fieldset{border:1px solid #e2d6c1;border-radius:10px;background:#fff}
+label{display:flex;gap:.5rem;align-items:flex-start;min-height:44px;padding:.2rem 0}input{width:22px;height:22px;flex:none}ul{padding-inline-start:1.2rem;margin:.2rem 0}
+@media (max-width:44rem){.compare thead th:first-child{width:6rem}}
+@media print{.scroll{max-height:none;overflow:visible;border:0}thead th,tbody th{position:static}}</style></head>
 <body><main><nav aria-label="Language">${LANGS.map(l => (l === lang ? `<strong>${NAMES[l]}</strong>` : `<a data-lang="${l}" lang="${l}" href="#">${NAMES[l]}</a>`)).join(' · ')}</nav>${main}</main>
 <script>
 // Ticks are a personal aid while reading; they never leave this device and are not a review record.
@@ -200,17 +208,21 @@ function index(lang, up) {
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([id, group]) => {
       const name = (group.de ?? Object.values(group)[0]).fm.title ?? id;
-      const langs = LOCALES.filter(l => group[l])
-        .map(l => `${NAMES[l]}${group[l].fm.reviewedBy || l === 'de' ? '' : ' ○'}${group[l].fm.status === 'published' ? ' ●' : ''}`)
-        .join(' · ');
-      return `<li><a href="${esc(id)}/"><bdi dir="ltr">${esc(id)}</bdi> <bdi>${esc(name)}</bdi></a><br><small>${langs}</small></li>`;
+      const cells = LOCALES.map(l => {
+        const f = group[l]?.fm;
+        if (!f) return '<td class="none">&ndash;</td>';
+        const status = f.status === 'published' ? `<span class="chip pub">${ui.published}</span>` : `<span class="chip">${ui.draft}</span>`;
+        return `<td>${status}${f.reviewedBy ? ' ✓' : ''}</td>`;
+      }).join('');
+      return `<tr><th scope="row"><a href="${esc(id)}/"><bdi>${esc(name)}</bdi></a><br><small dir="ltr">${esc(id)}</small></th>${cells}</tr>`;
     })
     .join('');
   return page(
     lang,
     ui.title,
-    `<h1>${ui.title}</h1><p>${esc(ui.intro)}</p><p><small>● ${ui.published} · ○ ${ui.notReviewed}</small></p>
-<p><a href="${up}status/${folderOf(lang)}">${ui.status}</a> · <a href="${up}guide/${folderOf(lang)}">${ui.guide}</a></p><h2>${ui.stories}</h2><ul>${rows}</ul>`
+    `<h1>${ui.title}</h1><p>${esc(ui.intro)}</p><p><small>✓ = ${ui.reviewed('…', '')} · &ndash; = ${ui.noFile}</small></p>
+<p><a href="${up}status/${folderOf(lang)}">${ui.status}</a> · <a href="${up}guide/${folderOf(lang)}">${ui.guide}</a></p>
+<div class="scroll"><table class="index"><thead><tr><th scope="col">${ui.stories}</th>${LOCALES.map(l => `<th scope="col" lang="${l}">${NAMES[l]}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`
   );
 }
 
