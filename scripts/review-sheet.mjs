@@ -207,7 +207,7 @@ function index(lang, up) {
     lang,
     ui.title,
     `<h1>${ui.title}</h1><p>${esc(ui.intro)}</p><p><small>● ${ui.published} · ○ ${ui.notReviewed}</small></p>
-<p><a href="${up}status/${lang === 'de' ? '' : `${lang}/`}">${ui.status}</a></p><h2>${ui.stories}</h2><ul>${rows}</ul>`
+<p><a href="${up}status/${lang === 'de' ? '' : `${lang}/`}">${ui.status}</a> · <a href="${up}guide/${lang === 'de' ? '' : `${lang}/`}">${ui.guide}</a></p><h2>${ui.stories}</h2><ul>${rows}</ul>`
   );
 }
 

@@ -75,7 +75,7 @@ ${problem ? `<p><strong>${esc(problem)}</strong></p>` : ''}
 <p>${esc(ui.checked(sha ?? '?', new Date().toISOString()))}</p>
 ${gate ? `<h2>${ui.details}</h2><pre>${esc(gate)}</pre>` : ''}
 ${overview}
-<p><a href="${lang === 'de' ? '../' : '../../'}">${ui.open}</a></p></main></body></html>
+<p><a href="${lang === 'de' ? '../' : '../../'}">${ui.open}</a> · <a href="${lang === 'de' ? '../' : '../../'}guide/${lang === 'de' ? '' : `${lang}/`}">${ui.guide}</a> · <a href="${lang === 'de' ? '../' : '../../'}art/${lang === 'de' ? '' : `${lang}/`}">${ui.art}</a></p></main></body></html>
 `;
 }
 
