@@ -145,7 +145,7 @@ export function readiness(root = '.') {
       }
       // `must` and `should` stay English strings (status.json, the terminal); the items carry the code for other languages.
       record.locales[locale] = {
-        status: fm.status === 'draft' ? 'draft' : 'published',
+        status: fm.status === 'published' ? 'published' : 'draft',
         must: must.map(i => say(i, 'en')),
         should: should.map(i => say(i, 'en')),
         mustItems: must,
