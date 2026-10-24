@@ -21,6 +21,8 @@ const ROOT = 'en';
 const folderOf = lang => (lang === ROOT ? '' : `${lang}/`);
 const NAMES = { de: 'Deutsch', ar: 'العربية', en: 'English', tr: 'Türkçe', ur: 'اردو' };
 const RTL = new Set(['ar', 'ur']);
+// Mirrors the publishing gate: without STRICT_PUBLISHING a review is not part of the process, so the sheet leaves it out.
+const strictPublishing = ['1', 'true'].includes(process.env.STRICT_PUBLISHING ?? '');
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const plain = s => String(s).replace(/[*_`#>]/g, '').trim();
 const day = v => (v instanceof Date ? v.toISOString().slice(0, 10) : v ? String(v) : '');
@@ -91,9 +93,9 @@ function storyPage(id, group, lang, up) {
     .map(l => {
       const f = group[l].fm;
       const status = f.status === 'published' ? `<span class="chip pub">${ui.published}</span>` : `<span class="chip">${ui.draft}</span>`;
-      const reviewed = f.reviewedBy ? ui.reviewed(esc(f.reviewedBy), day(f.reviewedAt)) : ui.notReviewed;
+      const reviewed = !strictPublishing ? '' : `<br><small>${f.reviewedBy ? ui.reviewed(esc(f.reviewedBy), day(f.reviewedAt)) : ui.notReviewed}</small>`;
       const note = notes[l] ? `<br><small class="note" ${ui_}>${esc(notes[l])}</small>` : '';
-      return `<th scope="col" lang="${l}">${NAMES[l]} ${status}<br><small>${reviewed}</small>${note}<br><a href="${preview(l)}">${ui.open}</a></th>`;
+      return `<th scope="col" lang="${l}">${NAMES[l]} ${status}${reviewed}${note}<br><a href="${preview(l)}">${ui.open}</a></th>`;
     })
     .join('')}</tr>`;
   const meta = [
@@ -140,7 +142,8 @@ function storyPage(id, group, lang, up) {
           const v = r.locales[l];
           if (!v) return cell(l, '&ndash;');
           const list = (items, label) => (items.length ? `<details><summary>${label} (${items.length})</summary><ul>${items.map(i => `<li>${esc(say(i, lang))}</li>`).join('')}</ul></details>` : '');
-          return cell(l, list(v.mustItems, ui.needs) + list(v.shouldItems, ui.worth) || ui.nothing);
+          const should = strictPublishing ? v.shouldItems : v.shouldItems.filter(i => i.code !== 'review');
+          return cell(l, list(v.mustItems, ui.needs) + list(should, ui.worth) || ui.nothing);
         })
         .join('')}</tr>`
     : '';
@@ -158,7 +161,7 @@ function storyPage(id, group, lang, up) {
     lang,
     `${esc(name)} · ${ui.title}`,
     `<p><a href="../">${ui.back}</a></p><h1><bdi dir="ltr">${esc(id)}</bdi> <bdi>${esc(name)}</bdi></h1>
-<p>${esc(ui.intro)}</p>${absent.length ? `<p>${absent.map(l => `${NAMES[l]}: ${ui.noFile}`).join(' · ')}</p>` : ''}
+<p>${esc(strictPublishing ? ui.intro : ui.introNoReview)}</p>${absent.length ? `<p>${absent.map(l => `${NAMES[l]}: ${ui.noFile}`).join(' · ')}</p>` : ''}
 <div class="scroll"><table class="compare" style="min-width:${9 + present.length * 14}rem"><thead>${head}</thead><tbody>${meta}${cover}${pages}${rest}${qs}${needs}</tbody></table></div>
 <h2>${ui.checklists}</h2><div class="lists">${checklists}</div>`
   );
@@ -212,7 +215,7 @@ function index(lang, up) {
         const f = group[l]?.fm;
         if (!f) return '<td class="none">&ndash;</td>';
         const status = f.status === 'published' ? `<span class="chip pub">${ui.published}</span>` : `<span class="chip">${ui.draft}</span>`;
-        return `<td>${status}${f.reviewedBy ? ' ✓' : ''}</td>`;
+        return `<td>${status}${strictPublishing && f.reviewedBy ? ' ✓' : ''}</td>`;
       }).join('');
       return `<tr><th scope="row"><a href="${esc(id)}/"><bdi>${esc(name)}</bdi></a><br><small dir="ltr">${esc(id)}</small></th>${cells}</tr>`;
     })
@@ -220,7 +223,7 @@ function index(lang, up) {
   return page(
     lang,
     ui.title,
-    `<h1>${ui.title}</h1><p>${esc(ui.intro)}</p><p><small>✓ = ${ui.reviewed('…', '')} · &ndash; = ${ui.noFile}</small></p>
+    `<h1>${ui.title}</h1><p>${esc(strictPublishing ? ui.intro : ui.introNoReview)}</p><p><small>${strictPublishing ? `✓ = ${ui.reviewed('…', '')} · ` : ''}&ndash; = ${ui.noFile}</small></p>
 <p><a href="${up}status/${folderOf(lang)}">${ui.status}</a> · <a href="${up}guide/${folderOf(lang)}">${ui.guide}</a></p>
 <div class="scroll"><table class="index"><thead><tr><th scope="col">${ui.stories}</th>${LOCALES.map(l => `<th scope="col" lang="${l}">${NAMES[l]}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`
   );
