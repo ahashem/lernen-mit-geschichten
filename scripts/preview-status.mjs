@@ -46,11 +46,13 @@ function render(lang) {
   const switcher = LANGS.map(l =>
     l === lang ? `<strong>${NAMES[l]}</strong>` : `<a href="${base}${PATHS[l]}" hreflang="${l}" lang="${l}">${NAMES[l]}</a>`
   ).join(' · ');
+  // The reviewers' sheet sits beside this page: preview/review/ (German) or preview/review/<lang>/.
+  const review = lang === 'de' ? '../review/' : `../../review/${lang}/`;
   const cell = v => (v ? `${ui[v.status]}<br>${v.must.length ? ui.toDo(v.must.length) : ui.ready}` : '&ndash;');
   const list = (items, label) =>
     items.length ? `<p><strong>${label}</strong></p><ul>${items.map(i => `<li>${esc(say(i, lang))}</li>`).join('')}</ul>` : '';
   const detail = r =>
-    `<details><summary><bdi dir="ltr">${esc(r.id)}</bdi> <bdi>${esc(r.title)}</bdi>: ${toFix(r) ? ui.toDo(toFix(r)) : ui.blocksNothing}</summary>${LOCALES.filter(l => r.locales[l])
+    `<details><summary><bdi dir="ltr">${esc(r.id)}</bdi> <bdi>${esc(r.title)}</bdi>: ${toFix(r) ? ui.toDo(toFix(r)) : ui.blocksNothing}</summary><p><a href="${review}${encodeURIComponent(r.id)}/">${ui.reviewSheet}</a></p>${LOCALES.filter(l => r.locales[l])
       .map(l => {
         const v = r.locales[l];
         return `<h3>${l} (${ui[v.status]})</h3>${list(v.mustItems, ui.must)}${list(v.shouldItems, ui.should)}${v.must.length || v.should.length ? '' : `<p>${ui.nothing}</p>`}`;

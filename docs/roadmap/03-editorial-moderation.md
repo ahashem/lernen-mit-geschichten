@@ -51,8 +51,9 @@ Moderators work in the CMS on the `editorial` branch and never see git. Steps 1 
    pages or body, questions and the alt text in that language (`coverAlt`, `frameAlts` in the same order as the
    German pictures). A native speaker reads it and fills `reviewedBy` and `reviewedAt`. Recordings for that language
    go in `assets/audio/<language>/023-nora/`.
-10. **Preview.** Every save rebuilds the preview at `…/preview/` (drafts visible, `noindex`). A reviewer reads the real
-    page there, with pictures and audio, and fills `reviewedBy` and `reviewedAt` in the CMS.
+10. **Preview.** Every save rebuilds the preview at `…/preview/` (drafts visible, `noindex`). A reviewer opens the
+    story's sheet at `…/preview/review/` (all languages side by side with the pictures and the checklists below), reads
+    the real page in the preview, with pictures and audio, and fills `reviewedBy` and `reviewedAt` in the CMS.
 11. **Publish.** Set `status: published` on the files that are ready; leave unreviewed translations as `draft`. A few
     minutes after the save, CI merges the branch to `main` if everything passes and both sites update. The result,
     or the exact error, is on `…/preview/status/`, which also lists every story with its status in each language. To take a story down, set it to `draft`.
