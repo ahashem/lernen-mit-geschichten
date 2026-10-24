@@ -3,7 +3,6 @@ import { loadEnv } from 'vite';
 
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
-import partytown from '@astrojs/partytown';
 import sitemap from '@astrojs/sitemap';
 
 // A blank field in a hosting panel means unset, not empty.
@@ -59,11 +58,6 @@ export default defineConfig({
   integrations: [
     mdx(),
     react(),
-    partytown({
-      config: {
-        forward: ['dataLayer.push'],
-      },
-    }),
     sitemap({
       i18n: {
         defaultLocale: 'de',

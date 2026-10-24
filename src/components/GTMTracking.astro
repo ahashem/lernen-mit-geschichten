@@ -1,36 +1,27 @@
 ---
-interface Props {
-  gtmId?: string;
-}
+import { gtmId } from '@utils/consent';
 
-const { gtmId } = Astro.props;
+const id = gtmId();
 
-// A truthy check shipped `id=_` to production once; require a real container ID.
-const isValidGtmId = /^GTM-[A-Z0-9]+$/.test(gtmId?.trim() ?? '');
+// Nothing from Google loads before the choice on this device is "granted" (the key is CONSENT_KEY in
+// utils/consent.ts). Advertising signals stay denied; only analytics storage is granted. GTM reads consent commands
+// only in gtag's shape, an `arguments` object, hence the small function.
+const loader = `
+window.dataLayer = window.dataLayer || [];
+window.lmgLoadGtm = function () {
+  if (window.lmgGtmLoaded) return;
+  window.lmgGtmLoaded = true;
+  (function () { window.dataLayer.push(arguments); })('consent', 'default', {
+    ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'granted'
+  });
+  window.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtm.js?id=${id}';
+  document.head.appendChild(s);
+};
+try { if (localStorage.getItem('reader-consent') === 'granted') window.lmgLoadGtm(); } catch (e) {}
+`;
 ---
 
-{
-  isValidGtmId && (
-    <>
-      <script
-        type="text/partytown"
-        is:inline
-        set:html={`
-(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${gtmId?.trim()}');
-`}
-      />
-      <noscript>
-        <iframe
-          src={`https://www.googletagmanager.com/ns.html?id=${gtmId?.trim()}`}
-          height="0"
-          width="0"
-          style="display:none;visibility:hidden"
-        />
-      </noscript>
-    </>
-  )
-}
+{id && <script is:inline set:html={loader} />}

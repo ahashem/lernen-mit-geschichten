@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { fmt, getTranslation, type Locale } from '@utils/i18n';
+import { gtmId } from '@utils/consent';
 
 interface Props {
   locale: Locale;
@@ -8,8 +9,19 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
-const stored = [t('privacyStoredPrefs'), t('privacyStoredPlace'), t('privacyStoredLast')];
-const strings = { done: t('forgetDone') };
+const analytics = !!gtmId();
+const stored = [
+  t('privacyStoredPrefs'),
+  t('privacyStoredPlace'),
+  t('privacyStoredLast'),
+  ...(analytics ? [t('privacyStoredConsent')] : []),
+];
+const strings = {
+  done: t('forgetDone'),
+  granted: t('consentStateGranted'),
+  denied: t('consentStateDenied'),
+  unset: t('consentStateUnset'),
+};
 ---
 
 <BaseLayout title={t('privacyTitle')} locale={locale}>
@@ -25,6 +37,19 @@ const strings = { done: t('forgetDone') };
 
     <h2>{t('privacyGtmTitle')}</h2>
     <p>{t('privacyGtm')}</p>
+    {
+      analytics && (
+        <div class="consent-choice" data-consent-choice>
+          <p role="status" data-consent-state />
+          <button class="btn" type="button" data-choice="granted">
+            {t('consentYes')}
+          </button>
+          <button class="btn" type="button" data-choice="denied">
+            {t('consentNo')}
+          </button>
+        </div>
+      )
+    }
 
     <h2>{t('forgetTitle')}</h2>
     <p>{t('forgetText')}</p>
@@ -42,12 +67,24 @@ const strings = { done: t('forgetDone') };
 
 <script>
   import { forgetAllRecordings } from '@components/reader/voice-store';
+  import { clearAnalyticsCookies, readConsent, setConsent, type Consent } from '@utils/consent';
 
   const root = document.querySelector<HTMLElement>('.privacy')!;
   const s = JSON.parse(root.dataset.strings!);
   const forget = root.querySelector<HTMLButtonElement>('[data-forget]')!;
   const confirm = root.querySelector<HTMLElement>('[data-confirm]')!;
   const done = root.querySelector<HTMLElement>('[data-done]')!;
+  const choice = root.querySelector<HTMLElement>('[data-consent-choice]');
+
+  if (choice) {
+    const state = choice.querySelector<HTMLElement>('[data-consent-state]')!;
+    const show = () => (state.textContent = s[readConsent() ?? 'unset']);
+    show();
+    choice
+      .querySelectorAll<HTMLButtonElement>('[data-choice]')
+      .forEach(b => b.addEventListener('click', () => setConsent(b.dataset.choice as Consent)));
+    document.addEventListener('lmg-consent', show);
+  }
 
   forget.addEventListener('click', () => {
     confirm.hidden = false;
@@ -58,6 +95,7 @@ const strings = { done: t('forgetDone') };
     forget.focus();
   });
   root.querySelector('[data-yes]')!.addEventListener('click', async () => {
+    const counted = readConsent() === 'granted';
     // Only this site's keys: on staging the origin is shared with other projects.
     try {
       for (const key of Object.keys(localStorage))
@@ -75,6 +113,10 @@ const strings = { done: t('forgetDone') };
       /* no Cache API here */
     }
     delete document.documentElement.dataset.theme;
+    clearAnalyticsCookies();
+    // A loaded Tag Manager cannot be unloaded; reloading asks again, which shows the choice is gone.
+    if (counted) return location.reload();
+    document.dispatchEvent(new CustomEvent('lmg-consent'));
     confirm.hidden = true;
     done.textContent = s.done;
     forget.focus();
@@ -115,7 +157,15 @@ const strings = { done: t('forgetDone') };
   .confirm[hidden] {
     display: none;
   }
-  .confirm p {
+  .confirm p,
+  .consent-choice p {
     flex: 1 1 100%;
+  }
+  .consent-choice {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    align-items: center;
+    margin-block-start: var(--s-3);
   }
 </style>
