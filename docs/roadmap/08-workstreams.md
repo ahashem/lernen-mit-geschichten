@@ -205,14 +205,29 @@ handout (no reviewers or partners yet).
 
 ## Next
 
-Handover state after Run 6 and the moderator work (2026-10-18).
+Handover state after Run 6 and the moderator work (2026-10-18), updated 2026-10-24.
+
+### Since the handover (2026-10-24)
+
+- **Publishing is opt-in (PR 80).** Only a story file with `status: published` goes to production; a missing status is a
+  draft. Before this, 64 of 65 files had no status and were live. Staging (the Pages root) now shows drafts too, like
+  `/preview/`. Each locale's file carries its own status, so a translation goes live only when it is marked.
+- **Production shows only Bruno and Dino (German, PR 81).** They were published by the owner past the publishing gate
+  and still lack `summary`, `keyMessage`, `reviewedBy`, `reviewedAt`; Bruno also lacks cover and picture alt texts and
+  `art.generator`/`art.reviewedBy`. Every other story waits for a moderator to complete and publish it.
+- **Gate fix.** `publish-gates.mjs` read `skills` only as `["a"]`; the CMS writes a block list, so every CMS-saved story
+  was reported as having no skills.
+- **Home and cards (PR 82).** No "moving up" tile on Reader home shelves (the next shelf is right below, so it repeated a
+  story); the picture door reads "For little ones: listen and look" instead of repeating the first shelf's name; Library
+  cards no longer list language endonyms (the "Available in" filter and the story page cover it). `ux/03` is updated.
+- One blocked CMS save holds back every later one: the publish run is all or nothing.
 
 ### What exists
 
 - **Reader (M1-M3 slices):** storybook, chapter reader, homes, Library, language switch, Class room, print pack and class links, privacy page, offline behind `PUBLIC_OFFLINE` (off), "Read it in my voice" (bands 1-2), spoken first tap and "?" tour on Picture home, feedback `mailto` (`PUBLIC_FEEDBACK_EMAIL`), the A4 folio at `/folio`.
 - **Moderator tooling:** `scripts/readiness.mjs` (per story and language: needed before it can go live, and worth fixing), the preview-only status page in German, Arabic and English at `/preview/status/` (wording in `scripts/status-messages.mjs`) with `status.json` for tools, the publishing gate (now also blocks a published story whose pictures were never uploaded), the `characters` collection and a story `cast` field, `sync-editorial.yml` (merges `main` into `editorial` after every code merge; verified).
 - **Story pipeline** (n8n, LiteLLM, Hermes; lives outside this repo, pack v3.1): moderators start from a short brief, from an already approved text, or from a character idea; everything after approval (translations, pictures, sizes, names, files) is automated, with human gates for the text, the pictures and the review. Not built or run yet. It reads allowed frontmatter keys from `.pages.yml`, drafts character sheets from the approved story, and never writes `reviewedBy`, `reviewedAt` or `author`.
-- **Local tags** the sandbox could not push (SHAs in the PRs): `m4-feedback` 1eea470, `m4-moderator-gates` 8e7e048, `m4-booklet-strings` b2d50d8, `m5-first-tap` aad2ade, `m6-own-voice` 80ab3b9, `m4-story-readiness` 8d59902, `m4-characters` 51dc2c2, `m4-status-json` f2da7c5, `m3-folio` fed1bc6, `m3-folio-print` a7f8b39.
+- **Local tags** the sandbox could not push (SHAs in the PRs): `m4-feedback` 1eea470, `m4-moderator-gates` 8e7e048, `m4-booklet-strings` b2d50d8, `m5-first-tap` aad2ade, `m6-own-voice` 80ab3b9, `m4-story-readiness` 8d59902, `m4-characters` 51dc2c2, `m4-status-json` f2da7c5, `m3-folio` fed1bc6, `m3-folio-print` a7f8b39, `publish-opt-in` 476cc93.
 
 ### Known issues (found, not fixed)
 
@@ -238,7 +253,8 @@ Other:
 3. **Next engineering run: phone usability.** Fix known issues 1-3: the 56 px top bar and "For grown-ups" menu, the Library filter bottom sheet with compact cards, and the storybook controls staying on screen in `ar`/`ur`. Read `ux/03` §1a, §2, §5, `ux/05` Text expansion and Arabic and Urdu pitfalls; check de, ar and ur at 320 and 375 px. This benefits every user, so do it before more features.
 4. **Build the story pipeline** from pack v3.1 on your n8n (Mode 2, "paste approved text", first), then run its quality gate per model alias.
 5. **Moderator tools still planned:** the browser art-prep page (drop images, get 1200 px WebP files with the right names, nothing uploaded) and the per-story review sheet (all languages side by side with the review checklists), both preview-only. Open decisions: a reviewer-name dropdown (puts moderator names in the public repo), and machine-drafted summaries and alt texts for moderators to accept.
-6. **Owner, content and review.** Fix Bruno (page breaks, translation page counts, alt texts, a WebP frame), assign bands, write `summary` and `keyMessage`, supply a band 3-4 story, `feelings` and the first `thinkCards`. `node scripts/readiness.mjs` and the status page show what each story lacks. Rewrite the About page, then move its copy to the locale files.
+6. **Owner, content and review.** Most urgent since opt-in publishing: production shows only what is marked
+   `published`. Fix Bruno (page breaks, translation page counts, alt texts, a WebP frame), assign bands, write `summary` and `keyMessage`, supply a band 3-4 story, `feelings` and the first `thinkCards`. `node scripts/readiness.mjs` and the status page show what each story lacks. Rewrite the About page, then move its copy to the locale files.
 7. **Try with the five families:** "Read it in my voice" on a real tablet, the first-tap labels with real device voices in `ar`, `tr`, `ur`.
 8. **Once the data exists:** Find by feeling and the faces row (needs `feelings`), Library feeling and format filters, Klasse hint, language default from `navigator.languages`, skeleton loading states; chapter reader depth (paginated columns, Listen, think cards, glosses, second-language tools, add-to-list, Literata) and "Read it in my voice" for bands 3-4.
 9. **Later:** Library performance (measure first), responsive images once the art pipeline exists, Class room, print and offline depth (narration toggle, per-page prompts, discussion card `D`, Letter paper, detail switch, "Keep on this device"), recall and feeling talk cards, Lamp shelf and door, "Listen in the dark", an in-app "Less motion" switch, `skills` into `story-meta`, fold `001-bruno-interactive` into `001-bruno`, remember the language pair per story.
