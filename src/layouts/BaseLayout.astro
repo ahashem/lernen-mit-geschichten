@@ -5,6 +5,8 @@ import '@styles/global.css';
 import '@styles/rtl.css';
 import ClassLinkCard from '@components/ClassLinkCard.astro';
 import LanguageSelector from '@components/LanguageSelector.astro';
+import GrownUpsMenu from '@components/GrownUpsMenu.astro';
+import Icon from '@components/reader/Icon.astro';
 import GTMTracking from '@components/GTMTracking.astro';
 import ConsentBanner from '@components/ConsentBanner.astro';
 import type { Locale } from '@utils/i18n';
@@ -136,35 +138,22 @@ const jsonLd =
     <a href="#main-content" class="visually-hidden">{getTranslation(locale, 'skipToContent')}</a>
 
     <header>
-      <div class="container">
-        <nav>
-          <div class="nav-brand">
-            <a href={locale === 'de' ? `${base}/` : `${base}/${locale}`}>
-              <p class="site-title">{siteName}</p>
-              <p class="site-tagline">{getTranslation(locale, 'tagline')}</p>
-            </a>
-          </div>
-
-          <div class="nav-links">
-            <a href={locale === 'de' ? `${base}/` : `${base}/${locale}`}
-              >{getTranslation(locale, 'home')}</a
-            >
-            <a href={locale === 'de' ? `${base}/library` : `${base}/${locale}/library`}
-              >{getTranslation(locale, 'library')}</a
-            >
-            <a href={locale === 'de' ? `${base}/about` : `${base}/${locale}/about`}
-              >{getTranslation(locale, 'about')}</a
-            >
-            <a href={locale === 'de' ? `${base}/settings` : `${base}/${locale}/settings`}
-              >{getTranslation(locale, 'settings')}</a
-            >
-          </div>
-
+      <div class="container bar">
+        <a class="wordmark" href={locale === 'de' ? `${base}/` : `${base}/${locale}`}>{siteName}</a>
+        <nav class="bar-end" aria-label={getTranslation(locale, 'mainNav')}>
+          <a
+            class="bar-link"
+            href={locale === 'de' ? `${base}/library` : `${base}/${locale}/library`}
+          >
+            <Icon name="search" size={22} />
+            <span class="bar-label">{getTranslation(locale, 'library')}</span>
+          </a>
           <LanguageSelector
             currentLocale={locale}
             currentPath={Astro.url.pathname}
             storyHrefs={storyHrefs}
           />
+          <GrownUpsMenu locale={locale} />
         </nav>
       </div>
     </header>
@@ -248,43 +237,61 @@ const jsonLd =
         z-index: 1000;
       }
 
-      nav {
+      /* One 56 px bar on every width (ux/03 §1a): the wordmark, then Library, language and the grown-ups menu. */
+      .bar {
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        align-items: center;
-        padding-block: var(--s-3);
-        gap: var(--s-4);
-        flex-wrap: wrap;
+        gap: var(--s-3);
+        block-size: 56px;
       }
 
-      .nav-brand a {
-        text-decoration: none;
-        color: inherit;
-      }
-
-      .site-title {
-        font-size: var(--t-display-2);
+      .wordmark {
+        font-family: var(--font-display, inherit);
+        font-size: var(--t-ui);
+        font-weight: 700;
+        line-height: 1.15;
         color: var(--poppy-ink);
+        text-decoration: none;
+        min-inline-size: 0;
       }
 
-      .site-tagline {
-        font-size: var(--t-ui-sm);
-        color: var(--ink-2);
-      }
-
-      .nav-links {
+      .bar-end {
         display: flex;
-        flex-wrap: wrap;
-        gap: var(--s-1) var(--s-5);
         align-items: center;
+        gap: var(--s-2);
+        flex-shrink: 0;
       }
 
-      .nav-links a {
+      .bar-link {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
+        gap: var(--s-2);
         min-block-size: var(--tap-adult);
+        min-inline-size: var(--tap-adult);
+        padding-inline: var(--s-2);
+        border-radius: var(--r-m);
         font-weight: 600;
         color: var(--ink);
+        text-decoration: none;
+      }
+
+      @media (min-width: 600px) {
+        .wordmark {
+          font-size: var(--t-display-2);
+        }
+      }
+
+      @media (max-width: 599px) {
+        .bar-label {
+          position: absolute;
+          inline-size: 1px;
+          block-size: 1px;
+          overflow: hidden;
+          clip-path: inset(50%);
+          white-space: nowrap;
+        }
       }
 
       main {
@@ -302,21 +309,6 @@ const jsonLd =
 
       footer p {
         margin-block: var(--s-1);
-      }
-
-      @media (max-width: 768px) {
-        nav {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .nav-links {
-          justify-content: center;
-        }
-
-        .site-title {
-          font-size: 1.5rem;
-        }
       }
     </style>
   </body>

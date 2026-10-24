@@ -18,16 +18,18 @@ interface Props {
   minutes?: number;
   /** The shelf name, e.g. "Chapter stories". */
   shelf?: string;
+  /** Phones: cover beside the text instead of above it, so a list of stories stays short. */
+  row?: boolean;
 }
 
-const { locale, slug, storyId, title, meta, emoji, summary, skillLabels, minutes, shelf } =
+const { locale, slug, storyId, title, meta, emoji, summary, skillLabels, minutes, shelf, row } =
   Astro.props;
 const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
 const href =
   locale === 'de' ? `${BASE_PATH}/stories/${slug}` : `${BASE_PATH}/${locale}/stories/${slug}`;
 ---
 
-<article class="tile">
+<article class:list={['tile', { 'tile--row': row }]}>
   <a class="tile-cover" href={href} tabindex="-1" aria-hidden="true">
     <StoryArt
       picture={coverOf(meta, locale)}
@@ -114,6 +116,20 @@ const href =
     gap: var(--s-1) var(--s-3);
     font-size: var(--t-ui-sm);
     color: var(--ink-2);
+  }
+  @media (max-width: 599px) {
+    .tile--row {
+      flex-direction: row;
+    }
+    .tile--row .tile-cover {
+      flex: 0 0 7rem;
+      aspect-ratio: auto;
+      min-block-size: 7rem;
+    }
+    .tile--row .tile-body {
+      padding: var(--s-3);
+      align-content: center;
+    }
   }
   .tile:focus-within {
     outline: 3px solid var(--focus);

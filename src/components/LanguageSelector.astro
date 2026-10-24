@@ -149,6 +149,12 @@ const available = rows.filter(r => !r.missing);
   summary::-webkit-details-marker {
     display: none;
   }
+  /* The narrowest phones keep the endonym and drop the bubble, so the top bar stays one row. */
+  @media (max-width: 359px) {
+    summary :global(.icon) {
+      display: none;
+    }
+  }
   .panel {
     position: absolute;
     inset-inline-end: 0;

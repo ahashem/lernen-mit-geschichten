@@ -1235,12 +1235,14 @@ const description = summary || `${title} | ${t('siteName')}`;
     margin-block-start: var(--s-6);
   }
 
-  /* The book fills the screen: the story is the screen. */
+  /* The book is the screen (the site header is hidden while reading), never more: long text (Arabic, Urdu) scrolls
+     inside the page so the page controls always stay on screen. */
   .view.book {
     position: relative;
     display: grid;
-    grid-template-rows: auto 1fr auto;
-    min-block-size: calc(100dvh - 2 * var(--s-6));
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    block-size: 100dvh;
+    min-block-size: 22rem;
     margin-block: calc(-1 * var(--s-6));
     background: var(--paper);
   }
@@ -1318,11 +1320,12 @@ const description = summary || `${title} | ${t('siteName')}`;
   .pages {
     position: relative;
     overflow: hidden;
+    min-block-size: 0;
   }
 
   .page {
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
     block-size: 100%;
     outline: none;
   }
@@ -1334,12 +1337,15 @@ const description = summary || `${title} | ${t('siteName')}`;
   .frame {
     container-type: inline-size;
     aspect-ratio: 4 / 3;
+    max-block-size: 42dvh;
     background: var(--paper-2);
   }
 
   .texts {
     display: grid;
     align-content: start;
+    min-block-size: 0;
+    overflow-y: auto;
   }
 
   .lang-label {
@@ -1674,6 +1680,7 @@ const description = summary || `${title} | ${t('siteName')}`;
     .frame {
       aspect-ratio: 3 / 2;
       align-self: center;
+      max-block-size: none;
     }
 
     .story-text {
