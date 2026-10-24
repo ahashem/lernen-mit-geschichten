@@ -38,7 +38,7 @@ const files = [];
 for (const locale of readdirSync(STORIES)) {
   for (const file of readdirSync(join(STORIES, locale))) {
     const fm = head(readFileSync(join(STORIES, locale, file), 'utf8'));
-    files.push({ locale, file, fm, id: scalar(fm, 'storyId'), draft: scalar(fm, 'status') === 'draft' });
+    files.push({ locale, file, fm, id: scalar(fm, 'storyId'), draft: scalar(fm, 'status') !== 'published' });
   }
 }
 const source = new Map(files.filter(f => f.locale === 'de').map(f => [f.id, f]));
@@ -47,7 +47,8 @@ const source = new Map(files.filter(f => f.locale === 'de').map(f => [f.id, f]))
 const taxonomy = readdirSync(SKILLS)
   .filter(f => f.endsWith('.yaml'))
   .map(f => f.replace(/\.yaml$/, ''));
-const skillsOf = fm => [...(fm.match(/^skills:\s*\[(.*?)\]/m)?.[1] ?? '').matchAll(/"([^"]+)"/g)].map(m => m[1]);
+// Parsed as YAML: the CMS writes a block list where hand-written files use `skills: ["a", "b"]`.
+const skillsOf = fm => [parseYaml(fm)?.skills ?? []].flat().map(String);
 // A translation may carry its own skills when its story really differs from the German one; the report lists them.
 const overrides = [];
 const lacking = { skillLabels: {}, band: {}, summary: {}, keyMessage: {}, reviewedBy: {}, coverAlt: {}, frameAlts: {} };
