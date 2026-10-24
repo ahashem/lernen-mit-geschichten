@@ -80,6 +80,7 @@ questions:
       - "Wer seine Zeit gut teilt, schafft alles"
       - "Wer viel schläft, braucht nichts zu lernen"
     correctAnswer: "Wer seine Zeit gut teilt, schafft alles"
+status: published
 ---
 
 ## Die Geschichte

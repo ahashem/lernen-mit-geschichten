@@ -41,6 +41,7 @@ questions:
       - "Drawing is boring"
       - "You should always play"
     correctAnswer: "Being attentive is fun"
+status: published
 ---
 
 ## The Story

@@ -41,6 +41,7 @@ questions:
       - "Together we are stronger"
       - "Nuts are too heavy"
     correctAnswer: "Together we are stronger"
+status: published
 ---
 
 ## The Story

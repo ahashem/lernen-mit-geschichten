@@ -44,6 +44,7 @@ questions:
       - "Gemeinsam sind wir stärker"
       - "Nüsse sind zu schwer"
     correctAnswer: "Gemeinsam sind wir stärker"
+status: published
 ---
 
 ## Die Geschichte

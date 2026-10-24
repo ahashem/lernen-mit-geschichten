@@ -41,6 +41,7 @@ questions:
       - "کھانا"
       - "ناچنا"
     correctAnswer: "ناچنا"
+status: published
 ---
 
 ## کہانی

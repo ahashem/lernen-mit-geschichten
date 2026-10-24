@@ -44,6 +44,7 @@ questions:
       - "Zeichnen ist langweilig"
       - "Man sollte immer spielen"
     correctAnswer: "Aufmerksam zu sein macht Spaß"
+status: published
 ---
 
 ## Die Geschichte

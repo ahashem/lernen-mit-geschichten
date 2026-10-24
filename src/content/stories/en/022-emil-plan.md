@@ -41,6 +41,7 @@ questions:
       - "If something doesn't work, you must think differently"
       - "You should always do things the same way as before"
     correctAnswer: "If something doesn't work, you must think differently"
+status: published
 ---
 
 ## The Story

@@ -41,6 +41,7 @@ questions:
       - "Eating"
       - "Dancing"
     correctAnswer: "Dancing"
+status: published
 ---
 
 ## The Story

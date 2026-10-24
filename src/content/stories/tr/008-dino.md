@@ -77,6 +77,7 @@ questions:
       - "Soğuk kurabiyelerin lezzetli olmadığını."
       - "Sabırlı olmanın değerli olduğunu."
     correctAnswer: "Sabırlı olmanın değerli olduğunu."
+status: published
 ---
 
 ## Hikâye
