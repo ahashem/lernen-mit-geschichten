@@ -26,9 +26,9 @@ ready-made one-page handout (QR to the site, 3 recommended stories, the circle-t
 
 ## Measuring
 
-Open decision for the owner: either (a) no analytics, relying on partner feedback and server access logs, or (b)
-a cookieless, aggregate-only, EU-hosted counter with no identifiers, disclosed on the privacy page. Never GTM or
-anything that sets identifiers. If (b), track only: story opens, completion (reached the end), language, mode,
+Decided (2026-10-24): Google Analytics through Google Tag Manager, only after consent on the banner (`AGENTS.md`
+Analytics). A cookieless, aggregate-only, EU-hosted counter with no identifiers remains the alternative that would
+need no banner. Track only: story opens, completion (reached the end), language, mode,
 and offline installs, as daily aggregates.
 
 ## Roadmap shape

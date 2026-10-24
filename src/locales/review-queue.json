@@ -184,7 +184,16 @@
     "mainNav",
     "closeLabel",
     "showStories",
-    "showStoriesOne"
+    "showStoriesOne",
+    "consentLabel",
+    "consentText",
+    "consentMore",
+    "consentYes",
+    "consentNo",
+    "consentStateGranted",
+    "consentStateDenied",
+    "consentStateUnset",
+    "privacyStoredConsent"
   ],
   "tr": [
     "skipToContent",
@@ -371,7 +380,16 @@
     "mainNav",
     "closeLabel",
     "showStories",
-    "showStoriesOne"
+    "showStoriesOne",
+    "consentLabel",
+    "consentText",
+    "consentMore",
+    "consentYes",
+    "consentNo",
+    "consentStateGranted",
+    "consentStateDenied",
+    "consentStateUnset",
+    "privacyStoredConsent"
   ],
   "ur": [
     "skipToContent",
@@ -558,6 +576,15 @@
     "mainNav",
     "closeLabel",
     "showStories",
-    "showStoriesOne"
+    "showStoriesOne",
+    "consentLabel",
+    "consentText",
+    "consentMore",
+    "consentYes",
+    "consentNo",
+    "consentStateGranted",
+    "consentStateDenied",
+    "consentStateUnset",
+    "privacyStoredConsent"
   ]
 }
