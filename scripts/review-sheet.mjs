@@ -76,7 +76,7 @@ function storyPage(id, group, lang, up) {
     if (!aligned) notes[l] = ui.notAligned(deBook.pages.length, own.length);
   }
   const rows = Math.max(0, ...present.map(l => pagesOf[l].length));
-  const cell = (l, html) => `<td lang="${l}" dir="${RTL.has(l) ? 'rtl' : 'ltr'}">${html}</td>`;
+  const cell = (l, html) => `<td data-l="${l}" lang="${l}" dir="${RTL.has(l) ? 'rtl' : 'ltr'}">${html}</td>`;
   // Interface words inside a column keep the interface's own direction, so German text in an Arabic column reads right.
   const ui_ = `lang="${lang}" dir="${ui.dir}"`;
   const missing = `<em class="missing" ${ui_}>${ui.missing}</em>`;
@@ -95,7 +95,7 @@ function storyPage(id, group, lang, up) {
       const status = f.status === 'published' ? `<span class="chip pub">${ui.published}</span>` : `<span class="chip">${ui.draft}</span>`;
       const reviewed = !strictPublishing ? '' : `<br><small>${f.reviewedBy ? ui.reviewed(esc(f.reviewedBy), day(f.reviewedAt)) : ui.notReviewed}</small>`;
       const note = notes[l] ? `<br><small class="note" ${ui_}>${esc(notes[l])}</small>` : '';
-      return `<th scope="col" lang="${l}">${NAMES[l]} ${status}${reviewed}${note}<br><a href="${preview(l)}">${ui.open}</a></th>`;
+      return `<th scope="col" data-l="${l}" lang="${l}">${NAMES[l]} ${status}${reviewed}${note}<br><a href="${preview(l)}">${ui.open}</a></th>`;
     })
     .join('')}</tr>`;
   const meta = [
@@ -162,6 +162,7 @@ function storyPage(id, group, lang, up) {
     `${esc(name)} · ${ui.title}`,
     `<p><a href="../">${ui.back}</a></p><h1><bdi dir="ltr">${esc(id)}</bdi> <bdi>${esc(name)}</bdi></h1>
 <p>${esc(strictPublishing ? ui.intro : ui.introNoReview)}</p>${absent.length ? `<p>${absent.map(l => `${NAMES[l]}: ${ui.noFile}`).join(' · ')}</p>` : ''}
+<p class="pick" role="group" aria-label="${ui.show}">${ui.show}: ${present.map(l => `<label><input type="checkbox" data-col="${l}" checked> <span lang="${l}">${NAMES[l]}</span></label>`).join('')}</p>
 <div class="scroll"><table class="compare" style="min-width:${9 + present.length * 14}rem"><thead>${head}</thead><tbody>${meta}${cover}${pages}${rest}${qs}${needs}</tbody></table></div>
 <h2>${ui.checklists}</h2><div class="lists">${checklists}</div>`
   );
@@ -185,7 +186,9 @@ th img{display:block;width:100%;margin-top:.4rem;border-radius:6px}td[dir=rtl]{f
 .label{display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}summary{cursor:pointer;font-weight:600}h4{margin:.6rem 0 .2rem}
 .lists{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}fieldset{border:1px solid #e2d6c1;border-radius:10px;background:#fff}
 label{display:flex;gap:.5rem;align-items:flex-start;min-height:44px;padding:.2rem 0}input{width:22px;height:22px;flex:none}ul{padding-inline-start:1.2rem;margin:.2rem 0}
-@media (max-width:44rem){.compare thead th:first-child{width:6rem}}
+.pick{display:flex;flex-wrap:wrap;gap:.2rem 1rem;align-items:center}.pick label{display:inline-flex;align-items:center}
+${LOCALES.map(l => `.hide-${l} [data-l=${l}]`).join(',')}{display:none}
+@media (max-width:44rem){.compare thead th:first-child{width:6rem}.scroll{max-height:none}}
 @media print{.scroll{max-height:none;overflow:visible;border:0}thead th,tbody th{position:static}}</style></head>
 <body><main><nav aria-label="Language">${LANGS.map(l => (l === lang ? `<strong>${NAMES[l]}</strong>` : `<a data-lang="${l}" lang="${l}" href="#">${NAMES[l]}</a>`)).join(' · ')}</nav>${main}</main>
 <script>
@@ -195,6 +198,31 @@ document.querySelectorAll('input[data-key]').forEach(b => {
   try { b.checked = localStorage.getItem(k) === '1'; } catch (e) {}
   b.addEventListener('change', () => { try { b.checked ? localStorage.setItem(k, '1') : localStorage.removeItem(k); } catch (e) {} });
 });
+// Which languages the comparison shows, remembered on this device. On a small screen it starts with German and one
+// other language, since five columns do not fit.
+const table = document.querySelector('table.compare');
+const cols = [...document.querySelectorAll('input[data-col]')];
+if (table && cols.length) {
+  let hidden = null;
+  try { hidden = JSON.parse(localStorage.getItem('review-hidden')); } catch (e) {}
+  if (!Array.isArray(hidden)) {
+    const present = cols.map(b => b.dataset.col);
+    const other = present.includes('${lang}') && '${lang}' !== 'de' ? '${lang}' : present.find(l => l !== 'de');
+    hidden = matchMedia('(max-width: 60rem)').matches ? present.filter(l => l !== 'de' && l !== other) : [];
+  }
+  const apply = () => {
+    cols.forEach(b => table.classList.toggle('hide-' + b.dataset.col, !b.checked));
+    table.style.minWidth = 9 + cols.filter(b => b.checked).length * 14 + 'rem';
+  };
+  cols.forEach(b => {
+    b.checked = !hidden.includes(b.dataset.col);
+    b.addEventListener('change', () => {
+      apply();
+      try { localStorage.setItem('review-hidden', JSON.stringify(cols.filter(c => !c.checked).map(c => c.dataset.col))); } catch (e) {}
+    });
+  });
+  apply();
+}
 // The same page in another language: English has no prefix, the others add ar/ or de/ after review/.
 document.querySelectorAll('a[data-lang]').forEach(a => {
   const rest = location.pathname.replace(/^(.*\\/review\\/)(?:(?:ar|de)\\/)?/, '');
