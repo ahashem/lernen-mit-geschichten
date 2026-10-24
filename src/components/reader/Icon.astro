@@ -2,7 +2,17 @@
 // One hand-drawn-feel icon set on a 24 grid, 2.25 stroke, round caps (ux/02 Iconography).
 interface Props {
   name:
-    'home' | 'bubble' | 'play' | 'pause' | 'prev' | 'next' | 'more' | 'moon' | 'repeat' | 'speaker';
+    | 'home'
+    | 'bubble'
+    | 'play'
+    | 'pause'
+    | 'prev'
+    | 'next'
+    | 'more'
+    | 'moon'
+    | 'repeat'
+    | 'speaker'
+    | 'search';
   size?: number;
 }
 const { name, size = 24 } = Astro.props;
@@ -18,6 +28,7 @@ const paths: Record<string, string> = {
   repeat:
     'M4 12a8 8 0 0 1 13.7-5.6L20 8.5M20 4v4.5h-4.5M20 12a8 8 0 0 1-13.7 5.6L4 15.5M4 20v-4.5h4.5',
   speaker: 'M4 9.5v5h3.5L12 18.5v-13L7.5 9.5zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11',
+  search: 'M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13zM15.5 15.5 20 20',
 };
 const filled = name === 'play';
 const mirror = name === 'prev' || name === 'next';
