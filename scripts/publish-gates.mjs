@@ -5,9 +5,10 @@
  * Two things always fail: a translation with no German source file (nothing can supply its shared
  * fields), and shared fields written outside the German file (they would be silently ignored).
  *
- * `--changed=<ref>` adds the publishing gate for the moderators' automated pipeline: every story file changed
- * since <ref> that is `published` must be complete and reviewed by someone other than its author, or the run
- * fails. Untouched files are never held to it, so existing stories stay as they are.
+ * `--changed=<ref>` adds the publishing gate for the moderators' automated pipeline, for every story file changed
+ * since <ref>. A save that would lose a field always fails. `published` means live: whether a published file is
+ * complete and reviewed is reported as ADVICE, and blocks only with STRICT_PUBLISHING=1, which the owner switches on
+ * once there are reviewers. Untouched files are never held to it, so existing stories stay as they are.
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -19,6 +20,7 @@ const SHARED = ['band', 'cover', 'frames', 'palette', 'art', 'feelings', 'editor
 const SKILLS = 'src/content/skills';
 const CHARACTERS = 'src/content/characters';
 const strict = process.env.CONTENT_STRICT === '1';
+const strictPublishing = ['1', 'true'].includes(process.env.STRICT_PUBLISHING ?? '');
 const listStories = process.argv.includes('--stories');
 const changedRef = process.argv.find(a => a.startsWith('--changed='))?.slice('--changed='.length);
 
@@ -149,6 +151,7 @@ for (const line of hard) console.error(`FAIL ${line}`);
 
 // Publishing gate for changed files.
 const blocked = [];
+const advice = [];
 if (changedRef) {
   const changed = execFileSync('git', ['diff', '--name-only', `${changedRef}...HEAD`, '--', STORIES], { encoding: 'utf8' })
     .split('\n')
@@ -168,7 +171,7 @@ if (changedRef) {
     }
     if (f.draft) continue; // a draft is never held to the publishing rules
     const de = source.get(f.id);
-    const need = (cond, message) => cond || blocked.push(`${path}: ${message}`);
+    const need = (cond, message) => cond || (strictPublishing ? blocked : advice).push(`${path}: ${message}`);
     for (const field of ['summary', 'keyMessage', 'reviewedBy', 'reviewedAt']) need(has(f.fm, field), `published needs ${field}`);
     const by = scalar(f.fm, 'reviewedBy')?.toLowerCase();
     const author = scalar(f.fm, 'author')?.toLowerCase();
@@ -196,6 +199,9 @@ if (changedRef) {
     }
   }
   for (const line of blocked) console.error(`BLOCKED ${line}`);
-  console.log(`publishing gate: ${blocked.length ? blocked.length + ' problem(s)' : 'ok'} for ${changed.length} changed file(s)`);
+  for (const line of advice) console.log(`ADVICE ${line}`);
+  console.log(
+    `publishing gate: ${blocked.length ? blocked.length + ' problem(s)' : 'ok'}${advice.length ? `, ${advice.length} worth fixing` : ''} for ${changed.length} changed file(s)${strictPublishing ? '' : ' (STRICT_PUBLISHING off: review and completeness are advice)'}`
+  );
 }
 if (hard.length || blocked.length || (strict && missing)) process.exit(1);

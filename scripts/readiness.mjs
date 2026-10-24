@@ -13,6 +13,10 @@ import { alignTo, paginate } from '../src/utils/story-pages.ts';
 import { say } from './status-messages.mjs';
 
 export const LOCALES = ['de', 'en', 'ar', 'tr', 'ur'];
+// Mirrors the publishing gate: until the owner switches STRICT_PUBLISHING on, only these block; review and
+// completeness are "worth fixing".
+const strictPublishing = ['1', 'true'].includes(process.env.STRICT_PUBLISHING ?? '');
+const ALWAYS_MUST = new Set(['noGerman', 'skillUnknown', 'castUnknown']);
 const KB = 1024;
 
 function readStory(path) {
@@ -142,6 +146,10 @@ export function readiness(root = '.') {
         }
       } else {
         must.push(M('noGerman'));
+      }
+      if (!strictPublishing) {
+        should.unshift(...must.filter(i => !ALWAYS_MUST.has(i.code)));
+        must.splice(0, must.length, ...must.filter(i => ALWAYS_MUST.has(i.code)));
       }
       // `must` and `should` stay English strings (status.json, the terminal); the items carry the code for other languages.
       record.locales[locale] = {
