@@ -36,7 +36,8 @@ Moderators work in the CMS on the `editorial` branch and never see git. Steps 1 
    the repo.
 3. **Art in fal.** Generate the cover and one picture per page from the templates in `ux/06` with the character sheet
    attached. Check each picture against the Art checklist.
-4. **Prepare files.** 1200 px wide, WebP, named `023-nora_cover.webp` and `023-nora_frame-01_colour.webp`. Line
+4. **Prepare files.** 1200 px wide, WebP, named `023-nora_cover.webp` and `023-nora_frame-01_colour.webp`. The
+   preview's `…/preview/art/` page does this in the browser. The step-by-step guide for moderators is `…/preview/guide/`. Line
    drawings and SVG vectorising are an owner job for later and are optional.
 5. **Audio (optional).** One recording per page, trimmed and named `01.m4a`, `02.m4a`. Word timings are optional and
    need a technical tool; without them the reader highlights sentences.
