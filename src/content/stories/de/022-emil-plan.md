@@ -1,7 +1,7 @@
 ---
 title: "Emil und dem verrückten Plan"
 emoji: "📝"
-skills: ["goal-setting", "problem-solving"]
+skills: ["adaptability", "goal-setting", "problem-solving"]
 ageGroup: "3-7"
 band: "2"
 storyId: "022-emil-plan"

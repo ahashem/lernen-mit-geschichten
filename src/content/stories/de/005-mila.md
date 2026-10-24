@@ -1,7 +1,7 @@
 ---
 title: "Mila und der Wunsch-Ballon"
 emoji: "🎈"
-skills: ["effective-communication", "emotional-expression"]
+skills: ["effective-communication"]
 ageGroup: "3-7"
 band: "1"
 storyId: "005-mila"
