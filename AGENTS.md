@@ -56,8 +56,8 @@ node scripts/content-report.mjs            # which stories are missing which lan
 node scripts/content-report.mjs --matrix   # the full per-story grid
 ```
 
-**Unpublishing.** Set `status: draft` in a story's frontmatter — it then gets no page, no listing
-and no sitemap entry. Read the collection through `getPublishedStories()` in `src/utils/stories.ts`;
+**Publishing is opt-in.** Only a story file with `status: published` goes live; a missing status is a
+draft and gets no page, no listing and no sitemap entry in production. Each locale's file carries its own status. Read the collection through `getPublishedStories()` in `src/utils/stories.ts`;
 calling `getCollection('stories')` directly bypasses the gate and leaks a draft into one surface
 while the others hide it.
 
@@ -128,8 +128,8 @@ Node >= 24.
   `window.location` assignment. Astro rewrites markup but not JS string literals.
 - **Branches.** `editorial` is the default branch: the CMS commits to it and `editorial-publish.yml` squash-merges
   it into `main` through a pull request when the checks pass (`docs/roadmap/03`). Code changes go through pull requests with `--base main`. The
-  Pages site shows `main` at the root and `editorial` at `/preview/` with drafts (`SHOW_DRAFTS=1` plus `NOINDEX=1`;
-  a production build never shows them).
+  Pages site shows `main` at the root and `editorial` at `/preview/`, both with drafts (`SHOW_DRAFTS=1` plus
+  `NOINDEX=1`; a production build never shows them).
 - **Stories.** `src/content.config.ts` defines `stories` (one Markdown file per locale, joined by `storyId`). Language-neutral fields (`band`, `cover`, `frames`, `palette`,
   `art`) live only in the German file and are read through `getStoryMeta()`; other locales carry `coverAlt` and
   `frameAlts`. `.pages.yml` configures the CMS from this schema (every frontmatter key must be a field of its language's form, hidden

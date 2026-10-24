@@ -116,8 +116,8 @@ const storiesCollection = defineCollection({
     ageGroup: z.string().default('3-7').describe('Guidance for adults only; never shown to children.'),
     status: z
       .enum(['draft', 'published'])
-      .default('published')
-      .describe("'draft' unpublishes: no page, no listing, no sitemap entry."),
+      .default('draft')
+      .describe("Only 'published' goes live; anything else is a draft: no page, no listing, no sitemap entry."),
     publishDate: z.date().optional().describe('First publication date.'),
     author: z.string().optional().describe('Author credit.'),
     difficulty: z.enum(['beginner', 'intermediate']).optional().describe('Legacy hint; the band replaces it.'),

@@ -1,7 +1,8 @@
 name: Deploy to GitHub Pages
 
-# Staging is `main` at the site root; the moderators' preview is the `editorial` branch at /preview/, with drafts
-# visible. One Pages deployment carries both. Production (Hostinger) builds `main` on its own.
+# Staging is `main` at the site root and the moderators' preview is the `editorial` branch at /preview/; both show
+# drafts. One Pages deployment carries both. Production (Hostinger) builds `main` on its own and shows only published
+# stories.
 on:
   push:
     branches: [main, editorial]
@@ -50,6 +51,7 @@ jobs:
         env:
           SITE_URL: ${{ env.PAGES_URL }}
           NOINDEX: '1'
+          SHOW_DRAFTS: '1'
         run: BUILD_SHA=$(git rev-parse --short HEAD) npm run build
 
       - name: Detect the editorial branch
