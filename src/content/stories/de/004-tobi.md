@@ -7,6 +7,7 @@ band: "1"
 storyId: "004-tobi"
 difficulty: "beginner"
 publishDate: 2024-01-15
+status: published
 ---
 
 ## Die Geschichte

@@ -44,6 +44,7 @@ questions:
       - "Essen"
       - "Tanzen"
     correctAnswer: "Tanzen"
+status: published
 ---
 
 ## Die Geschichte

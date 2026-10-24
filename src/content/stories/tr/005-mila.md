@@ -62,6 +62,7 @@ questions:
       - "Mila ne oynamak istedi?"
       - "Hikâyenin mesajı nedir?"
     correctAnswer: ""
+status: published
 ---
 
 ## Hikâye

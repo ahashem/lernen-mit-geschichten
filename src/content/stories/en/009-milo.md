@@ -41,6 +41,7 @@ questions:
       - "A cardboard box"
       - "The carpet"
     correctAnswer: "A pillow"
+status: published
 ---
 
 🐾 Story: Milo Learns to Adapt

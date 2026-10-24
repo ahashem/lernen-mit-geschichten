@@ -48,6 +48,7 @@ questions:
     text: "Timmi hat gelernt: Erst denken, dann handeln."
     type: "truefalse"
     correctAnswer: "true"
+status: published
 ---
 
 ## Die Geschichte

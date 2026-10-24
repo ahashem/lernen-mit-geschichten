@@ -45,6 +45,7 @@ questions:
       - "Büyük kalpli küçük fare"
       - "Hızlı ayaklı fare"
     correctAnswer: "Büyük kalpli küçük fare"
+status: published
 ---
 
 ## Hikâye

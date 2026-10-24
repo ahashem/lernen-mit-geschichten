@@ -41,6 +41,7 @@ questions:
       - "Birlikte daha güçlüyüz"
       - "Cevizler çok ağırdır"
     correctAnswer: "Birlikte daha güçlüyüz"
+status: published
 ---
 
 ## Hikâye

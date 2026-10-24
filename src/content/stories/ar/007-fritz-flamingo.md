@@ -41,6 +41,7 @@ questions:
       - "الأَكْلُ"
       - "الرَّقْصُ"
     correctAnswer: "الرَّقْصُ"
+status: published
 ---
 
 ## القِصَّة
