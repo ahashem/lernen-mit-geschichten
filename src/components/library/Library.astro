@@ -58,6 +58,8 @@ const strings = {
   lengthLabel: t('lengthLabel'),
   skills: t('skills'),
   availableIn: t('availableInLabel'),
+  show: t('showStories'),
+  showOne: t('showStoriesOne'),
 };
 ---
 
@@ -72,83 +74,99 @@ const strings = {
     </form>
 
     <div class="layout">
-      <details class="filters" open data-filters>
-        <summary data-filter-summary>{t('filterButton')}</summary>
-        <div class="filter-groups">
-          <fieldset>
-            <legend>{t('skills')}</legend>
-            <div class="chips">
+      <div class="filters">
+        <button class="btn filter-open" type="button" aria-haspopup="dialog" data-filter-open>
+          {t('filterButton')}
+        </button>
+        <!-- Open in the markup so the filters show without JS; on phones the script closes it into a bottom sheet. -->
+        <dialog class="sheet" open aria-labelledby="filter-title" data-sheet>
+          <div class="sheet-head">
+            <h2 id="filter-title">{t('filterButton')}</h2>
+            <button class="sheet-close" type="button" aria-label={t('closeLabel')} data-sheet-close>
+              ×
+            </button>
+          </div>
+          <div class="filter-groups">
+            <fieldset>
+              <legend>{t('skills')}</legend>
+              <div class="chips">
+                {
+                  topSkills.map(s => (
+                    <label class="chip">
+                      <input type="checkbox" name="skill" value={s.id} />
+                      <span>{s.label}</span>
+                    </label>
+                  ))
+                }
+              </div>
               {
-                topSkills.map(s => (
-                  <label class="chip">
-                    <input type="checkbox" name="skill" value={s.id} />
-                    <span>{s.label}</span>
-                  </label>
-                ))
+                moreSkills.length > 0 && (
+                  <details class="all-skills">
+                    <summary>{t('allSkills')}</summary>
+                    <div class="chips">
+                      {moreSkills.map(s => (
+                        <label class="chip">
+                          <input type="checkbox" name="skill" value={s.id} />
+                          <span>{s.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </details>
+                )
               }
-            </div>
+            </fieldset>
+
             {
-              moreSkills.length > 0 && (
-                <details class="all-skills">
-                  <summary>{t('allSkills')}</summary>
+              bands.length > 1 && (
+                <fieldset>
+                  <legend>{t('shelfLabel')}</legend>
                   <div class="chips">
-                    {moreSkills.map(s => (
+                    {bands.map(b => (
                       <label class="chip">
-                        <input type="checkbox" name="skill" value={s.id} />
-                        <span>{s.label}</span>
+                        <input type="checkbox" name="shelf" value={b} />
+                        <span>{t(SHELF_KEY[b as 1 | 2 | 3 | 4])}</span>
                       </label>
                     ))}
                   </div>
-                </details>
+                </fieldset>
               )
             }
-          </fieldset>
 
-          {
-            bands.length > 1 && (
-              <fieldset>
-                <legend>{t('shelfLabel')}</legend>
-                <div class="chips">
-                  {bands.map(b => (
+            <fieldset>
+              <legend>{t('lengthLabel')}</legend>
+              <div class="chips">
+                {
+                  lengths.map(l => (
                     <label class="chip">
-                      <input type="checkbox" name="shelf" value={b} />
-                      <span>{t(SHELF_KEY[b as 1 | 2 | 3 | 4])}</span>
+                      <input type="checkbox" name="length" value={l.id} />
+                      <span>{l.text}</span>
                     </label>
-                  ))}
-                </div>
-              </fieldset>
-            )
-          }
+                  ))
+                }
+              </div>
+            </fieldset>
 
-          <fieldset>
-            <legend>{t('lengthLabel')}</legend>
-            <div class="chips">
-              {
-                lengths.map(l => (
-                  <label class="chip">
-                    <input type="checkbox" name="length" value={l.id} />
-                    <span>{l.text}</span>
-                  </label>
-                ))
-              }
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend>{t('availableInLabel')}</legend>
-            <div class="chips">
-              {
-                languages.map(l => (
-                  <label class="chip">
-                    <input type="checkbox" name="lang" value={l} />
-                    <span lang={l}>{endonyms[l]}</span>
-                  </label>
-                ))
-              }
-            </div>
-          </fieldset>
-        </div>
-      </details>
+            <fieldset>
+              <legend>{t('availableInLabel')}</legend>
+              <div class="chips">
+                {
+                  languages.map(l => (
+                    <label class="chip">
+                      <input type="checkbox" name="lang" value={l} />
+                      <span lang={l}>{endonyms[l]}</span>
+                    </label>
+                  ))
+                }
+              </div>
+            </fieldset>
+          </div>
+          <div class="sheet-foot">
+            <button class="btn btn--primary" type="button" data-sheet-done
+              >{t('showStories')}</button
+            >
+          </div>
+        </dialog>
+      </div>
 
       <section class="results" aria-labelledby="results-heading">
         <h2 id="results-heading" class="visually-hidden">{t('library')}</h2>
@@ -179,6 +197,7 @@ const strings = {
                   skillLabels={item.skills.map(id => label.get(id)).filter((x): x is string => !!x)}
                   minutes={item.minutes}
                   shelf={t(SHELF_KEY[item.band as 1 | 2 | 3 | 4])}
+                  row
                 />
               </li>
             ))
@@ -219,8 +238,10 @@ const strings = {
   const emptyText = root.querySelector<HTMLElement>('[data-empty-text]')!;
   const emptyRemove = root.querySelector<HTMLButtonElement>('[data-empty-remove]')!;
   const grid = root.querySelector<HTMLElement>('[data-grid]')!;
-  const panel = root.querySelector<HTMLDetailsElement>('[data-filters]')!;
-  const panelTitle = root.querySelector<HTMLElement>('[data-filter-summary]')!;
+  const sheet = root.querySelector<HTMLDialogElement>('[data-sheet]')!;
+  const openButton = root.querySelector<HTMLButtonElement>('[data-filter-open]')!;
+  const done = root.querySelector<HTMLButtonElement>('[data-sheet-done]')!;
+  const phone = matchMedia('(max-width: 899px)');
   const fmt = (text: string, v: Record<string, string | number>) =>
     text.replace(/\{(\w+)\}/g, (_, k) => String(v[k] ?? ''));
 
@@ -294,7 +315,8 @@ const strings = {
     const query = c.searchQuery?.trim() ?? '';
     const total = set.length + (query ? 1 : 0);
     clear.hidden = total === 0;
-    panelTitle.textContent = total ? fmt(s.filterWith, { n: total }) : s.filter;
+    openButton.textContent = total ? fmt(s.filterWith, { n: total }) : s.filter;
+    done.textContent = n === 1 ? s.showOne : fmt(s.show, { n });
 
     active.replaceChildren();
     const addChip = (text: string, onRemove: () => void) => {
@@ -337,9 +359,29 @@ const strings = {
     }
   }
 
+  // Phones get the filters as a modal bottom sheet behind "Filter (n)"; wider screens keep them open as a column.
+  function layout() {
+    if (phone.matches) {
+      if (sheet.open && !sheet.matches(':modal')) sheet.close();
+    } else if (!sheet.open) sheet.show();
+    else if (sheet.matches(':modal')) {
+      sheet.close();
+      sheet.show();
+    }
+  }
+  openButton.addEventListener('click', () => sheet.showModal());
+  for (const b of root.querySelectorAll('[data-sheet-close], [data-sheet-done]'))
+    b.addEventListener('click', () => {
+      sheet.close();
+      openButton.focus();
+    });
+  sheet.addEventListener('click', e => {
+    if (e.target === sheet && sheet.matches(':modal')) sheet.close();
+  });
+  phone.addEventListener('change', layout);
+
   fromUrl();
-  // Phones start with the filters folded away unless some are set.
-  if (matchMedia('(max-width: 899px)').matches && !location.search) panel.open = false;
+  layout();
   render();
   form.addEventListener('submit', e => {
     e.preventDefault();
@@ -385,13 +427,44 @@ const strings = {
     gap: var(--s-5);
     align-items: start;
   }
-  .filters {
+  .sheet {
+    position: static;
+    inline-size: auto;
+    max-inline-size: none;
+    margin: 0;
+    border: 0;
+    color: inherit;
     background: var(--card);
     border-radius: var(--r-l);
     box-shadow: var(--e-1);
     padding: var(--s-3) var(--s-4);
   }
-  .filters > summary,
+  .sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sheet-head h2 {
+    font-size: var(--t-ui);
+    min-block-size: var(--tap-adult);
+    display: flex;
+    align-items: center;
+  }
+  .sheet-close {
+    display: none;
+    min-block-size: var(--tap-adult);
+    min-inline-size: var(--tap-adult);
+    border: 0;
+    border-radius: var(--r-m);
+    background: transparent;
+    color: var(--ink);
+    font-size: 1.75rem;
+    cursor: pointer;
+  }
+  .sheet-foot,
+  .filter-open {
+    display: none;
+  }
   .all-skills > summary {
     min-block-size: var(--tap-adult);
     display: flex;
@@ -506,6 +579,49 @@ const strings = {
   @media (min-width: 900px) {
     .layout {
       grid-template-columns: 18rem 1fr;
+    }
+  }
+  @media (max-width: 899px) {
+    .layout {
+      gap: var(--s-3);
+    }
+    .filter-open {
+      display: inline-flex;
+    }
+    .sheet:modal {
+      position: fixed;
+      inset: auto 0 0;
+      inline-size: 100%;
+      max-block-size: 85dvh;
+      padding: 0;
+      border-radius: var(--r-l) var(--r-l) 0 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .sheet::backdrop {
+      background: rgb(0 0 0 / 0.4);
+    }
+    .sheet:modal .sheet-head {
+      padding: var(--s-2) var(--s-4);
+      border-block-end: 1px solid var(--rule);
+    }
+    .sheet:modal .sheet-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sheet:modal .filter-groups {
+      overflow-y: auto;
+      padding: var(--s-3) var(--s-4);
+    }
+    .sheet:modal .sheet-foot {
+      display: block;
+      padding: var(--s-3) var(--s-4);
+      border-block-start: 1px solid var(--rule);
+    }
+    .sheet-foot .btn {
+      inline-size: 100%;
+      justify-content: center;
     }
   }
 </style>

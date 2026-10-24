@@ -231,7 +231,10 @@ Handover state after Run 6 and the moderator work (2026-10-18), updated 2026-10-
 
 ### Known issues (found, not fixed)
 
-Mobile, measured at 375 px unless noted:
+Mobile, measured at 375 px unless noted. Issues 1-4 are fixed by the phone-usability PR (2026-10-24): a 56 px bar with
+Library, language and a "For grown-ups" menu; the filters as a bottom sheet with "Show n stories" and row cards on
+phones (about 165 px each); the storybook fits the screen and its text scrolls, so Prev and Next stay visible in `ar`
+and `ur` at 320 and 375 px.
 
 1. **Navbar is crowded.** The header takes about 260 px of a 740 px screen: site title, tagline, four links wrapping onto two rows, then the language button. `ux/03` §1a asks for a 56 px top bar with a "For grown-ups" menu.
 2. **Library filters are crowded.** Opening "Filter" gives a panel about 800 px tall (skills, shelf, length, language), taller than the screen, with no "show results" or close control. Each story card is about 500 px tall, so 15 stories make a page of about 7,800 px. `ux/03` §2 asks for a bottom sheet "Filter (n)" with chips that stay on one row.

@@ -249,5 +249,9 @@
   "folioPrint": "Dosyayı yazdır",
   "folioIndex": "Dizin: beceriler ve hikâyeler",
   "folioNoStories": "Bu dilde henüz hikâye yok.",
-  "folioScan": "Açmak için tara"
+  "folioScan": "Açmak için tara",
+  "mainNav": "Ana gezinme",
+  "closeLabel": "Kapat",
+  "showStories": "{n} hikâyeyi göster",
+  "showStoriesOne": "1 hikâyeyi göster"
 }

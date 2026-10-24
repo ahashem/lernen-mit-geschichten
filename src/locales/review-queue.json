@@ -180,7 +180,11 @@
     "folioPrint",
     "folioIndex",
     "folioNoStories",
-    "folioScan"
+    "folioScan",
+    "mainNav",
+    "closeLabel",
+    "showStories",
+    "showStoriesOne"
   ],
   "tr": [
     "skipToContent",
@@ -363,7 +367,11 @@
     "folioPrint",
     "folioIndex",
     "folioNoStories",
-    "folioScan"
+    "folioScan",
+    "mainNav",
+    "closeLabel",
+    "showStories",
+    "showStoriesOne"
   ],
   "ur": [
     "skipToContent",
@@ -546,6 +554,10 @@
     "folioPrint",
     "folioIndex",
     "folioNoStories",
-    "folioScan"
+    "folioScan",
+    "mainNav",
+    "closeLabel",
+    "showStories",
+    "showStoriesOne"
   ]
 }
