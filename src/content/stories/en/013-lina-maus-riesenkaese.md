@@ -89,6 +89,10 @@ So Max did it: 🐭 *Inhale... Exhale...* 🐭 *“5... 4... 3... 2... 1...”* 
 
 ---
 
+Suddenly, Max felt much **calmer**.
+
+---
+
 Then he had a **brilliant idea**: He climbed onto an old cookie tin, waved his tail, and called out: **“Hey everyone! If we share, everyone gets a piece! Even the elephant can chew!”
 
 ---
