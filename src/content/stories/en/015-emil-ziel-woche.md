@@ -2,7 +2,7 @@
 storyId: "015-emil-ziel-woche"
 status: draft
 title: " Emil – A 7-year-old boy with a wild imagination. Loves dinosaurs and big sandwiches. A bit lazy sometimes, but becomes a hero when there's a challenge!  Mimi – Emil’s little sister, 5 years old. Smart and playful. She loves teasing Emil but also helps him with ideas.  Mr. Schnurrbart – The family’s old gray cat, with a huge mustache. He doesn’t talk in real life, only in Emil’s imagination!  Ms. Wunderlich – The teacher of class 2B. Always smiling and believes every child can do great things if they start small."
-keyMessage: ""
+keyMessage: "Small goals can lead to big success – especially when you choose them yourself and make it fun! 🎯 ---"
 questions:
   - id: "q1"
     text: "Emil wants to become an astronaut by the end of the week."
@@ -152,9 +152,3 @@ Emil jumped up: **“I did THREE! I’m a Goal Master!”
 ---
 
 And in his mind, Mr. Schnurrbart purred: **“Mission accomplished, young hero.”
-
-### **🟡 Moral of the story:
-
----
-
-**Small goals can lead to big success – especially when you choose them yourself and make it fun! 🎯
