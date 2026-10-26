@@ -6,7 +6,7 @@ emoji: "🐢"
 skills: ["self-confidence"]
 band: "1"
 summary: "Timo, die Schildkröte, ist langsam und schüchtern. Doch sie lernt, dass jeder seine eigenen Stärken hat und sie so gut ist, wie sie ist."
-keyMessage: "Botschaft der Geschichte: Jedes Kind ist besonders. Man muss nicht der Schnellste, Lauteste oder Stärkste sein. Wichtig ist, an sich selbst zu glauben und stolz auf sich zu sein."
+keyMessage: "Jedes Kind ist besonders. Man muss nicht der Schnellste, Lauteste oder Stärkste sein. Wichtig ist, an sich selbst zu glauben und stolz auf sich zu sein."
 questions:
   - id: "q1"
     text: "Wie heißt die kleine Schildkröte?"

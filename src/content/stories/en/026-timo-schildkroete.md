@@ -2,7 +2,7 @@
 storyId: "026-timo-schildkroete"
 status: draft
 title: "The Story of Timo, the Little Turtle"
-keyMessage: "Moral of the story: Every child is special. You don’t need to be the fastest, the strongest, or the loudest. What matters is to believe in yourself and be proud of who you are."
+keyMessage: "Every child is special. You don’t need to be the fastest, the strongest, or the loudest. What matters is to believe in yourself and be proud of who you are."
 questions:
   - id: "q1"
     text: "What is the name of the little turtle?"

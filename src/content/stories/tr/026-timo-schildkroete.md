@@ -2,7 +2,7 @@
 storyId: "026-timo-schildkroete"
 status: draft
 title: "Küçük Kaplumbağa Timo’nun Hikâyesi"
-keyMessage: "Hikâyenin mesajı: Her çocuk özeldir. En hızlı, en güçlü ya da en gürültülü olmak gerekmez. Önemli olan kendine inanmak ve kendinle gurur duymaktır."
+keyMessage: "Her çocuk özeldir. En hızlı, en güçlü ya da en gürültülü olmak gerekmez. Önemli olan kendine inanmak ve kendinle gurur duymaktır."
 questions:
   - id: "q1"
     text: "Küçük kaplumbağanın adı neydi?"
