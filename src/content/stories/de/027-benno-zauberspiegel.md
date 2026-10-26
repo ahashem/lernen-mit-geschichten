@@ -5,7 +5,7 @@ title: "Die Geschichte von Benno und dem Zauberspiegel"
 emoji: "🪞"
 skills: ["self-awareness"]
 band: "1"
-summary: "Der kleine Bär Benni findet einen Zauberspiegel, der ihm hilft, sein eigenes Verhalten zu beobachten und sich drei Fragen zu stellen."
+summary: "Der kleine Benno findet einen Zauberspiegel, der ihm hilft, sein eigenes Verhalten zu beobachten und sich drei Fragen zu stellen."
 questions:
   - id: "q1"
     text: "Benno fand den Zauberspiegel im Park."

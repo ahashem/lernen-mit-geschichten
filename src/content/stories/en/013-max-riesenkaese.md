@@ -1,7 +1,7 @@
 ---
-storyId: "013-lina-maus-riesenkaese"
+storyId: "013-max-riesenkaese"
 status: draft
-title: "## 🐭 Max the Mouse and the Giant Cheese Stress 🧀"
+title: "Max the Mouse and the Giant Cheese"
 keyMessage: ""
 questions:
   - id: "q1"
@@ -75,7 +75,7 @@ Max started to **panic**. His paws shook. His heart beat like a marching drum. H
 
 ---
 
-### **🧠 But then, Max remembered what his Aunt Lilli had told him:
+🧠 But then, Max remembered what his Aunt Lilli had told him:
 
 **“If you feel stressed, just do these three things:”
 
@@ -111,7 +111,7 @@ In the end, Max sat happily, holding a piece of cheese in his paw, chewing and s
 
 ---
 
-### **🧀 Learn with Max! When you feel stressed...
+🧀 Learn with Max! When you feel stressed...
 
 ---
 

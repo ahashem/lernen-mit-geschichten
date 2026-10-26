@@ -1,7 +1,7 @@
 ---
-storyId: "014-leo-lernt-ruhig"
+storyId: "014-leo-bruellen"
 status: draft
-title: "He got angry very quickly!"
+title: "Leo the Lion Learns to Roar Calmly"
 keyMessage: ""
 questions:
   - id: "q1"

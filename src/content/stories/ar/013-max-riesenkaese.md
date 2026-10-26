@@ -1,7 +1,7 @@
 ---
-storyId: "013-lina-maus-riesenkaese"
+storyId: "013-max-riesenkaese"
 status: draft
-title: "🐭 ماكس الفأر وتوتُّر الجُبْنِ الضَّخْم 🧀"
+title: "ماكس الفأر وتوتُّر الجُبْنِ الضَّخْم"
 keyMessage: ""
 questions:
   - id: "q1"

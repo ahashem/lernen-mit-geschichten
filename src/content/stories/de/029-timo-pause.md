@@ -40,6 +40,7 @@ questions:
       - "Ein Eichhörnchen"
       - "Ein Hase"
       - "Ein Eichhörnchen"
+    correctAnswer: "️ Richtige Antwort:"
   - id: "q10"
     text: "Was wollte Timo sofort machen?"
     type: "multiplechoice"
@@ -48,6 +49,7 @@ questions:
       - "Rutschen"
       - "Fangen spielen"
       - "Rutschen"
+    correctAnswer: "️ Richtige Antwort:"
   - id: "q11"
     text: "Wer sagte: „Bei uns wartet jeder in der Reihe“?"
     type: "multiplechoice"
@@ -56,6 +58,7 @@ questions:
       - "Lila"
       - "Emma"
       - "Lila"
+    correctAnswer: "️ Richtige Antwort:"
   - id: "q12"
     text: "Wer ist der Lehrer auf dem Schulhof?"
     type: "multiplechoice"
@@ -64,6 +67,7 @@ questions:
       - "Frau Eule"
       - "Onkel Hase"
       - "Herr Bär"
+    correctAnswer: "️ Richtige Antwort:"
   - id: "q13"
     text: "Was lernte Timo am Ende?"
     type: "multiplechoice"
@@ -72,6 +76,7 @@ questions:
       - "Dass Regeln keinen Spaß machen"
       - "Dass Rücksicht wichtig ist"
       - "Dass Rücksicht wichtig ist"
+    correctAnswer: "️ Richtige Antwort:"
 ---
 
 In einer kleinen Schule lebte ein fröhliches Eichhörnchen namens Timo. Timo liebte die große Pause, weil er dann mit allen Tieren spielen konnte.

@@ -1,7 +1,7 @@
 ---
-storyId: "014-leo-lernt-ruhig"
+storyId: "014-leo-bruellen"
 status: draft
-title: "🦁 لِيُو الأَسَدُ يَتَعَلَّمُ كَيْفَ يَزْأَرُ بِهُدُوءٍ"
+title: "لِيُو الأَسَدُ يَتَعَلَّمُ كَيْفَ يَزْأَرُ بِهُدُوءٍ"
 keyMessage: ""
 questions:
   - id: "q1"

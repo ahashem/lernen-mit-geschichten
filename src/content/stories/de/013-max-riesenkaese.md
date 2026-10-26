@@ -1,11 +1,11 @@
 ---
-storyId: "013-lina-maus-riesenkaese"
+storyId: "013-max-riesenkaese"
 status: draft
-title: "🐭 Max, die Maus und der Riesenkäse-Stress 🧀"
+title: "Max, die Maus und der Riesenkäse-Stress"
 emoji: "🐭"
 skills: ["stress-management"]
 band: "1"
-summary: "Lina, eine kleine nervöse Maus, entdeckt einen riesigen Käse und gerät in Stress. Sie erinnert sich an den Rat ihrer Tante Lilli und lernt, ruhig zu bleiben."
+summary: "Max, eine kleine nervöse Maus, entdeckt einen riesigen Käse und gerät in Stress. Er erinnert sich an den Rat seiner Oma und lernt, ruhig zu bleiben."
 questions:
   - id: "q1"
     text: "Warum war Max nervös beim großen Käse?"

@@ -1,12 +1,12 @@
 ---
 storyId: "024-lina-bruecke"
 status: draft
-title: "Lina und die verschwundene Brücke Es war einmal ein kleines Dorf am Rande eines großen Waldes. In diesem Dorf lebte ein fröhliches Mädchen namens Lina. Lina war bekannt für ihre Neugier und ihre verrückten Ideen. Eines Tages wollte sie ihre Freunde auf der anderen Seite des Flusses besuchen. Doch – oh Schreck! – die alte Holzbrücke war verschwunden. Nur noch ein paar Bretter schwammen im Wasser. „Oh nein! Wie komme ich jetzt rüber?“ rief Lina. Die Dorfbewohner standen ratlos da. Einer schlug vor: „Wir warten einfach, bis jemand eine neue Brücke baut.“ Ein anderer meinte: „Dann bleiben wir eben zu Hause.“ Aber Lina dachte nach. 🧐 „Es muss doch eine andere Möglichkeit geben!“ Sie schaute sich um. Am Ufer lagen große Kürbisse vom Bauernhof. Plötzlich begann Lina zu grinsen: „Ha! Ich habe eine Idee!“ Sie nahm die Kürbisse, band sie mit Seilen zusammen – und baute daraus ein schwimmendes Floß. Die Leute staunten. „Das kann doch nicht funktionieren!“ lachten sie. Doch Lina setzte sich mutig auf ihr Kürbis-Floß. Es schwankte ein wenig, aber es hielt. Langsam paddelte sie über den Fluss – und tatsächlich, sie kam heil auf der anderen Seite an! Die Kinder jubelten und riefen: „Lina, du bist genial! Du hast eine Brücke aus Kürbissen gemacht!“ Von diesem Tag an nannten alle im Dorf Lina die Ideenfinderin. Und wenn es ein Problem gab, fragten sie: „Was würde wohl Lina tun?“"
+title: "Lina und die verschwundene Brücke"
 emoji: "🐴"
 skills: ["creative-thinking"]
 band: "1"
 summary: "Linas Brücke über den Fluss ist verschwunden. Während die Dorfbewohner nur ratlos warten, bastelt Lina aus Kürbissen ein Floß und findet einen überraschenden Weg ans andere Ufer."
-keyMessage: "Botschaft für Kinder: Manchmal ist die erste Lösung nicht die beste. Wenn man kreativ denkt, findet man neue, lustige und überraschende Wege, ein Problem zu lösen."
+keyMessage: "Manchmal ist die erste Lösung nicht die beste. Wenn man kreativ denkt, findet man neue, lustige und überraschende Wege, ein Problem zu lösen."
 questions:
   - id: "q1"
     text: "Lina lebt in einer großen Stadt."
@@ -90,9 +90,6 @@ questions:
     text: "Wie nannten die Dorfbewohner Lina am Ende der Geschichte?"
     type: "fillinblank"
 ---
-
-Geschichte: Lina und die verschwundene Brücke
-
 ---
 
 Es war einmal ein kleines Dorf am Rande eines großen Waldes. In diesem Dorf lebte ein fröhliches Mädchen namens Lina. Lina war bekannt für ihre Neugier und ihre verrückten Ideen.

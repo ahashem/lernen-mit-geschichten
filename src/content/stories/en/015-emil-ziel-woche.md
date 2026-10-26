@@ -2,7 +2,7 @@
 storyId: "015-emil-ziel-woche"
 status: draft
 title: " Emil – A 7-year-old boy with a wild imagination. Loves dinosaurs and big sandwiches. A bit lazy sometimes, but becomes a hero when there's a challenge!  Mimi – Emil’s little sister, 5 years old. Smart and playful. She loves teasing Emil but also helps him with ideas.  Mr. Schnurrbart – The family’s old gray cat, with a huge mustache. He doesn’t talk in real life, only in Emil’s imagination!  Ms. Wunderlich – The teacher of class 2B. Always smiling and believes every child can do great things if they start small."
-keyMessage: "Small goals can lead to big success – especially when you choose them yourself and make it fun! 🎯 ---"
+keyMessage: "Small goals can lead to big success – especially when you choose them yourself and make it fun! 🎯"
 questions:
   - id: "q1"
     text: "Emil wants to become an astronaut by the end of the week."
@@ -65,7 +65,7 @@ questions:
       - "How to cook broccoli"
 ---
 
-### **The Story:
+The Story:
 
 One day, Ms. Wunderlich told the class: **“This week, we’re going to learn how to set *small goals* that we can *really achieve*!”
 
@@ -91,7 +91,7 @@ At home, his sister Mimi jumped in front of him: **“I bet you can’t do 3 sma
 
 ---
 
-### **🥦 Day 1 – The Broccoli Goal
+🥦 Day 1 – The Broccoli Goal
 
 **Goal: I will eat 3 pieces of broccoli without drama.
 
@@ -109,7 +109,7 @@ With a dramatic face, Emil crunched the broccoli. In his imagination, Mr. Schnur
 
 ---
 
-### **👟 Day 2 – The Shoe Goal
+👟 Day 2 – The Shoe Goal
 
 **Goal: I will put on my shoes in the morning without Mom calling me five times.
 
@@ -123,7 +123,7 @@ He jumped out of bed like a ninja and landed in his shoes – on the wrong feet,
 
 ---
 
-### **💬 Day 3 – The Sister Goal
+💬 Day 3 – The Sister Goal
 
 **Goal: I will say 3 kind things to Mimi.
 
@@ -139,7 +139,7 @@ Mimi raised an eyebrow. “Does that even count?” Emil took a deep breath. **�
 
 Mimi nodded proudly. ✅ **Done!
 
-### **🎉 Friday at School
+🎉 Friday at School
 
 ---
 

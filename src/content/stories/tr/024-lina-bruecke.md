@@ -1,8 +1,8 @@
 ---
 storyId: "024-lina-bruecke"
 status: draft
-title: "Lina ve Kayıp Köprü Bir varmış bir yokmuş… Büyük bir ormanın kenarında küçük bir köy varmış. Bu köyde Lina adında neşeli bir kız yaşarmış. Lina, merakı ve çılgın fikirleriyle tanınırmış. Bir gün Lina, nehrin karşı tarafındaki arkadaşlarını ziyaret etmek istemiş. Ama – aman Tanrım! – eski tahta köprü kaybolmuş. Suda yalnızca birkaç tahta parçası yüzüyormuş. “Ah hayır! Şimdi nasıl karşıya geçeceğim?” diye bağırmış Lina. Köylüler çaresizce durmuşlar. Biri demiş ki: “Yeni bir köprü yapılana kadar bekleyelim.” Bir başkası demiş ki: “O zaman evimizde kalalım.” Ama Lina düşünmeye başlamış 🧐: “Başka bir yol olmalı!” Etrafına bakmış ve kıyıda büyük balkabaklarını görmüş. Birden gülümsemiş ve şöyle demiş: “Aha! Bir fikrim var!” Balkabaklarını almış, iplerle birbirine bağlamış ve onlardan yüzen bir sal yapmış. Köylüler şaşırmış. Bazıları gülüp demiş ki: “Bu asla işe yaramaz!” Ama Lina cesurca balkabağı salına binmiş. Sal biraz sallanmış, ama batmamış. Yavaşça bir tahta parçasıyla kürek çekmiş ve güvenle karşı kıyıya ulaşmış. Karşı kıyıdaki çocuklar sevinçle bağırmış: “Lina, harikasın! Balkabaklarından köprü yaptın!” O günden sonra köylüler Lina’ya Fikir Bulucu adını vermişler. Ve ne zaman bir sorun olsa, şöyle derlermiş: “Acaba Lina ne yapardı?”"
-keyMessage: "Çocuklar için mesaj: Bazen ilk çözüm en iyisi değildir. Ama yaratıcı düşündüğümüzde, sorunları çözmek için yeni, eğlenceli ve şaşırtıcı yollar bulabiliriz."
+title: "Lina ve Kayıp Köprü"
+keyMessage: "Bazen ilk çözüm en iyisi değildir. Ama yaratıcı düşündüğümüzde, sorunları çözmek için yeni, eğlenceli ve şaşırtıcı yollar bulabiliriz."
 questions:
   - id: "q1"
     text: "Lina büyük bir şehirde yaşıyor."
@@ -86,9 +86,6 @@ questions:
     text: "Köylüler hikâyenin sonunda Lina’ya hangi adı verdiler?"
     type: "fillinblank"
 ---
-
-Hikâye: Lina ve Kayıp Köprü
-
 ---
 
 Bir varmış bir yokmuş… Büyük bir ormanın kenarında küçük bir köy varmış. Bu köyde Lina adında neşeli bir kız yaşarmış. Lina, merakı ve çılgın fikirleriyle tanınırmış.

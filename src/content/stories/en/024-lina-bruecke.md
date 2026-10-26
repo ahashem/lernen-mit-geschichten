@@ -1,8 +1,8 @@
 ---
 storyId: "024-lina-bruecke"
 status: draft
-title: "Lina and the Missing Bridge Once upon a time, in a small village at the edge of a big forest, there lived a cheerful girl named Lina. Lina was known for her curiosity and her crazy ideas. One day, she wanted to visit her friends on the other side of the river. But – oh no! – the old wooden bridge had disappeared, and only a few planks were floating in the water. “Oh dear! How will I get across?” cried Lina. The villagers stood there helpless. One of them said: “Let’s just wait until someone builds a new bridge.” Another said: “Then we’ll just stay at home.” But Lina started to think 🧐: “There must be another way!” She looked around and saw big pumpkins from the village farm lying by the riverbank. Suddenly she smiled and said: “Aha! I have an idea!” She took the pumpkins, tied them together with ropes, and built a floating raft. The people were astonished. Some laughed and said: “That will never work!” But Lina bravely sat on the pumpkin raft. It rocked a little, but it held. Slowly, she paddled with a piece of wood until she reached the other side safely. The children on the opposite bank cheered: “Lina, you are brilliant! You made a bridge out of pumpkins!” From that day on, the villagers called Lina the Idea Finder. And whenever they faced a problem, they asked: “What would Lina do?”"
-keyMessage: "Message for Children: Sometimes the first solution is not the best. But when we think creatively, we can find new, funny, and surprising ways to solve problems."
+title: "Lina and the Missing Bridge"
+keyMessage: "Sometimes the first solution is not the best. But when we think creatively, we can find new, funny, and surprising ways to solve problems."
 questions:
   - id: "q1"
     text: "Lina lives in a big city."
@@ -86,9 +86,6 @@ questions:
     text: "What nickname did the villagers give Lina at the end of the story?"
     type: "fillinblank"
 ---
-
-Story: Lina and the Missing Bridge
-
 ---
 
 Once upon a time, in a small village at the edge of a big forest, there lived a cheerful girl named Lina. Lina was known for her curiosity and her crazy ideas.

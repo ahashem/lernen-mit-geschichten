@@ -1,11 +1,11 @@
 ---
-storyId: "014-leo-lernt-ruhig"
+storyId: "014-leo-bruellen"
 status: draft
-title: "🦁 Leo der Löwe lernt, ruhig zu brüllen"
+title: "Leo der Löwe lernt, ruhig zu brüllen"
 emoji: "🦁"
 skills: ["anger-management"]
 band: "1"
-summary: "Leo, der Affe, wird schnell wütend und schreit. Die Schildkröte gibt ihm drei Tipps gegen die Wut, und Leo lernt, seine Gefühle mit Worten auszudrücken."
+summary: "Leo, ein kleiner Löwe, wird schnell wütend und schreit. Die weise Schildkröte gibt ihm drei Tipps gegen die Wut, und Leo lernt, seine Gefühle mit Worten auszudrücken."
 questions:
   - id: "q1"
     text: "Leo wird schnell wütend."

@@ -33,10 +33,10 @@ questions:
     type: "multiplechoice"
     options:
       - "Bir tilki"
-      - "Bir sincap 🐿"
+      - "Bir sincap 🐿️"
       - "Bir tavşan"
       - "Bir sincap"
-    correctAnswer: "Doğru cevap:"
+    correctAnswer: "️ Doğru cevap:"
   - id: "q10"
     text: "Timo hemen ne yapmak istedi?"
     type: "multiplechoice"
@@ -45,7 +45,7 @@ questions:
       - "Kaymak 🎢"
       - "Ebelemece oynamak"
       - "Kaymak"
-    correctAnswer: "Doğru cevap:"
+    correctAnswer: "️ Doğru cevap:"
   - id: "q11"
     text: "“Bizde herkes sırada bekler” diyen kimdir?"
     type: "multiplechoice"
@@ -54,7 +54,7 @@ questions:
       - "Lila 🐇"
       - "Emma"
       - "Lila"
-    correctAnswer: "Doğru cevap:"
+    correctAnswer: "️ Doğru cevap:"
   - id: "q12"
     text: "Okul bahçesinde öğretmen kimdir?"
     type: "multiplechoice"
@@ -63,7 +63,7 @@ questions:
       - "Bayan Baykuş"
       - "Tavşan Amca"
       - "Bay Ayı"
-    correctAnswer: "Doğru cevap:"
+    correctAnswer: "️ Doğru cevap:"
   - id: "q13"
     text: "Timo sonunda ne öğrendi?"
     type: "multiplechoice"
@@ -72,7 +72,7 @@ questions:
       - "Kurallar eğlenceli değildir"
       - "Başkalarını düşünmek önemlidir 🤝"
       - "Başkalarını düşünmek önemlidir"
-    correctAnswer: "Doğru cevap:"
+    correctAnswer: "️ Doğru cevap:"
 ---
 
 Küçük bir okulda neşeli bir sincabın adı Timo idi. Timo büyük teneffüsü çok severdi, çünkü tüm hayvanlarla oynayabiliyordu.
