@@ -189,4 +189,3 @@ Node >= 24.
 ## Known gaps
 
 - Legacy `locale === 'de' ? …` ternaries still hold UI text in a few components.
-- `de/001-bruno-interactive.md` is a draft with placeholder image URLs and its own page text; it is not folded into `001-bruno` yet.
