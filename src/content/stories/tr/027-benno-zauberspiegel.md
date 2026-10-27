@@ -1,9 +1,7 @@
 ---
 storyId: "027-benno-zauberspiegel"
 status: draft
-title: "Benno ve Sihirli Ayna"
-keyMessage: ""
-questions:
+title: "Benno ve Sihirli Ayna"questions:
   - id: "q1"
     text: "Benno sihirli aynayı parkta buldu."
     type: "truefalse"

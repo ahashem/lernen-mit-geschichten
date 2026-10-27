@@ -1,9 +1,7 @@
 ---
 storyId: "032-benno-waschbaer"
 status: draft
-title: "The Story of Benno, the Curious Raccoon"
-keyMessage: ""
-questions:
+title: "The Story of Benno, the Curious Raccoon"questions:
   - id: "q1"
     text: "Benno is a little raccoon."
     type: "truefalse"

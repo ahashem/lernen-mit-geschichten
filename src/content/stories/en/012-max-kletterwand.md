@@ -1,9 +1,7 @@
 ---
 storyId: "012-max-kletterwand"
 status: draft
-title: "Max and the Big Climbing Wall"
-keyMessage: ""
-questions:
+title: "Max and the Big Climbing Wall"questions:
   - id: "q1"
     text: "Where is Max today?"
     type: "multiplechoice"

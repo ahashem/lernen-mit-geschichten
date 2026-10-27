@@ -1,9 +1,7 @@
 ---
 storyId: "032-benno-waschbaer"
 status: draft
-title: "Benno’nun Hikâyesi: Meraklı Rakun"
-keyMessage: ""
-questions:
+title: "Benno’nun Hikâyesi: Meraklı Rakun"questions:
   - id: "q1"
     text: "Benno küçük bir rakundur."
     type: "truefalse"

@@ -72,6 +72,7 @@ questions:
       - "Benno, der König"
       - "Benno, der Verhaltens-Detektiv"
     correctAnswer: "Benno, der Verhaltens-Detektiv"
+keyMessage: "Schau ehrlich in den Spiegel: Wer sich selbst kennt, wächst."
 ---
 
 Es war einmal ein fröhlicher Junge namens Benno. Benno liebte es, den ganzen Tag zu spielen, zu lachen und Quatsch zu machen. Doch manchmal merkte er gar nicht, dass sein Verhalten andere störte.

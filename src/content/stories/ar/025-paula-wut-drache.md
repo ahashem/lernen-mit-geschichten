@@ -1,9 +1,7 @@
 ---
 storyId: "025-paula-wut-drache"
 status: draft
-title: "بَاوْلَا وَتَنِّينُ الغَضَبِ الصَّغِيرُ"
-keyMessage: ""
-questions:
+title: "بَاوْلَا وَتَنِّينُ الغَضَبِ الصَّغِيرُ"questions:
   - id: "q1"
     text: "مَا اسْمُ الفَتَاةِ فِي القِصَّةِ؟"
     type: "multiplechoice"

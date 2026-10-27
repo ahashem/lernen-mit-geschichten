@@ -119,6 +119,7 @@ questions:
       - "„Hurra!“"
       - "„Hallo!“"
       - "„Nein!“"
+keyMessage: "Fehler gehören dazu – wer aus ihnen lernt, wird klüger."
 ---
 
 Es war einmal ein kleiner Waschbär namens Benno. Benno war sehr neugierig – manchmal vielleicht zu neugierig. Er wollte alles ausprobieren, ohne richtig nachzudenken.

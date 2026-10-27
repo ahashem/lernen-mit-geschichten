@@ -46,6 +46,7 @@ questions:
   - id: "q13"
     text: "Leo hört nur zu, wenn es um Essen geht."
     type: "fillinblank"
+keyMessage: "Wer gut zuhört, versteht besser – und verpasst nichts Wichtiges."
 ---
 
 Es war einmal ein kleiner Löwe namens Leo. Leo war sehr neugierig und voller Energie. Aber Leo hatte ein Problem: Er hörte nie richtig zu.

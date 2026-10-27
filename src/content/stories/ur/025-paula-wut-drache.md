@@ -1,9 +1,7 @@
 ---
 storyId: "025-paula-wut-drache"
 status: draft
-title: "پاؤلا اور چھوٹا غصے والا اژدہا"
-keyMessage: ""
-questions:
+title: "پاؤلا اور چھوٹا غصے والا اژدہا"questions:
   - id: "q1"
     text: "کہانی میں لڑکی کا نام کیا ہے؟"
     type: "multiplechoice"

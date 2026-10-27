@@ -57,6 +57,7 @@ questions:
       - "Leo, der laute Löwe"
       - "Leo, der wütende Löwe"
       - "Leo, der Löwe mit dem ruhigen Brüllen"
+keyMessage: "Wütend zu sein ist normal – aber wie du wütend bist, macht den Unterschied. Sag, was du fühlst – ohne zu brüllen wie ein Staubsaugermonster!"
 ---
 
 In einem bunten Dschungel voller lustiger Tiere lebte Leo, ein kleiner Löwe mit einer wilden Mähne und einem großen Herzen. Aber Leo hatte ein Problem: Er wurde schnell wütend!

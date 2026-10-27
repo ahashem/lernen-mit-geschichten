@@ -1,9 +1,7 @@
 ---
 storyId: "014-leo-bruellen"
 status: draft
-title: "لِيُو الأَسَدُ يَتَعَلَّمُ كَيْفَ يَزْأَرُ بِهُدُوءٍ"
-keyMessage: ""
-questions:
+title: "لِيُو الأَسَدُ يَتَعَلَّمُ كَيْفَ يَزْأَرُ بِهُدُوءٍ"questions:
   - id: "q1"
     text: "ليُو يغضب بسرعة."
     type: "truefalse"

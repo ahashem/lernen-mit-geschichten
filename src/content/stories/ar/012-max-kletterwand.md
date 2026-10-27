@@ -1,9 +1,7 @@
 ---
 storyId: "012-max-kletterwand"
 status: draft
-title: "ماكس والجِدار الكبير للتَّسَلُّق"
-keyMessage: ""
-questions:
+title: "ماكس والجِدار الكبير للتَّسَلُّق"questions:
   - id: "q1"
     text: "أينَ كان ماكس اليوم؟"
     type: "multiplechoice"

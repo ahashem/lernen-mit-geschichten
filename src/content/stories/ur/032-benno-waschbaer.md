@@ -1,9 +1,7 @@
 ---
 storyId: "032-benno-waschbaer"
 status: draft
-title: "تجسّس پسند ریچھ نما جانور (رَکُون)"
-keyMessage: ""
-questions:
+title: "تجسّس پسند ریچھ نما جانور (رَکُون)"questions:
   - id: "q1"
     text: "بینّو ایک چھوٹا رَکُون ہے۔"
     type: "truefalse"

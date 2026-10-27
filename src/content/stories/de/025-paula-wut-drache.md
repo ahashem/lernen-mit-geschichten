@@ -71,6 +71,7 @@ questions:
       - "Wut ist normal, aber man kann sie kontrollieren."
       - "Man darf immer laut schreien."
     correctAnswer: "Wut ist normal, aber man kann sie kontrollieren."
+keyMessage: "Wut ist normal – aber du kannst lernen, sie ohne Brüllen loszuwerden."
 ---
 
 Es war einmal ein Mädchen namens Paula. Paula war fröhlich, neugierig – und manchmal sehr schnell wütend.

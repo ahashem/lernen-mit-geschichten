@@ -1,9 +1,7 @@
 ---
 storyId: "011-leo-zuhoeren"
 status: draft
-title: "قصة ليو، الأسدُ الصَّغيرُ الذي تعلَّمَ الاستماعَ"
-keyMessage: ""
-questions:
+title: "قصة ليو، الأسدُ الصَّغيرُ الذي تعلَّمَ الاستماعَ"questions:
   - id: "q1"
     text: "ما اسم الأسد الصغير؟"
     type: "fillinblank"

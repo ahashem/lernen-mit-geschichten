@@ -63,6 +63,7 @@ questions:
   - id: "q12"
     text: "Max hat Angst vor Käse."
     type: "truefalse"
+keyMessage: "Wenn alles zu viel wird: tief durchatmen, in kleine Schritte teilen – dann wird es leichter."
 ---
 
 Es war einmal eine kleine Maus namens Max, die in einem gemütlichen Mauseloch unter dem alten Apfelbaum lebte. Max war schlau, schnell – und ein klein wenig nervös.

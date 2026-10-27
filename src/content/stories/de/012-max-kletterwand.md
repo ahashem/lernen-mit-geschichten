@@ -74,6 +74,7 @@ questions:
   - id: "q13"
     text: "Max lernt, dass es gut ist, um Hilfe zu bitten."
     type: "truefalse"
+keyMessage: "Um Hilfe zu bitten ist keine Schwäche – es ist ein mutiger Schritt zum Ziel."
 ---
 
 Max ist ein kleiner Junge. Heute ist er im Park. Im Park gibt es eine große Kletterwand. Max möchte hochklettern, aber die Wand ist sehr, sehr hoch!
