@@ -116,6 +116,19 @@ export function alignTo(
   }));
 }
 
+/**
+ * Talk prompts for grown-ups: the story's `discussion`, else its questions. True/false items are statements,
+ * often false on purpose ("Bruno is a little dog."), so they never become prompts.
+ */
+export function talkPrompts(
+  data: { discussion?: string[]; questions?: { text: string; type: string }[] },
+  max: number
+): string[] {
+  const prompts =
+    data.discussion ?? data.questions?.filter(q => q.type !== 'truefalse').map(q => q.text) ?? [];
+  return prompts.slice(0, max);
+}
+
 /** A card or meta description when a story has no `summary`: derived, never stored. */
 export function firstSentence(body: string, locale: Locale): string {
   const { pages } = paginate(body, locale, 1);
