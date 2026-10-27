@@ -56,9 +56,15 @@ One morning, Benni decided he would show his mom how well he could make a jam sa
 
 ---
 
-He took the bread, the knife, and the jar of jam… And then – splat! The sandwich landed on the floor. Of course, with the jam side down! “Oh no!” cried Benni. “I’m terrible! I can’t do anything right!” Mama Bear came into the kitchen and looked at the mess. Then she laughed.
+He took the bread, the knife, and the jar of jam… And then – splat! The sandwich landed on the floor. Of course, with the jam side down!
 
 ---
+
+“Oh no!” cried Benni. “I’m terrible! I can’t do anything right!”
+
+---
+
+Mama Bear came into the kitchen and looked at the mess. Then she laughed.
 
 “You know what, Benni?” she said, as she helped him clean up. “Do you know what you just learned?”
 
@@ -66,15 +72,11 @@ He took the bread, the knife, and the jar of jam… And then – splat! The sand
 
 Benni sniffled. “That I’m a sandwich disaster bear?”
 
----
-
 Mama smiled. “No – you learned that jam loves to fly! And that the knife shouldn’t go straight into the jar like a rocket!”
 
 ---
 
 Benni giggled. “So... was that a learning flight?”
-
----
 
 “Exactly!” said Mama. “Mistakes are like little teachers – with sticky fingers!”
 
@@ -86,14 +88,10 @@ The next day, Benni tried again. This time very carefully. And… TA-DA! The san
 
 Benni beamed. “I’m a jam sandwich master now!”
 
----
-
 Mama Bear clapped. “And that’s all because you learned from your mistake!”
 
 ---
 
 Since that day, Benni never called his mistakes “disasters” anymore – he called them “training adventures.”
-
----
 
 And sometimes, just for fun, he throws a slice of bread in the air… but of course, without jam!
