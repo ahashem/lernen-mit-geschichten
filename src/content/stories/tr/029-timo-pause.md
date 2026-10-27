@@ -2,7 +2,7 @@
 storyId: "029-timo-pause"
 status: draft
 title: "Timo ve Büyük Teneffüs"
-keyMessage: "Hikâyenin Dersi Çocuklar şunları öğrenir: sosyal ilişkilerde kurallar önemlidir, örneğin beklemek, dinlemek, paylaşmak ve özür dilemek."
+keyMessage: "Çocuklar şunları öğrenir: sosyal ilişkilerde kurallar önemlidir, örneğin beklemek, dinlemek, paylaşmak ve özür dilemek."
 questions:
   - id: "q1"
     text: "Timo neşeli bir sincaptır. → Doğru"
