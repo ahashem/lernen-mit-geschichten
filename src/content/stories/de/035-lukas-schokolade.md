@@ -5,7 +5,7 @@ title: "Lukas und die Schokoladen-Katastrophe"
 emoji: "🍫"
 skills: ["apologizing", "honesty"]
 band: "1"
-summary: "Es war einmal ein kleiner Junge namens Lukas. Ein ehrliches ‚Entschuldigung‘ ist stärker als Schokolade."
+summary: "Lukas liebt Schokolade über alles – doch als er das Auto seiner Freundin kaputt macht, lernt er, dass eine ehrliche Entschuldigung stärker ist als Schokolade."
 keyMessage: "Ein ehrliches ‚Entschuldigung‘ ist stärker als Schokolade. 🍫✨"
 questions:
   - id: "q1"
