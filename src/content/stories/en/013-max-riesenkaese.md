@@ -57,8 +57,6 @@ questions:
 
 Once upon a time, there was a little mouse named **Max who lived in a cozy mouse hole under an old apple tree. Max was clever, quick — and a little bit **nervous**.
 
----
-
 One day, Max heard some exciting news: **“A giant cheese has fallen in the village! Right in front of the bakery!”
 
 ---
@@ -79,9 +77,11 @@ Max started to **panic**. His paws shook. His heart beat like a marching drum. H
 
 **“If you feel stressed, just do these three things:”
 
+1. **Take a deep breath – like a sleeping hamster. 2. **Count backward from 5 to 1 – slowly, like a turtle.
+
 ---
 
-1. **Take a deep breath – like a sleeping hamster. 2. **Count backward from 5 to 1 – slowly, like a turtle. 3. **Say something kind to yourself – like: ‘I can do this!’
+3. **Say something kind to yourself – like: ‘I can do this!’
 
 ---
 
@@ -91,21 +91,17 @@ So Max did it: 🐭 *Inhale... Exhale...* 🐭 *“5... 4... 3... 2... 1...”* 
 
 Suddenly, Max felt much **calmer**.
 
----
-
 Then he had a **brilliant idea**: He climbed onto an old cookie tin, waved his tail, and called out: **“Hey everyone! If we share, everyone gets a piece! Even the elephant can chew!”
 
 ---
 
 All the animals looked at Max. Then they laughed. And said: **“Great idea, Max!”
 
----
-
 They cut the cheese into lots of pieces – even tiny ones for the ants! 🐜
 
-In the end, Max sat happily, holding a piece of cheese in his paw, chewing and smiling, thinking:
-
 ---
+
+In the end, Max sat happily, holding a piece of cheese in his paw, chewing and smiling, thinking:
 
 **“When you stay calm, you think better. And cheese tastes even better without stress!” 😋
 
@@ -113,10 +109,10 @@ In the end, Max sat happily, holding a piece of cheese in his paw, chewing and s
 
 🧀 Learn with Max! When you feel stressed...
 
----
-
-* Take a deep breath, just like Max. * Count from 5 to 1, slowly. * Say something kind to yourself.
+* Take a deep breath, just like Max.
 
 ---
+
+* Count from 5 to 1, slowly. * Say something kind to yourself.
 
 **And soon, your big cheese-stress will turn into a cheesy success! 🧀💛
