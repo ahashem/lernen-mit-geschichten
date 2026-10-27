@@ -51,15 +51,13 @@ questions:
 
 When someone took his toy, Leo would shout: "Give it back! RAAAWR!"
 
-When he lost, he would stomp his paws and say: "Not fair! Everything is stupid!"
-
 ---
+
+When he lost, he would stomp his paws and say: "Not fair! Everything is stupid!"
 
 The other animals were afraid of him. The monkey Milo would climb the tallest tree when Leo roared. The parrot Lola would fly away and shout: "Leo's a volcano again!"
 
 One day, the wise turtle Tina said to Leo: "You know, Leo, it’s okay to be angry. But you have to learn how to be angry without roaring like a vacuum cleaner on monster mode!"
-
----
 
 Leo looked confused. "A vacu...what?"
 
@@ -71,11 +69,7 @@ Tina laughed and gave him three tricks:
 
 1. Take a deep breath and count to 5 – like a sloth in a math test.
 
----
-
 2. Say how you feel instead of shouting. For example: "I feel sad because you took my toy."
-
----
 
 3. Do an anger dance – jump, spin, wiggle, until the anger gets tired.
 
@@ -89,7 +83,11 @@ Leo tried it. Next time Milo took his ball, Leo took a deep breath... ...wiggled
 
 ---
 
-Milo was amazed. "Wow, you didn’t explode! Here’s your ball! And... do you want to play together?" Leo smiled. From that day on, Leo became the roaring lion who prefers dancing over shouting. And all the animals called him:
+Milo was amazed. "Wow, you didn’t explode! Here’s your ball! And... do you want to play together?"
+
+---
+
+Leo smiled. From that day on, Leo became the roaring lion who prefers dancing over shouting. And all the animals called him:
 
 ---
 
