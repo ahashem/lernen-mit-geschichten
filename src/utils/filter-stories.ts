@@ -67,6 +67,24 @@ export function matchesFilter(story: StoryFilterData, criteria: FilterCriteria):
 }
 
 /**
+ * The skills an area selection stands for: a ticked area means all its skills, unless skills of that area are ticked
+ * too, which narrow it to those. A ticked skill whose area is not ticked (a shared link) counts on its own.
+ */
+export function skillsForAreas(
+  areas: string[],
+  skills: string[],
+  areaOf: Record<string, string>
+): string[] {
+  const out = new Set(skills.filter(id => !areas.includes(areaOf[id])));
+  for (const area of areas) {
+    const picked = skills.filter(id => areaOf[id] === area);
+    const all = Object.keys(areaOf).filter(id => areaOf[id] === area);
+    for (const id of picked.length ? picked : all) out.add(id);
+  }
+  return [...out];
+}
+
+/**
  * Filters an array of stories based on criteria
  */
 export function filterStories<T extends StoryFilterData>(

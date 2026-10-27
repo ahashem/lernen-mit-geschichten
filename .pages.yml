@@ -498,7 +498,13 @@ content:
         label: Group in the filter
         required: true
         options:
-          values: [emotional, social, cognitive, behavioral]
+          values:
+            - { value: self, label: Knowing Myself }
+            - { value: emotions, label: Feelings & Stress }
+            - { value: thinking, label: Thinking & Problem Solving }
+            - { value: everyday, label: Everyday & Organizing }
+            - { value: social, label: Getting Along & Talking }
+            - { value: responsibility, label: Responsibility }
       - name: name
         type: string
         label: Name (German)
