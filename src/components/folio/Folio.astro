@@ -6,6 +6,7 @@ import { getCatalogue, SHELF_KEY } from '@utils/catalogue';
 import { getPublishedStories } from '@utils/stories';
 import { getSkillsByCategory } from '@utils/skills-taxonomy';
 import { getTranslation, type Locale } from '@utils/i18n';
+import { talkPrompts } from '@utils/story-pages';
 import { BASE_PATH } from '@utils/site';
 
 interface Props {
@@ -34,11 +35,15 @@ const stories = await Promise.all(
       qr.make();
       code = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
     }
-    const prompts = (entry.data.discussion ?? entry.data.questions?.map(q => q.text) ?? []).slice(
-      0,
-      4
-    );
-    return { item, Content, code, prompts };
+    const prompts = talkPrompts(entry.data, 4);
+    return {
+      item,
+      Content,
+      code,
+      prompts,
+      summary: entry.data.summary,
+      keyMessage: entry.data.keyMessage,
+    };
   })
 );
 
@@ -132,7 +137,7 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
               ))}
           </section>
 
-          {stories.map(({ item, Content, code, prompts }) => (
+          {stories.map(({ item, Content, code, prompts, summary, keyMessage }) => (
             <article class="sheet story-sheet" data-story={item.slug}>
               <div class="story-head">
                 <div>
@@ -152,10 +157,11 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
                   </div>
                 )}
               </div>
-              {item.summary && <p class="lead">{item.summary}</p>}
+              {summary && <p class="lead">{summary}</p>}
               <div class="body">
                 <Content />
               </div>
+              {keyMessage && <p class="key-message">{keyMessage}</p>}
               {prompts.length > 0 && (
                 <section class="prompts">
                   <h3>{t('talkPrompts')}</h3>
@@ -308,6 +314,19 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
   .body :global(p),
   .body :global(li) {
     line-height: 1.6;
+  }
+  /* The title is in the sheet head; a translation's leading `# Title` line would repeat it. */
+  .body :global(h1) {
+    display: none;
+  }
+  /* Storybook page breaks are only a pause on paper. */
+  .body :global(hr) {
+    border: 0;
+    margin-block: var(--s-3);
+  }
+  .key-message {
+    margin-block-start: var(--s-4);
+    font-weight: 700;
   }
   .prompts {
     margin-block-start: var(--s-4);
