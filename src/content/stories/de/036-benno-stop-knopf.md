@@ -5,7 +5,7 @@ title: "Die Geschichte von Benno und dem Zauber-Stop-Knopf"
 emoji: "🛑"
 skills: ["impulse-control", "emotional-regulation"]
 band: "1"
-summary: "In einem kleinen Dorf lebte ein fröhlicher Junge namens Benno."
+summary: "Immer wenn Benno wütend oder ungeduldig wurde, reagierte er sofort – bis er den Zauber-Stop-Knopf spüren konnte und erst kurz „Warte mal“ dachte."
 keyMessage: "Der Zauber-Stop-Knopf war gar kein echter Knopf. Er war in seinem Herzen – und jeder konnte ihn haben."
 questions:
   - id: "q1"
