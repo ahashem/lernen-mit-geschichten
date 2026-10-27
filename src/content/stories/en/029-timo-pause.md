@@ -2,7 +2,7 @@
 storyId: "029-timo-pause"
 status: draft
 title: "The Story of Timo and the Big Break"
-keyMessage: ""
+keyMessage: "Children learn that rules in social interaction are important, such as: waiting, listening, sharing, and apologizing."
 questions:
   - id: "q1"
     text: "Timo is a cheerful squirrel."
@@ -108,9 +108,3 @@ When it was finally his turn, he slid down and shouted: “Waiting makes the gam
 ---
 
 Everyone laughed. In the end, Timo said: “I’m sorry for pushing in front of you.” The friends shouted: “It’s okay, Timo! You learned quickly!”
-
----
-
-Lesson of the Story
-
-Children learn that rules in social interaction are important, such as: waiting, listening, sharing, and apologizing.

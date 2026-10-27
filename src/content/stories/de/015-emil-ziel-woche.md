@@ -59,6 +59,7 @@ questions:
       - "Du bist nervig!"
       - "Deine Füße riechen nicht immer schlimm."
       - "Ich will dein Spielzeug!"
+keyMessage: "Kleine Ziele machen großen Spaß – besonders, wenn du sie selbst wählst und mit einem Lächeln machst! 🎯"
 ---
 
 Emil kratzte sich am Kopf. „Ziele? Ich will Astronaut werden! Geht das bis Freitag?“
@@ -118,5 +119,3 @@ Am Freitag in der Schule: Frau Wunderlich fragte: „Wer hat ein Ziel erreicht?�
 ---
 
 Herr Schnurrbart schnurrte in Emils Kopf: „Mission erfüllt, junger Held.“
-
-Ende 🟡 Botschaft an die Kinder: Kleine Ziele machen großen Spaß – besonders, wenn du sie selbst wählst und mit einem Lächeln machst! 🎯

@@ -31,6 +31,7 @@ questions:
   - id: "q8"
     text: "Was können wir von Timmy lernen?"
     type: "fillinblank"
+keyMessage: "Ein guter Tagesablauf ist wie die Steine eines Turms. Wenn man jeden Tag seine kleinen Rituale einhält – aufstehen, Zähne putzen, frühstücken, Sachen vorbereiten – dann steht der „Turm“ fest und man fühlt sich stark, fröhlich und sicher."
 ---
 
 Es war einmal ein kleiner Bär namens Timmy. Timmy war freundlich, fröhlich – aber er hatte ein kleines Problem: Er vergaß ständig seinen Tagesablauf!
@@ -78,9 +79,3 @@ Am Abend sagte Timmy stolz: „Mein Ritual macht mich stark! Morgen mache ich es
 Frieda lächelte zufrieden und rief: „Bravo, Timmy! Wer seine Steine gut legt, hat einen Turm, der niemals umfällt!“
 
 Und seit diesem Tag war Timmy der zuverlässigste kleine Bär im ganzen Wald.
-
-Botschaft der Geschichte:
-
----
-
-Ein guter Tagesablauf ist wie die Steine eines Turms. Wenn man jeden Tag seine kleinen Rituale einhält – aufstehen, Zähne putzen, frühstücken, Sachen vorbereiten – dann steht der „Turm“ fest und man fühlt sich stark, fröhlich und sicher.
