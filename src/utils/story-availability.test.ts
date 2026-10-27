@@ -40,7 +40,7 @@ describe('localesByStoryId', () => {
   it('does not double-count a locale', () => {
     const result = localesByStoryId([
       entry('de/001-bruno', '001-bruno'),
-      entry('de/001-bruno-interactive', '001-bruno'),
+      entry('de/001-bruno-copy', '001-bruno'),
     ]);
 
     expect(result.get('001-bruno')).toEqual(['de']);
