@@ -5,7 +5,7 @@ title: "Milo und die Sprache ohne Worte"
 emoji: "🐵"
 skills: ["effective-communication", "empathy"]
 band: "1"
-summary: "In einem kleinen Zoo lebte ein neugieriger Affe namens Milo. Man braucht nicht immer Worte, um sich zu verstehen."
+summary: "Der neugierige Affe Milo lebt in einem kleinen Zoo und lernt, die Geste und den Blick der anderen Tiere zu verstehen – so zeigt er, dass man sich auch ohne Worte verstehen kann."
 keyMessage: "So lernten alle Tiere: Man braucht nicht immer Worte, um sich zu verstehen. Manchmal reicht ein Blick, ein Lächeln oder eine Bewegung. Und Milo sagte stolz: „Die Sprache ohne Worte ist die lustigste Sprache der Welt!“ 🐒✨"
 questions:
   - id: "q1"
