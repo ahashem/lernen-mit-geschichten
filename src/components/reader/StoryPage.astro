@@ -10,6 +10,7 @@ import {
   chapterTitles,
   firstSentence,
   paginate,
+  talkPrompts,
   wordsOf,
   type BookPage,
 } from '@utils/story-pages';
@@ -45,7 +46,7 @@ const skills = await getSkillsByIds(story.data.skills ?? meta?.skills ?? [], loc
 // The first skill is the story's main one; its area names the part of the skills tree the story belongs to.
 const area = skills[0] && skillGroupLabel(locale, skills[0].category);
 const summary = story.data.summary ?? firstSentence(story.body ?? '', locale);
-const prompts = (story.data.discussion ?? story.data.questions?.map(q => q.text) ?? []).slice(0, 3);
+const prompts = talkPrompts(story.data, 3);
 
 const storyUrl = `${Astro.site?.origin ?? ''}${Astro.url.pathname}`;
 const colouring = (meta?.frames ?? [])
