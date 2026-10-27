@@ -60,13 +60,13 @@ questions:
     correctAnswer: "Olumlu düşünürsen güzel bir şey bulabilirsin"
 ---
 
+
 Bir varmış, bir yokmuş. Küçük bir tavşan varmış, adı Fritzi’ymiş. Fritzi çayırlarda zıplamayı, havuç kemirmeyi ve arkadaşlarıyla gülmeyi çok severmiş.
 
+Bir gün, kocaman gri bir bulut ortaya çıkmış. Fritzi sağa zıplamış… bulut da onu takip etmiş. Sola zıplamış… bulut yine peşinden gelmiş.
 ---
 
-Bir gün, kocaman gri bir bulut ortaya çıkmış. Fritzi sağa zıplamış… bulut da onu takip etmiş. Sola zıplamış… bulut yine peşinden gelmiş. Fritzi homurdanmış: “Aman Tanrım! Şimdi ıslanacağım! Kulaklarım da uzun spagetti gibi sallanacak! Bu çok can sıkıcı!”
-
----
+Fritzi homurdanmış: “Aman Tanrım! Şimdi ıslanacağım! Kulaklarım da uzun spagetti gibi sallanacak! Bu çok can sıkıcı!”
 
 Kuşlar gülmüş, köstebek ise şöyle demiş: “Fritzi, neden sadece kötü tarafı görüyorsun? Belki bu bulutun içinde güzel bir sürpriz vardır!”
 
@@ -76,15 +76,16 @@ Fritzi içini çekmiş: “Güzel bir sürpriz mi? Bu yağmur bulutundan mı? İ
 
 ---
 
-Derken yağmur başlamış: Damla… damla… damla!
 
----
+Derken yağmur başlamış: Damla… damla… damla!
 
 Fritzi hemen bir ağacın altına koşmuş. Ama sonra fark etmiş ki: 🌱 Küçük çiçekler sevinçle açıyormuş. 🌈 Rengârenk bir gökkuşağı gökyüzünü süslüyormuş. 💦 Önünde kocaman bir su birikintisi oluşmuş!
 
+Fritzi su birikintisine atlamış: “Şap şup! Şap şup!” 
+
 ---
 
-Fritzi su birikintisine atlamış: “Şap şup! Şap şup!” Ve kahkahalar atmış: “Ha ha ha! Yağmur aslında çok eğlenceli! Kulaklarım da komik, sallanan makarnalara benziyor!”
+Ve kahkahalar atmış: “Ha ha ha! Yağmur aslında çok eğlenceli! Kulaklarım da komik, sallanan makarnalara benziyor!”
 
 ---
 

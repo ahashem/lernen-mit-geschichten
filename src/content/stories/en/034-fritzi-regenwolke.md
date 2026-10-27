@@ -60,13 +60,13 @@ questions:
     correctAnswer: "When you think positively, you can find something good"
 ---
 
+
 Once upon a time, there was a little bunny named Fritzi. Fritzi loved to hop around the meadow, nibble on carrots, and laugh with his friends.
 
+One day, a big gray cloud appeared. Fritzi hopped to the right… and the cloud followed him. He hopped to the left… and the cloud followed him again.
 ---
 
-One day, a big gray cloud appeared. Fritzi hopped to the right… and the cloud followed him. He hopped to the left… and the cloud followed him again. Fritzi grumbled: “Oh no! I’m going to get all wet! And my ears will dangle like long spaghetti! That’s so annoying!”
-
----
+Fritzi grumbled: “Oh no! I’m going to get all wet! And my ears will dangle like long spaghetti! That’s so annoying!”
 
 The birds laughed, and the mole said: “Fritzi, why do you only see the bad side? Maybe the cloud is hiding a nice surprise!”
 
@@ -76,15 +76,16 @@ Fritzi sighed: “A surprise? From this rainy cloud? Impossible!”
 
 ---
 
-Suddenly, the rain began to fall: Drop… drop… drop!
 
----
+Suddenly, the rain began to fall: Drop… drop… drop!
 
 Fritzi ran quickly under a tree. But then he noticed: 🌱 Tiny flowers were blooming happily. 🌈 A colorful rainbow lit up the sky. 💦 And right in front of him was a big puddle!
 
+Fritzi jumped into the puddle: “Splash! Splish! Splash!” 
+
 ---
 
-Fritzi jumped into the puddle: “Splash! Splish! Splash!” He laughed loudly: “Ha ha ha! The rain is actually fun! And my ears look like funny, dangling noodles!”
+He laughed loudly: “Ha ha ha! The rain is actually fun! And my ears look like funny, dangling noodles!”
 
 ---
 
