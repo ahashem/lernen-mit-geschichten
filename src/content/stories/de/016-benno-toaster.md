@@ -58,18 +58,6 @@ questions:
       - "Schule ist langweilig"
 ---
 
-Figuren:
-
-Benno: Ein neugieriger Junge, der gerne erfindet
-
-Frau Schnipsel: Seine Lehrerin, die genaue Anweisungen liebt
-
----
-
-Herr Krümel: Ein sprechender Toaster, etwas frech, aber schlau
-
----
-
 Benno war schlau. Also... meistens. Er konnte mit Bauklötzen Raketen bauen und mit Schnürsenkeln Roboter fesseln. Aber eines konnte Benno gar nicht gut: Anweisungen befolgen.
 
 ---

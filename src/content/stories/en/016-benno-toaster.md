@@ -53,125 +53,90 @@ questions:
       - "Old toasters shouldn’t be used"
       - "School is boring"
 ---
-
-Characters
-
-Benno: A curious boy who loves inventing things.
-
----
-
-Ms. Schnipsel: His teacher, who loves precise instructions.
-
----
-
-Mr. Crumb: A talking toaster — a little cheeky, but smart.
-
-The Story
-
----
-
 Benno was smart. Or... at least he thought he was. 📚 He could build rockets out of blocks and tie up robots with shoelaces. But one thing he was terrible at: following instructions!
-
 ---
-
 At school, Ms. Schnipsel would say:
 
----
+
 
 “First, read the card. Then glue the pictures. Then color them.”
 
----
+
 
 But Benno glued first, colored second, and never read anything! In the end, the fish had wings and the sun was under the table. 🌞🐟
 
 Ms. Schnipsel sighed:
-
 ---
-
 “Benno! You have to pay attention and do things step by step!”
 
----
+
 
 Benno nodded… and promptly forgot again.
-
+---
 Then something strange happened at home.
 
----
+
 
 Benno found an old toaster in the basement. He plugged it in—ZAP! And suddenly, it shouted:
-
 ---
-
 “OUCH! Watch it, kid!”
 
----
+
 
 Benno froze. “Did... did you just talk?”
 
----
+
 
 “Of course!” grumbled the toaster. “I’m Mr. Crumb. I’m sick of being burned because no one ever reads the instructions!”
-
 ---
-
 Mr. Crumb had had enough. So he came up with a plan:
 
----
+
 
 “If you learn to follow instructions properly, I’ll give you… chocolate toast!” 🍫
-
 ---
-
 Benno was thrilled. “What do I do?”
 
----
+
 
 “Step 1: Press the red button. Only the red one. NOT the green one!”
 
----
+
 
 Benno reached out… toward the green button.
 
----
+
 
 “WRONG!” Puff! The toaster shot out confetti. No toast.
-
 ---
-
 Benno giggled. “Okay, let’s try again!”
 
----
+
 
 This time, he pressed the red button—click!—DING! Chocolate toast!
-
 ---
-
 It kept going: Benno had to read, listen, follow every step carefully. Sometimes it was tricky. Sometimes hilarious (once he had to sing a song called “I am Toast-Benno!”). 🎶
-
 ---
-
 But little by little, Benno got really good at following directions.
-
+---
 The next day at school: Ms. Schnipsel said:
 
----
+
 
 “First read. Then glue. Then color.”
 
----
+
 
 Benno nodded with confidence. He read, then glued, then colored. The fish had fins, and the sun was up in the sky.
-
 ---
-
 Ms. Schnipsel gasped.
 
----
+
 
 “Benno! That’s wonderful!”
 
 Benno grinned.
 
----
+
 
 “I’ve got a teacher at home… He’s hot. And crumbly.” 🔥🍞
