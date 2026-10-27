@@ -88,7 +88,6 @@ Bir gün Timo okul bahçesine koştu. Orada tavşan Lila, tilki Fredi ve baykuş
 
 Timo yüksek sesle bağırdı: “Hemen kaymak istiyorum!” Sonra öne geçti.
 
----
 
 Lila dedi ki: “Dur Timo! Bizde herkes sırada bekler.” Timo gülümsedi: “Ama ben hızlıyım! Sadece birkaç saniye kayarım!”
 
@@ -109,7 +108,3 @@ Sonunda sırası geldiğinde kaydı ve bağırdı: “Beklemek oyunu daha da eğ
 ---
 
 Herkes güldü. Sonunda Timo dedi ki: “Öne geçtiğim için özür dilerim.” Arkadaşları bağırdı: “Sorun değil Timo! Çabuk öğrendin!”
-
----
-
-##

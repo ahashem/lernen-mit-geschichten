@@ -88,7 +88,6 @@ One day, Timo ran onto the schoolyard. There, the rabbit Lila, the fox Fredi, an
 
 Timo shouted loudly: “I want to slide right now!” Then he pushed himself to the front.
 
----
 
 Lila said: “Wait, Timo! Here, everyone stands in line and waits for their turn.” Timo smiled and said: “But I’m fast! I’ll slide only for a few seconds!”
 
