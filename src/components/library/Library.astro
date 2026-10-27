@@ -2,7 +2,7 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import StoryTile from '@components/StoryTile.astro';
 import { getCatalogue, SHELF_KEY } from '@utils/catalogue';
-import { getSkillsByIds, getSkills } from '@utils/skills-taxonomy';
+import { getSkillsByCategory, getSkillsByIds, getSkills } from '@utils/skills-taxonomy';
 import { endonyms, fmt, getTranslation, type Locale } from '@utils/i18n';
 import { LOCALES } from '@utils/story-availability';
 
@@ -21,12 +21,16 @@ const label = new Map(allSkills.map(s => [s.id, s.label]));
 
 const counts = new Map<string, number>();
 for (const item of items) for (const id of item.skills) counts.set(id, (counts.get(id) ?? 0) + 1);
-const collator = new Intl.Collator(locale);
-const used = allSkills
-  .filter(s => counts.has(s.id))
-  .sort((a, b) => counts.get(b.id)! - counts.get(a.id)! || collator.compare(a.label, b.label));
-const topSkills = used.slice(0, 8);
-const moreSkills = used.slice(8).sort((a, b) => collator.compare(a.label, b.label));
+// Areas first; ticking one shows its skills, most used first. Only skills with a story here are offered.
+const areas = (await getSkillsByCategory(locale))
+  .map(g => ({
+    ...g,
+    skills: g.skills
+      .filter(s => counts.has(s.id))
+      .sort((a, b) => counts.get(b.id)! - counts.get(a.id)!),
+  }))
+  .filter(g => g.skills.length > 0);
+const areaOf = Object.fromEntries(areas.flatMap(g => g.skills.map(s => [s.id, g.id])));
 
 const bands = [1, 2, 3, 4].filter(b => items.some(i => i.band === b));
 const lengths = [
@@ -91,28 +95,25 @@ const strings = {
               <legend>{t('skills')}</legend>
               <div class="chips">
                 {
-                  topSkills.map(s => (
+                  areas.map(a => (
                     <label class="chip">
-                      <input type="checkbox" name="skill" value={s.id} />
-                      <span>{s.label}</span>
+                      <input type="checkbox" name="area" value={a.id} />
+                      <span>{a.label}</span>
                     </label>
                   ))
                 }
               </div>
               {
-                moreSkills.length > 0 && (
-                  <details class="all-skills">
-                    <summary>{t('allSkills')}</summary>
-                    <div class="chips">
-                      {moreSkills.map(s => (
-                        <label class="chip">
-                          <input type="checkbox" name="skill" value={s.id} />
-                          <span>{s.label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </details>
-                )
+                areas.map(a => (
+                  <div class="chips sub" data-area={a.id} role="group" aria-label={a.label} hidden>
+                    {a.skills.map(s => (
+                      <label class="chip">
+                        <input type="checkbox" name="skill" value={s.id} />
+                        <span>{s.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                ))
               }
             </fieldset>
 
@@ -211,6 +212,7 @@ const strings = {
       </section>
     </div>
     <script type="application/json" id="library-data" set:html={JSON.stringify(data)} />
+    <script type="application/json" id="library-areas" set:html={JSON.stringify(areaOf)} />
   </div>
 </BaseLayout>
 
@@ -219,6 +221,7 @@ const strings = {
     LENGTH_BUCKETS,
     matchesFilter,
     mostRestrictiveFilter,
+    skillsForAreas,
     type FilterCriteria,
     type FilterKey,
     type LengthBucket,
@@ -227,6 +230,9 @@ const strings = {
   const root = document.querySelector<HTMLElement>('.library')!;
   const s = JSON.parse(root.dataset.strings!);
   const data = JSON.parse(document.getElementById('library-data')!.textContent!);
+  const areaOf: Record<string, string> = JSON.parse(
+    document.getElementById('library-areas')!.textContent!
+  );
   const form = root.querySelector<HTMLFormElement>('[data-search]')!;
   const q = form.elements.namedItem('q') as HTMLInputElement;
   const boxes = [...root.querySelectorAll<HTMLInputElement>('.filters input[type="checkbox"]')];
@@ -253,6 +259,7 @@ const strings = {
     selectedLanguages: s.availableIn,
   };
   const keyOf: Record<string, FilterKey> = {
+    area: 'selectedSkills',
     skill: 'selectedSkills',
     shelf: 'selectedBands',
     length: 'selectedLengths',
@@ -263,7 +270,7 @@ const strings = {
     boxes.filter(b => b.name === name && b.checked).map(b => b.value);
   const read = (): FilterCriteria => ({
     searchQuery: q.value,
-    selectedSkills: values('skill'),
+    selectedSkills: skillsForAreas(values('area'), values('skill'), areaOf),
     selectedBands: values('shelf').map(Number),
     selectedLengths: values('length') as LengthBucket[],
     selectedLanguages: values('lang'),
@@ -273,7 +280,8 @@ const strings = {
   function writeUrl(c: FilterCriteria) {
     const p = new URLSearchParams();
     if (c.searchQuery?.trim()) p.set('q', c.searchQuery.trim());
-    if (c.selectedSkills?.length) p.set('skill', c.selectedSkills.join(','));
+    if (values('area').length) p.set('area', values('area').join(','));
+    if (values('skill').length) p.set('skill', values('skill').join(','));
     if (c.selectedBands?.length) p.set('shelf', c.selectedBands.join(','));
     if (c.selectedLengths?.length) p.set('length', c.selectedLengths.join(','));
     if (c.selectedLanguages?.length) p.set('lang', c.selectedLanguages.join(','));
@@ -284,8 +292,11 @@ const strings = {
   function fromUrl() {
     const p = new URLSearchParams(location.search);
     q.value = p.get('q') ?? '';
+    const skills = (p.get('skill') ?? '').split(',');
     const sets: Record<string, string[]> = {
-      skill: (p.get('skill') ?? '').split(','),
+      // A skill from a shared link opens its area, so the ticked chip is visible.
+      area: [...(p.get('area') ?? '').split(','), ...skills.map(id => areaOf[id])],
+      skill: skills,
       shelf: (p.get('shelf') ?? '').split(','),
       length: (p.get('length') ?? '')
         .split(',')
@@ -293,9 +304,15 @@ const strings = {
       lang: (p.get('lang') ?? '').split(','),
     };
     for (const b of boxes) b.checked = sets[b.name].includes(b.value);
-    // A skill in the URL that sits behind "All skills" must be visible.
-    if (boxes.some(b => b.checked && b.closest('.all-skills')))
-      root.querySelector<HTMLDetailsElement>('.all-skills')!.open = true;
+  }
+
+  // A ticked area shows its skills; unticking it clears them.
+  function syncAreas() {
+    for (const row of root.querySelectorAll<HTMLElement>('.chips.sub')) {
+      const on = boxes.some(b => b.name === 'area' && b.value === row.dataset.area && b.checked);
+      row.hidden = !on;
+      if (!on) row.querySelectorAll('input').forEach(b => (b.checked = false));
+    }
   }
 
   function chipLabel(b: HTMLInputElement) {
@@ -303,6 +320,7 @@ const strings = {
   }
 
   function render() {
+    syncAreas();
     const c = read();
     writeUrl(c);
     const shown = data.map((d: never) => matchesFilter(d, c));
@@ -465,12 +483,14 @@ const strings = {
   .filter-open {
     display: none;
   }
-  .all-skills > summary {
-    min-block-size: var(--tap-adult);
-    display: flex;
-    align-items: center;
-    font-weight: 700;
-    cursor: pointer;
+  /* An area's skills sit under the area chips, indented, so the two levels read as one tree. */
+  .chips.sub {
+    margin-block-start: var(--s-3);
+    padding-inline-start: var(--s-3);
+    border-inline-start: 3px solid var(--edge);
+  }
+  .chips.sub[hidden] {
+    display: none;
   }
   .filter-groups {
     display: grid;
