@@ -141,6 +141,18 @@ All art is AI-generated in-house, currently one image at a time, later a pipelin
    artist's style, never depicts a real child. Rights and licence terms of the generator used are recorded in
    `art.generator`; the owner decides who may reuse the art (open decision).
 
+## Page breaks for the older stories
+
+The 15 stories from before the CMS (001-010, 018-022) have no `---` breaks. The reader still pages them, grouping
+paragraphs by band at render time, but those derived pages cannot carry recordings, and Two languages reading needs
+the translation to have the same paragraphs as the German, which only Dino has. Explicit breaks fix both.
+
+An agent (Hermes or a coding agent) drafts the breaks, one story per pull request into `editorial`: breaks only,
+section headings removed, the closing moral moved to `keyMessage`, translations broken at the same places as the
+German, no word changed (a word check proves it in the PR). A moderator reads the story's sheet at
+`…/preview/review/`, adjusts the breaks in the CMS if needed, and merges. These stories are published, so the merge
+goes live. Bruno is the pilot. Where recordings exist, page _n_ must hold exactly what `nn.m4a` says.
+
 ## Adding a skill
 
 Rare, and an editor's job: add an entry in the CMS "Skills" collection (an id, its group and the German name). It shows
