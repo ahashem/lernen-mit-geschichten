@@ -64,91 +64,56 @@ questions:
       - "How to set small goals"
       - "How to cook broccoli"
 ---
-
 The Story:
 
 One day, Ms. Wunderlich told the class: **“This week, we’re going to learn how to set *small goals* that we can *really achieve*!”
 
----
-
 Emil scratched his head. “Goals? I want to be an astronaut! Can I do that by Friday?”
-
 ---
-
 The class laughed. Ms. Wunderlich smiled and said: **“No, Emil! Small goals! Like: ‘I’ll clean up my toys every day.’ Or ‘I’ll be nice to my sister.’”
-
 ---
-
 Emil stared at his eraser. “Pfff… That sounds boring.”
 
----
-
 At home, his sister Mimi jumped in front of him: **“I bet you can’t do 3 small goals in 3 days!”
-
 ---
-
 **“Oh yeah? Bet I can!” Emil shouted. And that’s how **Emil’s Super Goal Week began!
-
----
 
 🥦 Day 1 – The Broccoli Goal
 
 **Goal: I will eat 3 pieces of broccoli without drama.
-
 ---
-
 Emil sat in front of his plate like it was a monster. “Can I at least dip it in ketchup?” he asked.
 
----
-
 Mimi giggled. “Only if you *don’t* scream: ‘It’s poison!’”
-
 ---
-
 With a dramatic face, Emil crunched the broccoli. In his imagination, Mr. Schnurrbart said: **“Brave veggie warrior! Goal 1 – complete!” ✅ **Done!
-
 ---
-
 👟 Day 2 – The Shoe Goal
 
 **Goal: I will put on my shoes in the morning without Mom calling me five times.
 
----
-
 Emil set an alarm with a dinosaur roar: **“ROOOAAR! SHOE MISSION – GO, DINO!”
-
 ---
-
 He jumped out of bed like a ninja and landed in his shoes – on the wrong feet, but still! Mom was so surprised, she dropped her phone. ✅ **Done!
-
 ---
-
 💬 Day 3 – The Sister Goal
 
 **Goal: I will say 3 kind things to Mimi.
 
----
-
 This was the hardest goal. At breakfast, Emil said: **“Mimi… you don’t *look* too silly today.”
 
+
+Mimi raised an eyebrow. “Does that even count?”
 ---
-
-Mimi raised an eyebrow. “Does that even count?” Emil took a deep breath. **“You’re smart, fast… and your feet don’t always smell bad.”
+Emil took a deep breath. **“You’re smart, fast… and your feet don’t always smell bad.”
 
 ---
-
 Mimi nodded proudly. ✅ **Done!
 
 🎉 Friday at School
 
----
-
 Ms. Wunderlich asked: **“Who reached their goal this week?”
 
----
-
 Emil jumped up: **“I did THREE! I’m a Goal Master!”
-
 ---
-
 And in his mind, Mr. Schnurrbart purred: **“Mission accomplished, young hero.”
