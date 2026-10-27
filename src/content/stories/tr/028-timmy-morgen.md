@@ -40,37 +40,34 @@ Bir sabah Timmy uyanmış ve hemen dışarı koşup kelebeklerle oynamak istemi�
 
 Sonra akıllı baykuş arkadaşı Frieda gelmiş. Başını sallamış ve şöyle demiş: “Timmy, Timmy! Sabah ritüelin olmadan sallanan bir kule gibisin!”
 
----
-
 Timmy gülmüş: “Kule mi? Ben kule olmak istemiyorum!”
+
+---
 
 Frieda ciddiyetle başını sallamış: “Sağlam taşları olmayan kule hemen yıkılır. Senin ritüelin senin taşların:
 
----
-
 1. Uyan ve esne,
+
 
 2. Dişlerini fırçala,
 
-3. Kahvaltı et,
-
 ---
+
+3. Kahvaltı et,
 
 4. Çantanı hazırla.”
 
----
-
 Timmy başını kaşımış. “Ya unutursam?”
+
+---
 
 Frieda cevap vermiş: “O zaman huysuz bir ayı olursun – ve kimse huysuz bir ayıyla oynamak istemez!”
 
----
-
 Böylece Timmy denemiş: Dişlerini fırçalamış (par par!), bal ile lezzetli bir sandviç yemiş (mımm, mımm!), ve küçük çantasını hazırlamış (zip, zap!).
 
-Birden kendini aslan gibi güçlü, kuş gibi mutlu hissetmiş. Kelebekler yine etrafında uçuşmuş – ve bu sefer bütün gün onlarla oynayabilmiş, yorulmadan ya da somurtmadan.
-
 ---
+
+Birden kendini aslan gibi güçlü, kuş gibi mutlu hissetmiş. Kelebekler yine etrafında uçuşmuş – ve bu sefer bütün gün onlarla oynayabilmiş, yorulmadan ya da somurtmadan.
 
 Akşam olunca Timmy gururla demiş ki: “Ritüelim beni güçlü yapıyor! Yarın tekrar yapacağım!”
 

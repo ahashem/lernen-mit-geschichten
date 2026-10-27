@@ -40,37 +40,34 @@ One morning, Timmy woke up and ran straight outside to play with the butterflies
 
 Then his friend, the clever owl Frieda, came by. She shook her head and said: “Timmy, Timmy! Without your morning ritual, you are like a wobbly tower!”
 
----
-
 Timmy laughed: “A tower? I don’t want to be a tower!”
+
+---
 
 Frieda nodded seriously and said: “A tower without solid stones falls down immediately. Your ritual is your stones:
 
----
-
 1. Wake up and stretch,
+
 
 2. Brush your teeth,
 
-3. Eat breakfast,
-
 ---
+
+3. Eat breakfast,
 
 4. Pack your backpack.”
 
----
-
 Timmy scratched his head. “And what if I forget?”
+
+---
 
 Frieda replied: “Then you will become a grumpy bear – and no one wants to play with a grumpy bear!”
 
----
-
 So Timmy tried it: He brushed his teeth (shine, shine!), he ate a yummy honey sandwich (yum, yum!), and he packed his little backpack (zip, zap!).
 
-Suddenly, he felt strong like a lion and happy like a bird. The butterflies fluttered around him again – and this time he could play with them all day long without getting tired or grumpy.
-
 ---
+
+Suddenly, he felt strong like a lion and happy like a bird. The butterflies fluttered around him again – and this time he could play with them all day long without getting tired or grumpy.
 
 In the evening, Timmy said proudly: “My ritual makes me strong! Tomorrow I will do it again!”
 
