@@ -1,7 +1,8 @@
 ---
 storyId: "011-leo-zuhoeren"
 status: draft
-title: "Leo, the Little Lion Who Learned to Listen"questions:
+title: "Leo, the Little Lion Who Learned to Listen"
+questions:
   - id: "q1"
     text: "What is the little lion’s name?"
     type: "fillinblank"

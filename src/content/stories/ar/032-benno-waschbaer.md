@@ -1,7 +1,8 @@
 ---
 storyId: "032-benno-waschbaer"
 status: draft
-title: "قِصَّةُ بِنُّو، الرَّاكُونِ الْفُضُولِيِّ"questions:
+title: "قِصَّةُ بِنُّو، الرَّاكُونِ الْفُضُولِيِّ"
+questions:
   - id: "q1"
     text: "مَا هُوَ بِنُّو؟"
     type: "multiplechoice"

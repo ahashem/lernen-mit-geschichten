@@ -1,7 +1,8 @@
 ---
 storyId: "027-benno-zauberspiegel"
 status: draft
-title: "The Story of Benno and the Magic Mirror"questions:
+title: "The Story of Benno and the Magic Mirror"
+questions:
   - id: "q1"
     text: "Benno found the magic mirror in the park."
     type: "truefalse"

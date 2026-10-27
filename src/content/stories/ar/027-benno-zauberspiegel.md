@@ -1,7 +1,8 @@
 ---
 storyId: "027-benno-zauberspiegel"
 status: draft
-title: "قِصَّةُ بِنُّو وَالْمِرْآةِ السِّحْرِيَّةِ"questions:
+title: "قِصَّةُ بِنُّو وَالْمِرْآةِ السِّحْرِيَّةِ"
+questions:
   - id: "q1"
     text: "وَجَدَ بِنُّو الْمِرْآةَ السِّحْرِيَّةَ فِي الْمُنْتَزَهِ."
     type: "fillinblank"

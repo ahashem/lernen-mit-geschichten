@@ -2,7 +2,6 @@
 storyId: "016-benno-toaster"
 status: draft
 title: "بلال ومُحَمِّصَةُ الخُبْزِ المُتَكَلِّمَةُ"
-keyMessage: ""
 questions:
   - id: "q1"
     text: "لماذا كان بلال يُواجِهُ مشاكل في المدرسة؟"

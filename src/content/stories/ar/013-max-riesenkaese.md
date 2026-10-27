@@ -1,7 +1,8 @@
 ---
 storyId: "013-max-riesenkaese"
 status: draft
-title: "ماكس الفأر وتوتُّر الجُبْنِ الضَّخْم"questions:
+title: "ماكس الفأر وتوتُّر الجُبْنِ الضَّخْم"
+questions:
   - id: "q1"
     text: "لماذا شعر ماكس بالتوتُّر عند رؤية الجُبن الكبير؟"
     type: "multiplechoice"

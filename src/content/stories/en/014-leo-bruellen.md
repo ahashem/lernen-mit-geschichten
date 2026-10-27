@@ -1,7 +1,8 @@
 ---
 storyId: "014-leo-bruellen"
 status: draft
-title: "Leo the Lion Learns to Roar Calmly"questions:
+title: "Leo the Lion Learns to Roar Calmly"
+questions:
   - id: "q1"
     text: "Leo gets angry quickly."
     type: "truefalse"

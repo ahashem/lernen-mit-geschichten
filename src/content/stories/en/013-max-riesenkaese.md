@@ -1,7 +1,8 @@
 ---
 storyId: "013-max-riesenkaese"
 status: draft
-title: "Max the Mouse and the Giant Cheese"questions:
+title: "Max the Mouse and the Giant Cheese"
+questions:
   - id: "q1"
     text: "Why was Max nervous at the big cheese?"
     type: "multiplechoice"

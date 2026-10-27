@@ -1,7 +1,8 @@
 ---
 storyId: "025-paula-wut-drache"
 status: draft
-title: "Paula ve Küçük Öfke Ejderhası"questions:
+title: "Paula ve Küçük Öfke Ejderhası"
+questions:
   - id: "q1"
     text: "Hikâyedeki kızın adı nedir?"
     type: "multiplechoice"

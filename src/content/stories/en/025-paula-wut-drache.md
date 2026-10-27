@@ -1,7 +1,8 @@
 ---
 storyId: "025-paula-wut-drache"
 status: draft
-title: "Paula and the Little Anger Dragon"questions:
+title: "Paula and the Little Anger Dragon"
+questions:
   - id: "q1"
     text: "What is the name of the girl in the story?"
     type: "multiplechoice"

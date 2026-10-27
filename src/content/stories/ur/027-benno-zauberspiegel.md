@@ -1,7 +1,8 @@
 ---
 storyId: "027-benno-zauberspiegel"
 status: draft
-title: "بینّو اور جادوئی آئینہ"questions:
+title: "بینّو اور جادوئی آئینہ"
+questions:
   - id: "q1"
     text: "بینّو نے جادوئی آئینہ پارک میں پایا۔"
     type: "truefalse"
