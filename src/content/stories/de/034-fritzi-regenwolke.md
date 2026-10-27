@@ -5,7 +5,7 @@ title: "Fritzi und die Regenwolke"
 emoji: "🐇"
 skills: ["positive-thinking", "adaptability"]
 band: "1"
-summary: "Es war einmal ein kleiner Hase namens Fritzi. Wenn du positiv denkst, kannst du in jedem Problem etwas Gutes entdecken. Sogar eine graue Regenwolke kann Freude, Farben und Spaß bringen!"
+summary: "Dem Hasen Fritzi folgt überall eine Regenwolke – doch als er positiv denkt, entdeckt er, dass die graue Wolke Farben und Spaß bringt."
 keyMessage: "Wenn du positiv denkst, kannst du in jedem Problem etwas Gutes entdecken. Sogar eine graue Regenwolke kann Freude, Farben und Spaß bringen! 🌈✨"
 questions:
   - id: "q1"
