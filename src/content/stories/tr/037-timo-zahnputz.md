@@ -1,7 +1,7 @@
 ---
 storyId: "037-timo-zahnputz"
 status: draft
-title: "“Timo ve Komik Diş Fırçası Çalar Saati”"
+title: "Timo ve Komik Diş Fırçası Çalar Saati"
 keyMessage: "Ve böylece Timo, küçük alışkanlıkların her gün bizi daha güçlü kıldığını öğrendi – ve bazen komik bir çalar saatin en iyi arkadaş olabileceğini."
 questions:
   - id: "q1"

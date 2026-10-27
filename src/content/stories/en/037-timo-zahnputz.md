@@ -1,7 +1,7 @@
 ---
 storyId: "037-timo-zahnputz"
 status: draft
-title: "“Timo and the Funny Toothbrush Alarm Clock”"
+title: "Timo and the Funny Toothbrush Alarm Clock"
 keyMessage: "And so, Timo learned that small habits make us stronger every day – and that even a funny alarm clock can sometimes be the best friend."
 questions:
   - id: "q1"
