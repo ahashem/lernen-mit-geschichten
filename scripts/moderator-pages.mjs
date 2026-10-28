@@ -2,7 +2,7 @@
 /**
  * Writes the moderators' guide (<preview>/guide/) and the art-prep page (<preview>/art/), English at the folder,
  * Arabic at ar/, German at de/. Preview only, like preview-status.mjs: production never runs this.
- * The art-prep page works entirely in the browser (canvas to WebP, a stored ZIP); nothing is uploaded anywhere. Where the
+ * The art-prep page only shrinks pictures, entirely in the browser (canvas to WebP, a stored ZIP); nothing is uploaded anywhere. Where the
  * browser cannot write WebP (Safari, so every browser on iPad and iPhone) it loads the vendored libwebp in scripts/vendor/webp.
  * Usage: moderator-pages.mjs <preview dir>     CMS_URL in the environment links the CMS; no address is in source.
  */
@@ -58,66 +58,46 @@ function guide(lang) {
 
 function art(lang) {
   const ui = ART[lang];
-  const strings = { ...ui, frame: ui.frame('{n}'), small: ui.small('{w}'), big: ui.big('{kb}') };
   const body = `<h1>${ui.title}</h1><p>${ui.intro}</p>
-<p><label>${ui.storyId}<br><input id="id" dir="ltr" pattern="[0-9]{3}-[a-z0-9-]+" autocomplete="off" spellcheck="false"></label><br><small id="bad" hidden>${ui.badId}</small></p>
 <p><label class="drop" id="drop">${ui.choose}<input id="files" type="file" accept="image/*" multiple></label></p>
 <ol id="list"></ol>
-<p id="dup" role="alert" hidden>${ui.duplicate}</p><p id="nowebp" role="alert" hidden>${ui.noWebp}</p>
-<p><button id="convert" type="button" disabled>${ui.convert}</button> <button id="zip" type="button" hidden>${ui.downloadAll}</button></p>
+<p id="nowebp" role="alert" hidden>${ui.noWebp}</p>
+<p><button id="zip" type="button" hidden>${ui.downloadAll}</button></p>
 <p>${ui.next} <a href="../${lang === ROOT ? '' : '../'}guide/${folderOf(lang)}#s3">${ui.guide}</a></p>
 <style>.drop{display:block;padding:2rem 1rem;border:2px dashed #24212e;border-radius:12px;text-align:center;cursor:pointer;background:#fff}
 .drop.over{background:#e6f4f1}.drop input{display:block;margin:.8rem auto 0}#list li{margin:.8rem 0;padding:.6rem;background:#fff;border-radius:10px}
-#list img{max-width:8rem;max-height:6rem;vertical-align:middle;border-radius:6px}.warn{color:#a02c1c}.name{direction:ltr;unicode-bidi:isolate;font-family:monospace}</style>`;
+#list img{max-width:8rem;max-height:6rem;vertical-align:middle;border-radius:6px}.name{direction:ltr;unicode-bidi:isolate;font-family:monospace}</style>`;
   // Runs in the moderator's browser. Kept dependency-free: a stored (uncompressed) ZIP needs only CRC-32,
-  // and WebP is already compressed.
+  // and WebP is already compressed. Names carry no meaning: the CMS fields decide cover and pages, and the CMS
+  // adds -1, -2 when a name is already taken.
   const script = `<script>
 const WEBP = ${JSON.stringify(WEBP)}, ENCODER = '${lang === ROOT ? '' : '../'}webp/webp_enc.js';
-const S = ${JSON.stringify(strings)};
-const MAX_W = 1200, MAX_BYTES = 120 * 1024;
+const S = ${JSON.stringify(ui)};
+const MAX = 1200, MAX_BYTES = 120 * 1024;
 const $ = id => document.getElementById(id);
 let items = [];
-const fmt = (t, k, v) => t.replace('{' + k + '}', v);
-const name = it => $('id').value + (it.role === 'cover' ? '_cover.webp' : '_frame-' + String(it.role).padStart(2, '0') + '_colour.webp');
-const validId = () => /^[0-9]{3}-[a-z0-9-]+$/.test($('id').value);
+const slug = n => n.replace(/\\.[^.]*$/, '').normalize('NFKD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'picture';
 
-function add(files) {
-  const sorted = [...files].filter(f => f.type.startsWith('image/')).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
-  for (const f of sorted) {
-    const taken = items.map(i => i.role);
-    const role = /cover|titel|غلاف/i.test(f.name) && !taken.includes('cover') ? 'cover' : (() => { let n = 1; while (taken.includes(n)) n++; return n; })();
-    items.push({ file: f, role, url: URL.createObjectURL(f), out: null, note: '' });
-  }
-  render();
+function unique(base) {
+  const taken = new Set(items.map(i => i.name));
+  let name = base + '.webp', n = 1;
+  while (taken.has(name)) name = base + '-' + n++ + '.webp';
+  return name;
 }
 
 function render() {
-  const list = $('list');
-  list.replaceChildren();
-  items.forEach((it, i) => {
+  $('list').replaceChildren(...items.map(it => {
     const li = document.createElement('li');
-    const sel = document.createElement('select');
-    sel.setAttribute('aria-label', S.role);
-    sel.append(new Option(S.cover, 'cover'));
-    for (let n = 1; n <= Math.max(20, items.length); n++) sel.append(new Option(fmt(S.frame, 'n', n), n));
-    sel.value = it.role;
-    sel.onchange = () => { it.role = sel.value === 'cover' ? 'cover' : Number(sel.value); it.out = null; render(); };
     const img = document.createElement('img'); img.src = it.url; img.alt = '';
-    const label = document.createElement('span'); label.className = 'name'; label.textContent = ' ' + (validId() ? name(it) : it.file.name) + ' ';
-    li.append(img, ' ', sel, label);
+    const label = document.createElement('span'); label.className = 'name'; label.textContent = ' ' + it.name + ' ';
+    li.append(img, label);
     if (it.out) {
-      const a = document.createElement('a'); a.href = URL.createObjectURL(it.out); a.download = name(it);
+      const a = document.createElement('a'); a.href = URL.createObjectURL(it.out); a.download = it.name;
       a.textContent = S.download + ' (' + Math.round(it.out.size / 1024) + ' KB)';
       li.append(a);
-    }
-    if (it.note) { const p = document.createElement('p'); p.className = 'warn'; p.textContent = it.note; li.append(p); }
-    list.append(li);
-  });
-  const roles = items.map(i => String(i.role));
-  const dup = new Set(roles).size !== roles.length;
-  $('dup').hidden = !dup;
-  $('bad').hidden = !$('id').value || validId();
-  $('convert').disabled = !items.length || !validId() || dup;
+    } else li.append(S.working);
+    return li;
+  }));
   $('zip').hidden = !items.length || items.some(i => !i.out);
 }
 
@@ -134,21 +114,26 @@ async function webp(c, q) {
   return new Blob([out], { type: 'image/webp' });
 }
 
-async function convert() {
-  for (const it of items) {
-    const bmp = await createImageBitmap(it.file);
-    const w = Math.min(MAX_W, bmp.width), h = Math.round(bmp.height * (w / bmp.width));
-    const c = document.createElement('canvas'); c.width = w; c.height = h;
-    c.getContext('2d').drawImage(bmp, 0, 0, w, h);
-    let blob = null;
-    for (const q of [0.85, 0.78, 0.7, 0.62, 0.55, 0.48, 0.4]) {
-      try { blob = await webp(c, q); } catch (e) { $('nowebp').hidden = false; return; }
-      if (blob.size <= MAX_BYTES) break;
-    }
-    it.out = blob;
-    it.note = [bmp.width < MAX_W ? fmt(S.small, 'w', bmp.width) : '', blob.size > MAX_BYTES ? fmt(S.big, 'kb', Math.round(blob.size / 1024)) : ''].filter(Boolean).join(' ');
+// Fits inside MAX × MAX whatever the shape, never enlarges, and steps the quality down until it meets the budget.
+async function shrink(it) {
+  const bmp = await createImageBitmap(it.file);
+  const k = Math.min(1, MAX / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  for (const q of [0.85, 0.78, 0.7, 0.62, 0.55, 0.48, 0.4]) {
+    it.out = await webp(c, q);
+    if (it.out.size <= MAX_BYTES) break;
   }
+}
+
+async function add(files) {
+  const fresh = [...files].filter(f => f.type.startsWith('image/')).map(f => ({ file: f, url: URL.createObjectURL(f), out: null }));
+  for (const it of fresh) { it.name = unique(slug(it.file.name)); items.push(it); }
   render();
+  for (const it of fresh) {
+    try { await shrink(it); } catch (e) { $('nowebp').hidden = false; return; }
+    render();
+  }
 }
 
 const CRC = new Uint32Array(256).map((_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c >>> 0; });
@@ -157,7 +142,7 @@ async function zip() {
   const enc = new TextEncoder(), parts = [], dir = [];
   let offset = 0;
   for (const it of items) {
-    const data = new Uint8Array(await it.out.arrayBuffer()), fname = enc.encode($('id').value + '/' + name(it)), crc = crc32(data);
+    const data = new Uint8Array(await it.out.arrayBuffer()), fname = enc.encode(it.name), crc = crc32(data);
     const head = new DataView(new ArrayBuffer(30));
     [[0, 0x04034b50, 4], [4, 20, 2], [8, 0, 2], [14, crc, 4], [18, data.length, 4], [22, data.length, 4], [26, fname.length, 2]]
       .forEach(([o, v, n]) => n === 4 ? head.setUint32(o, v, true) : head.setUint16(o, v, true));
@@ -173,17 +158,15 @@ async function zip() {
     .forEach(([o, v, n]) => n === 4 ? end.setUint32(o, v, true) : end.setUint16(o, v, true));
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([...parts, ...dir, end], { type: 'application/zip' }));
-  a.download = $('id').value + '.zip';
+  a.download = S.zipName + '.zip';
   a.click();
 }
 
 $('files').onchange = e => { add(e.target.files); e.target.value = ''; };
-$('id').oninput = () => { items.forEach(i => (i.out = null)); render(); };
 const drop = $('drop');
 drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
 drop.ondragleave = () => drop.classList.remove('over');
 drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); add(e.dataTransfer.files); };
-$('convert').onclick = convert;
 $('zip').onclick = zip;
 </script>`;
   return shell(lang, ui.title, body, script);

@@ -105,10 +105,10 @@ export function readiness(root = '.') {
             continue;
           }
           const name = src.split('/').pop();
-          const expected = new RegExp(`^${id}_(cover|frame-\\d\\d_colour|frame-\\d\\d_line)(_\\d+)?\\.(webp|svg)$`);
-          if (!expected.test(name)) {
-            should.push(M('pictureName', { name, id }));
-          } else if (name.endsWith('.webp') && statSync(path).size > 120 * KB) {
+          // Names carry no meaning (the CMS fields decide cover and pages); only the folder does.
+          if (!src.startsWith(`/assets/stories/${id}/`)) {
+            should.push(M('pictureFolder', { name, id }));
+          } else if (!name.endsWith('.svg') && statSync(path).size > 120 * KB) {
             should.push(M('pictureSize', { name, kb: Math.round(statSync(path).size / KB) }));
           }
         }

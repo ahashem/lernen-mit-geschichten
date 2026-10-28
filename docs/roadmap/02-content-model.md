@@ -79,17 +79,19 @@ A story is **launch-ready** at `de` plus two reviewed translations. It is **feat
 Naming and formats follow `ux/06-illustration-and-asset-style-guide.md` §7, which wins on any conflict. Masters (PNG,
 WAV) stay out of the repo; only web deliveries are committed.
 
-| Kind                    | Delivered as                                                               | Path under `public/assets/`                            |
-| ----------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------ |
-| Cover                   | WebP (AVIF optional), 1200 w, ≤ 120 KB                                     | `stories/{story-id}/{story-id}_cover.webp`             |
-| Colour frame            | WebP, 1200 w, ≤ 120 KB; drawn over its own line art                        | `stories/{story-id}/{story-id}_frame-{nn}_colour.webp` |
-| Line frame (**master**) | SVG, closed paths, ≤ 80 KB (bands 1–2), ≤ 250 KB (bands 3–4)               | `stories/{story-id}/{story-id}_frame-{nn}_line.svg`    |
-| Colouring or print page | SVG, A4, per band                                                          | `stories/{story-id}/{story-id}_print-{nn}_b{1-4}.svg`  |
-| Narration, one per page | Opus/WebM 48 kbps mono plus M4A fallback                                   | `audio/{locale}/{story-id}/{nn}.opus`, `{nn}.m4a`      |
-| Word timings, per page  | JSON `[{ "w", "start", "end" }]` from forced alignment; optional           | `audio/{locale}/{story-id}/{nn}.json`                  |
-| Provenance              | One `manifest.json` per story: tool, model, seed, prompt, reviewer, checks | `stories/{story-id}/manifest.json`                     |
+| Kind                    | Delivered as                                                               | Path under `public/assets/`                           |
+| ----------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Cover                   | WebP, ≤ 1200 px long side, ≤ 120 KB; any name                              | `stories/{story-id}/{any}.webp`                       |
+| Colour frame            | WebP, ≤ 1200 px long side, ≤ 120 KB; any name                              | `stories/{story-id}/{any}.webp`                       |
+| Line frame (**master**) | SVG, closed paths, ≤ 80 KB (bands 1–2), ≤ 250 KB (bands 3–4)               | `stories/{story-id}/{story-id}_frame-{nn}_line.svg`   |
+| Colouring or print page | SVG, A4, per band                                                          | `stories/{story-id}/{story-id}_print-{nn}_b{1-4}.svg` |
+| Narration, one per page | Opus/WebM 48 kbps mono plus M4A fallback                                   | `audio/{locale}/{story-id}/{nn}.opus`, `{nn}.m4a`     |
+| Word timings, per page  | JSON `[{ "w", "start", "end" }]` from forced alignment; optional           | `audio/{locale}/{story-id}/{nn}.json`                 |
+| Provenance              | One `manifest.json` per story: tool, model, seed, prompt, reviewer, checks | `stories/{story-id}/manifest.json`                    |
 
-`{nn}` is the page or frame number, two digits, and pages and frames pair by number. A page without a frame uses the
+Picture names carry no meaning: the German file's `cover` and the order of `frames` (or a frame's `pageRef`) decide
+which picture is the cover and which page a picture belongs to, and only the folder must be the story id. `{nn}` is
+the page number, two digits; audio pairs with pages by it. A page without a frame uses the
 generated fallback; a page without audio simply has no narration; audio without timings plays without word
 highlight (sentence highlight on device voices). Both are valid states the reader must handle, so a story can be
 published partly illustrated.
