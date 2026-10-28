@@ -1,18 +1,8 @@
 name: Publish stories
 
-# Moderators save in the CMS, which commits to `editorial`. When the checks pass, this publishes `editorial`'s files
-# to `main` as one new commit made through the API with the built-in GITHUB_TOKEN, so both deploys follow with no human
-# merge and no personal token. GitHub signs that commit and it sits on top of `main`, which the `main` ruleset
-# (signed commits, linear history) requires. No pull request: GitHub's signed-commit check blocks pull requests from
-# `editorial` unpredictably over the unsigned commits in its history (the bot's merges, saves made with a GitHub
-# login), while a commit the job makes itself does not depend on that history. Only story and media files may differ from `main`; anything
-# else goes through a pull request to `main`. A story goes live when its status is `published`. The publishing gate
-# (scripts/publish-gates.mjs --changed) refuses a save that would lose a field; with the STRICT_PUBLISHING repository
-# variable set to 1 it also refuses a published file that is incomplete or unreviewed.
-#
-# Pushes made with GITHUB_TOKEN start no other workflow, so the Pages deploy is dispatched explicitly at the end.
-# This workflow runs on pushes to `editorial` and by hand (Actions > Publish stories > Run workflow), never on pull
-# requests, so a pull request from a fork cannot reach it.
+# CMS saves land on `editorial`; when the checks pass, its src/content and public/assets go to `main` as one commit
+# made through the API, which GitHub signs (`main` requires signed commits). GITHUB_TOKEN pushes start no workflow,
+# so the deploy is dispatched by hand. See docs/roadmap/03.
 on:
   push:
     branches: [editorial]
@@ -20,7 +10,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
   actions: write
 
 concurrency:
@@ -66,36 +55,42 @@ jobs:
 
       - name: Publish as a signed commit on main
         run: |
-          git fetch origin main
-          # Built from editorial's files, so main must be inside editorial or the commit would undo it.
-          if ! git merge-base --is-ancestor origin/main HEAD; then
-            echo "::error::main moved during this run; the next run publishes."
-            exit 1
+          repo="repos/$GITHUB_REPOSITORY"
+          base=$(git rev-parse origin/main)
+          tree=$(jq -n --arg b "$(git rev-parse "$base^{tree}")" \
+            --arg c "$(git rev-parse HEAD:src/content)" --arg a "$(git rev-parse HEAD:public/assets)" \
+            '{base_tree: $b, tree: [{path: "src/content", mode: "040000", type: "tree", sha: $c},
+                                     {path: "public/assets", mode: "040000", type: "tree", sha: $a}]}' |
+            gh api "$repo/git/trees" --input - --jq .sha)
+          other=$(git -c core.quotePath=false diff --name-only --no-renames "$base" HEAD -- . ':!src/content' ':!public/assets')
+          if [ -n "$other" ]; then
+            echo "::warning::editorial differs from main outside the content folders; not published:" $other
           fi
-          if git diff --quiet origin/main HEAD; then
+          if [ "$tree" = "$(git rev-parse "$base^{tree}")" ]; then
             echo "Nothing to publish."
             exit 0
           fi
-          other=$(git diff --name-only origin/main HEAD | grep -v -E '^(src/content/|public/assets/)' || true)
-          if [ -n "$other" ]; then
-            echo "::error::editorial changes files the CMS does not edit; land them through a pull request to main:"
-            echo "$other"
-            exit 1
-          fi
-          repo="repos/$GITHUB_REPOSITORY"
-          commit=$(gh api "$repo/git/commits" -f message='content: publish editorial changes' \
-            -f tree="$(git rev-parse 'HEAD^{tree}')" -f 'parents[]'="$(git rev-parse origin/main)" --jq .sha)
+          ids=$(git diff --name-only --no-renames "$base" HEAD -- src/content/stories |
+            sed -n 's#^src/content/stories/[a-z]*/\(.*\)\.md$#\1#p' | sort -u)
+          stories=$(echo "$ids" | head -5 | paste -sd ' ' -)
+          n=$(echo "$ids" | grep -c . || true)
+          if [ "$n" -gt 5 ]; then stories="$stories and $((n - 5)) more"; fi
+          commit=$(gh api "$repo/git/commits" -f message="content: publish ${stories:-editorial changes}" \
+            -f tree="$tree" -f 'parents[]'="$base" --jq .sha)
           if [ "$(gh api "$repo/git/commits/$commit" --jq .verification.verified)" != true ]; then
-            echo "::error::GitHub did not sign $commit, and main accepts signed commits only. Nothing was published."
+            echo "::error::GitHub did not sign $commit; main accepts signed commits only. Nothing was published."
             exit 1
           fi
-          # Not forced: if main moved since the fetch, this is refused and nothing changes.
-          gh api -X PATCH "$repo/git/refs/heads/main" -f sha="$commit" -F force=false --silent
+          if ! gh api -X PATCH "$repo/git/refs/heads/main" -f sha="$commit" -F force=false --silent; then
+            if [ "$(gh api "$repo/git/ref/heads/main" --jq .object.sha)" != "$base" ]; then
+              echo "main moved during this run; publishing again."
+              gh workflow run editorial-publish.yml --ref editorial
+              exit 0
+            fi
+            exit 1
+          fi
+          gh workflow run deploy.yml --ref main
           echo "Published $commit." >> "$GITHUB_STEP_SUMMARY"
-          for n in $(gh pr list --head editorial --base main --state open --json number --jq '.[].number'); do
-            gh pr close "$n" --comment "Published as $commit by the publish workflow, without a pull request."
-          done
           git fetch origin main
           git merge --no-edit origin/main
-          git push origin HEAD:editorial
-          gh workflow run deploy.yml --ref main
+          git push origin HEAD:editorial || echo "::notice::editorial moved; its next run merges main back."

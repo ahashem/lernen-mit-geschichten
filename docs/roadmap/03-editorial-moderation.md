@@ -70,11 +70,10 @@ Moderators work in the CMS on the `editorial` branch and never see git. Steps 1 
   `editorial` at `/preview/` with `SHOW_DRAFTS=1` and `NOINDEX=1` (both are required; a build with only one of them
   still hides drafts), plus a check-result page at `/preview/status/` (`scripts/preview-status.mjs`).
 - **Save → live.** `editorial-publish.yml` merges `main` into `editorial`, runs the changed-files publishing gate
-  (`node scripts/publish-gates.mjs --changed=origin/main`), `npm run quality` and the build, then writes `editorial`'s files to `main` as one new commit through the API with the built-in token. GitHub signs
-  it and it sits on top of `main`. There is no pull request: GitHub's signed-commit check blocked pull requests from
-  `editorial` unpredictably over the unsigned commits in its history (the bot's merges, saves made with a GitHub
-  login). Only story and media files may differ; anything else fails the run and goes through a pull request to
-  `main`. Actions > Publish stories > Run workflow publishes by hand.
+  (`node scripts/publish-gates.mjs --changed=origin/main`), `npm run quality` and the build, then copies `editorial`'s `src/content` and `public/assets` onto `main` as one commit through the API, which GitHub
+  signs. No pull request: unsigned commits in `editorial`'s history make GitHub block those. Other files on
+  `editorial` never reach `main`; code goes through pull requests to `main`. A run that loses a race with a merge to
+  `main` starts itself again.
   Untouched stories are never held to the gate, so the existing library stays as it is.
 - **Set up once:**
   1. Create the branch: `git push origin origin/main:refs/heads/editorial`.
