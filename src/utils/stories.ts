@@ -1,5 +1,6 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { localesByStoryId } from './story-availability';
+import { storySection } from './story-pages';
 
 export type Story = CollectionEntry<'stories'>;
 
@@ -103,8 +104,12 @@ export async function getStoryMeta(storyId: string): Promise<StoryMeta | undefin
   return (await getStoryMetaMap()).get(storyId);
 }
 
-/** Derived from the text, never hand-entered: 150 words a minute for a child being read to. */
-export function readMinutes(body: string | undefined): number {
-  const words = (body ?? '').split(/\s+/).filter(Boolean).length;
+/**
+ * Derived from the text, never hand-entered: 150 words a minute for a child being read to.
+ * Bands 1-2 count the story the storybook reads, not the message and questions after it.
+ */
+export function readMinutes(body: string | undefined, band: number): number {
+  const text = band >= 3 ? (body ?? '') : storySection(body ?? '');
+  const words = text.split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 150));
 }

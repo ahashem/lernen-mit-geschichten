@@ -36,7 +36,7 @@ export async function getCatalogue(locale: Locale): Promise<CatalogueItem[]> {
       title: s.data.title,
       summary: s.data.summary ?? firstSentence(s.body ?? '', locale),
       band: meta?.band ?? 1,
-      minutes: readMinutes(s.body),
+      minutes: readMinutes(s.body, meta?.band ?? 1),
       pageCount:
         (meta?.band ?? 1) >= 3
           ? chapterTitles(s.body ?? '').length
