@@ -52,6 +52,12 @@ setting for devices where the OS setting is not reachable (shared kita tablets).
   used only if a voice for that exact language exists (`speechSynthesis.getVoices()` matching
   `lang`). If there is no matching voice, play nothing and say "No voice for Türkçe on this device"
   rather than reading Turkish with a German voice.
+- **Choosing the device voice:** the site cannot install or improve voices, only choose among the device's voices
+  for the exact language, or not read. Prefer names with "Natural", "Enhanced" or "Premium" (Edge's online Microsoft
+  voices, Apple's downloadable enhanced voices), then the rest. Do not prefer `localService`: it skips Edge's best
+  voices. Edge's online voices send the text to Microsoft from the family's browser; the site makes no request, so
+  the no-cloud rule holds, and the privacy page says so. Look the voice up again before each sentence, because a
+  voice object can go stale after `voiceschanged`. Arabic and Urdu: `07` #19.
 - **Word timings:** generated offline with forced alignment of the recording against the text
   (e.g. aeneas or Montreal Forced Aligner) and stored as JSON per page:
   `[{ "w": 0, "start": 0.42, "end": 0.71 }]`, where `w` is the index of the word in the page's

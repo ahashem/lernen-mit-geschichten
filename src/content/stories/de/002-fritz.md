@@ -1,15 +1,24 @@
 ---
-title: "Fritzchen und dem wütenden Eichhörnchen"
-emoji: "🐿️"
-skills: ["impulse-control", "patience", "empathy"]
-ageGroup: "3-7"
+title: Fritzchen und dem wütenden Eichhörnchen
+emoji: 🐿️
+skills:
+  - impulse-control
+  - patience
+  - empathy
+ageGroup: 3-7
 band: "1"
-storyId: "002-fritz"
-difficulty: "beginner"
+storyId: 002-fritz
+difficulty: beginner
 publishDate: 2024-01-15
 status: published
+cover:
+  src: /assets/stories/002-fritz/002-fritz_frame-01_colour.webp
+art:
+  reviewedAt: 2026-10-28
+  aiGenerated: false
+narration:
+  timing: false
 ---
-
 ## Die Geschichte
 
 Fritzchen war ein kleines, neugieriges Eichhörnchen. Er liebte es, im Wald herumzuspringen und Nüsse zu sammeln. Eines Tages fand er eine besonders große, goldene Nuss unter einem alten Baum.
@@ -41,3 +50,4 @@ Und so wurden Fritzchen und Niko beste Freunde. Sie lernten, dass Geduld und Fre
 - Wenn jemand wütend ist, bleibe ruhig und versuche zu verstehen, warum.
 - Freundlichkeit und Teilen machen uns glücklicher als Streiten.
 - Geduld mit anderen hilft, Konflikte zu lösen und Freunde zu finden.
+

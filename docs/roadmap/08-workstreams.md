@@ -248,6 +248,7 @@ Other:
 7. **Folio:** text only (no pictures); checked as Chromium PDFs only (Chromium ignores right-hand page breaks, so no double-sided control); not tried on a printer, Safari or Firefox.
 8. **Older stories have no page breaks (001-010, 018-022).** The reader derives their pages, but derived pages carry no recordings, and Two languages reading works only for Dino (and `ar` 010, `tr` 019) because the other translations split into different paragraphs. Fix per story with explicit breaks (`03` Page breaks for the older stories), Bruno first. Bruno also lacks alt texts, and its colour frame is a 1.3 MB PNG.
 9. **Machine drafts:** `ar`/`tr`/`ur` UI strings (`src/locales/review-queue.json`), the German and Arabic wording of the status page, and the privacy text all need a native read.
+10. **Device voices misread Arabic and Urdu**, mostly by ignoring harakat. The reader takes the first voice for the language. Fix: rank voices as in `ux/04` Narration, then run the one listening check in `ux/07` #19. PR 108 prefers `localService`, which that rule replaces.
 
 ### Next steps, in order
 

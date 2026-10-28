@@ -1,12 +1,19 @@
 ---
-title: "Fritzchen and the Angry Squirrel"
-ageGroup: "3-7"
-storyId: "002-fritz"
+title: Fritzchen and the Angry Squirrel
+ageGroup: 3-7
+storyId: 002-fritz
 publishDate: 2024-01-15
-difficulty: "beginner"
+difficulty: beginner
 status: published
+questions:
+  - id: q1
+    text: Fritzchen sat under a tree and ate a banana.
+    type: truefalse
+    correctAnswer: False (He ate an apple.)
+narration:
+  timing: false
+reviewedAt: 2026-10-28
 ---
-
 🐿️ The Story of Fritzchen and the Angry Squirrel
 
 Once upon a time, there was a little boy named Fritzchen.
@@ -45,17 +52,11 @@ He giggled and said:
 
 From that day on, Fritzchen knew:
 
-Whoever stays calm will have more fun in the end –
-
-and maybe even a new friend. 🐿️🍎
+Whoever stays calm will have more fun in the end and maybe even a new friend. 🐿️🍎
 
 ---
 
 ❓ True or False Questions
-
-1. Fritzchen sat under a tree and ate a banana.
-
-➡️ False (He ate an apple.)
 
 2. A squirrel took a piece of Fritzchen’s apple.
 
@@ -132,13 +133,3 @@ a) He throws the apple away
 b) He eats the apple alone
 
 c) He shares the apple with the squirrel ✔️
-
----
-
-هل تُريدُ أن أُعِدَّ نسخةً من القصة بالإنجليزية بأسلوب أبسط جدًّا للأطفال الصغار (4–6 سنوات) بجمل قصيرة جدًا؟
-
-تمام 🌸
-
-إليك ترجمة القصة كاملة مع أسئلة الصح والخطأ والاختيار من متعدد مترجمة إلى اللغة التركية الصحيحة مع الإجابات:
-
----
