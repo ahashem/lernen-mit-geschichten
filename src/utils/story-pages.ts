@@ -87,7 +87,7 @@ const paragraphsOf = (story: string) =>
     .filter(Boolean);
 
 /** The story section of a Markdown body: the first `##` section, or everything before the first. */
-function storySection(body: string): string {
+export function storySection(body: string): string {
   const sections = body.split(/^## .*$/m).filter(s => s.trim());
   return body.trimStart().startsWith('## ') ? (sections[0] ?? '') : (body.split(/^## /m)[0] ?? '');
 }

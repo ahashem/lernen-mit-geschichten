@@ -156,7 +156,8 @@ child's name.
    editor-curated tags in front of the 58-skill taxonomy. The full taxonomy is behind "All skills".
 3. **Filter row:** shelf (Picture books / Read-along / Chapter stories / Long reads, with
    "Klasse 1-2" etc. shown as secondary adult text), feeling (a face plus a word), length (≤ 5 /
-   ≤ 15 / ≤ 30 / 30+ min), format (storybook / chapters / two languages available), and
+   ≤ 15 / ≤ 30 / 30+ min; only the lengths that add stories, and none while every story fits the
+   shortest), format (storybook / chapters / two languages available), and
    "Available in…" (multi-select of endonyms). Within a filter type the
    logic is OR, and across types it is AND. A "Clear" button appears as soon as any filter is set.
 4. **Result count:** "12 stories" in a polite live region.
