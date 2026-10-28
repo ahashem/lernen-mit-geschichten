@@ -67,10 +67,6 @@ And Lina thought happily:
 
 “If the first solution doesn’t work, try another way. With friends, every problem becomes easier and more fun.”
 
-بالطبع 🌟
-
-إليك ترجمة أسئلة صح وخطأ إلى اللغة الإنجليزية مع الإجابات الصحيحة:
-
 ---
 
 ❓ True or False
@@ -90,10 +86,6 @@ And Lina thought happily:
 7- The friends built a ladder out of twigs, buttons, and a toy car. → ✔️ True
 
 8- Lina learned: You should never try new solutions. → ❌ False
-
----
-
-هل ترغب أن أُعدّ نسخة مختصرة جدًا (فقط True / False) لتكون مناسبة للأطفال الأصغر سنًا؟
 
 ---
 
@@ -156,9 +148,3 @@ a) She ate it all alone
 b) She threw it away
 
 c) She shared it with her friends ✔️
-
----
-
-هل ترغب أن أجمع القصة باللغات الثلاث (الألمانية – العربية – الإنجليزية) في ملف واحد منسق (مثل PDF أو Word) ليكون جاهزًا للطباعة واستخدامه مع الأطفال؟
-
----
