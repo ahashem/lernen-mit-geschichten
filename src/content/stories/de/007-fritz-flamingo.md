@@ -110,9 +110,7 @@ Die Tiere staunten.
 Fritz grinste stolz:  
 „Ja! Jetzt habe ich Ordnung in Kopf, Herz und Beinen!“
 
-Und von da an war Fritz nicht nur bunt und lustig,  
-sondern auch ein Flamingo mit Selbstkontrolle –  
-und das machte ihn zu einem echten Vorbild.
+Und von da an war Fritz nicht nur bunt und lustig, sondern auch ein Flamingo mit Selbstkontrolle und das machte ihn zu einem echten Vorbild.
 
 ---
 
