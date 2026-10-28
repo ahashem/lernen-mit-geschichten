@@ -1,23 +1,15 @@
 name: Publish stories
 
-# Moderators save in the CMS, which commits to `editorial`. When the checks pass, this opens a pull request from
-# `editorial` to `main` and squash-merges it with the built-in GITHUB_TOKEN, so both deploys follow with no human
-# merge and no personal token: a squash merge made through the API is signed by GitHub and linear, which the `main`
-# ruleset requires. A story goes live when its status is `published`. The publishing gate
-# (scripts/publish-gates.mjs --changed) refuses a save that would lose a field; with the STRICT_PUBLISHING repository
-# variable set to 1 it also refuses a published file that is incomplete or unreviewed.
-#
-# Needs one repository setting: Settings > Actions > General > "Allow GitHub Actions to create and approve pull
-# requests". Pull requests and merges made with GITHUB_TOKEN start no other workflow, so the Pages deploy is
-# dispatched explicitly at the end. This workflow runs only on pushes to `editorial`, never on pull requests, so a
-# pull request from a fork cannot reach it.
+# CMS saves land on `editorial`; when the checks pass, its src/content and public/assets go to `main` as one commit
+# made through the API, which GitHub signs (`main` requires signed commits). GITHUB_TOKEN pushes start no workflow,
+# so the deploy is dispatched by hand. See docs/roadmap/03.
 on:
   push:
     branches: [editorial]
+  workflow_dispatch:
 
 permissions:
   contents: write
-  pull-requests: write
   actions: write
 
 concurrency:
@@ -61,18 +53,44 @@ jobs:
           SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
           NOINDEX: '1'
 
-      - name: Publish through a pull request
+      - name: Publish as a signed commit on main
         run: |
-          if git diff --quiet origin/main HEAD; then
+          repo="repos/$GITHUB_REPOSITORY"
+          base=$(git rev-parse origin/main)
+          tree=$(jq -n --arg b "$(git rev-parse "$base^{tree}")" \
+            --arg c "$(git rev-parse HEAD:src/content)" --arg a "$(git rev-parse HEAD:public/assets)" \
+            '{base_tree: $b, tree: [{path: "src/content", mode: "040000", type: "tree", sha: $c},
+                                     {path: "public/assets", mode: "040000", type: "tree", sha: $a}]}' |
+            gh api "$repo/git/trees" --input - --jq .sha)
+          other=$(git -c core.quotePath=false diff --name-only --no-renames "$base" HEAD -- . ':!src/content' ':!public/assets')
+          if [ -n "$other" ]; then
+            echo "::warning::editorial differs from main outside the content folders; not published:" $other
+          fi
+          if [ "$tree" = "$(git rev-parse "$base^{tree}")" ]; then
             echo "Nothing to publish."
             exit 0
           fi
-          number=$(gh pr list --head editorial --base main --state open --json number --jq '.[0].number')
-          if [ -z "$number" ]; then
-            number=$(gh pr create --base main --head editorial --title "content: publish editorial changes" --body "" | grep -o '[0-9]*$')
+          ids=$(git diff --name-only --no-renames "$base" HEAD -- src/content/stories |
+            sed -n 's#^src/content/stories/[a-z]*/\(.*\)\.md$#\1#p' | sort -u)
+          stories=$(echo "$ids" | head -5 | paste -sd ' ' -)
+          n=$(echo "$ids" | grep -c . || true)
+          if [ "$n" -gt 5 ]; then stories="$stories and $((n - 5)) more"; fi
+          commit=$(gh api "$repo/git/commits" -f message="content: publish ${stories:-editorial changes}" \
+            -f tree="$tree" -f 'parents[]'="$base" --jq .sha)
+          if [ "$(gh api "$repo/git/commits/$commit" --jq .verification.verified)" != true ]; then
+            echo "::error::GitHub did not sign $commit; main accepts signed commits only. Nothing was published."
+            exit 1
           fi
-          gh pr merge "$number" --squash --subject "content: publish editorial changes" --body ""
+          if ! gh api -X PATCH "$repo/git/refs/heads/main" -f sha="$commit" -F force=false --silent; then
+            if [ "$(gh api "$repo/git/ref/heads/main" --jq .object.sha)" != "$base" ]; then
+              echo "main moved during this run; publishing again."
+              gh workflow run editorial-publish.yml --ref editorial
+              exit 0
+            fi
+            exit 1
+          fi
+          gh workflow run deploy.yml --ref main
+          echo "Published $commit." >> "$GITHUB_STEP_SUMMARY"
           git fetch origin main
           git merge --no-edit origin/main
-          git push origin HEAD:editorial
-          gh workflow run deploy.yml --ref main
+          git push origin HEAD:editorial || echo "::notice::editorial moved; its next run merges main back."
