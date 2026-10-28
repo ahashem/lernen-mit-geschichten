@@ -151,7 +151,13 @@ content:
         type: object
         label: Cover
         fields:
-          - { name: src, type: image, label: Picture, options: { media: art } }
+          - {
+              name: src,
+              type: image,
+              label: Picture,
+              description: "Open the folder named after this story's ID (e.g. 023-nora/) before uploading.",
+              options: { media: art },
+            }
           - { name: alt, type: text, label: Alt text (German) }
       - name: frames
         type: object
@@ -162,7 +168,13 @@ content:
             collapsed: true
             summary: '{index}'
         fields:
-          - { name: src, type: image, label: Picture, options: { media: art } }
+          - {
+              name: src,
+              type: image,
+              label: Picture,
+              description: "Open the folder named after this story's ID (e.g. 023-nora/) before uploading.",
+              options: { media: art },
+            }
           - { name: alt, type: text, label: Alt text (German) }
           - {
               name: pageRef,
