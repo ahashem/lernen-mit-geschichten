@@ -26,6 +26,18 @@ Mini-games hub and the 18 games (memory, puzzles, mazes, fishing, fruit slicer, 
 economy; fortune teller and magic garden; 3D book demo; card battle. They compete with stories for attention and
 multiply the translation surface roughly forty-fold.
 
+## Better voices than the device's (researched 2026-10-28)
+
+Device voices for `ar` and `ur` are weak (`ux/07` #19), but every stronger source costs more than the project can
+carry today.
+
+| Idea                                                                                                                        | Why not now                                                                                                                                                                                               | Revisit when                                                                        |
+| --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Audio generated once with a cloud voice (Azure, Google, ElevenLabs), checked by a moderator and played as `narration.audio` | Every page needs a native moderator's listen-through per locale, and every text edit means generating again: studio work                                                                                  | Moderators have capacity per locale, or M5 recorded narration starts                |
+| A speech model running in the browser (Piper through sherpa-onnx WebAssembly)                                               | One medium-quality Arabic voice (`ar_JO-kareem`, fine-tuned from English) that adds its own harakat before speaking, no Urdu voice, and an 11.5 MB engine plus a model per language on children's tablets | An open model covers `ar` and `ur`, keeps the harakat it is given and fits a tablet |
+| Open Arabic research models (Habibi, SILMA) and Urdu fine-tunes                                                             | Built for servers, or of unproven quality                                                                                                                                                                 | As above                                                                            |
+| Cloud speech while the child reads                                                                                          | A third-party request from the child's device (`ux/07` #4), and the site has no backend                                                                                                                   | Not under the current privacy stance                                                |
+
 ## Not without a backend (separate project, opt-in)
 
 Class codes, student progress sync, teacher dashboards, assignments, community submissions, ratings.
