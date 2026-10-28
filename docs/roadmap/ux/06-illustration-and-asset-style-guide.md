@@ -303,7 +303,9 @@ Square 1:1. Negative: {NEGATIVE}
 | Spot illustrations | PNG 1024² | WebP 256 + 512 | n/a |
 | Narration | WAV 48 kHz 24-bit | Opus/WebM 48 kbps mono + AAC/M4A fallback; `{page}.json` word timings | n/a |
 
-**Naming** (lowercase ASCII, hyphens, no locale in art since art is language-neutral):
+**Naming** (lowercase ASCII, hyphens, no locale in art since art is language-neutral). The names below are for masters
+and production files outside the repo. Web pictures in the repo only need the folder `stories/{story-id}/`: their names
+carry no meaning, since the CMS fields decide cover and page (`02` Assets).
 
 ```
 art/stories/{story-id}/{story-id}_cover.{ext}

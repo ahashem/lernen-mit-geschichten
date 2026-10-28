@@ -73,10 +73,10 @@ export const MESSAGES = {
     de: p => `Das Bild ${p.src} wurde nicht hochgeladen.`,
     ar: p => `لم يتم رفع الصورة ${p.src}.`,
   },
-  pictureName: {
-    en: p => `${p.name}: the convention is ${p.id}_cover.webp or ${p.id}_frame-01_colour.webp (WebP, 1200 px wide).`,
-    de: p => `${p.name}: üblich sind ${p.id}_cover.webp oder ${p.id}_frame-01_colour.webp (WebP, 1200 px breit).`,
-    ar: p => `${p.name}: التسمية المعتمدة ${p.id}_cover.webp أو ${p.id}_frame-01_colour.webp (WebP بعرض 1200 بكسل).`,
+  pictureFolder: {
+    en: p => `${p.name} is not in the story's folder: upload it into Story art › ${p.id} and choose it again.`,
+    de: p => `${p.name} liegt nicht im Ordner der Geschichte: in Story art › ${p.id} hochladen und neu auswählen.`,
+    ar: p => `${p.name} ليست في مجلد القصة: ارفعوها في Story art › ${p.id} واختاروها من جديد.`,
   },
   pictureSize: {
     en: p => `${p.name} is ${p.kb} KB; the budget is 120 KB.`,

@@ -18,8 +18,8 @@ media:
     label: Story art
     input: public/assets/stories
     output: /assets/stories
-    extensions: [webp, png, svg]
-    rename: false # file names follow docs/roadmap/02-content-model.md; do not slugify
+    extensions: [webp, png, jpg, jpeg, svg]
+    rename: safe # names carry no meaning (the Cover and Page pictures fields do); lowercase ASCII, -1/-2 on a clash
   - name: audio
     label: Narration audio
     input: public/assets/audio
@@ -155,7 +155,7 @@ content:
               name: src,
               type: image,
               label: Picture,
-              description: "Open the folder named after this story's ID (e.g. 023-nora/) before uploading.",
+              description: "Open the folder named after this story's ID (e.g. 023-nora/) before uploading. Any file name works.",
               options: { media: art },
             }
           - { name: alt, type: text, label: Alt text (German) }
@@ -172,7 +172,7 @@ content:
               name: src,
               type: image,
               label: Picture,
-              description: "Open the folder named after this story's ID (e.g. 023-nora/) before uploading.",
+              description: "Open the folder named after this story's ID (e.g. 023-nora/) before uploading. Any file name works.",
               options: { media: art },
             }
           - { name: alt, type: text, label: Alt text (German) }

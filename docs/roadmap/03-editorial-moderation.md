@@ -38,15 +38,17 @@ Moderators work in the CMS on the `editorial` branch and never see git. Steps 1 
    the repo.
 3. **Art in fal.** Generate the cover and one picture per page from the templates in `ux/06` with the character sheet
    attached. Check each picture against the Art checklist.
-4. **Prepare files.** 1200 px wide, WebP, named `023-nora_cover.webp` and `023-nora_frame-01_colour.webp`. The
-   preview's `…/preview/art/` page does this in the browser. The step-by-step guide for moderators is `…/preview/guide/`. Line
+4. **Prepare files.** WebP, at most 1200 px on the long side, about 120 KB; portrait or landscape. File names carry no
+   meaning. The preview's `…/preview/art/` page does this in the browser. The step-by-step guide for moderators is `…/preview/guide/`. Line
    drawings and SVG vectorising are an owner job for later and are optional.
 5. **Audio (optional).** One recording per page, trimmed and named `01.m4a`, `02.m4a`. Word timings are optional and
    need a technical tool; without them the reader highlights sentences.
 6. **German entry.** In the CMS: Stories (German), New. Fill `storyId`, title, emoji, skills (pick from the list), band, summary, key
    message. Skills and emoji are set here only; translations inherit them. Write the text in the editor like a document; a horizontal line starts a new page (page _n_ pairs with picture _n_ and recording _n_). Chapter stories use headings instead. Add questions and the grown-up prompts. `status` is `draft`.
-7. **Art and audio.** Upload the cover and page pictures to `assets/stories/023-nora/` and the recordings to
-   `assets/audio/de/023-nora/`, choose them in the Cover and Page pictures fields, and write the German alt text.
+7. **Art and audio.** Upload the cover and page pictures to `assets/stories/023-nora/` (create the folder for a new
+   story) and the recordings to `assets/audio/de/023-nora/`. Choose the cover in Cover and the page pictures in Page
+   pictures, in page order; Page number covers a page without a picture. Replacing a picture is a new upload chosen in
+   the field (the CMS never overwrites; a taken name gets `-1`). Write the German alt text.
    Fill "How the art was made" (tool, model, who reviewed it).
 8. **Review.** A second moderator checks the text and art against the checklists below and fills in the reviewer
    fields. The CMS cannot force this to be a different person.
@@ -103,8 +105,7 @@ Moderators work in the CMS on the `editorial` branch and never see git. Steps 1 
   must not appear in it. Pause moderator edits while a code change migrates many story files; a merge conflict stops
   the pipeline and shows on the status page.
 - **To confirm in the first test:** the CMS writes to the default branch and its commits start the workflows; email
-  sign-in works; Pages publishes the preview folder. Not yet possible: automatic conversion of PNG to WebP, a naming
-  check on uploads, and anything needing SVG or word-timing tools.
+  sign-in works; Pages publishes the preview folder. Not yet possible: automatic conversion of PNG to WebP and anything needing SVG or word-timing tools.
 
 ## Roles
 
