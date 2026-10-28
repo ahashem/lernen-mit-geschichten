@@ -1,4 +1,5 @@
 import { fmt } from '@utils/i18n';
+import { withoutEmoji } from '@utils/speech';
 import { applyTheme, loadPrefs, read, savePrefs, write } from './prefs';
 import { startChapters } from './chapters';
 import { startClassroom } from './classroom';
@@ -28,6 +29,7 @@ const $ = <T extends HTMLElement>(root: ParentNode, selector: string) =>
 const $$ = <T extends HTMLElement>(root: ParentNode, selector: string) => [
   ...root.querySelectorAll<T>(selector),
 ];
+const speakable = (el: HTMLElement) => withoutEmoji(el.textContent ?? '');
 
 export function startReader() {
   const app = $<HTMLElement>(document, '.story-app');
@@ -274,13 +276,15 @@ export function startReader() {
       const sentence = sentences[i];
       sentence.classList.add('is-on');
       const words = $$(sentence, '.w');
+      const spoken = words.map(speakable);
+      if (!spoken.some(Boolean)) return next(i + 1);
       const starts: number[] = [];
       let offset = 0;
-      for (const w of words) {
+      for (const w of spoken) {
         starts.push(offset);
-        offset += (w.textContent ?? '').length + 1;
+        offset += w.length + 1;
       }
-      const u = new SpeechSynthesisUtterance(words.map(w => w.textContent).join(' '));
+      const u = new SpeechSynthesisUtterance(spoken.join(' '));
       u.voice = chosen;
       u.lang = chosen.lang;
       u.rate = prefs.speed;
@@ -396,9 +400,11 @@ export function startReader() {
       audio.play().catch(() => {});
       return;
     }
+    const text = speakable(el);
+    if (!text) return;
     voice(locale).then(chosen => {
       if (!chosen) return status(fmt(t.noVoiceFor, { language: data.endonyms[locale] }));
-      const u = new SpeechSynthesisUtterance(el.textContent ?? '');
+      const u = new SpeechSynthesisUtterance(text);
       u.voice = chosen;
       u.lang = chosen.lang;
       u.rate = prefs.speed;
