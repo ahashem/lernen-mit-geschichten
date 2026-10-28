@@ -41,7 +41,7 @@ const hasBook = band <= 2 && pages.length > 0;
 const chapters = band >= 3 ? chapterTitles(story.body ?? '') : [];
 const narration = narrationFor(storyId, locale, pages.length, explicit);
 const cover = coverOf(meta, locale);
-const minutes = readMinutes(story.body);
+const minutes = readMinutes(story.body, band);
 const skills = await getSkillsByIds(story.data.skills ?? meta?.skills ?? [], locale);
 // The first skill is the story's main one; its area names the part of the skills tree the story belongs to.
 const area = skills[0] && skillGroupLabel(locale, skills[0].category);

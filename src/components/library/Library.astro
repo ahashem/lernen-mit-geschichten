@@ -33,12 +33,14 @@ const areas = (await getSkillsByCategory(locale))
 const areaOf = Object.fromEntries(areas.flatMap(g => g.skills.map(s => [s.id, g.id])));
 
 const bands = [1, 2, 3, 4].filter(b => items.some(i => i.band === b));
+// A length is offered only when it adds stories the shorter one does not; one length alone filters nothing.
+const reach = [5, 15, 30, Infinity];
 const lengths = [
   { id: '5', text: fmt(t('lengthUpTo'), { n: 5 }) },
   { id: '15', text: fmt(t('lengthUpTo'), { n: 15 }) },
   { id: '30', text: fmt(t('lengthUpTo'), { n: 30 }) },
   { id: '30+', text: fmt(t('lengthOver'), { n: 30 }) },
-];
+].filter((_, i) => items.some(it => it.minutes > (reach[i - 1] ?? 0) && it.minutes <= reach[i]));
 const languages = LOCALES.filter(l => items.some(i => i.languages.includes(l)));
 
 const data = items.map(i => ({
@@ -133,19 +135,21 @@ const strings = {
               )
             }
 
-            <fieldset>
-              <legend>{t('lengthLabel')}</legend>
-              <div class="chips">
-                {
-                  lengths.map(l => (
-                    <label class="chip">
-                      <input type="checkbox" name="length" value={l.id} />
-                      <span>{l.text}</span>
-                    </label>
-                  ))
-                }
-              </div>
-            </fieldset>
+            {
+              lengths.length > 1 && (
+                <fieldset>
+                  <legend>{t('lengthLabel')}</legend>
+                  <div class="chips">
+                    {lengths.map(l => (
+                      <label class="chip">
+                        <input type="checkbox" name="length" value={l.id} />
+                        <span>{l.text}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              )
+            }
 
             <fieldset>
               <legend>{t('availableInLabel')}</legend>
