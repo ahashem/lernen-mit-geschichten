@@ -205,10 +205,14 @@ export function startReader() {
 
   async function voice(locale: string): Promise<SpeechSynthesisVoice | null> {
     if (typeof speechSynthesis === 'undefined') return null;
-    const find = () =>
-      speechSynthesis
+    // Looked up on every use: a voice object from before a voiceschanged can go stale, and the browser then
+    // falls back to the default voice, which reads only the punctuation of a script it cannot speak.
+    const find = () => {
+      const matches = speechSynthesis
         .getVoices()
-        .find(v => v.lang.toLowerCase().replace('_', '-').split('-')[0] === locale) ?? null;
+        .filter(v => v.lang.toLowerCase().replace('_', '-').split('-')[0] === locale);
+      return matches.find(v => v.localService) ?? matches[0] ?? null;
+    };
     const found = find();
     if (found) return found;
     await new Promise<void>(resolve => {
@@ -266,7 +270,9 @@ export function startReader() {
       return;
     }
     const sentences = $$(block(current, locale), '.s');
-    const next = (i: number) => {
+    const next = async (i: number) => {
+      if (mine !== token) return;
+      const fresh = (await voice(locale)) ?? chosen;
       if (mine !== token) return;
       if (i >= sentences.length) return done();
       sentenceIndex = i;
@@ -281,8 +287,8 @@ export function startReader() {
         offset += (w.textContent ?? '').length + 1;
       }
       const u = new SpeechSynthesisUtterance(words.map(w => w.textContent).join(' '));
-      u.voice = chosen;
-      u.lang = chosen.lang;
+      u.voice = fresh;
+      u.lang = fresh.lang;
       u.rate = prefs.speed;
       u.onboundary = e => {
         if (mine !== token) return;

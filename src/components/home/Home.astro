@@ -222,10 +222,12 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
   // talking, so with no voice for this language nothing changes and the "?" stays hidden.
   const picture = root.querySelector<HTMLElement>('[data-body="picture"]');
   if (picture && typeof speechSynthesis !== 'undefined') {
-    const findVoice = () =>
-      speechSynthesis
+    const findVoice = () => {
+      const matches = speechSynthesis
         .getVoices()
-        .find(v => v.lang.toLowerCase().replace('_', '-').split('-')[0] === s.locale) ?? null;
+        .filter(v => v.lang.toLowerCase().replace('_', '-').split('-')[0] === s.locale);
+      return matches.find(v => v.localService) ?? matches[0] ?? null;
+    };
     const tour = picture.querySelector<HTMLButtonElement>('[data-tour]')!;
     let armed: Element | null = null;
     let timer = 0;
