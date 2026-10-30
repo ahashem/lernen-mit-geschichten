@@ -172,3 +172,14 @@ const code = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
     }
   }
 </style>
+
+<script>
+  // Any `[data-print="prep|pack"]` button prints that sheet; the attribute is what the print stylesheet keys on.
+  document.addEventListener('click', e => {
+    const button = (e.target as HTMLElement).closest<HTMLElement>('[data-print]');
+    if (!button?.dataset.print) return;
+    document.body.dataset.print = button.dataset.print;
+    window.print();
+  });
+  window.addEventListener('afterprint', () => delete document.body.dataset.print);
+</script>

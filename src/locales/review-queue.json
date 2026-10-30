@@ -205,7 +205,11 @@
     "skillLabels.active-listening",
     "skillLabels.asking-for-help",
     "skillLabels.apologizing",
-    "skillLabels.humor"
+    "skillLabels.humor",
+    "colourIt",
+    "thinkAboutIt",
+    "activity",
+    "backToShelf"
   ],
   "tr": [
     "skipToContent",
@@ -413,7 +417,11 @@
     "skillLabels.active-listening",
     "skillLabels.asking-for-help",
     "skillLabels.apologizing",
-    "skillLabels.humor"
+    "skillLabels.humor",
+    "colourIt",
+    "thinkAboutIt",
+    "activity",
+    "backToShelf"
   ],
   "ur": [
     "skipToContent",
@@ -621,6 +629,10 @@
     "skillLabels.active-listening",
     "skillLabels.asking-for-help",
     "skillLabels.apologizing",
-    "skillLabels.humor"
+    "skillLabels.humor",
+    "colourIt",
+    "thinkAboutIt",
+    "activity",
+    "backToShelf"
   ]
 }

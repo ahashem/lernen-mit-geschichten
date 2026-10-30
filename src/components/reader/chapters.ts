@@ -43,11 +43,12 @@ export function startChapters(
   const saved = (read(key) ?? '').split(':').map(Number);
   const titleOf = (i: number) => chapters[i][0].textContent ?? '';
 
-  function show(name: 'cover' | 'chapters' | 'text', push = true) {
+  function show(name: 'cover' | 'chapters' | 'text' | 'end', push = true) {
     for (const v of views) v.hidden = v.dataset.view !== name;
     app.dataset.view = name;
     document.body.dataset.reading = String(name === 'chapters');
-    const hash = name === 'chapters' ? `#chapter-${current + 1}` : name === 'text' ? '#text' : '';
+    const hash =
+      name === 'chapters' ? `#chapter-${current + 1}` : name === 'cover' ? '' : `#${name}`;
     if (push && hash !== location.hash)
       history.pushState(null, '', hash || location.pathname + location.search);
     $<HTMLElement>(app, `.view[data-view="${name}"]`)?.focus({ preventScroll: true });
@@ -61,7 +62,7 @@ export function startChapters(
     nextLabel.textContent =
       current < total - 1
         ? fmt(strings.chapterDoneNext, { n: current + 1, title: titleOf(current + 1) })
-        : strings.toCover;
+        : strings.theEnd;
     next.setAttribute('aria-label', nextLabel.textContent);
     show('chapters', push);
     window.scrollTo(0, offset * (document.documentElement.scrollHeight - innerHeight));
@@ -90,8 +91,14 @@ export function startChapters(
       else {
         write(key, null);
         write(lastKey, null);
-        show('cover');
+        show('end');
       }
+    },
+    think: () => {
+      const button = $<HTMLButtonElement>(app, '[data-action="think"]')!;
+      const list = $<HTMLElement>(app, '#think-prompts')!;
+      list.hidden = !list.hidden;
+      button.setAttribute('aria-expanded', String(!list.hidden));
     },
     'chapters-lamp': () => {
       prefs.theme = prefs.theme === 'lamp' ? 'day' : 'lamp';
@@ -123,10 +130,12 @@ export function startChapters(
   });
   addEventListener('scroll', () => requestAnimationFrame(track), { passive: true });
 
+  const viewOf = (hash: string) => (hash === '#text' ? 'text' : hash === '#end' ? 'end' : 'cover');
+
   function fromHash() {
     const m = /^#chapter-(\d+)$/.exec(location.hash);
     if (m) open(Number(m[1]) - 1, 0, false);
-    else show(location.hash === '#text' ? 'text' : 'cover', false);
+    else show(viewOf(location.hash), false);
   }
   addEventListener('popstate', fromHash);
 
@@ -136,5 +145,5 @@ export function startChapters(
   const initial = /^#chapter-(\d+)$/.exec(location.hash);
   if (initial)
     open(Number(initial[1]) - 1, (saved[0] === Number(initial[1]) - 1 && saved[1]) || 0, false);
-  else show(location.hash === '#text' ? 'text' : 'cover', false);
+  else show(viewOf(location.hash), false);
 }

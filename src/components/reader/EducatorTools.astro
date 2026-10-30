@@ -68,15 +68,6 @@ const shelves = [
   import qrcode from 'qrcode-generator';
 
   document.querySelectorAll<HTMLElement>('[data-educator]').forEach(root => {
-    // Printing shows one sheet; the attribute is what the print stylesheet keys on.
-    root.querySelectorAll<HTMLElement>('[data-print]').forEach(button =>
-      button.addEventListener('click', () => {
-        document.body.dataset.print = button.dataset.print;
-        window.print();
-      })
-    );
-    window.addEventListener('afterprint', () => delete document.body.dataset.print);
-
     const field = (name: string) => root.querySelector<HTMLInputElement>(`[data-cl="${name}"]`)!;
     const out = root.querySelector<HTMLElement>('[data-cl-out]')!;
     const qrBox = root.querySelector<HTMLElement>('[data-cl-qr]')!;
