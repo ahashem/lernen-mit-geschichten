@@ -41,6 +41,26 @@ questions:
       - "Together we are stronger"
       - "Nuts are too heavy"
     correctAnswer: "Together we are stronger"
+  - id: q1
+    text: Who found the nut first?
+    type: fillinblank
+    correctAnswer: Finn, the little raccoon.
+  - id: q2
+    text: Who did Finn meet first?
+    type: fillinblank
+    correctAnswer: Mila, the squirrel.
+  - id: q3
+    text: Who else helped?
+    type: fillinblank
+    correctAnswer: Kiko the bird, and many ants.
+  - id: q4
+    text: What happened when everyone worked together?
+    type: fillinblank
+    correctAnswer: They could move the giant nut and eat it.
+  - id: q5
+    text: What do we learn from the story?
+    type: fillinblank
+    correctAnswer: Together we are stronger! / Teamwork is fun!
 status: published
 ---
 
@@ -83,19 +103,3 @@ And Kiko flapped happily: “Together, no one can beat us!”
 
 From that day on, all the forest animals knew:
 Whoever works together can finish even the hardest tasks – and have lots of fun, too.
-
-Questions 
-1. Who found the nut first?
-👉 Finn, the little raccoon.
-
-2. Who did Finn meet first?
-👉 Mila, the squirrel.
-
-3. Who else helped?
-👉 Kiko the bird, and many ants.
-
-4. What happened when everyone worked together?
-👉 They could move the giant nut and eat it.
-
-5. What do we learn from the story?
-👉 Together we are stronger! / Teamwork is fun!
