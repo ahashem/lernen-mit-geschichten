@@ -120,7 +120,7 @@ Er stellte sich oben auf den Hügel, atmete tief ein … und wuschhhhh – schon
 
 ---
 
-Da kam seine Freundin, die Eule Lotte, angeflogen. Sie lachte freundlich: „Fritzi, weißt du, wie oft ich beim Fliegen üben runtergeplumpst bin? Unzählige Male! Aber jedes Mal habe ich etwas Neues gelernt.“
+Da kam seine Freundin, die Eule Lotte, angeflogen. Sie lachte freundlich: „Fritzi, weißt du, wie oft ich beim Fliegenüben runtergeplumpst bin? Unzählige Male! Aber jedes Mal habe ich etwas Neues gelernt.“
 
 ---
 
@@ -138,7 +138,7 @@ Also versuchte er es wieder. Beim zweiten Versuch rutschte er zu früh auf dem R
 
 Anstatt zu weinen, kicherte Fritzi: „Na gut, jetzt weiß ich, dass Wasser und Roller keine Freunde sind.“
 
-Beim dritten Versuch – ohne Steine, ohne Pfütze, mit viel Mut – sauste Fritzi den ganzen Hügel hinunter. „Juhuuuuu!“ schrie er, und Lotte klatschte mit den Flügeln.
+Beim dritten Versuch – ohne Steine, ohne Pfütze, mit viel Mut – sauste Fritzi den ganzen Hügel hinunter. „Juhuuuuu!“, schrie er, und Lotte klatschte mit den Flügeln.
 
 ---
 

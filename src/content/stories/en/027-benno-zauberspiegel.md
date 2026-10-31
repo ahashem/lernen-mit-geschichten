@@ -93,7 +93,7 @@ The next day, Benno tried it out.
 
 ---
 
-At breakfast, he spilled some milk and laughed: “Oops!”. Then he asked himself: “Was I kind?” – Yes, nobody was angry. “Did I annoy anyone?” – No, it was just a small accident. “Am I satisfied?” – Hmm… I should have been a bit more careful.
+At breakfast, he spilled some milk and laughed: “Oops!” Then he asked himself: “Was I kind?” – Yes, nobody was angry. “Did I annoy anyone?” – No, it was just a small accident. “Am I satisfied?” – Hmm… I should have been a bit more careful.
 
 ---
 

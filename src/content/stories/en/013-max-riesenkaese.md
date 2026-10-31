@@ -54,9 +54,9 @@ questions:
     type: "truefalse"
 ---
 
-Once upon a time, there was a little mouse named **Max who lived in a cozy mouse hole under an old apple tree. Max was clever, quick — and a little bit **nervous**.
+Once upon a time, there was a little mouse named **Max** who lived in a cozy mouse hole under an old apple tree. Max was clever, quick — and a little bit **nervous**.
 
-One day, Max heard some exciting news: **“A giant cheese has fallen in the village! Right in front of the bakery!”
+One day, Max heard some exciting news: **“A giant cheese has fallen in the village! Right in front of the bakery!”**
 
 ---
 
@@ -64,23 +64,23 @@ Max jumped up, ran out, and shouted: “Cheese! Cheese! Cheese! I have to be the
 
 ---
 
-But when he got there… oh no! Ten animals were already there! An elephant, two ducks, a prickly hedgehog — and **everyone wanted the cheese!
+But when he got there… oh no! Ten animals were already there! An elephant, two ducks, a prickly hedgehog — and **everyone wanted the cheese!**
 
 ---
 
-Max started to **panic**. His paws shook. His heart beat like a marching drum. He thought: **“I’ll never get a single crumb! What if I fall? What if they squash me?!”
+Max started to **panic**. His paws shook. His heart beat like a marching drum. He thought: **“I’ll never get a single crumb! What if I fall? What if they squash me?!”**
 
 ---
 
 🧠 But then, Max remembered what his Aunt Lilli had told him:
 
-**“If you feel stressed, just do these three things:”
+**“If you feel stressed, just do these three things:”**
 
-1. **Take a deep breath – like a sleeping hamster. 2. **Count backward from 5 to 1 – slowly, like a turtle.
+1. **Take a deep breath** – like a sleeping hamster. 2. **Count backward from 5 to 1** – slowly, like a turtle.
 
 ---
 
-3. **Say something kind to yourself – like: ‘I can do this!’
+3. **Say something kind to yourself** – like: ‘I can do this!’
 
 ---
 
@@ -90,11 +90,11 @@ So Max did it: 🐭 *Inhale... Exhale...* 🐭 *“5... 4... 3... 2... 1...”* 
 
 Suddenly, Max felt much **calmer**.
 
-Then he had a **brilliant idea**: He climbed onto an old cookie tin, waved his tail, and called out: **“Hey everyone! If we share, everyone gets a piece! Even the elephant can chew!”
+Then he had a **brilliant idea**: He climbed onto an old cookie tin, waved his tail, and called out: **“Hey everyone! If we share, everyone gets a piece! Even the elephant can chew!”**
 
 ---
 
-All the animals looked at Max. Then they laughed. And said: **“Great idea, Max!”
+All the animals looked at Max. Then they laughed. And said: **“Great idea, Max!”**
 
 They cut the cheese into lots of pieces – even tiny ones for the ants! 🐜
 
@@ -102,7 +102,7 @@ They cut the cheese into lots of pieces – even tiny ones for the ants! 🐜
 
 In the end, Max sat happily, holding a piece of cheese in his paw, chewing and smiling, thinking:
 
-**“When you stay calm, you think better. And cheese tastes even better without stress!” 😋
+**“When you stay calm, you think better. And cheese tastes even better without stress!”** 😋
 
 ---
 
@@ -114,4 +114,4 @@ In the end, Max sat happily, holding a piece of cheese in his paw, chewing and s
 
 * Count from 5 to 1, slowly. * Say something kind to yourself.
 
-**And soon, your big cheese-stress will turn into a cheesy success! 🧀💛
+**And soon, your big cheese-stress will turn into a cheesy success!** 🧀💛

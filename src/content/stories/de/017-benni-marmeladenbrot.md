@@ -76,7 +76,7 @@ Mama Bär kam in die Küche und schaute sich das Chaos an. Dann lachte sie.
 
 Benni schniefte. „Dass ich ein Brotkatastrophenbär bin?“
 
-„Nein“, lächelte Mama. „Dass Marmelade sehr fliegtüchtig ist – und dass man das Messer nicht senkrecht in die Marmelade stecken sollte!“
+„Nein“, lächelte Mama. „Dass Marmelade sehr flugtüchtig ist – und dass man das Messer nicht senkrecht in die Marmelade stecken sollte!“
 
 ---
 

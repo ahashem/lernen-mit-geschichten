@@ -84,10 +84,10 @@ Eines Tages spielte Mila mit ihrem besten Freund, dem kleinen Hasen Hoppel, im G
 „Hoppel, lass uns Fangen spielen!“, rief Mila begeistert.
 
 Aber Hoppel schaute auf den Ballon, den er in den Pfoten hielt.
-„Ich möchte lieber mit dem Ballon hüpfen,“ sagte er leise.
+„Ich möchte lieber mit dem Ballon hüpfen“, sagte er leise.
 
 Mila runzelte die Stirn. Sie wollte unbedingt rennen und laut lachen.
-„Ach, Hoppel, warum sagst du das nicht deutlicher?“ fragte sie.
+„Ach, Hoppel, warum sagst du das nicht deutlicher?“, fragte sie.
 
 Da sprang Hoppel auf und sagte:
 „Okay, Mila. Ich fühle mich heute ein bisschen müde. Ich habe Lust, mit dem Ballon ruhig zu spielen. Aber ich möchte trotzdem Zeit mit dir verbringen.“
@@ -104,4 +104,4 @@ Am Ende sagte Mila:
 „Weißt du, Hoppel? Wenn man Wünsche und Gefühle klar und freundlich sagt, dann versteht der andere es besser. Das macht Freundschaft noch stärker!“
 
 Und der kleine Hase nickte.
-„Genau, Mila. Ehrliche Worte sind wie ein bunter Ballon – sie bringen Freude und fliegen hoch!" 🎈
+„Genau, Mila. Ehrliche Worte sind wie ein bunter Ballon – sie bringen Freude und fliegen hoch!“ 🎈

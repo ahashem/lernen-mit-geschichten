@@ -68,7 +68,7 @@ keyMessage: "Wenn alles zu viel wird: tief durchatmen, in kleine Schritte teilen
 
 Es war einmal eine kleine Maus namens Max, die in einem gemütlichen Mauseloch unter dem alten Apfelbaum lebte. Max war schlau, schnell – und ein klein wenig nervös.
 
-Eines Tages hörte Max eine fantastische Nachricht: "Ein riesiger Käse ist im Dorf gefallen! Genau vor dem Bäckerladen!"
+Eines Tages hörte Max eine fantastische Nachricht: „Ein riesiger Käse ist im Dorf gefallen! Genau vor dem Bäckerladen!“
 
 ---
 

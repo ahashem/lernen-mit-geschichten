@@ -1,7 +1,7 @@
 ---
 storyId: "031-lina-lange-nase"
 status: draft
-title: "“Lina’s Long Nose”"
+title: "Lina’s Long Nose"
 keyMessage: "Moral of the Story Sometimes we feel angry or think things are unfair. But if we take a deep breath, count to three, and pause for a moment, we can stay in control of our feelings – just like Lina with her “long nose.”"
 questions:
   - id: "q1"

@@ -82,7 +82,7 @@ Wenn jemand ihr Spielzeug nahm oder sie verlor, fühlte sie, wie ein kleiner Dra
 
 ---
 
-„GRRRR!“ brüllte Funkel, wenn Paula sich ärgerte. „Schrei! Stampf! Wirf dein Kuscheltier!“
+„GRRRR!“, brüllte Funkel, wenn Paula sich ärgerte. „Schrei! Stampf! Wirf dein Kuscheltier!“
 
 ---
 
@@ -122,7 +122,7 @@ Am nächsten Tag verlor Paula wieder im Spiel. Funkel wollte schon brüllen – 
 
 ---
 
-Sie pustete, zählte, zog ein ulkiges Gesicht. Und siehe da: Funkel kicherte und schrumpfte zu einem Mini-Drache, der nur noch albern kicherte.
+Sie pustete, zählte, zog ein ulkiges Gesicht. Und siehe da: Funkel kicherte und schrumpfte zu einem Mini-Drachen, der nur noch albern kicherte.
 
 Ihre Freunde klatschten: „Paula, du bist die beste Wut-Zauberin!“
 
