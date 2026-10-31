@@ -5,6 +5,100 @@ storyId: "005-mila"
 publishDate: 2024-01-15
 difficulty: "beginner"
 status: published
+questions:
+  - id: q1
+    text: Mila wanted to play with the balloon first.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q2
+    text: Hoppel felt a little tired.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q3
+    text: Mila didn’t listen to Hoppel.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q4
+    text: In the end, Mila and Hoppel played both games.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q5
+    text: The story shows that we should express wishes and feelings clearly.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q6
+    text: Hoppel didn’t want to play with Mila at all.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q7
+    text: What did Mila want to play first?
+    type: multiplechoice
+    options:
+      - Balloon
+      - Tag
+      - Hide-and-seek
+    correctAnswer: Tag
+  - id: q8
+    text: Why did Hoppel want to play with the balloon?
+    type: multiplechoice
+    options:
+      - Because he was tired.
+      - Because he was afraid.
+      - Because he didn’t like tag.
+    correctAnswer: Because he was tired.
+  - id: q9
+    text: What did Mila do when Hoppel explained his feelings?
+    type: multiplechoice
+    options:
+      - She got angry.
+      - She suggested an idea.
+      - She walked away.
+    correctAnswer: She suggested an idea.
+  - id: q10
+    text: How did Mila and Hoppel play in the end?
+    type: multiplechoice
+    options:
+      - Only tag.
+      - Only with the balloon.
+      - First with the balloon, then tag.
+    correctAnswer: First with the balloon, then tag.
+  - id: q11
+    text: What is the main message of the story?
+    type: multiplechoice
+    options:
+      - You should always play alone.
+      - You should express wishes and feelings clearly and kindly.
+      - Balloons are more fun than tag.
+    correctAnswer: You should express wishes and feelings clearly and kindly.
+  - id: q12
+    text: __________ wanted to play tag first.
+    type: fillinblank
+    correctAnswer: Mila
+  - id: q13
+    text: __________ felt a little __________.
+    type: fillinblank
+    correctAnswer: Hoppel – tired
+  - id: q14
+    text: They first played with the __________.
+    type: fillinblank
+    correctAnswer: balloon
+  - id: q15
+    text: In the end, they also played __________.
+    type: fillinblank
+    correctAnswer: tag
+  - id: q16
+    text: What did Hoppel feel?
+    type: fillinblank
+    correctAnswer: He felt tired.
+  - id: q17
+    text: What did Mila want to play?
+    type: fillinblank
+    correctAnswer: She wanted to play tag.
+  - id: q18
+    text: What is the message of the story?
+    type: fillinblank
+    correctAnswer: We should express wishes and feelings clearly and kindly.
+keyMessage: It is important to express feelings and wishes clearly. We should always speak kindly and respectfully. When we listen well, we can find solutions that make both sides happy. Honest words make friendship stronger.
 ---
 
 ## The Story
@@ -39,97 +133,9 @@ At the end Mila said:
 And the little rabbit nodded.
 “Exactly, Mila. Honest words are like a colorful balloon – they bring joy and fly high!” 🎈
 
----
+## ✏️ Activities
 
-🌟 Message of the Story
-
-It is important to express feelings and wishes clearly.
-
-We should always speak kindly and respectfully.
-
-When we listen well, we can find solutions that make both sides happy.
-
-Honest words make friendship stronger.
-
----
-
-❓ True or False Questions
-
-1. Mila wanted to play with the balloon first.
-→ False. Mila wanted to play tag first.
-
-2. Hoppel felt a little tired.
-→ True. He said he was tired and preferred to play quietly with the balloon.
-
-3. Mila didn’t listen to Hoppel.
-→ False. She listened well and found a solution.
-
-4. In the end, Mila and Hoppel played both games.
-→ True. First they played with the balloon, then tag.
-
-5. The story shows that we should express wishes and feelings clearly.
-→ True. That way, friends understand each other better.
-
-6. Hoppel didn’t want to play with Mila at all.
-→ False. He wanted to play with her, but in a different way.
-
----
-
-❓ Multiple-Choice Questions
-
-1. What did Mila want to play first?
-a) Balloon
-b) Tag
-c) Hide-and-seek
-→ ✔️ b) Tag
-
-2. Why did Hoppel want to play with the balloon?
-a) Because he was tired.
-b) Because he was afraid.
-c) Because he didn’t like tag.
-→ ✔️ a) Because he was tired.
-
-3. What did Mila do when Hoppel explained his feelings?
-a) She got angry.
-b) She suggested an idea.
-c) She walked away.
-→ ✔️ b) She suggested an idea.
-
-4. How did Mila and Hoppel play in the end?
-a) Only tag.
-b) Only with the balloon.
-c) First with the balloon, then tag.
-→ ✔️ c) First with the balloon, then tag.
-
-5. What is the main message of the story?
-a) You should always play alone.
-b) You should express wishes and feelings clearly and kindly.
-c) Balloons are more fun than tag.
-→ ✔️ b) You should express wishes and feelings clearly and kindly.
-
----
-
-✏️ Activities
-
-1. Fill in the blanks:
-
-(Words: Mila – Hoppel – balloon – tag – tired)
-
-a) __________ wanted to play tag first.
-→ Mila
-
-b) __________ felt a little __________.
-→ Hoppel – tired
-
-c) They first played with the __________.
-→ balloon
-
-d) In the end, they also played __________.
-→ tag
-
----
-
-2. Put the sentences in the correct order:
+### Put the sentences in the correct order:
 
 1. Mila wanted to play tag.
 
@@ -139,26 +145,7 @@ d) In the end, they also played __________.
 
 4. They first played with the balloon, then tag.
 
----
-
-3. Answer the questions:
-
-a) What did Hoppel feel?
-→ He felt tired.
-
-b) What did Mila want to play?
-→ She wanted to play tag.
-
-c) What is the message of the story?
-→ We should express wishes and feelings clearly and kindly.
-
----
-
-4. Drawing activity:
+### Drawing activity:
 
 Draw Mila and Hoppel with a big colorful balloon 🎈. Write below:
 “Honest words are like a colorful balloon – they bring joy and fly high!”
-
----
-
----
