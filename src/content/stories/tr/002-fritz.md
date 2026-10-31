@@ -5,6 +5,75 @@ storyId: "002-fritz"
 publishDate: 2024-01-15
 difficulty: "beginner"
 status: published
+questions:
+  - id: q1
+    text: Fritzchen bir ağacın altında oturup muz yemiş.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q2
+    text: Bir sincap, Fritzchen’in elmasının bir parçasını almış.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q3
+    text: Fritzchen önce çok kızmış.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q4
+    text: "Büyükannesi ona demiş ki: “Beşe kadar say ve derin nefes al.”"
+    type: truefalse
+    correctAnswer: "true"
+  - id: q5
+    text: Fritzchen yüksek sesle bağırmış ve elmayı fırlatmış.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q6
+    text: Fritzchen sakin kalmış ve sincaba gülmüş.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q7
+    text: Sonunda Fritzchen elmayı sincapla paylaşmış.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q8
+    text: Fritzchen ağacın altında ne yiyor?
+    type: multiplechoice
+    options:
+      - Muz
+      - Elma
+      - Armut
+    correctAnswer: Elma
+  - id: q9
+    text: Kim aniden ağaçtan aşağıya geliyor?
+    type: multiplechoice
+    options:
+      - Bir köpek
+      - Bir sincap
+      - Bir kedi
+    correctAnswer: Bir sincap
+  - id: q10
+    text: Sincap elmayı alınca Fritzchen önce ne hissediyor?
+    type: multiplechoice
+    options:
+      - Sevinç
+      - Korku
+      - Öfke
+    correctAnswer: Öfke
+  - id: q11
+    text: Büyükanne Fritzchen’e ne tavsiye etmiş?
+    type: multiplechoice
+    options:
+      - Hızlıca kaçmasını
+      - Beşe kadar sayıp derin nefes almasını
+      - Elmayı saklamasını
+    correctAnswer: Beşe kadar sayıp derin nefes almasını
+  - id: q12
+    text: Fritzchen sonunda ne yapıyor?
+    type: multiplechoice
+    options:
+      - Elmayı fırlatıyor
+      - Elmayı tek başına yiyor
+      - Elmayı sincapla paylaşıyor
+    correctAnswer: Elmayı sincapla paylaşıyor
 ---
 
 🐿️ Fritzchen ve Kızgın Sincap Hikâyesi
@@ -46,87 +115,3 @@ O günden sonra Fritzchen öğrenmiş ki:
 Sakin kalan kişi sonunda daha çok eğlenir –
 
 ve belki de yeni bir arkadaş kazanır. 🐿️🍎
-
----
-
-❓ Doğru mu Yanlış mı Soruları
-
-1. Fritzchen bir ağacın altında oturup muz yemiş.
-
-➡️ Yanlış (Elma yemiş.)
-
-2. Bir sincap, Fritzchen’in elmasının bir parçasını almış.
-
-➡️ Doğru
-
-3. Fritzchen önce çok kızmış.
-
-➡️ Doğru
-
-4. Büyükannesi ona demiş ki: “Beşe kadar say ve derin nefes al.”
-
-➡️ Doğru
-
-5. Fritzchen yüksek sesle bağırmış ve elmayı fırlatmış.
-
-➡️ Yanlış (Sakinleşmiş ve elmayı fırlatmamış.)
-
-6. Fritzchen sakin kalmış ve sincaba gülmüş.
-
-➡️ Doğru
-
-7. Sonunda Fritzchen elmayı sincapla paylaşmış.
-
-➡️ Doğru
-
----
-
-❓ Çoktan Seçmeli Sorular
-
-1. Fritzchen ağacın altında ne yiyor?
-
-a) Muz
-
-b) Elma ✔️
-
-c) Armut
-
----
-
-2. Kim aniden ağaçtan aşağıya geliyor?
-
-a) Bir köpek
-
-b) Bir sincap ✔️
-
-c) Bir kedi
-
----
-
-3. Sincap elmayı alınca Fritzchen önce ne hissediyor?
-
-a) Sevinç
-
-b) Korku
-
-c) Öfke ✔️
-
----
-
-4. Büyükanne Fritzchen’e ne tavsiye etmiş?
-
-a) Hızlıca kaçmasını
-
-b) Beşe kadar sayıp derin nefes almasını ✔️
-
-c) Elmayı saklamasını
-
----
-
-5. Fritzchen sonunda ne yapıyor?
-
-a) Elmayı fırlatıyor
-
-b) Elmayı tek başına yiyor
-
-c) Elmayı sincapla paylaşıyor ✔️

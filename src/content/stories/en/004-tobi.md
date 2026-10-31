@@ -6,6 +6,80 @@ storyId: "004-tobi"
 publishDate: 2024-01-15
 difficulty: "beginner"
 status: published
+questions:
+  - id: q1
+    text: Tobi lives in a big city.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q2
+    text: Mrs. Schmidt bakes an apple pie.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q3
+    text: Tobi first thinks about secretly taking a piece of pie.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q4
+    text: The wise voice tells Tobi to ask politely.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q5
+    text: Tobi steals the pie, and everyone gets angry at him.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q6
+    text: Tobi politely asks Mrs. Schmidt for a piece of pie.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q7
+    text: Mrs. Schmidt gives him a piece of pie if he helps her.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q8
+    text: At the end, Tobi gets two pieces of pie.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q9
+    text: What does Tobi especially love?
+    type: multiplechoice
+    options:
+      - Chocolate
+      - Apples
+      - Bananas
+    correctAnswer: Apples
+  - id: q10
+    text: Who bakes the big apple pie?
+    type: multiplechoice
+    options:
+      - Tobi
+      - Mrs. Schmidt
+      - The baker
+    correctAnswer: Mrs. Schmidt
+  - id: q11
+    text: What does the impatient voice say?
+    type: multiplechoice
+    options:
+      - “Ask politely for a piece.”
+      - “Take a piece when no one is looking!”
+      - “Help with the dishes first.”
+    correctAnswer: “Take a piece when no one is looking!”
+  - id: q12
+    text: What does Tobi decide at the end?
+    type: multiplechoice
+    options:
+      - He steals a piece of pie.
+      - He politely asks for a piece.
+      - He runs back home.
+    correctAnswer: He politely asks for a piece.
+  - id: q13
+    text: What does Tobi get in the end?
+    type: multiplechoice
+    options:
+      - One piece of pie
+      - No pie at all
+      - Two pieces of pie
+    correctAnswer: Two pieces of pie
+keyMessage: "Sometimes we have two voices in our heads: One wants the fast, wrong way, the other wants the wise, right way. When you choose the right decision, you don’t just get pie – you also get a warm, happy feeling inside."
 ---
 
 📖 Story: Tobi and the Big Apple Pie
@@ -61,117 +135,3 @@ Mrs. Schmidt smiled. “Of course, Tobi. But afterwards, help me with the dishes
 Tobi nodded, happily ate his piece of pie, and then helped with the chores.
 
 In the end, he even got a second piece – without any trouble.
-
----
-
-🌟 Moral:
-
-Sometimes we have two voices in our heads:
-
-One wants the fast, wrong way,
-
-the other wants the wise, right way.
-
-When you choose the right decision,
-
-you don’t just get pie –
-
-you also get a warm, happy feeling inside.
-
----
-
-❓ True or False Questions
-
-1. Tobi lives in a big city.
-
-👉 Answer: False
-
-2. Mrs. Schmidt bakes an apple pie.
-
-👉 Answer: True
-
-3. Tobi first thinks about secretly taking a piece of pie.
-
-👉 Answer: True
-
-4. The wise voice tells Tobi to ask politely.
-
-👉 Answer: True
-
-5. Tobi steals the pie, and everyone gets angry at him.
-
-👉 Answer: False
-
-6. Tobi politely asks Mrs. Schmidt for a piece of pie.
-
-👉 Answer: True
-
-7. Mrs. Schmidt gives him a piece of pie if he helps her.
-
-👉 Answer: True
-
-8. At the end, Tobi gets two pieces of pie.
-
-👉 Answer: True
-
----
-
-📝 Multiple-Choice Questions
-
-1. What does Tobi especially love?
-
-a) Chocolate
-
-b) Apples
-
-c) Bananas
-
-👉 Answer: b) Apples
-
----
-
-2. Who bakes the big apple pie?
-
-a) Tobi
-
-b) Mrs. Schmidt
-
-c) The baker
-
-👉 Answer: b) Mrs. Schmidt
-
----
-
-3. What does the impatient voice say?
-
-a) “Ask politely for a piece.”
-
-b) “Take a piece when no one is looking!”
-
-c) “Help with the dishes first.”
-
-👉 Answer: b) “Take a piece when no one is looking!”
-
----
-
-4. What does Tobi decide at the end?
-
-a) He steals a piece of pie.
-
-b) He politely asks for a piece.
-
-c) He runs back home.
-
-👉 Answer: b) He politely asks for a piece.
-
----
-
-5. What does Tobi get in the end?
-
-a) One piece of pie
-
-b) No pie at all
-
-c) Two pieces of pie
-
-👉 Answer: c) Two pieces of pie

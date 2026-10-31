@@ -5,6 +5,88 @@ storyId: "003-lina"
 publishDate: 2024-01-15
 difficulty: "beginner"
 status: published
+questions:
+  - id: q1
+    text: Lina is a little mouse.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q2
+    text: The cookie was small and light.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q3
+    text: Lina could jump onto the table right away.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q4
+    text: Pico is a sparrow and wanted to help Lina.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q5
+    text: The turtle Tilda suggested building something together.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q6
+    text: In the end Lina ate the cookie all alone.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q7
+    text: The friends built a ladder out of twigs, buttons, and a toy car.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q8
+    text: "Lina learned: You should never try new solutions."
+    type: truefalse
+    correctAnswer: "false"
+  - id: q9
+    text: What did Lina find on the kitchen table?
+    type: multiplechoice
+    options:
+      - An apple
+      - A big cookie
+      - A piece of cheese
+    correctAnswer: A big cookie
+  - id: q10
+    text: Why couldn’t Lina get the cookie right away?
+    type: multiplechoice
+    options:
+      - The cookie was too hard
+      - The table was too high
+      - Pico took the cookie
+    correctAnswer: The table was too high
+  - id: q11
+    text: Who helped Lina first?
+    type: multiplechoice
+    options:
+      - The cat
+      - The sparrow Pico
+      - The turtle Tilda
+    correctAnswer: The sparrow Pico
+  - id: q12
+    text: What did Tilda suggest?
+    type: multiplechoice
+    options:
+      - To share the cookie
+      - To shout loudly
+      - To build something together
+    correctAnswer: To build something together
+  - id: q13
+    text: What did the friends use to build the ladder?
+    type: multiplechoice
+    options:
+      - Twigs, buttons, and a toy car
+      - Stones and water
+      - Paper and colors
+    correctAnswer: Twigs, buttons, and a toy car
+  - id: q14
+    text: What did Lina do with the cookie in the end?
+    type: multiplechoice
+    options:
+      - She ate it all alone
+      - She threw it away
+      - She shared it with her friends
+    correctAnswer: She shared it with her friends
+keyMessage: If the first solution doesn’t work, try another way. With friends, every problem becomes easier and more fun.
 ---
 
 🐭 "Lina and the Big Cookie"
@@ -60,91 +142,3 @@ So the mouse, the sparrow, and the turtle sat in a circle, eating the cookie and
 And Lina thought happily:
 
 “Problems aren’t scary… when we try new ways!”
-
----
-
-📌 Story Message
-
-“If the first solution doesn’t work, try another way. With friends, every problem becomes easier and more fun.”
-
----
-
-❓ True or False
-
-1- Lina is a little mouse. → ✔️ True
-
-2- The cookie was small and light. → ❌ False
-
-3- Lina could jump onto the table right away. → ❌ False
-
-4- Pico is a sparrow and wanted to help Lina. → ✔️ True
-
-5- The turtle Tilda suggested building something together. → ✔️ True
-
-6- In the end Lina ate the cookie all alone. → ❌ False
-
-7- The friends built a ladder out of twigs, buttons, and a toy car. → ✔️ True
-
-8- Lina learned: You should never try new solutions. → ❌ False
-
----
-
-📝 Multiple-Choice Questions
-
-1. What did Lina find on the kitchen table?
-
-a) An apple
-
-b) A big cookie ✔️
-
-c) A piece of cheese
-
----
-
-2. Why couldn’t Lina get the cookie right away?
-
-a) The cookie was too hard
-
-b) The table was too high ✔️
-
-c) Pico took the cookie
-
----
-
-3. Who helped Lina first?
-
-a) The cat
-
-b) The sparrow Pico ✔️
-
-c) The turtle Tilda
-
----
-
-4. What did Tilda suggest?
-
-a) To share the cookie
-
-b) To shout loudly
-
-c) To build something together ✔️
-
----
-
-5. What did the friends use to build the ladder?
-
-a) Twigs, buttons, and a toy car ✔️
-
-b) Stones and water
-
-c) Paper and colors
-
----
-
-6. What did Lina do with the cookie in the end?
-
-a) She ate it all alone
-
-b) She threw it away
-
-c) She shared it with her friends ✔️

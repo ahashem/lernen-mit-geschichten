@@ -4,48 +4,101 @@ ageGroup: "3-7"
 storyId: "005-mila"
 publishDate: 2024-01-15
 difficulty: "beginner"
-questions:
-  - id: "mc1"
-    text: "Mila önce ne oynamak istedi?"
-    type: "multiplechoice"
-    options:
-      - "Balon"
-      - "Yakalamaca"
-      - "Saklambaç"
-    correctAnswer: ""
-  - id: "mc2"
-    text: "Hoppel neden balonla oynamak istedi?"
-    type: "multiplechoice"
-    options:
-      - "Çünkü yorgundu."
-      - "Çünkü korkuyordu."
-      - "Çünkü yakalamacayı sevmiyordu."
-    correctAnswer: ""
-  - id: "mc3"
-    text: "Hoppel duygularını açıkladığında Mila ne yaptı?"
-    type: "multiplechoice"
-    options:
-      - "Kızdı."
-      - "Bir fikir önerdi."
-      - "Gidip onu yalnız bıraktı."
-    correctAnswer: ""
-  - id: "mc4"
-    text: "Mila ve Hoppel sonunda nasıl oynadılar?"
-    type: "multiplechoice"
-    options:
-      - "Sadece yakalamaca."
-      - "Sadece balonla."
-      - "Önce balonla, sonra yakalamaca."
-    correctAnswer: ""
-  - id: "mc5"
-    text: "Hikâyenin en önemli mesajı nedir?"
-    type: "multiplechoice"
-    options:
-      - "Her zaman yalnız oynamalıyız."
-      - "İstekleri ve duyguları açık ve nazikçe ifade etmeliyiz."
-      - "Balonlar yakalamacadan daha eğlencelidir."
-    correctAnswer: ""
 status: published
+questions:
+  - id: q1
+    text: Mila önce balonla oynamak istedi.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q2
+    text: Hoppel biraz yorgun hissetti.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q3
+    text: Mila, Hoppel’i dinlemedi.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q4
+    text: Sonunda Mila ve Hoppel iki oyunu da oynadı.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q5
+    text: Hikâye, istek ve duyguları açıkça ifade etmemiz gerektiğini gösteriyor.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q6
+    text: Hoppel, Mila ile hiç oynamak istemedi.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q7
+    text: Mila önce ne oynamak istedi?
+    type: multiplechoice
+    options:
+      - Balon
+      - Yakalamaca
+      - Saklambaç
+    correctAnswer: Yakalamaca
+  - id: q8
+    text: Hoppel neden balonla oynamak istedi?
+    type: multiplechoice
+    options:
+      - Çünkü yorgundu.
+      - Çünkü korkuyordu.
+      - Çünkü yakalamacayı sevmiyordu.
+    correctAnswer: Çünkü yorgundu.
+  - id: q9
+    text: Hoppel duygularını açıkladığında Mila ne yaptı?
+    type: multiplechoice
+    options:
+      - Kızdı.
+      - Bir fikir önerdi.
+      - Gidip onu yalnız bıraktı.
+    correctAnswer: Bir fikir önerdi.
+  - id: q10
+    text: Mila ve Hoppel sonunda nasıl oynadılar?
+    type: multiplechoice
+    options:
+      - Sadece yakalamaca.
+      - Sadece balonla.
+      - Önce balonla, sonra yakalamaca.
+    correctAnswer: Önce balonla, sonra yakalamaca.
+  - id: q11
+    text: Hikâyenin en önemli mesajı nedir?
+    type: multiplechoice
+    options:
+      - Her zaman yalnız oynamalıyız.
+      - İstekleri ve duyguları açık ve nazikçe ifade etmeliyiz.
+      - Balonlar yakalamacadan daha eğlencelidir.
+    correctAnswer: İstekleri ve duyguları açık ve nazikçe ifade etmeliyiz.
+  - id: q12
+    text: __________ önce yakalamaca oynamak istedi.
+    type: fillinblank
+    correctAnswer: Mila
+  - id: q13
+    text: __________ biraz __________ hissetti.
+    type: fillinblank
+    correctAnswer: Hoppel – yorgun
+  - id: q14
+    text: Önce __________ ile oynadılar.
+    type: fillinblank
+    correctAnswer: balon
+  - id: q15
+    text: Sonunda __________ da oynadılar.
+    type: fillinblank
+    correctAnswer: yakalamaca
+  - id: q16
+    text: Hoppel ne hissetti?
+    type: fillinblank
+    correctAnswer: Yorgun hissetti.
+  - id: q17
+    text: Mila ne oynamak istedi?
+    type: fillinblank
+    correctAnswer: Yakalamaca oynamak istedi.
+  - id: q18
+    text: Hikâyenin mesajı nedir?
+    type: fillinblank
+    correctAnswer: İstekleri ve duyguları açık ve nazikçe ifade etmeliyiz.
+keyMessage: Duyguları ve istekleri açıkça ifade etmek önemlidir. Her zaman nazik ve saygılı konuşmalıyız. İyi dinlediğimizde, her iki tarafı da mutlu eden çözümler bulabiliriz. Dürüst sözler arkadaşlığı güçlendirir.
 ---
 
 ## Hikâye
@@ -80,97 +133,9 @@ Sonunda Mila dedi ki:
 Küçük tavşan başını salladı:
 “Aynen öyle Mila. Dürüst sözler renkli bir balon gibidir – neşe getirir ve yükseğe uçar!” 🎈
 
----
+## ✏️ Etkinlikler
 
-🌟 Hikâyenin Mesajı
-
-Duyguları ve istekleri açıkça ifade etmek önemlidir.
-
-Her zaman nazik ve saygılı konuşmalıyız.
-
-İyi dinlediğimizde, her iki tarafı da mutlu eden çözümler bulabiliriz.
-
-Dürüst sözler arkadaşlığı güçlendirir.
-
----
-
-❓ Doğru mu Yanlış mı
-
-1. Mila önce balonla oynamak istedi.
-→ Yanlış. Mila önce yakalamaca oynamak istedi.
-
-2. Hoppel biraz yorgun hissetti.
-→ Doğru. Yorgun olduğunu söyledi ve balonla sakin oynamayı tercih etti.
-
-3. Mila, Hoppel’i dinlemedi.
-→ Yanlış. Onu dikkatle dinledi ve bir çözüm buldu.
-
-4. Sonunda Mila ve Hoppel iki oyunu da oynadı.
-→ Doğru. Önce balonla, sonra yakalamaca oynadılar.
-
-5. Hikâye, istek ve duyguları açıkça ifade etmemiz gerektiğini gösteriyor.
-→ Doğru. Böylece arkadaşlar birbirini daha iyi anlar.
-
-6. Hoppel, Mila ile hiç oynamak istemedi.
-→ Yanlış. Onunla oynamak istedi ama farklı bir şekilde.
-
----
-
-❓ Çoktan Seçmeli Sorular
-
-1. Mila önce ne oynamak istedi?
-a) Balon
-b) Yakalamaca
-c) Saklambaç
-→ ✔️ b) Yakalamaca
-
-2. Hoppel neden balonla oynamak istedi?
-a) Çünkü yorgundu.
-b) Çünkü korkuyordu.
-c) Çünkü yakalamacayı sevmiyordu.
-→ ✔️ a) Çünkü yorgundu.
-
-3. Hoppel duygularını açıkladığında Mila ne yaptı?
-a) Kızdı.
-b) Bir fikir önerdi.
-c) Gidip onu yalnız bıraktı.
-→ ✔️ b) Bir fikir önerdi.
-
-4. Mila ve Hoppel sonunda nasıl oynadılar?
-a) Sadece yakalamaca.
-b) Sadece balonla.
-c) Önce balonla, sonra yakalamaca.
-→ ✔️ c) Önce balonla, sonra yakalamaca.
-
-5. Hikâyenin en önemli mesajı nedir?
-a) Her zaman yalnız oynamalıyız.
-b) İstekleri ve duyguları açık ve nazikçe ifade etmeliyiz.
-c) Balonlar yakalamacadan daha eğlencelidir.
-→ ✔️ b) İstekleri ve duyguları açık ve nazikçe ifade etmeliyiz.
-
----
-
-✏️ Etkinlikler
-
-1. Boşlukları doldur:
-
-(Kelimeler: Mila – Hoppel – balon – yakalamaca – yorgun)
-
-a) __________ önce yakalamaca oynamak istedi.
-→ Mila
-
-b) __________ biraz __________ hissetti.
-→ Hoppel – yorgun
-
-c) Önce __________ ile oynadılar.
-→ balon
-
-d) Sonunda __________ da oynadılar.
-→ yakalamaca
-
----
-
-2. Cümleleri sıraya koy:
+### Cümleleri sıraya koy:
 
 1. Mila yakalamaca oynamak istedi.
 
@@ -180,26 +145,7 @@ d) Sonunda __________ da oynadılar.
 
 4. Önce balonla, sonra yakalamaca oynadılar.
 
----
-
-3. Soruları cevapla:
-
-a) Hoppel ne hissetti?
-→ Yorgun hissetti.
-
-b) Mila ne oynamak istedi?
-→ Yakalamaca oynamak istedi.
-
-c) Hikâyenin mesajı nedir?
-→ İstekleri ve duyguları açık ve nazikçe ifade etmeliyiz.
-
----
-
-4. Resim etkinliği:
+### Resim etkinliği:
 
 Mila ve Hoppel’i büyük renkli bir balonla çiz 🎈. Altına yaz:
 “Dürüst sözler renkli bir balon gibidir – neşe getirir ve yükseğe uçar!”
-
----
-
----
