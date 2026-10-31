@@ -41,6 +41,26 @@ questions:
       - "Birlikte daha güçlüyüz"
       - "Cevizler çok ağırdır"
     correctAnswer: "Birlikte daha güçlüyüz"
+  - id: q1
+    text: Cevizi ilk kim buldu?
+    type: fillinblank
+    correctAnswer: Küçük rakun Finn.
+  - id: q2
+    text: Finn ilk önce kiminle karşılaştı?
+    type: fillinblank
+    correctAnswer: Sincap Mila ile.
+  - id: q3
+    text: Başka kim yardım etti?
+    type: fillinblank
+    correctAnswer: Kuş Kiko ve birçok karınca.
+  - id: q4
+    text: Herkes birlikte çalışınca ne oldu?
+    type: fillinblank
+    correctAnswer: Dev cevizi taşıyabildiler ve yediler.
+  - id: q5
+    text: Bu hikâyeden ne öğreniyoruz?
+    type: fillinblank
+    correctAnswer: Birlikte daha güçlüyüz! / Takım çalışması eğlenceli!
 status: published
 ---
 
@@ -83,20 +103,3 @@ Kiko mutlu bir şekilde kanat çırptı: “Birlikteyken kimse bizi yenemez!”
 
 O günden sonra ormandaki bütün hayvanlar şunu öğrendi:
 Birlikte çalışanlar, en zor işleri bile başarır – hem de çok eğlenirler.
-
-Çocuklar için Sorular
-
-1. Cevizi ilk kim buldu?
-👉 Küçük rakun Finn.
-
-2. Finn ilk önce kiminle karşılaştı?
-👉 Sincap Mila ile.
-
-3. Başka kim yardım etti?
-👉 Kuş Kiko ve birçok karınca.
-
-4. Herkes birlikte çalışınca ne oldu?
-👉 Dev cevizi taşıyabildiler ve yediler.
-
-5. Bu hikâyeden ne öğreniyoruz?
-👉 Birlikte daha güçlüyüz! / Takım çalışması eğlenceli!

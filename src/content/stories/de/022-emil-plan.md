@@ -1,50 +1,87 @@
 ---
 title: "Emil und dem verrückten Plan"
 emoji: "📝"
-skills: ["adaptability", "goal-setting", "problem-solving"]
+skills: [ "adaptability", "goal-setting", "problem-solving" ]
 ageGroup: "3-7"
 band: "2"
 storyId: "022-emil-plan"
 publishDate: 2024-01-15
 difficulty: "beginner"
-questions:
-  - id: "tf1"
-    text: "Emil wollte einen großen Schokoladenkuchen backen."
-    type: "truefalse"
-    correctAnswer: "false"
-  - id: "tf2"
-    text: "Der Ofen war kaputt."
-    type: "truefalse"
-    correctAnswer: "true"
-  - id: "tf3"
-    text: "Leni sagte: Vielleicht können wir den Kuchen anders machen."
-    type: "truefalse"
-    correctAnswer: "true"
-  - id: "mc1"
-    text: "Was wollte Emil backen?"
-    type: "multiplechoice"
-    options:
-      - "Einen Schokoladenkuchen"
-      - "Einen Apfelkuchen"
-      - "Einen Käsekuchen"
-    correctAnswer: "Einen Apfelkuchen"
-  - id: "mc2"
-    text: "Wer half Emil beim Überlegen?"
-    type: "multiplechoice"
-    options:
-      - "Seine Katze Minka"
-      - "Sein Freund Tom"
-      - "Seine Freundin Leni"
-    correctAnswer: "Seine Freundin Leni"
-  - id: "mc3"
-    text: "Was hat Emil am Ende gelernt?"
-    type: "multiplechoice"
-    options:
-      - "Ohne Ofen gibt es keinen Kuchen"
-      - "Wenn etwas nicht klappt, muss man anders denken"
-      - "Man sollte immer alles genauso machen wie früher"
-    correctAnswer: "Wenn etwas nicht klappt, muss man anders denken"
 status: published
+questions:
+  - id: q1
+    text: Emil wollte einen großen Schokoladenkuchen backen.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q2
+    text: Der Ofen war kaputt.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q3
+    text: "Leni sagte: „Vielleicht können wir den Kuchen anders machen.“"
+    type: truefalse
+    correctAnswer: "true"
+  - id: q4
+    text: Emil hat sofort eine neue Idee gefunden.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q5
+    text: Die Kinder machten Apfelspieße am Lagerfeuer.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q6
+    text: Am Ende gab es einen Apfel-Zaubertrank.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q7
+    text: Alle Kinder im Dorf fanden Emils Ideen lustig und lecker.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q8
+    text: "Emil lernte: Wenn etwas nicht klappt, muss man es genauso wiederholen."
+    type: truefalse
+    correctAnswer: "false"
+  - id: q9
+    text: Was wollte Emil backen?
+    type: multiplechoice
+    options:
+      - Einen Schokoladenkuchen
+      - Einen Apfelkuchen
+      - Einen Käsekuchen
+    correctAnswer: Einen Apfelkuchen
+  - id: q10
+    text: Warum war Emil traurig?
+    type: multiplechoice
+    options:
+      - Er hatte keine Äpfel.
+      - Der Ofen war kaputt.
+      - Der Zucker war verschwunden.
+    correctAnswer: Der Ofen war kaputt.
+  - id: q11
+    text: Wer half Emil beim Überlegen?
+    type: multiplechoice
+    options:
+      - Seine Katze Minka
+      - Sein Freund Tom
+      - Seine Freundin Leni
+    correctAnswer: Seine Freundin Leni
+  - id: q12
+    text: Welche Idee probierten die Kinder zuerst?
+    type: multiplechoice
+    options:
+      - Apfelspieße am Lagerfeuer
+      - Apfel-Zaubertrank
+      - Apfel-Taschen in der Pfanne
+    correctAnswer: Apfelspieße am Lagerfeuer
+  - id: q13
+    text: Was hat Emil am Ende gelernt?
+    type: multiplechoice
+    options:
+      - Ohne Ofen gibt es keinen Kuchen.
+      - Wenn etwas nicht klappt, muss man anders denken.
+      - Man sollte immer alles genauso machen wie früher.
+    correctAnswer: Wenn etwas nicht klappt, muss man anders denken.
+keyMessage: Manchmal läuft nicht alles so, wie wir es geplant haben. Aber wenn wir neue Wege ausprobieren und anders denken, können wir tolle Lösungen finden – oft sogar noch bessere!
 ---
 
 ## Die Geschichte
@@ -85,59 +122,3 @@ Emil grinste:
 
 Und seitdem war Emil bekannt als:
 „Der Junge mit den tausend Ideen.“
-
-Botschaft der Geschichte
-
-Manchmal läuft nicht alles so, wie wir es geplant haben.
-Aber wenn wir neue Wege ausprobieren und anders denken,
-können wir tolle Lösungen finden – oft sogar noch bessere!
-
-Fragen zur Geschichte – Richtig oder Falsch
-
-1. Emil wollte einen großen Schokoladenkuchen backen. → Falsch
-
-2. Der Ofen war kaputt. → Richtig
-
-3. Leni sagte: „Vielleicht können wir den Kuchen anders machen.“ → Richtig
-
-4. Emil hat sofort eine neue Idee gefunden. → Falsch
-
-5. Die Kinder machten Apfelspieße am Lagerfeuer. → Richtig
-
-6. Am Ende gab es einen Apfel-Zaubertrank. → Richtig
-
-7. Alle Kinder im Dorf fanden Emils Ideen lustig und lecker. → Richtig
-
-8. Emil lernte: Wenn etwas nicht klappt, muss man es genauso wiederholen. → Falsch
-
-Multiple-Choice-Fragen zur Geschichte
-
-1. Was wollte Emil backen?
-a) Einen Schokoladenkuchen
-b) Einen Apfelkuchen
-c) Einen Käsekuchen
-➡️ Richtige Antwort: b) Einen Apfelkuchen
-
-2. Warum war Emil traurig?
-a) Er hatte keine Äpfel.
-b) Der Ofen war kaputt.
-c) Der Zucker war verschwunden.
-➡️ Richtige Antwort: b) Der Ofen war kaputt
-
-3. Wer half Emil beim Überlegen?
-a) Seine Katze Minka
-b) Sein Freund Tom
-c) Seine Freundin Leni
-➡️ Richtige Antwort: c) Seine Freundin Leni
-
-4. Welche Idee probierten die Kinder zuerst?
-a) Apfelspieße am Lagerfeuer
-b) Apfel-Zaubertrank
-c) Apfel-Taschen in der Pfanne
-➡️ Richtige Antwort: a) Apfelspieße am Lagerfeuer
-
-5. Was hat Emil am Ende gelernt?
-a) Ohne Ofen gibt es keinen Kuchen.
-b) Wenn etwas nicht klappt, muss man anders denken.
-c) Man sollte immer alles genauso machen wie früher.
-➡️ Richtige Antwort: b) Wenn etwas nicht klappt, muss man anders denken.

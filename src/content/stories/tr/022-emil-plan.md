@@ -41,7 +41,80 @@ questions:
       - "Bir şey işe yaramazsa, farklı düşünmelisin"
       - "Hep eskisi gibi yapmalısın"
     correctAnswer: "Bir şey işe yaramazsa, farklı düşünmelisin"
+  - id: q1
+    text: Emil büyük bir çikolatalı pasta yapmak istedi.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q2
+    text: Fırın bozulmuştu.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q3
+    text: "Leni dedi ki: “Belki turtayı başka türlü yapabiliriz.”"
+    type: truefalse
+    correctAnswer: "true"
+  - id: q4
+    text: Emil hemen yeni bir fikir buldu.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q5
+    text: Çocuklar ateşte elmalı şişler yaptılar.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q6
+    text: En sonunda sihirli bir elma içeceği yaptılar.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q7
+    text: Köydeki bütün çocuklar Emil’in fikirlerini komik ve lezzetli buldu.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q8
+    text: "Emil şunu öğrendi: Bir şey işe yaramazsa, hep aynı şekilde yapmalısın."
+    type: truefalse
+    correctAnswer: "false"
+  - id: q9
+    text: Emil ne yapmak istedi?
+    type: multiplechoice
+    options:
+      - Çikolatalı pasta
+      - Elmalı turta
+      - Peynirli kek
+    correctAnswer: Elmalı turta
+  - id: q10
+    text: Emil neden üzgündü?
+    type: multiplechoice
+    options:
+      - Elması yoktu.
+      - Fırın bozulmuştu.
+      - Şeker kaybolmuştu.
+    correctAnswer: Fırın bozulmuştu.
+  - id: q11
+    text: Emil’e kim yardım etti?
+    type: multiplechoice
+    options:
+      - Kedisi Minka
+      - Arkadaşı Tom
+      - Arkadaşı Leni
+    correctAnswer: Arkadaşı Leni
+  - id: q12
+    text: Çocuklar ilk önce hangi fikri denediler?
+    type: multiplechoice
+    options:
+      - Ateşte elmalı şişler
+      - Sihirli elma içeceği
+      - Tavada elmalı cepler
+    correctAnswer: Ateşte elmalı şişler
+  - id: q13
+    text: Emil sonunda ne öğrendi?
+    type: multiplechoice
+    options:
+      - Fırın olmadan turta olmaz.
+      - Bir şey işe yaramazsa, farklı düşünmelisin.
+      - Hep eskisi gibi yapmalısın.
+    correctAnswer: Bir şey işe yaramazsa, farklı düşünmelisin.
 status: published
+keyMessage: Bazen işler planladığımız gibi gitmez. Ama yeni yollar dener ve farklı düşünürsek, daha güzel ve daha lezzetli çözümler bulabiliriz!
 ---
 
 ## Hikâye
@@ -82,55 +155,3 @@ Emil gülümsedi ve dedi ki:
 
 O günden sonra Emil,
 “Bin fikri olan çocuk” olarak tanındı.
-
-✨ Hikâyenin Mesajı:
-Bazen işler planladığımız gibi gitmez.
-Ama yeni yollar dener ve farklı düşünürsek, daha güzel ve daha lezzetli çözümler bulabiliriz!
-Doğru / Yanlış Soruları
-
-1. Emil büyük bir çikolatalı pasta yapmak istedi. → Yanlış
-
-2. Fırın bozulmuştu. → Doğru
-
-3. Leni dedi ki: “Belki turtayı başka türlü yapabiliriz.” → Doğru
-
-4. Emil hemen yeni bir fikir buldu. → Yanlış
-
-5. Çocuklar ateşte elmalı şişler yaptılar. → Doğru
-
-6. En sonunda sihirli bir elma içeceği yaptılar. → Doğru
-
-7. Köydeki bütün çocuklar Emil’in fikirlerini komik ve lezzetli buldu. → Doğru
-
-8. Emil şunu öğrendi: Bir şey işe yaramazsa, hep aynı şekilde yapmalısın. → Yanlış
-
-Çoktan Seçmeli Sorular
-
-1. Emil ne yapmak istedi?
-a) Çikolatalı pasta
-b) Elmalı turta
-c) Peynirli kek
-➡️ Doğru cevap: b) Elmalı turta
-
-2. Emil neden üzgündü?
-a) Elması yoktu.
-b) Fırın bozulmuştu.
-c) Şeker kaybolmuştu.
-➡️ Doğru cevap: b) Fırın bozulmuştu
-3. Emil’e kim yardım etti?
-a) Kedisi Minka
-b) Arkadaşı Tom
-c) Arkadaşı Leni
-➡️ Doğru cevap: c) Arkadaşı Leni
-
-4. Çocuklar ilk önce hangi fikri denediler?
-a) Ateşte elmalı şişler
-b) Sihirli elma içeceği
-c) Tavada elmalı cepler
-➡️ Doğru cevap: a) Ateşte elmalı şişler
-
-5. Emil sonunda ne öğrendi?
-a) Fırın olmadan turta olmaz.
-b) Bir şey işe yaramazsa, farklı düşünmelisin.
-c) Hep eskisi gibi yapmalısın.
-➡️ Doğru cevap: b) Bir şey işe yaramazsa, farklı düşünmelisin.

@@ -5,6 +5,48 @@ storyId: "020-timmi-denkt"
 publishDate: 2024-01-15
 difficulty: "beginner"
 status: published
+questions:
+  - id: q1
+    text: Hikâyedeki ana karakter kimdir?
+    type: fillinblank
+    correctAnswer: Ana karakter küçük rakun Timmi’dir.
+  - id: q2
+    text: Timmi elma ağacından ne istedi?
+    type: fillinblank
+    correctAnswer: Kırmızı elmalar istedi.
+  - id: q3
+    text: Neden dala tırmanmak tehlikeliydi?
+    type: fillinblank
+    correctAnswer: Çünkü dal kırılabilirdi.
+  - id: q4
+    text: Lilli Timmi’ye ne diye bağırdı?
+    type: fillinblank
+    correctAnswer: “Timmi! Önce düşün! Dal kırılırsa ne olur?” dedi.
+  - id: q5
+    text: Timmi düşündükten sonra hangi fikre sahip oldu?
+    type: fillinblank
+    correctAnswer: Bir sopa kullanmak istedi.
+  - id: q6
+    text: Timmi ve Lilli sonunda elmaları nasıl aldılar?
+    type: fillinblank
+    correctAnswer: Timmi sopayla elmaları itti ve elmalar düştü.
+  - id: q7
+    text: Timmi sonunda ne öğrendi?
+    type: fillinblank
+    correctAnswer: Önce düşünmeyi, sonra hareket etmeyi öğrendi.
+  - id: q8
+    text: Timmi önce düşünmeseydi ne olurdu?
+    type: fillinblank
+    correctAnswer: Düşerdi ve canı acırdı.
+  - id: q9
+    text: Sen de önce düşünülmesi gereken durumlar biliyor musun?
+    type: fillinblank
+    correctAnswer: Evet, mesela oyun oynarken, tırmanırken veya karşıdan karşıya geçerken.
+  - id: q10
+    text: Neden sonuçları düşünmek önemlidir?
+    type: fillinblank
+    correctAnswer: Çünkü bu şekilde daha iyi ve daha güvenli kararlar veririz.
+keyMessage: Çocuklar, bir şey yapmadan önce sonuçlarını düşünmenin daha akıllıca ve güvenli kararlar verdiğini öğrenirler.
 ---
 
 ## Hikâye
@@ -33,37 +75,3 @@ Timmi uzun bir sopa bulmuş. Elmaya hafifçe dokunmuş – Plop! – bir elma ye
 
 Sonunda Timmi gururla demiş:
 “Bugün öğrendim: Önce düşün, sonra yap!”
-
-✨ Ders: Çocuklar, bir şey yapmadan önce sonuçlarını düşünmenin daha akıllıca ve güvenli kararlar verdiğini öğrenirler.
-
-❓ Sorular ve Cevaplar
-
-1. Hikâyedeki ana karakter kimdir?
-👉 Ana karakter küçük rakun Timmi’dir.
-
-2. Timmi elma ağacından ne istedi?
-👉 Kırmızı elmalar istedi.
-
-3. Neden dala tırmanmak tehlikeliydi?
-👉 Çünkü dal kırılabilirdi.
-
-4. Lilli Timmi’ye ne diye bağırdı?
-👉 “Timmi! Önce düşün! Dal kırılırsa ne olur?” dedi.
-
-5. Timmi düşündükten sonra hangi fikre sahip oldu?
-👉 Bir sopa kullanmak istedi.
-
-6. Timmi ve Lilli sonunda elmaları nasıl aldılar?
-👉 Timmi sopayla elmaları itti ve elmalar düştü.
-
-7. Timmi sonunda ne öğrendi?
-👉 Önce düşünmeyi, sonra hareket etmeyi öğrendi.
-
-8. Timmi önce düşünmeseydi ne olurdu?
-👉 Düşerdi ve canı acırdı.
-
-9. Sen de önce düşünülmesi gereken durumlar biliyor musun?
-👉 Evet, mesela oyun oynarken, tırmanırken veya karşıdan karşıya geçerken.
-
-10. Neden sonuçları düşünmek önemlidir?
-👉 Çünkü bu şekilde daha iyi ve daha güvenli kararlar veririz.

@@ -4,44 +4,81 @@ ageGroup: "3-7"
 storyId: "022-emil-plan"
 publishDate: 2024-01-15
 difficulty: "beginner"
-questions:
-  - id: "tf1"
-    text: "Emil wanted to bake a big chocolate cake."
-    type: "truefalse"
-    correctAnswer: "false"
-  - id: "tf2"
-    text: "The oven was broken."
-    type: "truefalse"
-    correctAnswer: "true"
-  - id: "tf3"
-    text: "Leni said: Maybe we can make the pie in a different way."
-    type: "truefalse"
-    correctAnswer: "true"
-  - id: "mc1"
-    text: "What did Emil want to bake?"
-    type: "multiplechoice"
-    options:
-      - "A chocolate cake"
-      - "An apple pie"
-      - "A cheesecake"
-    correctAnswer: "An apple pie"
-  - id: "mc2"
-    text: "Who helped Emil think of new ideas?"
-    type: "multiplechoice"
-    options:
-      - "His cat Minka"
-      - "His friend Tom"
-      - "His friend Leni"
-    correctAnswer: "His friend Leni"
-  - id: "mc3"
-    text: "What did Emil learn in the end?"
-    type: "multiplechoice"
-    options:
-      - "Without an oven, there can be no cake"
-      - "If something doesn't work, you must think differently"
-      - "You should always do things the same way as before"
-    correctAnswer: "If something doesn't work, you must think differently"
 status: published
+questions:
+  - id: q1
+    text: Emil wanted to bake a big chocolate cake.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q2
+    text: The oven was broken.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q3
+    text: "Leni said: “Maybe we can make the pie in a different way.”"
+    type: truefalse
+    correctAnswer: "true"
+  - id: q4
+    text: Emil immediately had a new idea.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q5
+    text: The children made apple skewers over the campfire.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q6
+    text: In the end, they made a magic apple drink.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q7
+    text: All the children in the village thought Emil’s ideas were funny and tasty.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q8
+    text: "Emil learned: If something doesn’t work, you must always do it the same way again."
+    type: truefalse
+    correctAnswer: "false"
+  - id: q9
+    text: What did Emil want to bake?
+    type: multiplechoice
+    options:
+      - A chocolate cake
+      - An apple pie
+      - A cheesecake
+    correctAnswer: An apple pie
+  - id: q10
+    text: Why was Emil sad?
+    type: multiplechoice
+    options:
+      - He had no apples.
+      - The oven was broken.
+      - The sugar was missing.
+    correctAnswer: The oven was broken.
+  - id: q11
+    text: Who helped Emil think of new ideas?
+    type: multiplechoice
+    options:
+      - His cat Minka
+      - His friend Tom
+      - His friend Leni
+    correctAnswer: His friend Leni
+  - id: q12
+    text: Which idea did the children try first?
+    type: multiplechoice
+    options:
+      - Apple skewers over the campfire
+      - Magic apple drink
+      - Apple pockets in the pan
+    correctAnswer: Apple skewers over the campfire
+  - id: q13
+    text: What did Emil learn in the end?
+    type: multiplechoice
+    options:
+      - Without an oven, there can be no cake.
+      - If something doesn’t work, you must think differently.
+      - You should always do things the same way as before.
+    correctAnswer: If something doesn’t work, you must think differently.
+keyMessage: Sometimes things don’t go as we plan. But if we try new ways and think differently, we can find even better and tastier solutions!
 ---
 
 ## The Story
@@ -82,56 +119,3 @@ Emil grinned and said:
 
 And from that day on, Emil was known as:
 “The boy with a thousand ideas.”
-
-✨ Message of the story:
-Sometimes things don’t go as we plan.
-But if we try new ways and think differently, we can find even better and tastier solutions!
-
-True or False Questions
-
-1. Emil wanted to bake a big chocolate cake. → False
-
-2. The oven was broken. → True
-
-3. Leni said: “Maybe we can make the pie in a different way.” → True
-
-4. Emil immediately had a new idea. → False
-
-5. The children made apple skewers over the campfire. → True
-
-6. In the end, they made a magic apple drink. → True
-
-7. All the children in the village thought Emil’s ideas were funny and tasty. → True
-
-8. Emil learned: If something doesn’t work, you must always do it the same way again. → False
-
-Multiple-Choice Questions
-
-1. What did Emil want to bake?
-a) A chocolate cake
-b) An apple pie
-c) A cheesecake
-➡️ Correct answer: b) An apple pie
-2. Why was Emil sad?
-a) He had no apples.
-b) The oven was broken.
-c) The sugar was missing.
-➡️ Correct answer: b) The oven was broken
-
-3. Who helped Emil think of new ideas?
-a) His cat Minka
-b) His friend Tom
-c) His friend Leni
-➡️ Correct answer: c) His friend Leni
-
-4. Which idea did the children try first?
-a) Apple skewers over the campfire
-b) Magic apple drink
-c) Apple pockets in the pan
-➡️ Correct answer: a) Apple skewers over the campfire
-
-5. What did Emil learn in the end?
-a) Without an oven, there can be no cake.
-b) If something doesn’t work, you must think differently.
-c) You should always do things the same way as before.
-➡️ Correct answer: b) If something doesn’t work, you must think differently.
