@@ -22,7 +22,7 @@ questions:
       - "Cat"
       - "Dog"
       - "Squirrel"
-    correctAnswer: "The alarm clock has the shape of a squirrel."
+    correctAnswer: "Squirrel"
   - id: "q4"
     text: "What does the alarm clock say to Timo?"
     type: "fillinblank"
