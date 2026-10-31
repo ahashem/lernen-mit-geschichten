@@ -4,44 +4,96 @@ ageGroup: "3-7"
 storyId: "009-milo"
 publishDate: 2024-01-15
 difficulty: "beginner"
-questions:
-  - id: "tf1"
-    text: "Milo had a blue blanket that he loved."
-    type: "truefalse"
-    correctAnswer: "false"
-  - id: "tf2"
-    text: "Milo was very sad when his blanket disappeared."
-    type: "truefalse"
-    correctAnswer: "true"
-  - id: "tf3"
-    text: "Lina the spider helped Milo try something new."
-    type: "truefalse"
-    correctAnswer: "true"
-  - id: "mc1"
-    text: "What color was Milo's favorite blanket?"
-    type: "multiplechoice"
-    options:
-      - "Blue"
-      - "Green"
-      - "Red"
-    correctAnswer: "Green"
-  - id: "mc2"
-    text: "Who was Milo's friend?"
-    type: "multiplechoice"
-    options:
-      - "A mouse"
-      - "A spider"
-      - "A dog"
-    correctAnswer: "A spider"
-  - id: "mc3"
-    text: "What did Milo try first after the blanket was gone?"
-    type: "multiplechoice"
-    options:
-      - "A pillow"
-      - "A cardboard box"
-      - "The carpet"
-    correctAnswer: "A pillow"
 status: published
+questions:
+  - id: q1
+    text: Milo had a blue blanket that he loved.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q2
+    text: Milo was very sad when his blanket disappeared.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q3
+    text: Lina the spider helped Milo try something new.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q4
+    text: Milo immediately liked the pillow.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q5
+    text: At the end, Milo thought the box was funny, like a boat.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q6
+    text: "Milo learned: Change can also be something good."
+    type: truefalse
+    correctAnswer: "true"
+  - id: q7
+    text: What color was Milo’s favorite blanket?
+    type: multiplechoice
+    options:
+      - Blue
+      - Green
+      - Red
+    correctAnswer: Green
+  - id: q8
+    text: Who was Milo’s friend?
+    type: multiplechoice
+    options:
+      - A mouse
+      - A spider
+      - A dog
+    correctAnswer: A spider
+  - id: q9
+    text: What did Milo try first after the blanket was gone?
+    type: multiplechoice
+    options:
+      - A pillow
+      - A cardboard box
+      - The carpet
+    correctAnswer: A pillow
+  - id: q10
+    text: What happened the first time on the pillow?
+    type: multiplechoice
+    options:
+      - Milo fell asleep immediately
+      - Milo fell down
+      - Milo purred loudly
+    correctAnswer: Milo fell down
+  - id: q11
+    text: How did Milo feel at the end of the story?
+    type: multiplechoice
+    options:
+      - Sad
+      - Happy
+      - Afraid
+    correctAnswer: Happy
+  - id: q12
+    text: Milo loved his __________ blanket.
+    type: fillinblank
+    correctAnswer: green
+  - id: q13
+    text: When the blanket disappeared, Milo was very __________.
+    type: fillinblank
+    correctAnswer: sad
+  - id: q14
+    text: The spider __________ helped Milo try something new.
+    type: fillinblank
+    correctAnswer: Lina
+  - id: q15
+    text: Milo first tried a __________ in the living room.
+    type: fillinblank
+    correctAnswer: pillow
+  - id: q16
+    text: In the evening, Milo jumped into a __________.
+    type: fillinblank
+    correctAnswer: cardboard box
+  - id: q17
+    text: "Milo learned: Change can be __________."
+    type: fillinblank
+    correctAnswer: good / beautiful / exciting
 ---
 
 🐾 Story: Milo Learns to Adapt
@@ -93,103 +145,3 @@ From that day on, Milo learned:
 And so Milo purred happily:
 
 “Sometimes, change… is exactly what we need!” 🐱✨
-
----
-
-✔️ True or False Questions
-
-1. Milo had a blue blanket that he loved.
-
-➡️ False
-
-2. Milo was very sad when his blanket disappeared.
-
-➡️ True
-
-3. Lina the spider helped Milo try something new.
-
-➡️ True
-
-4. Milo immediately liked the pillow.
-
-➡️ False
-
-5. At the end, Milo thought the box was funny, like a boat.
-
-➡️ True
-
-6. Milo learned: Change can also be something good.
-
-➡️ True
-
----
-
-✔️ Multiple-Choice Questions
-
-1. What color was Milo’s favorite blanket?
-
-a) Blue
-
-b) Green ✔️
-
-c) Red
-
-2. Who was Milo’s friend?
-
-a) A mouse
-
-b) A spider ✔️
-
-c) A dog
-
-3. What did Milo try first after the blanket was gone?
-
-a) A pillow ✔️
-
-b) A cardboard box
-
-c) The carpet
-
-4. What happened the first time on the pillow?
-
-a) Milo fell asleep immediately
-
-b) Milo fell down ✔️
-
-c) Milo purred loudly
-
-5. How did Milo feel at the end of the story?
-
-a) Sad
-
-b) Happy ✔️
-
-c) Afraid
-
----
-
-✔️ Fill-in-the-Blank Questions
-
-1. Milo loved his __________ blanket.
-
-👉 green
-
-2. When the blanket disappeared, Milo was very __________.
-
-👉 sad
-
-3. The spider __________ helped Milo try something new.
-
-👉 Lina
-
-4. Milo first tried a __________ in the living room.
-
-👉 pillow
-
-5. In the evening, Milo jumped into a __________.
-
-👉 cardboard box
-
-6. Milo learned: Change can be __________.
-
-👉 good / beautiful / exciting

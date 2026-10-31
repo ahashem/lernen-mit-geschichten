@@ -4,48 +4,72 @@ ageGroup: "3-7"
 storyId: "006-moritz"
 publishDate: 2024-01-15
 difficulty: "beginner"
-questions:
-  - id: "mc1"
-    text: "Moritz kimdir?"
-    type: "multiplechoice"
-    options:
-      - "Bir köpek 🐶"
-      - "Küçük bir fare"
-      - "Bir kurbağa 🐸"
-    correctAnswer: "Küçük bir fare"
-  - id: "mc2"
-    text: "Fritz’e ne olmuştur?"
-    type: "multiplechoice"
-    options:
-      - "Bir çiçek bulmuştur"
-      - "Ayağına diken batmıştır"
-      - "Çimlerin üzerinde uyumuştur 🌿"
-    correctAnswer: "Ayağına diken batmıştır"
-  - id: "mc3"
-    text: "Moritz neden önce gülmüştür?"
-    type: "multiplechoice"
-    options:
-      - "Çünkü Fritz kaktüse benziyordur"
-      - "Çünkü Fritz şarkı söylüyordur"
-      - "Çünkü güneş parlıyordur"
-    correctAnswer: "Çünkü Fritz kaktüse benziyordur"
-  - id: "mc4"
-    text: "Moritz, Fritz’in üzgün olduğunu fark ettikten sonra ne yapmıştır?"
-    type: "multiplechoice"
-    options:
-      - "Koşarak kaçmıştır"
-      - "Peynir yemiştir"
-      - "Özür dilemiş ve ona yardım etmiştir"
-    correctAnswer: "Özür dilemiş ve ona yardım etmiştir"
-  - id: "mc5"
-    text: "Hayvanlar sonunda Moritz’e hangi ismi vermiştir?"
-    type: "multiplechoice"
-    options:
-      - "Uzun kulaklı fare"
-      - "Büyük kalpli küçük fare"
-      - "Hızlı ayaklı fare"
-    correctAnswer: "Büyük kalpli küçük fare"
 status: published
+questions:
+  - id: q1
+    text: Moritz küçük gri bir faredir.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q2
+    text: Fritz uzun kulaklı bir tavşandır.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q3
+    text: Moritz, Fritz’in kaktüse benzediğini düşündüğü için gülmüştür.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q4
+    text: Moritz güldüğünde Fritz çok mutlu olmuştur.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q5
+    text: Moritz, Fritz’e yardım ederek dikeni çıkarmıştır.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q6
+    text: Sonunda tüm hayvanlar Moritz’in büyük bir kalbi olduğunu anlamıştır.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q7
+    text: Moritz kimdir?
+    type: multiplechoice
+    options:
+      - Bir köpek 🐶
+      - Küçük bir fare 🐭
+      - Bir kurbağa 🐸
+    correctAnswer: Küçük bir fare 🐭
+  - id: q8
+    text: Fritz’e ne olmuştur?
+    type: multiplechoice
+    options:
+      - Bir çiçek bulmuştur 🌸
+      - Ayağına diken batmıştır 🌵
+      - Çimlerin üzerinde uyumuştur 🌿
+    correctAnswer: Ayağına diken batmıştır 🌵
+  - id: q9
+    text: Moritz neden önce gülmüştür?
+    type: multiplechoice
+    options:
+      - Çünkü Fritz kaktüse benziyordur 🌵
+      - Çünkü Fritz şarkı söylüyordur 🎵
+      - Çünkü güneş parlıyordur ☀️
+    correctAnswer: Çünkü Fritz kaktüse benziyordur 🌵
+  - id: q10
+    text: Moritz, Fritz’in üzgün olduğunu fark ettikten sonra ne yapmıştır?
+    type: multiplechoice
+    options:
+      - Koşarak kaçmıştır 🏃‍♂️
+      - Peynir yemiştir 🧀
+      - Özür dilemiş ve ona yardım etmiştir ❤️
+    correctAnswer: Özür dilemiş ve ona yardım etmiştir ❤️
+  - id: q11
+    text: Hayvanlar sonunda Moritz’e hangi ismi vermiştir?
+    type: multiplechoice
+    options:
+      - Uzun kulaklı fare
+      - Büyük kalpli küçük fare 💖
+      - Hızlı ayaklı fare
+    correctAnswer: Büyük kalpli küçük fare 💖
 ---
 
 ## Hikâye
@@ -78,80 +102,3 @@ Ve birini üzgün gördüğünde sormuş: “Sana nasıl yardım edebilirim?”
 
 Ormandaki tüm hayvanlar onu bunun için sevmiş – ve ona tatlı bir lakap takmışlar:
 “Büyük kalpli küçük fare.” 💖
-
----
-
-❓ Doğru mu Yanlış mı (True or False)
-
-1. Moritz küçük gri bir faredir.
-👉 Doğru (Richtig / True)
-
-2. Fritz uzun kulaklı bir tavşandır.
-👉 Yanlış (Falsch / False)
-
-3. Moritz, Fritz’in kaktüse benzediğini düşündüğü için gülmüştür.
-👉 Doğru (Richtig / True)
-
-4. Moritz güldüğünde Fritz çok mutlu olmuştur.
-👉 Yanlış (Falsch / False)
-
-5. Moritz, Fritz’e yardım ederek dikeni çıkarmıştır.
-👉 Doğru (Richtig / True)
-
-6. Sonunda tüm hayvanlar Moritz’in büyük bir kalbi olduğunu anlamıştır.
-👉 Doğru (Richtig / True)
-
----
-
-❓ Çoktan Seçmeli Sorular
-
-1. Moritz kimdir?
-a) Bir köpek 🐶
-b) Küçük bir fare 🐭
-c) Bir kurbağa 🐸
-
-👉 Cevap: b) Küçük bir fare
-
----
-
-2. Fritz’e ne olmuştur?
-a) Bir çiçek bulmuştur 🌸
-b) Ayağına diken batmıştır 🌵
-c) Çimlerin üzerinde uyumuştur 🌿
-
-👉 Cevap: b) Ayağına diken batmıştır
-
----
-
-3. Moritz neden önce gülmüştür?
-a) Çünkü Fritz kaktüse benziyordur 🌵
-b) Çünkü Fritz şarkı söylüyordur 🎵
-c) Çünkü güneş parlıyordur ☀️
-
-👉 Cevap: a) Çünkü Fritz kaktüse benziyordur
-
----
-
-4. Moritz, Fritz’in üzgün olduğunu fark ettikten sonra ne yapmıştır?
-a) Koşarak kaçmıştır 🏃‍♂️
-b) Peynir yemiştir 🧀
-c) Özür dilemiş ve ona yardım etmiştir ❤️
-
-👉 Cevap: c) Özür dilemiş ve ona yardım etmiştir
-
----
-
-5. Hayvanlar sonunda Moritz’e hangi ismi vermiştir?
-a) Uzun kulaklı fare
-b) Büyük kalpli küçük fare 💖
-c) Hızlı ayaklı fare
-
-👉 Cevap: b) Büyük kalpli küçük fare
-
----
-
----
-
----
-
----
