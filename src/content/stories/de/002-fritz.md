@@ -1,5 +1,5 @@
 ---
-title: Fritzchen und dem wütenden Eichhörnchen
+title: Fritzchen und das wütende Eichhörnchen
 emoji: 🐿️
 skills:
   - impulse-control

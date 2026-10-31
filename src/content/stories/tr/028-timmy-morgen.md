@@ -30,7 +30,7 @@ questions:
     type: "fillinblank"
 ---
 
-Bir varmış bir yokmuş , Timmy adında küçük bir ayı varmış. Timmy sevimli ve neşeliymiş – ama küçük bir sorunu varmış: Her zaman günlük rutinini unutuyormuş!
+Bir varmış bir yokmuş, Timmy adında küçük bir ayı varmış. Timmy sevimli ve neşeliymiş – ama küçük bir sorunu varmış: Her zaman günlük rutinini unutuyormuş!
 
 ---
 

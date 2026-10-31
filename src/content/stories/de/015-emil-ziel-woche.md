@@ -76,15 +76,15 @@ Zu Hause sprang ihm seine Schwester Mimi in den Weg. „Ich wette, du schaffst n
 
 ---
 
-„Wetten doch!“ rief Emil. Und da begann Emils Super-Ziel-Woche!
+„Wetten doch!“, rief Emil. Und da begann Emils Super-Ziel-Woche!
 
-Tag 1 – Das Brokkoli-Ziel Ziel: Ich esse heute 3 Stücke Brokkoli ohne Theater.
+Tag 1 – Das Brokkoli-Ziel. Ziel: Ich esse heute 3 Stücke Brokkoli ohne Theater.
 
 ---
 
-Emil saß vor seinem Teller wie vor einem Monster. „Darf ich sie wenigstens in Ketchup tunken?“ fragte er.
+Emil saß vor seinem Teller wie vor einem Monster. „Darf ich sie wenigstens in Ketchup tunken?“, fragte er.
 
-Mimi grinste. „Nur, wenn du dabei nicht schreißt: 'Ich werde vergiftet!'“
+Mimi grinste. „Nur, wenn du dabei nicht schreist: 'Ich werde vergiftet!'“
 
 ---
 
@@ -92,7 +92,7 @@ Mit dramatischer Miene kaute Emil den Brokkoli. Herr Schnurrbart (in Emils Kopf)
 
 ---
 
-Tag 2 – Das Schuhe-Ziel Ziel: Ich ziehe morgens meine Schuhe an, ohne dass Mama fünfmal rufen muss.
+Tag 2 – Das Schuhe-Ziel. Ziel: Ich ziehe morgens meine Schuhe an, ohne dass Mama fünfmal rufen muss.
 
 Emil stellte sich einen Wecker mit Dino-Ruf: „ROOOAAAR! SCHUHE ANZIEHEN, KOMMANDO DINO!“
 
@@ -102,7 +102,7 @@ Er sprang wie ein Ninja aus dem Bett, landete in seinen Schuhen – falschrum, a
 
 ---
 
-Tag 3 – Das Schwester-Ziel Ziel: Ich sage heute 3 nette Dinge zu Mimi.
+Tag 3 – Das Schwester-Ziel. Ziel: Ich sage heute 3 nette Dinge zu Mimi.
 
 Das war das schwerste Ziel. Am Frühstückstisch sagte Emil: „Mimi, du siehst heute nicht ganz doof aus.“ Mimi: „Zählt das?“ Emil: „Moment, ich verbessere mich!“
 

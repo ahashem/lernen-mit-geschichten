@@ -106,7 +106,7 @@ Eines Tages wollte sie ihre Freunde auf der anderen Seite des Flusses besuchen. 
 
 ---
 
-„Oh nein! Wie komme ich jetzt rüber?“ rief Lina.
+„Oh nein! Wie komme ich jetzt rüber?“, rief Lina.
 
 Die Dorfbewohner standen ratlos da. Einer schlug vor: „Wir warten einfach, bis jemand eine neue Brücke baut.“ Ein anderer meinte: „Dann bleiben wir eben zu Hause.“
 
@@ -120,7 +120,7 @@ Sie schaute sich um. Am Ufer lagen große Kürbisse vom Bauernhof. Plötzlich be
 
 ---
 
-Sie nahm die Kürbisse, band sie mit Seilen zusammen – und baute daraus ein schwimmendes Floß. Die Leute staunten. „Das kann doch nicht funktionieren!“ lachten sie.
+Sie nahm die Kürbisse, band sie mit Seilen zusammen – und baute daraus ein schwimmendes Floß. Die Leute staunten. „Das kann doch nicht funktionieren!“, lachten sie.
 
 ---
 

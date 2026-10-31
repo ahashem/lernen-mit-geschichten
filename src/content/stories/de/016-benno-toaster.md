@@ -78,7 +78,7 @@ Zu Hause fand Benno im Keller einen alten Toaster. Er steckte ihn neugierig ein 
 
 ---
 
-„AUA! Pass doch auf, Junge!“ brummte der Toaster. „W-Was? Du kannst sprechen?“ „Klar! Ich bin Herr Krümel. Und ich hab genug davon, verbrannt zu werden, weil niemand Anleitungen liest!“
+„AUA! Pass doch auf, Junge!“, brummte der Toaster. „W-Was? Du kannst sprechen?“ „Klar! Ich bin Herr Krümel. Und ich hab genug davon, verbrannt zu werden, weil niemand Anleitungen liest!“
 
 ---
 

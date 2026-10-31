@@ -18,7 +18,7 @@ questions:
       - "Ein Maulwurf"
     correctAnswer: "Ein kleiner Hase namens Fritzi"
   - id: "q2"
-    text: "Was folgte Fritzi überall hin?"
+    text: "Was folgte Fritzi überallhin?"
     type: "multiplechoice"
     options:
       - "Ein Regenbogen"
@@ -64,7 +64,7 @@ questions:
     correctAnswer: "Wenn man positiv denkt, kann man etwas Gutes finden"
 ---
 
-Es war einmal ein kleiner Hase namens Fritzi. Fritzi liebte es, über die Wiese zu hüpfen und Möhren zu knabbern. Eines Tages kam eine dicke graue Regenwolke und folgte ihm überall hin.
+Es war einmal ein kleiner Hase namens Fritzi. Fritzi liebte es, über die Wiese zu hüpfen und Möhren zu knabbern. Eines Tages kam eine dicke graue Regenwolke und folgte ihm überallhin.
 
 ---
 

@@ -20,7 +20,7 @@ Tobi lief in den Garten, aber die Äpfel hingen viel zu hoch am Baum. Er sprang 
 
 „Das ist unmöglich!", seufzte Tobi frustriert.
 
-Da kam sein Freund, die Giraffe Greta, vorbei. „Was machst du denn, Tobi?"
+Da kam seine Freundin, die Giraffe Greta, vorbei. „Was machst du denn, Tobi?"
 
 „Ich will Apfelkuchen backen, aber ich komme nicht an die Äpfel!", jammerte Tobi.
 
