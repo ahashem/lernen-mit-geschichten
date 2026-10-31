@@ -1,7 +1,7 @@
 ---
 title: "Finn und die Riesen-Nuss"
 emoji: "🌰"
-skills: ["cooperation"]
+skills: [ "cooperation" ]
 ageGroup: "3-7"
 band: "2"
 storyId: "019-finn"
@@ -44,6 +44,26 @@ questions:
       - "Gemeinsam sind wir stärker"
       - "Nüsse sind zu schwer"
     correctAnswer: "Gemeinsam sind wir stärker"
+  - id: q1
+    text: Wer hat die Nuss zuerst gefunden?
+    type: fillinblank
+    correctAnswer: Finn, der kleine Waschbär.
+  - id: q2
+    text: Wem begegnete Finn als Erstes?
+    type: fillinblank
+    correctAnswer: Mila, das Eichhörnchen.
+  - id: q3
+    text: Wer hat noch geholfen?
+    type: fillinblank
+    correctAnswer: Kiko, der Vogel, und viele Ameisen.
+  - id: q4
+    text: Was passierte, als alle zusammenarbeiteten?
+    type: fillinblank
+    correctAnswer: Sie konnten die große Nuss bewegen und essen.
+  - id: q5
+    text: Was lernen wir aus der Geschichte?
+    type: fillinblank
+    correctAnswer: Gemeinsam sind wir stärker! / Teamarbeit macht Spaß!
 status: published
 ---
 
@@ -85,20 +105,3 @@ Mila nickte: „Teamarbeit macht Spaß!“
 Und Kiko flatterte fröhlich: „Gemeinsam sind wir unschlagbar!“
 
 Seit diesem Tag wussten alle Waldbewohner: Wer zusammenarbeitet, schafft auch die größten Aufgaben – und hat dabei jede Menge Spaß.
-
-Fragen zum Nachdenken 
-
-1. Wer hat die Nuss zuerst gefunden?
-👉 Finn, der kleine Waschbär.
-
-2. Wem begegnete Finn als Erstes?
-👉 Mila, das Eichhörnchen.
-
-3. Wer hat noch geholfen?
-👉 Kiko, der Vogel, und viele Ameisen.
-
-4. Was passierte, als alle zusammenarbeiteten?
-👉 Sie konnten die große Nuss bewegen und essen.
-
-5. Was lernen wir aus der Geschichte?
-👉 Gemeinsam sind wir stärker! / Teamarbeit macht Spaß!

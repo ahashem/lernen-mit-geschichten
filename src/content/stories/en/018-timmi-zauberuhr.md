@@ -5,6 +5,80 @@ storyId: "018-timmi-zauberuhr"
 publishDate: 2024-01-15
 difficulty: "beginner"
 status: published
+questions:
+  - id: q1
+    text: What did Timmy want to do all day?
+    type: multiplechoice
+    options:
+      - Study
+      - Sleep
+      - Play
+    correctAnswer: Play
+  - id: q2
+    text: Who gave Timmy the magic clock?
+    type: multiplechoice
+    options:
+      - His teacher
+      - His stuffed cat Minka
+      - His friend
+    correctAnswer: His stuffed cat Minka
+  - id: q3
+    text: Which color meant “learning” on the magic clock?
+    type: multiplechoice
+    options:
+      - Blue
+      - Yellow
+      - Green
+    correctAnswer: Blue
+  - id: q4
+    text: What did Timmy do when the clock turned yellow?
+    type: multiplechoice
+    options:
+      - He slept
+      - He built a road and played
+      - He ate
+    correctAnswer: He built a road and played
+  - id: q5
+    text: How did Timmy feel in the evening?
+    type: multiplechoice
+    options:
+      - Tired and sad
+      - Happy and proud
+      - Angry
+    correctAnswer: Happy and proud
+  - id: q6
+    text: What does the story teach us?
+    type: multiplechoice
+    options:
+      - Whoever always plays is happy
+      - Whoever organizes time well can achieve everything
+      - Whoever sleeps a lot doesn’t need to learn
+    correctAnswer: Whoever organizes time well can achieve everything
+  - id: q7
+    text: Timmy wanted to play all day.
+    type: truefalse
+    correctAnswer: "true"
+  - id: q8
+    text: His mother gave him the magic clock.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q9
+    text: The green color on the clock meant “resting.”
+    type: truefalse
+    correctAnswer: "true"
+  - id: q10
+    text: Timmy learned nothing when the clock turned blue.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q11
+    text: In the evening, Timmy was tired and angry.
+    type: truefalse
+    correctAnswer: "false"
+  - id: q12
+    text: The story teaches us that if we organize our time, we can study, play, and rest.
+    type: truefalse
+    correctAnswer: "true"
+keyMessage: "When you organize your time, you always have space for everything: learning, playing, and resting."
 ---
 
 ## The Story
@@ -45,58 +119,3 @@ Minka smiled:
 “Meow! Whoever shares their time wisely will always have enough for learning, playing, and dreaming!”
 
 And so Timmy fell asleep peacefully, with the magic clock beside his bed.
-
-✨ Lesson for Children:
-When you organize your time, you always have space for everything: learning, playing, and resting.
-
-📝 Multiple Choice Questions
-
-1. What did Timmy want to do all day?
-a) Study
-b) Sleep
-c) Play 
-
-2. Who gave Timmy the magic clock?
-a) His teacher
-b) His stuffed cat Minka 
-c) His friend
-
-3. Which color meant “learning” on the magic clock?
-a) Blue 
-b) Yellow
-c) Green
-
-4. What did Timmy do when the clock turned yellow?
-a) He slept
-b) He built a road and played 
-c) He ate
-
-5. How did Timmy feel in the evening?
-a) Tired and sad
-b) Happy and proud 
-c) Angry
-
-6. What does the story teach us?
-a) Whoever always plays is happy
-b) Whoever organizes time well can achieve everything 
-c) Whoever sleeps a lot doesn’t need to learn
-
-📝 True or False Questions
-
-1. Timmy wanted to play all day.
-✅ True
-
-2. His mother gave him the magic clock.
-❌ False (He got it from his stuffed cat Minka.)
-
-3. The green color on the clock meant “resting.”
-✅ True
-
-4. Timmy learned nothing when the clock turned blue.
-❌ False (He learned the alphabet.)
-
-5. In the evening, Timmy was tired and angry.
-❌ False (He was happy and proud.)
-
-6. The story teaches us that if we organize our time, we can study, play, and rest.
-✅ True
