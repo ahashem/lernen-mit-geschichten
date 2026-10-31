@@ -1,5 +1,5 @@
 ---
-title: "Moritz, der kleinen Maus"
+title: "Moritz, die kleine Maus"
 emoji: "🐭"
 skills: ["empathy", "self-confidence"]
 ageGroup: "3-7"
@@ -77,4 +77,4 @@ Er hatte verstanden: Wenn man die Gefühle anderer sieht und ernst nimmt, wird m
 Von diesem Tag an hörte Moritz nicht nur mit den Ohren, sondern auch mit dem Herzen zu.
 Und wenn jemand traurig war, fragte er: „Wie kann ich dir helfen?“
 
-Alle Tiere im Wald mochten Moritz dafür – und manchmal nannten sie ihn sogar „die kleine Maus mit dem großen Herzen". 💖
+Alle Tiere im Wald mochten Moritz dafür – und manchmal nannten sie ihn sogar „die kleine Maus mit dem großen Herzen“. 💖

@@ -54,7 +54,7 @@ Da kam seine Freundin, die Maus Mia, und flüsterte: „Timo, du musst nicht der
 
 ---
 
-Also startete Timo mit klopfendem Herz. Die Hasen sprangen schnell davon, die Papageien flatterten wild, und die Bären trampelten los.
+Also startete Timo mit klopfendem Herzen. Die Hasen sprangen schnell davon, die Papageien flatterten wild, und die Bären trampelten los.
 
 ---
 

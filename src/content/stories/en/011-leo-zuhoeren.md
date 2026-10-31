@@ -60,7 +60,7 @@ One day the school organized a **trip to the forest**. The teacher said, “Chil
 
 ---
 
-Suddenly Leo found himself **all alone**. The birds were chirping, the trees were rustling, but there wasn’t another child in sight. Leo felt sad. He sat down on a tree stump and whispered, “I should have listened better . . .”
+Suddenly Leo found himself **all alone**. The birds were chirping, the trees were rustling, but there wasn’t another child in sight. Leo felt sad. He sat down on a tree stump and whispered, “I should have listened better â¦”
 
 ---
 
@@ -68,10 +68,10 @@ After a while Leo heard footsteps. It was his teacher with the class. “Leo! Th
 
 ---
 
-From that day on, Leo became the **best listener in the class. He raised his hand, waited until others finished speaking, and nodded when he understood. All the children enjoyed talking with Leo because they knew: **Leo really listens.
+From that day on, Leo became the **best listener in the class.** He raised his hand, waited until others finished speaking, and nodded when he understood. All the children enjoyed talking with Leo because they knew: **Leo really listens.**
 
 ---
 
 And if you listen carefully, you can hear Leo’s quiet roar as he says, “Listening is power!”
 
-Draw a picture of Leo in the forest, showing how he is listening. Underneath, write the sentence: **“Listening is power!”
+Draw a picture of Leo in the forest, showing how he is listening. Underneath, write the sentence: **“Listening is power!”**

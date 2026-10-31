@@ -56,7 +56,7 @@ Es war ein sonniger Morgen im Wald. Der kleine Waschbär Finn hüpfte fröhlich 
 
 Finn versuchte, die Nuss allein zu rollen. Er schob, er drückte, er schnaufte – doch die Nuss bewegte sich kaum.
 
-Da kam die flinke Eichhörnchen-Mädchen Mila vorbei.
+Da kam das flinke Eichhörnchen-Mädchen Mila vorbei.
 „Hallo Finn, brauchst du Hilfe?“
 Finn nickte: „Ja, aber sie ist soooo schwer!“
 
@@ -67,7 +67,7 @@ Doch dann blieb die Nuss in einer kleinen Mulde stecken.
 
 In diesem Moment flatterte der bunte Vogel Kiko herunter.
 „Was ist los?“
-„Wir wollen die Nuss zum großen Baum bringen, aber sie steckt fest!“ erklärte Mila.
+„Wir wollen die Nuss zum großen Baum bringen, aber sie steckt fest!“, erklärte Mila.
 
 Kiko überlegte kurz, dann sagte er: „Ich habe eine Idee! Ich hole meine Freunde, die Ameisen. Sie sind klein, aber gemeinsam sehr stark.“
 

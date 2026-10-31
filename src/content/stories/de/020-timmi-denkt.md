@@ -61,7 +61,7 @@ Eines Tages sah Timmi einen großen Apfelbaum. Die roten Äpfel hingen hoch oben
 „Oh, die hole ich mir!“, rief Timmi und kletterte los.
 
 Doch plötzlich hörte er ein lautes Knacks! – der Ast wackelte gefährlich.
-Sein Freund, das schlaue Eichhörnchen Lilli, rief:
+Seine Freundin, das schlaue Eichhörnchen Lilli, rief:
 „Timmi! Denk doch nach! Was passiert, wenn der Ast bricht?“
 
 Timmi hielt kurz inne.
@@ -76,6 +76,6 @@ Also holte Timmi einen langen Stock. Er stupste vorsichtig – Plopp! – schon 
 Beide lachten und aßen glücklich.
 
 Am Ende sagte Timmi stolz:
-„Heute habe ich gelernt: Erst denken, dann handeln!"
+„Heute habe ich gelernt: Erst denken, dann handeln!“
 
 ✨ Botschaft: Die Kinder lernen spielerisch, dass Nachdenken über mögliche Folgen zu klügeren und sichereren Entscheidungen führt.

@@ -116,7 +116,7 @@ Also spielte er mit seinem Schwanz – plopp! – er fiel um.
 Er zählte Steine in der Höhle – eins, zwei, drei… bis er die Zahlen vergaß.
 Dann machte er Grimassen vor dem Spiegel:
 „Grrrr!“, „Hiiii!“, „Blubb!“ 🤪
-Das machte ihn so sehr lachen, dass er fast die Kekse vergaß.
+Das brachte ihn so sehr zum Lachen, dass er fast die Kekse vergaß.
 
 ---
 

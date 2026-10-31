@@ -106,7 +106,7 @@ Grün für Ausruhen 😴
 
 Timmi probierte es aus:
 
-Als die Uhr blau leuchtete, setzte er sich hin und übte das ABC. Minka sang dabei ein schräges Lied: „Aaa, Bee, Cee, ich tanze wie ein Känguruh!“ Timmi musste lachen, aber er lernte trotzdem.
+Als die Uhr blau leuchtete, setzte er sich hin und übte das ABC. Minka sang dabei ein schräges Lied: „Aaa, Bee, Cee, ich tanze wie ein Känguru!“ Timmi musste lachen, aber er lernte trotzdem.
 
 Dann wurde die Uhr gelb. Timmi sprang sofort los, baute eine Riesen-Autobahn und Minka rutschte kichernd mit den Autos mit.
 

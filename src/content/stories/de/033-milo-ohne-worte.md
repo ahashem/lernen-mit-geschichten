@@ -51,7 +51,7 @@ Eines Morgens spielte Milo im Garten. Da kam seine Freundin, die Schildkröte Lo
 
 Milo dachte nach: 👉 Schulter hoch \= „Ich weiß nicht“ oder „Ich bin unsicher“. 🙂 Trauriges Gesicht \= „Etwas stimmt nicht.“
 
-„Oh!“, rief Milo, „Du hast Hunger, oder?“ Lotte nickte sofort und lachte.
+„Oh!“, rief Milo, „du hast Hunger, oder?“ Lotte nickte sofort und lachte.
 
 ---
 

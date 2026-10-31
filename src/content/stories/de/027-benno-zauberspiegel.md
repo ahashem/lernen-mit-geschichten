@@ -95,7 +95,7 @@ Der Spiegel lächelte. „Ganz einfach! Stell dir drei Fragen:
 
 ---
 
-1. War ich freundlich? 2. Habe ich jemandem geholfen oder geärgert? 3. Bin ich zufrieden mit meinem Verhalten?“
+1. War ich freundlich? 2. Habe ich jemandem geholfen oder jemanden geärgert? 3. Bin ich zufrieden mit meinem Verhalten?“
 
 ---
 
@@ -103,7 +103,7 @@ Am nächsten Tag probierte Benno es aus.
 
 ---
 
-Beim Frühstück verschüttete er Milch, lachte laut und sagte: „Ups!“. Dann fragte er sich: „War ich freundlich?“ – Ja! Niemand war böse. „Habe ich jemandem geärgert?“ – Nein, es war nur ein kleiner Unfall. „Bin ich zufrieden?“ – Hmm… ein bisschen vorsichtiger wäre besser!
+Beim Frühstück verschüttete er Milch, lachte laut und sagte: „Ups!“ Dann fragte er sich: „War ich freundlich?“ – Ja! Niemand war böse. „Habe ich jemanden geärgert?“ – Nein, es war nur ein kleiner Unfall. „Bin ich zufrieden?“ – Hmm… ein bisschen vorsichtiger wäre besser!
 
 ---
 

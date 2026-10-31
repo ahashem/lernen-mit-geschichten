@@ -88,7 +88,7 @@ Mach einen Wut-Tanz – hüpfen, drehen, zappeln, bis die Wut müde ist.
 
 ---
 
-Leo probierte es aus. Beim nächsten Mal, als Milo sein Ball nahm, atmete Leo tief ein... ...zappelte ein bisschen mit den Pfoten... ...und sagte dann ganz ruhig:
+Leo probierte es aus. Beim nächsten Mal, als Milo seinen Ball nahm, atmete Leo tief ein... ...zappelte ein bisschen mit den Pfoten... ...und sagte dann ganz ruhig:
 
 ---
 
