@@ -58,6 +58,10 @@ Whoever stays calm will have more fun in the end and maybe even a new friend. �
 
 ❓ True or False Questions
 
+1. Fritzchen sat under a tree and ate a banana.
+
+➡️ False (He ate an apple.)
+
 2. A squirrel took a piece of Fritzchen’s apple.
 
 ➡️ True

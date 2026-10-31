@@ -45,23 +45,6 @@ questions:
       - "İstekleri ve duyguları açık ve nazikçe ifade etmeliyiz."
       - "Balonlar yakalamacadan daha eğlencelidir."
     correctAnswer: ""
-  - id: "mc6"
-    text: "Boşlukları doldur:"
-    type: "multiplechoice"
-    options:
-      - "__________ önce yakalamaca oynamak istedi."
-      - "__________ biraz __________ hissetti."
-      - "Önce __________ ile oynadılar."
-      - "Sonunda __________ da oynadılar."
-    correctAnswer: ""
-  - id: "mc7"
-    text: "Soruları cevapla:"
-    type: "multiplechoice"
-    options:
-      - "Hoppel ne hissetti?"
-      - "Mila ne oynamak istedi?"
-      - "Hikâyenin mesajı nedir?"
-    correctAnswer: ""
 status: published
 ---
 
