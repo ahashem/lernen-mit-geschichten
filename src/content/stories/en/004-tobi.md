@@ -1,5 +1,5 @@
 ---
-title: "Tobi and the Big Apple Cake"
+title: "Tobi and the Big Apple Pie"
 ageGroup: "3-7"
 skills: ["sharing"]
 storyId: "004-tobi"
