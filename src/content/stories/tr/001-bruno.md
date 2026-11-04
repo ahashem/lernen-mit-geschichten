@@ -85,6 +85,8 @@ Yere oturdu ve şöyle dedi:
 
 "Karnım garip hissediyor. Sanırım korkuyorum."
 
+---
+
 Mila yanına uçtu ve dedi ki:
 
 "Bunu fark etmen çok iyi Bruno! Ne hissettiğini bilirsen, daha kolay başa çıkabilirsin."
@@ -105,11 +107,15 @@ Bruno biraz düşündü, sonra dedi ki:
 
 İkisi de güldü.
 
+---
+
 Akşam olduğunda, güneş batarken Bruno sessizce dedi ki:
 
 "Şimdi kendimi mutlu hissediyorum. Şunu öğrendim:
 
 Duygularımı bildiğimde, ne yapacağıma daha iyi karar verebilirim."
+
+---
 
 Mila göz kırptı ve dedi ki:
 
