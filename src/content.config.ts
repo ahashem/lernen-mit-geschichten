@@ -75,6 +75,12 @@ const storiesCollection = defineCollection({
     title: z.string().describe("This locale's title."),
     summary: z.string().optional().describe('One or two sentences for cards, previews and SEO.'),
     keyMessage: z.string().optional().describe('The one idea, shown at the end of the story.'),
+    adaptation: z
+      .boolean()
+      .optional()
+      .describe(
+        "This language tells its own version of the story rather than translating the German. It is never read beside the German in Two languages, only beside other adaptations of this story."
+      ),
     emoji: z
       .string()
       .optional()
