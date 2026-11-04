@@ -1,6 +1,6 @@
 ---
 storyId: "023-lina-spiegel"
-status: draft
+status: published
 title: "Lina und der singende Spiegel"
 emoji: "🪞"
 skills: ["motivation"]

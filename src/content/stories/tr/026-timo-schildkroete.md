@@ -1,6 +1,6 @@
 ---
 storyId: "026-timo-schildkroete"
-status: draft
+status: published
 title: "Küçük Kaplumbağa Timo’nun Hikâyesi"
 keyMessage: "Her çocuk özeldir. En hızlı, en güçlü ya da en gürültülü olmak gerekmez. Önemli olan kendine inanmak ve kendinle gurur duymaktır."
 questions:

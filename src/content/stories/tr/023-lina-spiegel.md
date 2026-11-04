@@ -1,6 +1,6 @@
 ---
 storyId: "023-lina-spiegel"
-status: draft
+status: published
 title: "Lina ve Şarkı Söyleyen Ayna"
 keyMessage: "Bazen ödül olarak alkış ya da şeker olmaz. Ama kendine “Ben güçlüyüm, yapabilirim, tekrar deneyeceğim!” dersen, içindeki güç büyür – ve bu, çikolatadan bile daha güzeldir. 🍫💪"
 questions:

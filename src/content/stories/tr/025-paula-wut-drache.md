@@ -1,6 +1,6 @@
 ---
 storyId: "025-paula-wut-drache"
-status: draft
+status: published
 title: "Paula ve Küçük Öfke Ejderhası"
 questions:
   - id: "q1"

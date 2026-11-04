@@ -1,6 +1,6 @@
 ---
 storyId: "025-paula-wut-drache"
-status: draft
+status: published
 title: "بَاوْلَا وَتَنِّينُ الغَضَبِ الصَّغِيرُ"
 questions:
   - id: "q1"

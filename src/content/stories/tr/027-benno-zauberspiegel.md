@@ -1,6 +1,6 @@
 ---
 storyId: "027-benno-zauberspiegel"
-status: draft
+status: published
 title: "Benno ve Sihirli Ayna"
 questions:
   - id: "q1"

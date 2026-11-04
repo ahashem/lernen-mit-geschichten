@@ -1,6 +1,6 @@
 ---
 storyId: "027-benno-zauberspiegel"
-status: draft
+status: published
 title: "Die Geschichte von Benno und dem Zauberspiegel"
 emoji: "🪞"
 skills: ["self-awareness"]
