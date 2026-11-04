@@ -205,7 +205,35 @@ handout (no reviewers or partners yet).
 
 ## Next
 
-Handover state after Run 6 and the moderator work (2026-10-18), updated 2026-10-24.
+Handover state after Run 6 and the moderator work (2026-10-18), updated 2026-10-24 and 2026-11-04.
+
+### Owner decisions (2026-11-04)
+
+- **Outcome for the next 4-6 weeks: more stories live, then polish for the five test families.** Their main
+  complaint is too few stories. Publish what is ready now and already has good structure (below); stories can still be
+  improved after they are live. The agent publishes through pull requests into `main`, not `editorial`.
+- **Machine drafts are allowed as suggestions.** The agent may draft `summary`, `keyMessage`, alt text, `feelings`
+  and page breaks for a moderator to accept or edit on the review sheet. A draft is never published by itself and is
+  marked as a draft until a named moderator accepts it.
+- **Translations that tell a different story are adaptations.** They stay published, are marked as adaptations and
+  are never offered beside the German in Two languages (known issue 11).
+- **A lightweight feedback round** with the five families, through the existing feedback link.
+
+### Since 2026-10-24 (to 2026-11-04)
+
+- **Phones (PR 84):** 56 px top bar with a "For grown-ups" menu, Library filters as a bottom sheet with row cards, and
+  storybook controls that stay on screen in `ar`/`ur` (known issues 1-4).
+- **Moderators:** review sheet, art-prep page and guide in the preview (PRs 86-87, 90-91); skills grouped into six
+  areas and a two-step skill filter in the Library (PRs 92-93); quizzes and messages of the older stories moved into
+  frontmatter and their typos and markup fixed (PRs 117-122).
+- **Reading:** "Colour it" on the end screen, and an end screen of their own for chapter stories (PR 116); the device
+  voice no longer reads emoji aloud (PR 111).
+- **Arabic and Urdu voices (PR 126):** the reader prefers "Natural", "Enhanced" or "Premium" device voices and looks
+  the voice up before each sentence; the `ar`/`ur` grown-ups panel says where a better voice is; the privacy page says
+  Edge's online voices send the text to Microsoft (known issue 10).
+- **Page breaks (PRs 127, 129-131):** Bruno, 010 Leo, 018 Timmi Zauberuhr and 020 Timmi denkt read as explicit pages,
+  and every language pairs with every other in Two languages. 005, 006, 019, 022 and 008 already pair through derived
+  pages, so they need breaks only once recordings exist (known issue 8).
 
 ### Since the handover (2026-10-24)
 
@@ -227,7 +255,7 @@ Handover state after Run 6 and the moderator work (2026-10-18), updated 2026-10-
 - **Reader (M1-M3 slices):** storybook, chapter reader, homes, Library, language switch, Class room, print pack and class links, privacy page, offline behind `PUBLIC_OFFLINE` (off), "Read it in my voice" (bands 1-2), spoken first tap and "?" tour on Picture home, feedback `mailto` (`PUBLIC_FEEDBACK_EMAIL`), the A4 folio at `/folio`.
 - **Moderator tooling:** `scripts/readiness.mjs` (per story and language: needed before it can go live, and worth fixing), the preview-only status page in German, Arabic and English at `/preview/status/` (wording in `scripts/status-messages.mjs`) with `status.json` for tools, the publishing gate (now also blocks a published story whose pictures were never uploaded), the `characters` collection and a story `cast` field, `sync-editorial.yml` (merges `main` into `editorial` after every code merge; verified).
 - **Story pipeline** (n8n, LiteLLM, Hermes; lives outside this repo, pack v3.1): moderators start from a short brief, from an already approved text, or from a character idea; everything after approval (translations, pictures, sizes, names, files) is automated, with human gates for the text, the pictures and the review. Not built or run yet. It reads allowed frontmatter keys from `.pages.yml`, drafts character sheets from the approved story, and never writes `reviewedBy`, `reviewedAt` or `author`.
-- **Local tags** the sandbox could not push (SHAs in the PRs): `m4-feedback` 1eea470, `m4-moderator-gates` 8e7e048, `m4-booklet-strings` b2d50d8, `m5-first-tap` aad2ade, `m6-own-voice` 80ab3b9, `m4-story-readiness` 8d59902, `m4-characters` 51dc2c2, `m4-status-json` f2da7c5, `m3-folio` fed1bc6, `m3-folio-print` a7f8b39, `publish-opt-in` 476cc93.
+- **Tags not yet on GitHub** (the cloud sessions' git proxy refuses tag pushes; the owner pushes them): `m4-feedback` 1eea470, `m4-moderator-gates` 8e7e048, `m4-booklet-strings` b2d50d8, `m5-first-tap` aad2ade, `m6-own-voice` 80ab3b9, `m4-story-readiness` 8d59902, `m4-characters` 51dc2c2, `m4-status-json` f2da7c5, `m3-folio` fed1bc6, `m3-folio-print` a7f8b39, `publish-opt-in` 476cc93, `m5-device-voice` bf3be05, `m4-page-breaks` 196060f (on `editorial`). All are on `main` or `editorial`.
 
 ### Known issues (found, not fixed)
 
@@ -246,19 +274,43 @@ Other:
 5. **Library performance** was Lighthouse mobile 72 in Run 3 and has not been re-measured (no Lighthouse in the sandbox).
 6. **About copy is stale** (standard and interactive formats, old features) and the cover's grown-ups panel sits under "Für Pädagoginnen und Pädagogen" although parents use it too.
 7. **Folio:** text only (no pictures); checked as Chromium PDFs only (Chromium ignores right-hand page breaks, so no double-sided control); not tried on a printer, Safari or Firefox.
-8. **Older stories have no page breaks (001-010, 018-022).** The reader derives their pages, but derived pages carry no recordings, and Two languages reading works only for Dino (and `ar` 010, `tr` 019) because the other translations split into different paragraphs. Fix per story with explicit breaks (`03` Page breaks for the older stories), Bruno first. Bruno also lacks alt texts, and its colour frame is a 1.3 MB PNG.
+8. **Older stories without page breaks.** Done for 001, 010, 018 and 020 (2026-11-04). 005, 006, 008, 019 and 022 pair through derived pages and need breaks only when recordings arrive. Bruno still lacks alt texts, and its colour frame is a 1.3 MB PNG.
 9. **Machine drafts:** `ar`/`tr`/`ur` UI strings (`src/locales/review-queue.json`), the German and Arabic wording of the status page, and the privacy text all need a native read.
 10. **Device voices misread Arabic and Urdu**, mostly by ignoring harakat. The reader now ranks voices as in `ux/04` Narration ("Natural", "Enhanced", "Premium" first, looked up before each sentence), the `ar`/`ur` grown-ups panel says where a better voice is, and the privacy page names Edge's online voices. Still open: the one listening check in `ux/07` #19, and whether Edge on Android offers its online voices to web pages (unverified, so the hint names only Edge on a computer).
+11. **Translations that tell a different story.** 002 Fritz (the German is a squirrel and a nut, the translations a boy and an apple), 003 Lina, 004 Tobi and 009 Milo (adaptations of different length or ending), 007 Fritz Flamingo (the English file holds German exercises, the Turkish file is in English) and 021 Emil (the German file is in Turkish). They cannot be broken at the same places as the German. Decided: mark them as adaptations (next step 2); the wrong-language files of 007 and 021 still need a moderator.
 
 ### Next steps, in order
 
-1. **Owner, CMS mirror.** The repo's check rejects any frontmatter key that is not a `.pages.yml` form field. Mirror the `characters` collection and `cast` (snippets in PR 70), and `feelings`, `editorsPick`, `situations`, `glossary`, `thinkCards`. The pipeline needs these first. Add a CMS media folder for character references if they live in the repo (otherwise keep them in your own storage).
-2. **Owner, release.** Push the local tags above. Set `PUBLIC_FEEDBACK_EMAIL` in the deploys that show the feedback link. Decide on `PUBLIC_OFFLINE=1` (needs a trial on real kita Wi-Fi). Staging and production still carry Google Tag Manager.
-3. **Next engineering run: phone usability.** Fix known issues 1-3: the 56 px top bar and "For grown-ups" menu, the Library filter bottom sheet with compact cards, and the storybook controls staying on screen in `ar`/`ur`. Read `ux/03` §1a, §2, §5, `ux/05` Text expansion and Arabic and Urdu pitfalls; check de, ar and ur at 320 and 375 px. This benefits every user, so do it before more features.
-4. **Build the story pipeline** from pack v3.1 on your n8n (Mode 2, "paste approved text", first), then run its quality gate per model alias.
-5. **Moderator tools:** the review sheet (`/preview/review/`), the art-prep page (`/preview/art/`) and the moderators' guide (`/preview/guide/`) are live (2026-10-24). Owner: set the `CMS_URL` repository variable so the guide links the CMS, and add top-level `reviewedBy`/`reviewedAt` to the German form in `.pages.yml` (the gate requires them; today only the art section has them). Open decisions: a reviewer-name dropdown (puts moderator names in the public repo), and machine-drafted summaries and alt texts for moderators to accept.
-6. **Owner, content and review.** Most urgent since opt-in publishing: production shows only what is marked
-   `published`. Approve the page-break pull requests for the older stories, Bruno first (`03`); fix Bruno's alt texts and WebP frame, assign bands, write `summary` and `keyMessage`, supply a band 3-4 story, `feelings` and the first `thinkCards`. `node scripts/readiness.mjs` and the status page show what each story lacks. Rewrite the About page, then move its copy to the locale files.
-7. **Try with the five families:** "Read it in my voice" on a real tablet, the first-tap labels with real device voices in `ar`, `tr`, `ur`.
+Worked back from the outcome: more stories live in more languages, then polish for the five families.
+
+1. **Agent: publish the ready batch (PRs into `main`).** 16 German drafts have good structure: the German is in
+   German with at most one `##` section, and at least two translations line up with it paragraph for paragraph.
+   13 are complete in all five languages: 023, 024, 025, 026, 027, 030, 031, 032, 033, 036, 037, 038, 039, 040;
+   012 (`de`, `en`, `ar`) and 028 (`de`, `en`, `tr`) publish only the files that line up. That takes the library
+   from 14 to 30 German stories and Arabic from 9 to about 25. Set `status: published` and nothing else; leave the
+   others as drafts; a few stories per PR; `npm run quality`, a build and the Two languages check per story. Not
+   reviewed yet (`reviewedBy` stays empty) by the owner's choice; review continues after they are live.
+2. **Agent: mark adaptations.** An optional, described schema field on a translation (for example `adaptation:
+true`) so the reader never pairs it with the German and readiness stops asking for matching pages; say in the PR
+   which field to mirror in `.pages.yml`. Apply it to the translations of 002, 003, 004 and 009. 007 and 021 hold
+   wrong-language files, which a moderator replaces.
+3. **Owner and agent: feedback round with the five families.** Owner: set `PUBLIC_FEEDBACK_EMAIL`. Agent: prefill the
+   feedback mail with three short questions (did the child finish, what did they like, what was hard) in the story's
+   language. Owner: a short check-in with each family about two weeks after the batch is live: which stories, which
+   language, which device, what was hard, what they would want next. In the same visit, try "Read it in my voice" on a real tablet and the first-tap labels with the device voices in `ar`, `tr` and `ur`.
+4. **Agent: machine drafts for moderators.** On the review sheet (`/preview/review/`), a suggested `summary`,
+   `keyMessage`, alt text, `feelings` and page breaks per story and language, marked as drafts, kept outside the
+   story files and copied into the CMS by a moderator who accepts them. `feelings` unlocks Find by feeling.
+5. **Agent: polish for the five families,** led by the feedback from step 3. Candidates now: Library performance
+   (Lighthouse mobile 72 in Run 3, Chromium is now available to re-measure), the drafts left out of step 1 once their
+   translations line up, and the remaining items under step 9.
+6. **Owner, CMS mirror.** The repo's check rejects any frontmatter key that is not a `.pages.yml` form field. Mirror
+   the `characters` collection and `cast` (snippets in PR 70), `feelings`, `editorsPick`, `situations`, `glossary`,
+   `thinkCards`, and the adaptation field from step 2. Add top-level `reviewedBy`/`reviewedAt` to the German form and
+   set the `CMS_URL` repository variable so the moderators' guide links the CMS.
+7. **Owner, release and content.** Push the tags above; decide on `PUBLIC_OFFLINE=1` (needs a trial on real kita
+   Wi-Fi). Listen to Bruno's pages 1-2 against `01.m4a`/`02.m4a`; run the Arabic and Urdu listening check (`ux/07`
+   #19); native read of `review-queue.json`; supply a band 3-4 story; rewrite the About page. Build the story
+   pipeline from pack v3.1 (Mode 2, "paste approved text", first).
 8. **Once the data exists:** Find by feeling and the faces row (needs `feelings`), Library feeling and format filters, Klasse hint, language default from `navigator.languages`, skeleton loading states; chapter reader depth (paginated columns, Listen, think cards, glosses, second-language tools, add-to-list, Literata) and "Read it in my voice" for bands 3-4.
-9. **Later:** Library performance (measure first), responsive images once the art pipeline exists, Class room, print and offline depth (narration toggle, per-page prompts, discussion card `D`, Letter paper, detail switch, "Keep on this device"), recall and feeling talk cards, Lamp shelf and door, "Listen in the dark", an in-app "Less motion" switch, `skills` into `story-meta`, remember the language pair per story.
+9. **Later:** responsive images once the art pipeline exists, Class room, print and offline depth (narration toggle, per-page prompts, discussion card `D`, Letter paper, detail switch, "Keep on this device"), recall and feeling talk cards, Lamp shelf and door, "Listen in the dark", an in-app "Less motion" switch, `skills` into `story-meta`, remember the language pair per story.
