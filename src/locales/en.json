@@ -51,6 +51,7 @@
   "forGrownUps": "For grown-ups",
   "noRecordedVoice": "No recorded voice yet",
   "betterVoiceHint": "The device voice may misread words. It usually sounds clearer in Microsoft Edge on a computer, or on an iPad with an enhanced voice downloaded in the Accessibility settings.",
+  "ownVersion": "This language tells its own version of the story, not a translation of the German one.",
   "talkPrompts": "Talk prompts",
   "pageOf": "Page {n} of {total}",
   "backLabel": "Back",

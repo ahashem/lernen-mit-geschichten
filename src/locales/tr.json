@@ -51,6 +51,7 @@
   "forGrownUps": "Yetişkinler için",
   "noRecordedVoice": "Henüz kayıtlı ses yok",
   "betterVoiceHint": "Cihazın sesi bazı kelimeleri yanlış okuyabilir. Bilgisayarda Microsoft Edge’de ya da Erişilebilirlik ayarlarından gelişmiş bir ses indirilmiş bir iPad’de genellikle daha net duyulur.",
+  "ownVersion": "Bu dil, hikâyenin Almanca metninin çevirisini değil, kendi versiyonunu anlatıyor.",
   "talkPrompts": "Konuşma soruları",
   "pageOf": "Sayfa {n} / {total}",
   "backLabel": "Geri",

@@ -212,7 +212,8 @@
     "backToShelf",
     "betterVoiceHint",
     "privacyVoiceTitle",
-    "privacyVoice"
+    "privacyVoice",
+    "ownVersion"
   ],
   "tr": [
     "skipToContent",
@@ -427,7 +428,8 @@
     "backToShelf",
     "betterVoiceHint",
     "privacyVoiceTitle",
-    "privacyVoice"
+    "privacyVoice",
+    "ownVersion"
   ],
   "ur": [
     "skipToContent",
@@ -642,6 +644,7 @@
     "backToShelf",
     "betterVoiceHint",
     "privacyVoiceTitle",
-    "privacyVoice"
+    "privacyVoice",
+    "ownVersion"
   ]
 }
