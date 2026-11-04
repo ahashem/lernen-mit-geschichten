@@ -1,6 +1,6 @@
 ---
 storyId: "023-lina-spiegel"
-status: draft
+status: published
 title: "Lina and the Singing Mirror"
 keyMessage: "Sometimes there’s no applause or candy as a reward. But if you tell yourself: “I am strong, I can do it, I’ll try again!”, your inner strength grows – and that feels even better than chocolate. 🍫💪"
 questions:

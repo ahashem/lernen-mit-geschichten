@@ -1,6 +1,6 @@
 ---
 storyId: "024-lina-bruecke"
-status: draft
+status: published
 title: "Lina and the Missing Bridge"
 keyMessage: "Sometimes the first solution is not the best. But when we think creatively, we can find new, funny, and surprising ways to solve problems."
 questions:

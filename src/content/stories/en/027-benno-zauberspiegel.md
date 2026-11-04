@@ -1,6 +1,6 @@
 ---
 storyId: "027-benno-zauberspiegel"
-status: draft
+status: published
 title: "The Story of Benno and the Magic Mirror"
 questions:
   - id: "q1"

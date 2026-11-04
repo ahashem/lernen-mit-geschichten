@@ -1,6 +1,6 @@
 ---
 storyId: "026-timo-schildkroete"
-status: draft
+status: published
 title: "Die Geschichte von Timo, der kleine Schildkröte"
 emoji: "🐢"
 skills: ["self-confidence"]

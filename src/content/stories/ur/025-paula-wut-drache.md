@@ -1,6 +1,6 @@
 ---
 storyId: "025-paula-wut-drache"
-status: draft
+status: published
 title: "پاؤلا اور چھوٹا غصے والا اژدہا"
 questions:
   - id: "q1"

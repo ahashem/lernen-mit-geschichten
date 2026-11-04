@@ -1,6 +1,6 @@
 ---
 storyId: "026-timo-schildkroete"
-status: draft
+status: published
 title: "چھوٹے کچھوے تیمو کی کہانی"
 keyMessage: "ہر بچہ خاص ہے۔ سب سے تیز، سب سے طاقتور یا سب سے شور مچانے والا ہونا ضروری نہیں۔ اصل چیز یہ ہے کہ اپنے آپ پر یقین رکھو اور اپنے آپ پر فخر کرو۔"
 questions:

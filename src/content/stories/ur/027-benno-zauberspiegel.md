@@ -1,6 +1,6 @@
 ---
 storyId: "027-benno-zauberspiegel"
-status: draft
+status: published
 title: "بینّو اور جادوئی آئینہ"
 questions:
   - id: "q1"

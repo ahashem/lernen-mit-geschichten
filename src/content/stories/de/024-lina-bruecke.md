@@ -1,6 +1,6 @@
 ---
 storyId: "024-lina-bruecke"
-status: draft
+status: published
 title: "Lina und die verschwundene Brücke"
 emoji: "🐴"
 skills: ["creative-thinking"]

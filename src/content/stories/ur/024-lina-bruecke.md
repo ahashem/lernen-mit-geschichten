@@ -1,6 +1,6 @@
 ---
 storyId: "024-lina-bruecke"
-status: draft
+status: published
 title: "لینا اور گمشدہ پل"
 keyMessage: "کبھی کبھی پہلا حل بہترین نہیں ہوتا۔ لیکن اگر ہم تخلیقی سوچیں تو مسائل کو حل کرنے کے لیے نئے، دلچسپ اور حیران کن طریقے تلاش کر سکتے ہیں۔"
 questions:

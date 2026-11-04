@@ -1,6 +1,6 @@
 ---
 storyId: "024-lina-bruecke"
-status: draft
+status: published
 title: "Lina ve Kayıp Köprü"
 keyMessage: "Bazen ilk çözüm en iyisi değildir. Ama yaratıcı düşündüğümüzde, sorunları çözmek için yeni, eğlenceli ve şaşırtıcı yollar bulabiliriz."
 questions:
