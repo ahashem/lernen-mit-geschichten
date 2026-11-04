@@ -5,6 +5,7 @@ storyId: "002-fritz"
 publishDate: 2024-01-15
 difficulty: "beginner"
 status: published
+adaptation: true
 questions:
   - id: q1
     text: Fritzchen bir ağacın altında oturup muz yemiş.
