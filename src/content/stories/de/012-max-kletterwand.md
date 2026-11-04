@@ -1,6 +1,6 @@
 ---
 storyId: "012-max-kletterwand"
-status: draft
+status: published
 title: "Max und die große Kletterwand"
 emoji: "🧗"
 skills: ["asking-for-help"]

@@ -1,6 +1,6 @@
 ---
 storyId: "039-fritzi-huegel"
-status: draft
+status: published
 title: "Fritzi ve Tepe’nin Hikâyesi"
 keyMessage: "Çocuklar öğrenir ki hatalar normaldir, bazen komik bile olabilir, ve her başarısızlık yeni bir şey öğrenmek için fırsattır."
 questions:

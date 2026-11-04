@@ -1,6 +1,6 @@
 ---
 storyId: "012-max-kletterwand"
-status: draft
+status: published
 title: "ماكس والجِدار الكبير للتَّسَلُّق"
 questions:
   - id: "q1"

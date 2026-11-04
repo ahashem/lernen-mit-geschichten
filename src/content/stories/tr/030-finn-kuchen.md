@@ -1,6 +1,6 @@
 ---
 storyId: "030-finn-kuchen"
-status: draft
+status: published
 title: "Finn ve Uçan Pasta Hikâyesi"
 keyMessage: "Hata yaptığında dürüst olmak ve sorumluluk almak en iyisidir. Bu seni güçlü kılar – ve çoğu zaman hayatın sonunda hâlâ küçük bir “pasta dilimi” vardır."
 questions:

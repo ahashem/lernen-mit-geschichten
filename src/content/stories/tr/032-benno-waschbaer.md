@@ -1,6 +1,6 @@
 ---
 storyId: "032-benno-waschbaer"
-status: draft
+status: published
 title: "Benno’nun Hikâyesi: Meraklı Rakun"
 questions:
   - id: "q1"

@@ -1,6 +1,6 @@
 ---
 storyId: "012-max-kletterwand"
-status: draft
+status: published
 title: "Max and the Big Climbing Wall"
 questions:
   - id: "q1"

@@ -1,6 +1,6 @@
 ---
 storyId: "037-timo-zahnputz"
-status: draft
+status: published
 title: "Timo und der lustige Zahnputz-Wecker"
 emoji: "🪥"
 skills: ["routines", "self-discipline"]

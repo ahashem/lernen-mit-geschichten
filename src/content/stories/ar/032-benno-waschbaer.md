@@ -1,6 +1,6 @@
 ---
 storyId: "032-benno-waschbaer"
-status: draft
+status: published
 title: "قِصَّةُ بِنُّو، الرَّاكُونِ الْفُضُولِيِّ"
 questions:
   - id: "q1"

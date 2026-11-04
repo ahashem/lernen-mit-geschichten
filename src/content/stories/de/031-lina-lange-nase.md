@@ -1,6 +1,6 @@
 ---
 storyId: "031-lina-lange-nase"
-status: draft
+status: published
 title: "Linas Lange Nase"
 emoji: "🐭"
 skills: ["self-discipline", "anger-management", "emotional-regulation"]

@@ -1,6 +1,6 @@
 ---
 storyId: "036-benno-stop-knopf"
-status: draft
+status: published
 title: "The Story of Benno and the Magic Stop Button"
 keyMessage: "The Magic Stop Button wasn’t a real button. It was in his heart – and everyone could have one."
 questions:

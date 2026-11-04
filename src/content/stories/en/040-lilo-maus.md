@@ -1,6 +1,6 @@
 ---
 storyId: "040-lilo-maus"
-status: draft
+status: published
 title: "The Story of Lilo the Mouse"
 keyMessage: "Humor helps us make conflicts smaller and reduce stress. A funny thought or a good joke can bring friends back together."
 questions:
