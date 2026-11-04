@@ -1,6 +1,6 @@
 ---
 storyId: "025-paula-wut-drache"
-status: draft
+status: published
 title: "Paula and the Little Anger Dragon"
 questions:
   - id: "q1"

@@ -1,6 +1,6 @@
 ---
 storyId: "026-timo-schildkroete"
-status: draft
+status: published
 title: "The Story of Timo, the Little Turtle"
 keyMessage: "Every child is special. You don’t need to be the fastest, the strongest, or the loudest. What matters is to believe in yourself and be proud of who you are."
 questions:

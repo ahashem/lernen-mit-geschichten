@@ -1,6 +1,6 @@
 ---
 storyId: "027-benno-zauberspiegel"
-status: draft
+status: published
 title: "قِصَّةُ بِنُّو وَالْمِرْآةِ السِّحْرِيَّةِ"
 questions:
   - id: "q1"

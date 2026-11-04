@@ -1,6 +1,6 @@
 ---
 storyId: "025-paula-wut-drache"
-status: draft
+status: published
 title: "Paula und der kleine Wut-Drache"
 emoji: "🐉"
 skills: ["anger-management"]
