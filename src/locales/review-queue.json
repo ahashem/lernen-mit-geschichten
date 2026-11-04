@@ -209,7 +209,10 @@
     "colourIt",
     "thinkAboutIt",
     "activity",
-    "backToShelf"
+    "backToShelf",
+    "betterVoiceHint",
+    "privacyVoiceTitle",
+    "privacyVoice"
   ],
   "tr": [
     "skipToContent",
@@ -421,7 +424,10 @@
     "colourIt",
     "thinkAboutIt",
     "activity",
-    "backToShelf"
+    "backToShelf",
+    "betterVoiceHint",
+    "privacyVoiceTitle",
+    "privacyVoice"
   ],
   "ur": [
     "skipToContent",
@@ -633,6 +639,9 @@
     "colourIt",
     "thinkAboutIt",
     "activity",
-    "backToShelf"
+    "backToShelf",
+    "betterVoiceHint",
+    "privacyVoiceTitle",
+    "privacyVoice"
   ]
 }
