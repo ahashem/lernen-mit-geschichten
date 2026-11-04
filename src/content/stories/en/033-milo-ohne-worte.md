@@ -1,6 +1,6 @@
 ---
 storyId: "033-milo-ohne-worte"
-status: draft
+status: published
 title: "Milo and the Language Without Words"
 keyMessage: "And all the animals learned: You don’t always need words to understand each other. Sometimes a look, a smile, or a simple movement is enough. And Milo said proudly: “The language without words is the funniest language in the world!” 🐒✨"
 questions:

@@ -1,6 +1,6 @@
 ---
 storyId: "036-benno-stop-knopf"
-status: draft
+status: published
 title: "بینو اور جادوئی رُکنے والا بٹن"
 keyMessage: "جادوئی رُکنے والا بٹن کوئی اصل بٹن نہیں تھا۔ وہ تو اُس کے دل میں تھا – اور ہر کسی کے پاس ہو سکتا تھا۔"
 questions:

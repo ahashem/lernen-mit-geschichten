@@ -1,6 +1,6 @@
 ---
 storyId: "031-lina-lange-nase"
-status: draft
+status: published
 title: "“Lina’nın Uzun Burnu”"
 keyMessage: "Hikâyenin Mesajı Bazen öfkeli hissederiz ya da bir şeylerin adil olmadığını düşünürüz. Ama derin bir nefes alıp üçe kadar sayarsak ve biraz beklersek, duygularımızı kontrol edebiliriz – tıpkı Lina’nın “uzun burnu” ile yaptığı gibi."
 questions:
