@@ -1,6 +1,6 @@
 ---
 storyId: "038-tilda-schildkroete"
-status: draft
+status: published
 title: "Tilda the Little Turtle"
 keyMessage: "Everyone is different – and that’s good. You can practice and get better without feeling bad. Sometimes strengths are hidden where you don’t expect them."
 questions:

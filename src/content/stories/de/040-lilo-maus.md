@@ -1,6 +1,6 @@
 ---
 storyId: "040-lilo-maus"
-status: draft
+status: published
 title: "Die Geschichte von Lilo der Maus"
 emoji: "🐭"
 skills: ["humor", "problem-solving"]

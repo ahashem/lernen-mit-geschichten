@@ -1,6 +1,6 @@
 ---
 storyId: "038-tilda-schildkroete"
-status: draft
+status: published
 title: "Tilda die kleine Schildkröte"
 emoji: "✨"
 skills: ["self-acceptance"]

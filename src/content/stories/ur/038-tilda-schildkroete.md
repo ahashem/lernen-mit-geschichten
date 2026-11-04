@@ -1,6 +1,6 @@
 ---
 storyId: "038-tilda-schildkroete"
-status: draft
+status: published
 title: "چھوٹی کچھوے ٹلڈا"
 keyMessage: "ہر شخص مختلف ہے – اور یہ اچھی بات ہے۔ بغیر برا محسوس کیے محنت کر سکتے ہیں اور بہتر بن سکتے ہیں۔ کبھی کبھی طاقتیں وہاں چھپی ہوتی ہیں جہاں ہم توقع نہیں کرتے۔"
 questions:
