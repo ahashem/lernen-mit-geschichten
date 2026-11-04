@@ -1,0 +1,18 @@
+# Machine drafts for moderators (owner decision 2026-11-04, docs/roadmap/08-workstreams.md Next step 4).
+# Not read by the site. Shown on the review sheet only while the story file lacks the field; a moderator
+# checks a draft, edits it if needed and copies it into the CMS, which then replaces the draft.
+# Source: the story's reviewed German summary or key message, retold in each language with its own names.
+storyId: 032-benno-waschbaer
+drafted: '2026-11-04'
+en:
+  summary: 'Benno, a curious raccoon, wants to try everything without thinking – until he learns: first watch, then think, then act. And he catches his first fish.'
+  keyMessage: Mistakes are part of learning – if you learn from them, you get wiser.
+ar:
+  summary: 'يريد الراكون الفضولي بِنّو أن يجرّب كلّ شيء من دون تفكير، إلى أن يتعلّم: أوّلًا أراقب، ثم أفكّر، ثم أتصرّف. فيصطاد أوّل سمكة له.'
+  keyMessage: الأخطاء جزء من التعلّم، ومن يتعلّم منها يصبح أذكى.
+tr:
+  summary: 'Meraklı rakun Benno her şeyi düşünmeden denemek ister – ta ki şunu öğrenene kadar: önce gözle, sonra düşün, sonra harekete geç. Ve ilk balığını yakalar.'
+  keyMessage: Hatalar öğrenmenin bir parçasıdır – onlardan ders alan daha akıllı olur.
+ur:
+  summary: 'تجسّس پسند رَکُون بینّو ہر چیز بغیر سوچے آزمانا چاہتا ہے – یہاں تک کہ وہ سیکھتا ہے: پہلے دیکھو، پھر سوچو، پھر کرو۔ اور وہ اپنی پہلی مچھلی پکڑ لیتا ہے۔'
+  keyMessage: غلطیاں سیکھنے کا حصہ ہیں – جو ان سے سیکھتا ہے وہ زیادہ سمجھدار بنتا ہے۔

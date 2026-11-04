@@ -1,0 +1,12 @@
+# Machine drafts for moderators (owner decision 2026-11-04, docs/roadmap/08-workstreams.md Next step 4).
+# Not read by the site. Shown on the review sheet only while the story file lacks the field; a moderator
+# checks a draft, edits it if needed and copies it into the CMS, which then replaces the draft.
+# Source: the story's reviewed German summary or key message, retold in each language with its own names.
+storyId: 012-max-kletterwand
+drafted: '2026-11-04'
+en:
+  summary: Max gets stuck on the big climbing wall and cannot go on alone. He calls out for help and learns that accepting help is strong.
+  keyMessage: Asking for help is not a weakness – it is a brave step towards your goal.
+ar:
+  summary: يعلق ماكس على جدار التسلّق الكبير ولا يستطيع أن يكمل وحده. فينادي طالبًا المساعدة، ويتعلّم أنّ قبول المساعدة قوّة.
+  keyMessage: طلب المساعدة ليس ضعفًا، بل خطوة شجاعة نحو الهدف.

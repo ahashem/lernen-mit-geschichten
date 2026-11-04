@@ -290,7 +290,7 @@ Worked back from the outcome: more stories live in more languages, then polish f
    from 14 to 30 German stories and Arabic from 9 to about 25. Set `status: published` and nothing else; leave the
    others as drafts; a few stories per PR; `npm run quality`, a build and the Two languages check per story. Not
    reviewed yet (`reviewedBy` stays empty) by the owner's choice; review continues after they are live.
-2. **Agent: mark adaptations.** An optional, described schema field on a translation (for example `adaptation:
+2. **Done (PRs 139, 141): mark adaptations.** An optional, described schema field on a translation (for example `adaptation:
 true`) so the reader never pairs it with the German and readiness stops asking for matching pages; say in the PR
    which field to mirror in `.pages.yml`. Apply it to the translations of 002, 003, 004 and 009. 007 and 021 hold
    wrong-language files, which a moderator replaces.
@@ -301,6 +301,9 @@ true`) so the reader never pairs it with the German and readiness stops asking f
 4. **Agent: machine drafts for moderators.** On the review sheet (`/preview/review/`), a suggested `summary`,
    `keyMessage`, alt text, `feelings` and page breaks per story and language, marked as drafts, kept outside the
    story files and copied into the CMS by a moderator who accepts them. `feelings` unlocks Find by feeling.
+   Started 2026-11-04: `drafts/<storyId>.yaml` holds 60 summaries and 14 key messages for the translations of the 16
+   stories published that day, translated from their reviewed German text; the review sheet shows each with a copy
+   button until the field is filled. Next: alt text, `feelings` and page breaks.
 5. **Agent: polish for the five families,** led by the feedback from step 3. Candidates now: Library performance
    (Lighthouse mobile 72 in Run 3, Chromium is now available to re-measure), the drafts left out of step 1 once their
    translations line up, and the remaining items under step 9.

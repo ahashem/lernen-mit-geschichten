@@ -1,0 +1,14 @@
+# Machine drafts for moderators (owner decision 2026-11-04, docs/roadmap/08-workstreams.md Next step 4).
+# Not read by the site. Shown on the review sheet only while the story file lacks the field; a moderator
+# checks a draft, edits it if needed and copies it into the CMS, which then replaces the draft.
+# Source: the story's reviewed German summary or key message, retold in each language with its own names.
+storyId: 030-finn-kuchen
+drafted: '2026-11-04'
+en:
+  summary: Finn cannot resist and secretly cuts a piece of the cake. When everything goes wrong, he learns to be honest and take responsibility.
+ar:
+  summary: لا يستطيع فِنّ أن يقاوم، فيقطع خلسةً قطعة من الكعكة. وعندما يسوء كلّ شيء، يتعلّم أن يكون صادقًا وأن يتحمّل المسؤولية.
+tr:
+  summary: Finn dayanamaz ve gizlice pastadan bir dilim keser. Her şey ters gidince dürüst olmayı ve sorumluluk almayı öğrenir.
+ur:
+  summary: فن خود کو روک نہیں پاتا اور چپکے سے کیک کا ایک ٹکڑا کاٹ لیتا ہے۔ جب سب کچھ الٹا ہو جاتا ہے تو وہ سچ بولنا اور ذمہ داری لینا سیکھتا ہے۔
