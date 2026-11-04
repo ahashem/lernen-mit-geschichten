@@ -89,6 +89,8 @@ He sat down on the ground and said:
 
 "My tummy feels strange. I think I am scared."
 
+---
+
 Mila flew to him and said:
 
 "Good that you noticed, Bruno! When you know what you feel, it's easier to handle it."
@@ -109,11 +111,15 @@ Bruno thought for a moment and said:
 
 They both laughed.
 
+---
+
 In the evening, when the sun went down, Bruno said softly:
 
 "Now I feel happy. I learned:
 
 When I know my feelings, I can better decide what to do."
+
+---
 
 Mila winked and said:
 
