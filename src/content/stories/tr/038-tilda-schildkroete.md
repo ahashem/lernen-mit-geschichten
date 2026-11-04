@@ -1,6 +1,6 @@
 ---
 storyId: "038-tilda-schildkroete"
-status: draft
+status: published
 title: "Küçük Kaplumbağa Tilda"
 keyMessage: "Herkes farklıdır – ve bu güzeldir. Kötü hissetmeden çalışabilir ve daha iyi olabilirsin. Bazen güçlü yönler hiç beklemediğin yerde gizlidir."
 questions:

@@ -1,6 +1,6 @@
 ---
 storyId: "039-fritzi-huegel"
-status: draft
+status: published
 title: "The Story of Fritzi and the Hill"
 keyMessage: "Children learn that mistakes are normal, can even be funny, and that every failed attempt is a chance to learn something new."
 questions:

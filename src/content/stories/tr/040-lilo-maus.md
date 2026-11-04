@@ -1,6 +1,6 @@
 ---
 storyId: "040-lilo-maus"
-status: draft
+status: published
 title: "Lilo Fare’nin Hikâyesi"
 keyMessage: "Mizah, tartışmaları küçültmeye ve stresi azaltmaya yardımcı olur. Komik bir düşünce ya da güzel bir şaka, arkadaşları yeniden bir araya getirebilir."
 questions:

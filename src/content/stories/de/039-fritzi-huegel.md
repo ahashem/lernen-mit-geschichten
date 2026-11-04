@@ -1,6 +1,6 @@
 ---
 storyId: "039-fritzi-huegel"
-status: draft
+status: published
 title: "Die Geschichte von Fritzi und dem Hügel"
 emoji: "🛴"
 skills: ["persistence", "learning-from-mistakes"]

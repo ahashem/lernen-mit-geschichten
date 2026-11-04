@@ -1,6 +1,6 @@
 ---
 storyId: "039-fritzi-huegel"
-status: draft
+status: published
 title: "فریٹزی اور پہاڑی کی کہانی"
 keyMessage: "بچے سیکھتے ہیں کہ غلطیاں عام بات ہیں، کبھی کبھار مزاحیہ بھی ہو سکتی ہیں، اور ہر ناکامی سیکھنے کا ایک نیا موقع ہے۔"
 questions:
