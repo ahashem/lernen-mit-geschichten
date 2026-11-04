@@ -1,0 +1,14 @@
+# Machine drafts for moderators (owner decision 2026-11-04, docs/roadmap/08-workstreams.md Next step 4).
+# Not read by the site. Shown on the review sheet only while the story file lacks the field; a moderator
+# checks a draft, edits it if needed and copies it into the CMS, which then replaces the draft.
+# Source: the story's reviewed German summary or key message, retold in each language with its own names.
+storyId: 036-benno-stop-knopf
+drafted: '2026-11-04'
+en:
+  summary: Whenever Benno got angry or impatient, he reacted straight away – until he found the magic stop button and first thought “Wait a moment”.
+ar:
+  summary: 'كلّما غضب بلال أو نفد صبره، كان يتصرّف فورًا، إلى أن اكتشف زرّ الإيقاف السحري وصار يقول لنفسه أوّلًا: «انتظر قليلًا».'
+tr:
+  summary: Benno ne zaman kızsa ya da sabırsızlansa hemen tepki verirdi – ta ki sihirli durdurma düğmesini keşfedip önce “Bir dakika” diye düşünene kadar.
+ur:
+  summary: 'جب بھی بینو کو غصہ آتا یا وہ بے صبر ہوتا، وہ فوراً ردِعمل دیتا – یہاں تک کہ اُس نے جادوئی رُکنے والا بٹن محسوس کیا اور پہلے سوچا: “ذرا رُکو”۔'

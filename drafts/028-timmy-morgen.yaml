@@ -1,0 +1,10 @@
+# Machine drafts for moderators (owner decision 2026-11-04, docs/roadmap/08-workstreams.md Next step 4).
+# Not read by the site. Shown on the review sheet only while the story file lacks the field; a moderator
+# checks a draft, edits it if needed and copies it into the CMS, which then replaces the draft.
+# Source: the story's reviewed German summary or key message, retold in each language with its own names.
+storyId: 028-timmy-morgen
+drafted: '2026-11-04'
+en:
+  summary: Timmy, a little bear, keeps forgetting his daily routine. His friend Frieda shows him that a steady routine gives support, like a solid tower.
+tr:
+  summary: Küçük ayı Timmy günlük rutinini sürekli unutur. Arkadaşı Frieda ona, düzenli bir günlük rutinin sağlam bir kule gibi destek verdiğini gösterir.
