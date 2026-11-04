@@ -49,33 +49,40 @@ questions:
     type: "truefalse"
     correctAnswer: "true"
 status: published
+keyMessage: "Die Kinder lernen spielerisch, dass Nachdenken über mögliche Folgen zu klügeren und sichereren Entscheidungen führt."
 ---
-
-## Die Geschichte
-
-
 Es war einmal ein kleiner Waschbär namens Timmi.
 Timmi war neugierig, frech und hatte immer viele Ideen. Doch manchmal machte er Dinge, ohne vorher nachzudenken.
 
+---
+
 Eines Tages sah Timmi einen großen Apfelbaum. Die roten Äpfel hingen hoch oben.
 „Oh, die hole ich mir!“, rief Timmi und kletterte los.
+
+---
 
 Doch plötzlich hörte er ein lautes Knacks! – der Ast wackelte gefährlich.
 Seine Freundin, das schlaue Eichhörnchen Lilli, rief:
 „Timmi! Denk doch nach! Was passiert, wenn der Ast bricht?“
 
+---
+
 Timmi hielt kurz inne.
 Er stellte sich vor: Wenn der Ast bricht, falle ich runter. Das tut weh. Und die Äpfel bekomme ich trotzdem nicht.
+
+---
 
 Timmi kletterte vorsichtig zurück und überlegte:
 „Hmm… vielleicht kann ich einen Stock benutzen, um die Äpfel herunterzuschütteln.“
 
 Lilli lachte: „Siehst du? Wenn man vorher denkt, findet man eine bessere Lösung!“
 
+---
+
 Also holte Timmi einen langen Stock. Er stupste vorsichtig – Plopp! – schon fiel ein Apfel herunter.
 Beide lachten und aßen glücklich.
 
+---
+
 Am Ende sagte Timmi stolz:
 „Heute habe ich gelernt: Erst denken, dann handeln!“
-
-✨ Botschaft: Die Kinder lernen spielerisch, dass Nachdenken über mögliche Folgen zu klügeren und sichereren Entscheidungen führt.
