@@ -54,6 +54,7 @@
   "forGrownUps": "Für Erwachsene",
   "noRecordedVoice": "Noch keine aufgenommene Stimme",
   "betterVoiceHint": "Die Gerätestimme kann Wörter falsch lesen. Deutlicher klingt sie meist in Microsoft Edge auf einem Computer oder auf dem iPad mit einer erweiterten Stimme, die Sie in den Bedienungshilfen laden.",
+  "ownVersion": "Diese Sprache erzählt ihre eigene Fassung der Geschichte, keine Übersetzung der deutschen.",
   "talkPrompts": "Gesprächsfragen",
   "pageOf": "Seite {n} von {total}",
   "backLabel": "Zurück",

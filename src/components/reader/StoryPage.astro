@@ -72,6 +72,8 @@ const otherLanguages = siblings.map(s => {
 // Every translation that can be cut into exactly these pages can be read beside this one.
 const aligned: Record<string, BookPage[]> = { [locale]: pages };
 for (const sibling of siblings) {
+  // An adaptation tells its own version, so it pairs only with other adaptations of this story, never with the original.
+  if (!!sibling.data.adaptation !== !!story.data.adaptation) continue;
   const loc = sibling.id.split('/')[0] as Locale;
   const other = alignTo({ pages, explicit }, sibling.body ?? '', loc, band, sibling.data.pages);
   if (other) aligned[loc] = other;
@@ -233,6 +235,7 @@ const description = summary || `${title} | ${t('siteName')}`;
                 )
               }
               {!narration && weakDeviceVoice && <p class="meta">{t('betterVoiceHint')}</p>}
+              {story.data.adaptation && <p class="meta">{t('ownVersion')}</p>}
               {
                 prompts.length > 0 && (
                   <>

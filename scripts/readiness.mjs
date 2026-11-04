@@ -137,7 +137,8 @@ export function readiness(root = '.') {
         if (frames.length) {
           need((fm.frameAlts ?? []).length >= frames.length, M('frameAltsLocale', { frames: frames.length, have: (fm.frameAlts ?? []).length }));
         }
-        if (deBook) {
+        // An adaptation tells its own version, so its pages need not line up with the German.
+        if (deBook && !fm.adaptation) {
           const aligned = alignTo(deBook, f.body, locale, band ?? 1, fm.pages);
           if (!aligned) {
             const mine = paginate(f.body, locale, band ?? 1, fm.pages).pages.length;

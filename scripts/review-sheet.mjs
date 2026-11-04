@@ -75,7 +75,7 @@ function storyPage(id, group, lang, up) {
     const own = paginate(f.body, l, band, f.fm.pages).pages;
     const aligned = l === 'de' || !deBook ? own : alignTo(deBook, f.body, l, band, f.fm.pages);
     pagesOf[l] = aligned ?? own;
-    if (!aligned) notes[l] = ui.notAligned(deBook.pages.length, own.length);
+    if (!aligned && !f.fm.adaptation) notes[l] = ui.notAligned(deBook.pages.length, own.length);
   }
   const rows = Math.max(0, ...present.map(l => pagesOf[l].length));
   // Interface words inside a box keep the interface's own direction, so German text in an Arabic box reads right.
