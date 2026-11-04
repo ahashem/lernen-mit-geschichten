@@ -80,21 +80,21 @@ questions:
     correctAnswer: "true"
 keyMessage: Zamanını düzenleyen biri, öğrenmeye, oynamaya ve dinlenmeye her zaman vakit bulur.
 ---
-
-## Hikâye
-
-
 Bir zamanlar, yalnızca bütün gün oynamak isteyen neşeli bir çocuk vardı. Onun adı Timmi idi.
 Oyuncakları her yere dağılmıştı: Yatakta bloklar, masanın altında arabalar ve hatta ayakkabılarının içinde boyama kalemleri vardı!
 
 Bir sabah annesi dedi ki:
 “Timmi, bugün üç önemli şeyin var: öğrenmek 📚, oynamak 🎲 ve dinlenmek 😴. Peki, bunların hepsini nasıl yapacaksın?”
 
+---
+
 Timmi omuzlarını silkti:
 “Hmm… Belki bütün gün oynarım?”
 
 Birdenbire, konuşan peluş kedisi Minka kıkırdadı ve şöyle dedi:
 “Miyav! Bir fikrim var! İşte sana bir sihirli saat. Bu saat zamanını düzenlemene yardım edecek.”
+
+---
 
 Sihirli saat tik-tak, tik-tak diye ses çıkardı ve parlak renkler gösterdi:
 
@@ -104,13 +104,19 @@ Sarı oynamak için 🎲
 
 Yeşil dinlenmek için 😴
 
+---
+
 Timmi hemen denedi:
 
 Saat mavi olduğunda oturdu ve alfabeyi çalıştı. Minka komik bir şarkı söyledi: “A, B, C, kanguru gibi dans ederim!” Timmi güldü ama yine de öğrendi.
 
+---
+
 Sonra saat sarıya döndü. Timmi zıpladı, arabaları için kocaman bir yol yaptı ve Minka kahkahalar atarak arabaların üstünde kaydı.
 
 Daha sonra saat yeşil oldu. Timmi kanepeye uzandı, gözlerini kapadı ve Minka motor gibi mırıldandı.
+
+---
 
 Akşam olduğunda Timmi çok mutluydu.
 “Vay canına! Öğrendim, oynadım ve dinlendim – hepsini yaptım!” dedi gururla.

@@ -81,20 +81,21 @@ questions:
       - "Wer viel schläft, braucht nichts zu lernen"
     correctAnswer: "Wer seine Zeit gut teilt, schafft alles"
 status: published
+keyMessage: "Wenn man seine Zeit einteilt, bleibt Platz für alles: Lernen, Spielen und Ausruhen."
 ---
-
-## Die Geschichte
-
-
 Es war einmal ein fröhlicher Junge namens Timmi, der den ganzen Tag nur spielen wollte.
 Seine Spielsachen lagen überall im Zimmer – die Bauklötze auf dem Bett, die Autos unter dem Tisch und die Malstifte sogar in den Schuhen!
 
 Eines Morgens sagte Mama:
 „Timmi, du hast heute drei wichtige Dinge: Lernen, Spielen und Ausruhen. Aber wie schaffst du das alles?“
 
+---
+
 Timmi zuckte mit den Schultern: „Äh… vielleicht spiele ich einfach den ganzen Tag?“
 Da kicherte plötzlich seine sprechende Kuscheltierkatze Minka:
 „Miau! Ich habe eine Idee! Hier ist eine Zauberuhr. Sie hilft dir, deine Zeit zu teilen.“
+
+---
 
 Die Zauberuhr machte tick-tack und zeigte bunte Farben:
 
@@ -104,13 +105,19 @@ Gelb für Spielen 🎲
 
 Grün für Ausruhen 😴
 
+---
+
 Timmi probierte es aus:
 
 Als die Uhr blau leuchtete, setzte er sich hin und übte das ABC. Minka sang dabei ein schräges Lied: „Aaa, Bee, Cee, ich tanze wie ein Känguru!“ Timmi musste lachen, aber er lernte trotzdem.
 
+---
+
 Dann wurde die Uhr gelb. Timmi sprang sofort los, baute eine Riesen-Autobahn und Minka rutschte kichernd mit den Autos mit.
 
 Später wurde die Uhr grün. Timmi legte sich aufs Sofa, schloss die Augen und Minka schnurrte wie ein Motorboot.
+
+---
 
 Am Abend war Timmi glücklich.
 „Wow, ich habe gelernt, gespielt und ausgeruht – alles geschafft!“, rief er stolz.
@@ -118,6 +125,3 @@ Am Abend war Timmi glücklich.
 Minka grinste: „Miau, wer seine Zeit gut teilt, hat immer genug für Spaß und Träume!“
 
 Und so schlief Timmi zufrieden ein – mit der Zauberuhr neben seinem Bett.
-
-✨ Botschaft für Kinder:
-Wenn man seine Zeit einteilt, bleibt Platz für alles: Lernen, Spielen und Ausruhen.

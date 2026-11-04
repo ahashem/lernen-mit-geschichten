@@ -80,21 +80,21 @@ questions:
     correctAnswer: "true"
 keyMessage: "When you organize your time, you always have space for everything: learning, playing, and resting."
 ---
-
-## The Story
-
-
 Once upon a time, there was a cheerful boy named Timmy who only wanted to play all day long.
 His toys were scattered everywhere: the building blocks on the bed, the cars under the table, and even the coloring pencils inside his shoes!
 
 One morning, his mother said:
 “Timmy, today you have three important things to do: learning 📚, playing 🎲, and resting 😴. But how will you manage all of them?”
 
+---
+
 Timmy shrugged his shoulders:
 “Hmm… maybe I’ll just play all day?”
 
 Suddenly, his talking stuffed cat Minka giggled and said:
 “Meow! I have an idea! Here is a magic clock. It will help you organize your time.”
+
+---
 
 The magic clock went tick-tock, tick-tock and showed bright colors:
 
@@ -104,13 +104,19 @@ Yellow for playing 🎲
 
 Green for resting 😴
 
+---
+
 Timmy tried it out:
 
 When the clock turned blue, he sat down and practiced the alphabet. Minka sang a funny song: “A, B, C, I dance like a kangaroo!” Timmy laughed, but he still learned.
 
+---
+
 Then the clock turned yellow. Timmy jumped up, built a giant road for his cars, and Minka slid along laughing.
 
 Later, the clock turned green. Timmy lay down on the sofa, closed his eyes, and Minka purred like a little motorboat.
+
+---
 
 In the evening, Timmy was very happy.
 “Wow! I learned, I played, and I rested – I did everything!” he said proudly.
