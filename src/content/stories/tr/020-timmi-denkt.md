@@ -48,30 +48,38 @@ questions:
     correctAnswer: Çünkü bu şekilde daha iyi ve daha güvenli kararlar veririz.
 keyMessage: Çocuklar, bir şey yapmadan önce sonuçlarını düşünmenin daha akıllıca ve güvenli kararlar verdiğini öğrenirler.
 ---
-
-## Hikâye
-
-
 Bir zamanlar Timmi adında küçük bir rakun varmış.
 Timmi çok meraklı, oyunbaz ve hep yeni fikirlerle doluymuş. Ama bazen bir şeyleri düşünmeden yaparmış.
 
+---
+
 Bir gün Timmi büyük bir elma ağacı görmüş. Kırmızı elmalar dalların yukarısında sallanıyormuş.
 “Ah, bu elmaları alacağım!” demiş ve tırmanmaya başlamış.
+
+---
 
 Ama birden ÇAT! diye bir ses duymuş – dal tehlikeli şekilde sallanmış.
 Akıllı sincabı Lilli bağırmış:
 “Timmi! Önce düşün! Dal kırılırsa ne olur?”
 
+---
+
 Timmi biraz durmuş ve hayal etmiş:
 Dal kırılırsa yere düşerim. Bu acıtır. Ve yine de elmaları alamam.
+
+---
 
 Sonra dikkatlice aşağı inmiş ve şöyle düşünmüş:
 “Hmm… Belki de bir sopa kullanarak elmaları düşürebilirim.”
 
 Lilli gülmüş: “Gördün mü? Önce düşünürsen daha iyi bir çözüm bulursun!”
 
+---
+
 Timmi uzun bir sopa bulmuş. Elmaya hafifçe dokunmuş – Plop! – bir elma yere düşmüş.
 İkisi de gülmüş ve mutlulukla yemişler.
+
+---
 
 Sonunda Timmi gururla demiş:
 “Bugün öğrendim: Önce düşün, sonra yap!”
