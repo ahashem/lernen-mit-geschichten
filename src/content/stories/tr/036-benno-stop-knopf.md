@@ -1,6 +1,6 @@
 ---
 storyId: "036-benno-stop-knopf"
-status: draft
+status: published
 title: "Benno ve Sihirli Durdurma Düğmesi"
 keyMessage: "Sihirli Durdurma Düğmesi gerçek bir düğme değildi. Onun kalbindeydi – ve herkesin de olabilirdi."
 questions:

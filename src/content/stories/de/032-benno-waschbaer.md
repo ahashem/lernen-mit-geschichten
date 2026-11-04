@@ -1,6 +1,6 @@
 ---
 storyId: "032-benno-waschbaer"
-status: draft
+status: published
 title: "Die Geschichte von Benno, dem neugierigen Waschbär"
 emoji: "🦝"
 skills: ["learning-from-mistakes", "patience", "critical-thinking"]

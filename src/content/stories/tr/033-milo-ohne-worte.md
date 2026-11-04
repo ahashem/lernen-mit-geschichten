@@ -1,6 +1,6 @@
 ---
 storyId: "033-milo-ohne-worte"
-status: draft
+status: published
 title: "Milo ve Kelimesiz Dil"
 keyMessage: "Ve bütün hayvanlar şunu öğrendi: Birbirimizi anlamak için her zaman kelimelere gerek yoktur. Bazen bir bakış, bir gülümseme ya da basit bir hareket yeterlidir. Milo gururla şöyle dedi: “Kelimesiz dil, dünyanın en eğlenceli dilidir!” 🐒✨"
 questions:

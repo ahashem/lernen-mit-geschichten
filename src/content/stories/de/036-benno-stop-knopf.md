@@ -1,6 +1,6 @@
 ---
 storyId: "036-benno-stop-knopf"
-status: draft
+status: published
 title: "Die Geschichte von Benno und dem Zauber-Stop-Knopf"
 emoji: "🛑"
 skills: ["impulse-control", "emotional-regulation"]

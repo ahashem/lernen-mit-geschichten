@@ -1,6 +1,6 @@
 ---
 storyId: "032-benno-waschbaer"
-status: draft
+status: published
 title: "تجسّس پسند ریچھ نما جانور (رَکُون)"
 questions:
   - id: "q1"

@@ -1,6 +1,6 @@
 ---
 storyId: "030-finn-kuchen"
-status: draft
+status: published
 title: "The Story of Finn and the Flying Cake"
 keyMessage: "When you make a mistake, it’s better to be honest and take responsibility. That makes you strong – and in the end, there’s usually still a “piece of cake” waiting for you in life."
 questions:

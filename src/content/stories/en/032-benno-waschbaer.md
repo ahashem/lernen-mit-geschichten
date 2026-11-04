@@ -1,6 +1,6 @@
 ---
 storyId: "032-benno-waschbaer"
-status: draft
+status: published
 title: "The Story of Benno, the Curious Raccoon"
 questions:
   - id: "q1"

@@ -1,6 +1,6 @@
 ---
 storyId: "030-finn-kuchen"
-status: draft
+status: published
 title: "Die Geschichte von Finn und dem fliegenden Kuchen"
 emoji: "🐾"
 skills: ["responsibility"]

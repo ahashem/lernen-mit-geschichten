@@ -1,6 +1,6 @@
 ---
 storyId: "033-milo-ohne-worte"
-status: draft
+status: published
 title: "Milo und die Sprache ohne Worte"
 emoji: "🐵"
 skills: ["effective-communication", "empathy"]
