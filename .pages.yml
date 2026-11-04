@@ -252,6 +252,12 @@ content:
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
+          name: adaptation,
+          type: boolean,
+          label: Own version (not a translation of the German),
+          required: false,
+        }
+      - {
           name: body,
           type: rich-text,
           label: Story text,
@@ -320,6 +326,12 @@ content:
           label: '{fields.name}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
+      - {
+          name: adaptation,
+          type: boolean,
+          label: Own version (not a translation of the German),
+          required: false,
+        }
       - {
           name: body,
           type: rich-text,
@@ -390,6 +402,12 @@ content:
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
       - {
+          name: adaptation,
+          type: boolean,
+          label: Own version (not a translation of the German),
+          required: false,
+        }
+      - {
           name: body,
           type: rich-text,
           label: Story text,
@@ -458,6 +476,12 @@ content:
           label: '{fields.name}'
       - { name: summary, type: text, label: Summary (1-2 sentences), required: false }
       - { name: keyMessage, type: text, label: The one idea, required: false }
+      - {
+          name: adaptation,
+          type: boolean,
+          label: Own version (not a translation of the German),
+          required: false,
+        }
       - {
           name: body,
           type: rich-text,

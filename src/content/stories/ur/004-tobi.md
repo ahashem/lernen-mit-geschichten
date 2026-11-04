@@ -6,6 +6,7 @@ storyId: "004-tobi"
 publishDate: 2024-01-15
 difficulty: "beginner"
 status: published
+adaptation: true
 questions:
   - id: q1
     text: توبی ایک بڑے شہر میں رہتا ہے۔

@@ -5,6 +5,7 @@ storyId: 002-fritz
 publishDate: 2024-01-15
 difficulty: beginner
 status: published
+adaptation: true
 narration:
   timing: false
 reviewedAt: 2026-10-28
