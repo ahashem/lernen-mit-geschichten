@@ -1,0 +1,14 @@
+# Machine drafts for moderators (owner decision 2026-11-04, docs/roadmap/08-workstreams.md Next step 4).
+# Not read by the site. Shown on the review sheet only while the story file lacks the field; a moderator
+# checks a draft, edits it if needed and copies it into the CMS, which then replaces the draft.
+# Source: the story's reviewed German summary or key message, retold in each language with its own names.
+storyId: 040-lilo-maus
+drafted: '2026-11-04'
+en:
+  summary: Lilo the mouse and her friend Fips argue when their ball falls into a puddle. Laughing about the “swimming tomato” ends the quarrel and shows how humour makes problems smaller.
+ar:
+  summary: تتشاجر الفأرة ليلو وصديقها فيبس عندما تسقط كرتهما في بركة ماء. لكنّ ضحكة على «الطماطم السابحة» تُنهي الخلاف، وتُظهر كيف تجعل روح الدعابة المشكلات أصغر.
+tr:
+  summary: Fare Lilo ile arkadaşı Fips, topları bir su birikintisine düşünce tartışır. “Yüzen domates”e gülmek kavgayı bitirir ve mizahın sorunları nasıl küçülttüğünü gösterir.
+ur:
+  summary: لیلو چوہیا اور اُس کے دوست فِپس کی لڑائی ہو جاتی ہے جب اُن کی گیند پانی کے گڑھے میں گر جاتی ہے۔ “تیرتے ٹماٹر” پر ہنسی لڑائی ختم کر دیتی ہے اور دکھاتی ہے کہ مزاح مسائل کو کیسے چھوٹا کر دیتا ہے۔

@@ -1,0 +1,14 @@
+# Machine drafts for moderators (owner decision 2026-11-04, docs/roadmap/08-workstreams.md Next step 4).
+# Not read by the site. Shown on the review sheet only while the story file lacks the field; a moderator
+# checks a draft, edits it if needed and copies it into the CMS, which then replaces the draft.
+# Source: the story's reviewed German summary or key message, retold in each language with its own names.
+storyId: 031-lina-lange-nase
+drafted: '2026-11-04'
+en:
+  summary: Lina, a little mouse, is given away during hide-and-seek and gets angry – but she counts to three, takes a deep breath and tames her anger.
+ar:
+  summary: تُكشَف الفأرة الصغيرة لينا وهي تلعب الغمّيضة فتغضب، لكنّها تعدّ إلى ثلاثة وتأخذ نفسًا عميقًا وتروّض غضبها.
+tr:
+  summary: Küçük fare Lina saklambaçta ele verilir ve kızar – ama üçe kadar sayar, derin bir nefes alır ve öfkesini yatıştırır.
+ur:
+  summary: چھپن چھپائی کھیلتے ہوئے ننھی چوہیا لِینا کا راز کھل جاتا ہے اور اُسے غصہ آتا ہے – لیکن وہ تین تک گنتی ہے، گہری سانس لیتی ہے اور اپنے غصے پر قابو پا لیتی ہے۔

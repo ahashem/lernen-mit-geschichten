@@ -1,0 +1,14 @@
+# Machine drafts for moderators (owner decision 2026-11-04, docs/roadmap/08-workstreams.md Next step 4).
+# Not read by the site. Shown on the review sheet only while the story file lacks the field; a moderator
+# checks a draft, edits it if needed and copies it into the CMS, which then replaces the draft.
+# Source: the story's reviewed German summary or key message, retold in each language with its own names.
+storyId: 024-lina-bruecke
+drafted: '2026-11-04'
+en:
+  summary: The bridge over the river has disappeared. While the villagers just wait, unsure what to do, Lina builds a raft out of pumpkins and finds a surprising way to the other bank.
+ar:
+  summary: اختفى الجسر الذي يعبر النهر. وبينما ينتظر أهل القرية حائرين، تصنع لينا طَوْفًا من القرع وتجد طريقًا مفاجئًا إلى الضفّة الأخرى.
+tr:
+  summary: Nehrin üzerindeki köprü kaybolmuştur. Köylüler ne yapacaklarını bilemeden beklerken Lina balkabaklarından bir sal yapar ve karşı kıyıya şaşırtıcı bir yol bulur.
+ur:
+  summary: دریا پر بنا پل غائب ہو گیا ہے۔ گاؤں والے پریشان ہو کر بس انتظار کرتے ہیں، مگر لینا کدوؤں سے ایک بیڑا بناتی ہے اور دوسرے کنارے تک پہنچنے کا ایک حیران کن راستہ ڈھونڈ لیتی ہے۔
