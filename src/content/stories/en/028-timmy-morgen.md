@@ -1,6 +1,6 @@
 ---
 storyId: "028-timmy-morgen"
-status: draft
+status: published
 title: "Timmy and the Missing Morning"
 keyMessage: "The daily routine is like the stones that build the tower of stability. Whoever keeps it feels strong and happy."
 questions:

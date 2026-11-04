@@ -1,6 +1,6 @@
 ---
 storyId: "028-timmy-morgen"
-status: draft
+status: published
 title: "Timmy ve Kayıp Sabah"
 keyMessage: "Günlük rutin, istikrar kulesini inşa eden taşlar gibidir. Ona uyan herkes kendini güçlü ve mutlu hisseder."
 questions:
