@@ -189,6 +189,7 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
 
 <script>
   import { loadPrefs, savePrefs, read } from '@components/reader/prefs';
+  import { bestVoice, withoutEmoji } from '@utils/speech';
 
   const root = document.querySelector<HTMLElement>('.home')!;
   const items = JSON.parse(root.dataset.items!);
@@ -222,10 +223,7 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
   // talking, so with no voice for this language nothing changes and the "?" stays hidden.
   const picture = root.querySelector<HTMLElement>('[data-body="picture"]');
   if (picture && typeof speechSynthesis !== 'undefined') {
-    const findVoice = () =>
-      speechSynthesis
-        .getVoices()
-        .find(v => v.lang.toLowerCase().replace('_', '-').split('-')[0] === s.locale) ?? null;
+    const findVoice = () => bestVoice(speechSynthesis.getVoices(), s.locale);
     const tour = picture.querySelector<HTMLButtonElement>('[data-tour]')!;
     let armed: Element | null = null;
     let timer = 0;
@@ -233,7 +231,7 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
     const say = (text: string) => {
       const voice = findVoice();
       if (!voice) return;
-      const u = new SpeechSynthesisUtterance(text);
+      const u = new SpeechSynthesisUtterance(withoutEmoji(text));
       u.voice = voice;
       u.lang = voice.lang;
       speechSynthesis.cancel();

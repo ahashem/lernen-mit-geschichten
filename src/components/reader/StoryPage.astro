@@ -40,6 +40,8 @@ const hasBook = band <= 2 && pages.length > 0;
 // Bands 3-4 read as chapters (the `##` headings); a story without them stays a full text.
 const chapters = band >= 3 ? chapterTitles(story.body ?? '') : [];
 const narration = narrationFor(storyId, locale, pages.length, explicit);
+// Device voices for these scripts often misread vocalised text (ux/07 #19), so grown-ups learn where a better one is.
+const weakDeviceVoice = locale === 'ar' || locale === 'ur';
 const cover = coverOf(meta, locale);
 const minutes = readMinutes(story.body, band);
 const skills = await getSkillsByIds(story.data.skills ?? meta?.skills ?? [], locale);
@@ -230,6 +232,7 @@ const description = summary || `${title} | ${t('siteName')}`;
                   </p>
                 )
               }
+              {!narration && weakDeviceVoice && <p class="meta">{t('betterVoiceHint')}</p>}
               {
                 prompts.length > 0 && (
                   <>
