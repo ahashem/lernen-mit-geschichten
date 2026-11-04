@@ -1,6 +1,6 @@
 ---
 storyId: "028-timmy-morgen"
-status: draft
+status: published
 title: "Timmy und der verschwundene Morgen"
 emoji: "⏰"
 skills: ["routines"]
