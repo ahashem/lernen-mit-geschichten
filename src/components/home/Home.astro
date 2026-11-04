@@ -79,6 +79,9 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
               ))}
             </span>
             <span class="door-label">{t('pictureDoor')}</span>
+            <span class="door-go" aria-hidden="true">
+              <Icon name="next" size={28} />
+            </span>
           </button>
         )
       }
@@ -88,7 +91,9 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
           shelves.map(shelf => (
             <section class="shelf" data-shelf={shelf.band} aria-labelledby={`shelf-${shelf.band}`}>
               <div class="shelf-head">
-                <h2 id={`shelf-${shelf.band}`}>{t(SHELF_KEY[shelf.band])}</h2>
+                <h2 id={`shelf-${shelf.band}`} class="squiggle">
+                  {t(SHELF_KEY[shelf.band])}
+                </h2>
                 <a href={`${library}?shelf=${shelf.band}`}>
                   {t('seeAll')}
                   <span class="visually-hidden"> {t(SHELF_KEY[shelf.band])}</span>
@@ -116,11 +121,13 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
       {
         situations.length > 0 && (
           <section class="situations" aria-labelledby="situations-title">
-            <h2 id="situations-title">{t('findBySituation')}</h2>
+            <h2 id="situations-title" class="squiggle">
+              {t('findBySituation')}
+            </h2>
             <ul class="chips">
               {situations.map(s => (
                 <li>
-                  <a class="chip" href={`${library}?skill=${s.id}`}>
+                  <a class="chip" data-group={s.category} href={`${library}?skill=${s.id}`}>
                     {s.label}
                   </a>
                 </li>
@@ -160,7 +167,9 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
           </section>
 
           <section class="shelf" aria-labelledby="more-title">
-            <h2 id="more-title">{t('moreStories')}</h2>
+            <h2 id="more-title" class="squiggle">
+              {t('moreStories')}
+            </h2>
             <ul class="tiles">
               {more.map(i => (
                 <li>
@@ -312,45 +321,124 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
   .continue-page {
     color: var(--ink-2);
   }
+  /* The door to the picture-book home: a sunny strip with the characters peeking in. */
   .door {
+    position: relative;
     display: flex;
     align-items: center;
     gap: var(--s-4);
     inline-size: 100%;
-    min-block-size: var(--tap-child);
-    padding: var(--s-4);
-    border: 0;
+    min-block-size: 96px;
+    padding: var(--s-4) var(--s-5);
+    border: var(--outline);
     background: var(--honey-tint);
     color: var(--ink);
     font: inherit;
-    font-weight: 700;
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 600;
+    line-height: 1.25;
     text-align: start;
     cursor: pointer;
     margin-block-end: var(--s-6);
+    overflow: hidden;
+    transition:
+      transform var(--dur-base) var(--ease-settle),
+      box-shadow var(--dur-base) var(--ease-out);
+  }
+  .door::before {
+    content: '';
+    position: absolute;
+    inset-block-start: -60px;
+    inset-inline-end: -40px;
+    inline-size: 180px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--sun);
+    opacity: 0.55;
+  }
+  .door > * {
+    position: relative;
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .door:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--e-2);
+    }
+  }
+  .door:active {
+    transform: translate(calc(2px * var(--shadow-x)), 3px);
+    box-shadow: var(--e-press);
   }
   .door-faces {
     display: flex;
-    gap: var(--s-2);
+    flex-shrink: 0;
   }
   .door-face {
     display: grid;
     place-items: center;
+    inline-size: 60px;
+    block-size: 60px;
+    border-radius: var(--r-round);
+    border: var(--outline);
+    background: var(--card);
+    font-size: 32px;
+  }
+  .door-face + .door-face {
+    margin-inline-start: -12px;
+  }
+  .door-face:nth-child(2) {
+    background: var(--poppy-tint);
+  }
+  .door-face:nth-child(3) {
+    background: var(--lagoon-tint);
+  }
+  .door-label {
+    flex: 1;
+  }
+  .door-go {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
     inline-size: 48px;
     block-size: 48px;
     border-radius: var(--r-round);
-    background: var(--card);
-    font-size: 28px;
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  @media (max-width: 599px) {
+    .door {
+      font-size: 1.125rem;
+      padding: var(--s-3) var(--s-4);
+    }
+    .door-face {
+      inline-size: 48px;
+      block-size: 48px;
+      font-size: 26px;
+    }
   }
   .shelves {
     display: grid;
-    gap: var(--s-6);
+    gap: var(--s-7);
   }
   .shelf-head {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
     gap: var(--s-4);
-    margin-block-end: var(--s-3);
+    margin-block-end: var(--s-4);
+  }
+  [data-shelf='1'] h2 {
+    --squiggle: var(--poppy);
+  }
+  [data-shelf='2'] h2 {
+    --squiggle: var(--lagoon);
+  }
+  [data-shelf='3'] h2 {
+    --squiggle: var(--plum);
+  }
+  [data-shelf='4'] h2 {
+    --squiggle: var(--moss);
   }
   .shelf-head a {
     display: inline-flex;
@@ -363,14 +451,15 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
     padding: 0;
     margin: 0;
     display: grid;
-    gap: var(--s-4);
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 9rem), 1fr));
+    gap: var(--s-5);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
   }
   .situations {
-    margin-block-start: var(--s-6);
+    margin-block-start: var(--s-7);
+    --squiggle: var(--honey);
   }
   .situations h2 {
-    margin-block-end: var(--s-3);
+    margin-block-end: var(--s-4);
   }
   .chips {
     list-style: none;
@@ -378,19 +467,48 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
     margin: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: var(--s-2);
+    gap: var(--s-3);
   }
   .chip {
     display: inline-flex;
     align-items: center;
     min-block-size: var(--tap-adult);
     padding: var(--s-1) var(--s-4);
-    border: 2px solid var(--edge);
-    border-radius: var(--r-round);
-    background: var(--card);
+    border: var(--outline);
+    border-radius: var(--r-m);
+    background: var(--chip, var(--card));
     color: var(--ink);
-    font-weight: 600;
+    font-weight: 700;
     text-decoration: none;
+    box-shadow: var(--e-1);
+    transition: transform var(--dur-quick) var(--ease-settle);
+  }
+  .chip:active {
+    transform: translate(calc(2px * var(--shadow-x)), 3px);
+    box-shadow: var(--e-press);
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .chip:hover {
+      transform: translateY(-2px);
+    }
+  }
+  .chip[data-group='self'] {
+    --chip: var(--plum-tint);
+  }
+  .chip[data-group='emotions'] {
+    --chip: var(--poppy-tint);
+  }
+  .chip[data-group='thinking'] {
+    --chip: var(--sky-tint);
+  }
+  .chip[data-group='everyday'] {
+    --chip: var(--honey-tint);
+  }
+  .chip[data-group='social'] {
+    --chip: var(--lagoon-tint);
+  }
+  .chip[data-group='responsibility'] {
+    --chip: var(--moss-tint);
   }
   .hero {
     display: grid;
@@ -400,6 +518,8 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
   .hero-cover {
     position: relative;
     display: block;
+    border: var(--outline);
+    text-decoration: none;
     aspect-ratio: 4 / 3;
     max-inline-size: 36rem;
     border-radius: var(--r-l);
@@ -416,8 +536,9 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
     inline-size: 96px;
     block-size: 96px;
     border-radius: var(--r-round);
-    background: var(--lagoon);
+    background: var(--listen);
     color: var(--on-accent);
+    border: 3px solid var(--card);
     box-shadow: var(--e-1);
   }
   .hero-cover:focus-visible {

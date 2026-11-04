@@ -20,8 +20,45 @@ body {
   font-size: var(--t-ui);
   line-height: var(--lh-ui);
   color: var(--ink);
+  position: relative;
   background: var(--paper);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Paper grain (ux/02): fine monochrome noise multiplied into the page, behind content. */
+body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.6 -.3'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@media (prefers-reduced-transparency: reduce), (forced-colors: active) {
+  body::before {
+    display: none;
+  }
+}
+
+/* A hand-drawn underline in the current ink. Purely decorative, so it is a mask on a pseudo-element. */
+.squiggle::after {
+  content: '';
+  display: block;
+  inline-size: min(5.5em, 100%);
+  block-size: 10px;
+  margin-block-start: var(--s-1);
+  background: var(--squiggle, var(--poppy));
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'%3E%3Cpath d='M2 6c10-5 18-5 28 0s18 5 28 0 18-5 28 0 18 5 28 0' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'%3E%3Cpath d='M2 6c10-5 18-5 28 0s18 5 28 0 18-5 28 0 18 5 28 0' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+}
+@media (forced-colors: active) {
+  .squiggle::after {
+    display: none;
+  }
 }
 
 /* No italics, no uppercase transforms, no letter-spacing on cursive scripts (ux/02 Typography rules). */
@@ -74,6 +111,11 @@ a {
   color: var(--lagoon);
   text-decoration: underline;
   text-underline-offset: 0.2em;
+}
+
+/* Lamp has no blue-green: links are ember, still underlined (ux/02 Semantic roles). */
+:root[data-theme='lamp'] a {
+  color: var(--ink);
 }
 
 img,
@@ -155,8 +197,15 @@ button {
   text-decoration: none;
   box-shadow: var(--e-1);
   transition:
-    transform var(--dur-instant),
-    box-shadow var(--dur-instant);
+    transform var(--dur-quick) var(--ease-settle),
+    box-shadow var(--dur-quick) var(--ease-out);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--e-2);
+  }
 }
 
 .btn:active {
@@ -168,6 +217,8 @@ button {
   background: var(--accent);
   border-color: var(--accent);
   color: var(--on-accent);
+  border-block-end-width: 4px;
+  border-block-end-color: rgb(0 0 0 / 0.22);
 }
 
 .btn--listen {

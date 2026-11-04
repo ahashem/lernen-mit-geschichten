@@ -139,7 +139,16 @@ const jsonLd =
 
     <header>
       <div class="container bar">
-        <a class="wordmark" href={locale === 'de' ? `${base}/` : `${base}/${locale}`}>{siteName}</a>
+        <a class="wordmark" href={locale === 'de' ? `${base}/` : `${base}/${locale}`}>
+          <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+            <circle class="mark-sun" cx="26" cy="13" r="9"></circle>
+            <path
+              class="mark-book"
+              d="M5 14c5-2 10-2 15 1 5-3 10-3 15-1v19c-5-2-10-2-15 1-5-3-10-3-15-1z"></path>
+            <path class="mark-spine" d="M20 15v19"></path>
+          </svg>
+          <span>{siteName}</span>
+        </a>
         <nav class="bar-end" aria-label={getTranslation(locale, 'mainNav')}>
           <a
             class="bar-link"
@@ -185,28 +194,35 @@ const jsonLd =
     </main>
 
     <footer>
-      <div class="container">
+      <svg class="hills" viewBox="0 0 1200 80" preserveAspectRatio="none" aria-hidden="true">
+        <path class="hills-back" d="M0 60C180 10 330 20 470 50s300 10 450-25 220 10 280 30V80H0z"
+        ></path>
+        <path class="hills-front" d="M0 70c160-35 320-40 520-12s420 20 680-28V80H0z"></path>
+      </svg>
+      <div class="container foot">
+        <ul class="foot-links">
+          <li>
+            <a href={locale === 'de' ? `${base}/folio` : `${base}/${locale}/folio`}
+              >{getTranslation(locale, 'folioTitle')}</a
+            >
+          </li>
+          <li>
+            <a href={locale === 'de' ? `${base}/privacy` : `${base}/${locale}/privacy`}
+              >{getTranslation(locale, 'privacyTitle')}</a
+            >
+          </li>
+          <li>
+            <a
+              href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+              target="_blank"
+              rel="noopener"
+            >
+              CC BY-NC-SA 4.0
+            </a>
+          </li>
+        </ul>
         <p>{getTranslation(locale, 'footerArt')}</p>
         <p>&copy; {new Date().getFullYear()} {siteName}</p>
-        <p>
-          <a href={locale === 'de' ? `${base}/folio` : `${base}/${locale}/folio`}
-            >{getTranslation(locale, 'folioTitle')}</a
-          >
-        </p>
-        <p>
-          <a href={locale === 'de' ? `${base}/privacy` : `${base}/${locale}/privacy`}
-            >{getTranslation(locale, 'privacyTitle')}</a
-          >
-        </p>
-        <p>
-          <a
-            href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
-            target="_blank"
-            rel="noopener"
-          >
-            CC BY-NC-SA 4.0
-          </a>
-        </p>
       </div>
     </footer>
 
@@ -231,10 +247,30 @@ const jsonLd =
 
       header {
         background: var(--card);
-        border-block-end: 1px solid var(--rule);
         position: sticky;
         inset-block-start: 0;
         z-index: 1000;
+      }
+      /* A scalloped paper edge instead of a hairline: the bar reads as a strip of card laid on the page. */
+      header::after {
+        content: '';
+        position: absolute;
+        inset-inline: 0;
+        inset-block-start: 100%;
+        block-size: 10px;
+        background: var(--card);
+        -webkit-mask: radial-gradient(10px 10px at 10px 0, #000 98%, transparent) 0 0 / 20px 10px
+          repeat-x;
+        mask: radial-gradient(10px 10px at 10px 0, #000 98%, transparent) 0 0 / 20px 10px repeat-x;
+        filter: drop-shadow(0 2px 0 rgb(110 62 28 / 0.12));
+      }
+      @media (forced-colors: active) {
+        header {
+          border-block-end: 1px solid CanvasText;
+        }
+        header::after {
+          display: none;
+        }
       }
 
       /* One 56 px bar on every width (ux/03 §1a): the wordmark, then Library, language and the grown-ups menu. */
@@ -243,10 +279,14 @@ const jsonLd =
         align-items: center;
         justify-content: space-between;
         gap: var(--s-3);
-        block-size: 56px;
+        min-block-size: 64px;
+        padding-block: var(--s-1);
       }
 
       .wordmark {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--s-2);
         font-family: var(--font-display, inherit);
         font-size: var(--t-ui);
         font-weight: 700;
@@ -254,6 +294,32 @@ const jsonLd =
         color: var(--poppy-ink);
         text-decoration: none;
         min-inline-size: 0;
+      }
+      .mark {
+        flex-shrink: 0;
+        inline-size: 36px;
+        block-size: 36px;
+      }
+      .mark-sun {
+        fill: var(--sun);
+      }
+      .mark-book {
+        fill: var(--card);
+        stroke: var(--poppy-ink);
+        stroke-width: 2.6;
+        stroke-linejoin: round;
+      }
+      .mark-spine {
+        stroke: var(--poppy-ink);
+        stroke-width: 2.6;
+        stroke-linecap: round;
+      }
+      :root[data-theme='lamp'] .wordmark {
+        color: var(--ink);
+      }
+      :root[data-theme='lamp'] .mark-book,
+      :root[data-theme='lamp'] .mark-spine {
+        stroke: var(--ink);
       }
 
       .bar-end {
@@ -284,6 +350,13 @@ const jsonLd =
       }
 
       @media (max-width: 599px) {
+        .wordmark {
+          font-size: var(--t-ui-sm);
+        }
+        .mark {
+          inline-size: 30px;
+          block-size: 30px;
+        }
         .bar-label {
           position: absolute;
           inline-size: 1px;
@@ -300,15 +373,49 @@ const jsonLd =
       }
 
       footer {
-        background: var(--paper-2);
         color: var(--ink);
-        padding-block: var(--s-6);
         margin-block-start: var(--s-8);
         text-align: center;
       }
-
+      .hills {
+        display: block;
+        inline-size: 100%;
+        block-size: 64px;
+      }
+      .hills-back {
+        fill: var(--hill-back);
+      }
+      .hills-front {
+        fill: var(--hill-front);
+      }
+      .foot {
+        background: var(--paper-2);
+        padding-block: var(--s-4) var(--s-6);
+        max-inline-size: none;
+      }
+      .foot-links {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--s-1) var(--s-5);
+        margin-block-end: var(--s-3);
+        font-weight: 700;
+      }
+      .foot-links a {
+        display: inline-flex;
+        align-items: center;
+        min-block-size: var(--tap-adult);
+      }
       footer p {
         margin-block: var(--s-1);
+        font-size: var(--t-ui-sm);
+        color: var(--ink-2);
+      }
+      @media (forced-colors: active) {
+        .hills {
+          display: none;
+        }
       }
     </style>
   </body>

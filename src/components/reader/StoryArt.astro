@@ -21,7 +21,9 @@ const { picture, emoji, palette, eager = false } = Astro.props;
     />
   ) : (
     <div class="art-fallback" style={`--a:${palette[0]};--b:${palette[1]}`} aria-hidden="true">
-      <span>{emoji}</span>
+      <span class="sun" />
+      <span class="hill" />
+      <span class="emoji">{emoji}</span>
     </div>
   )
 }
@@ -32,12 +34,52 @@ const { picture, emoji, palette, eager = false } = Astro.props;
     block-size: 100%;
     object-fit: contain;
   }
+  /* Two flat inks, no gradient (ux/02): a plate, a sun printed slightly off-register, a hill to stand on. */
   .art-fallback {
+    position: relative;
     inline-size: 100%;
     block-size: 100%;
     display: grid;
     place-items: center;
-    background: linear-gradient(135deg, var(--a), var(--b));
-    font-size: clamp(64px, 18cqi, 160px);
+    overflow: hidden;
+    background: var(--a);
+  }
+  .sun {
+    position: absolute;
+    inline-size: 58cqi;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--b);
+    translate: calc(5cqi * var(--shadow-x)) -6%;
+    box-shadow: inset 0 0 0 3px rgb(255 255 255 / 0.35);
+  }
+  .hill {
+    position: absolute;
+    inset-inline: -10%;
+    inset-block-end: -30%;
+    block-size: 48%;
+    border-radius: 50%;
+    background: var(--card);
+    opacity: 0.55;
+  }
+  .emoji {
+    position: relative;
+    font-size: clamp(56px, 30cqi, 160px);
+    line-height: 1;
+    text-decoration: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.tile:hover) .emoji,
+    :global(.hero-cover:hover) .emoji {
+      animation: wobble var(--dur-gentle) var(--ease-settle);
+    }
+  }
+  @keyframes wobble {
+    40% {
+      rotate: -6deg;
+    }
+    70% {
+      rotate: 4deg;
+    }
   }
 </style>

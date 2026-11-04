@@ -36,16 +36,16 @@ All ratios are WCAG 2.1 contrast ratios, computed against the background named i
 
 | Token         | Hex       | Role                                                     | Contrast                                         |
 | ------------- | --------- | -------------------------------------------------------- | ------------------------------------------------ |
-| `--paper`     | `#FBF5EA` | Page background                                          | n/a                                              |
-| `--paper-2`   | `#F3EADA` | Recessed areas, panels, the reading band under frames    | ink 13.2:1                                       |
-| `--card`      | `#FFFDF8` | Raised surfaces: covers, dialogs, question cards         | ink 15.5:1                                       |
-| `--ink`       | `#24212E` | Body text, icons, line art                               | 14.5:1 on paper                                  |
-| `--ink-2`     | `#5A5466` | Secondary text (adult UI only, never child reading text) | 6.7:1 paper, 6.1:1 paper-2                       |
-| `--rule`      | `#D9CDB8` | Decorative dividers only (fails 3:1 on purpose)          | 1.45:1, decorative                               |
-| `--edge`      | `#8C7F6A` | Borders of inputs and controls (non-text contrast)       | 3.6:1 paper, 3.85:1 card                         |
+| `--paper`     | `#FBF0DE` | Page background                                          | n/a                                              |
+| `--paper-2`   | `#F5E4CA` | Recessed areas, panels, the reading band under frames    | ink 12.6:1                                       |
+| `--card`      | `#FFF9EF` | Raised surfaces: covers, dialogs, question cards         | ink 15.1:1                                       |
+| `--ink`       | `#24212E` | Body text, icons, line art                               | 14.0:1 on paper                                  |
+| `--ink-2`     | `#5A5466` | Secondary text (adult UI only, never child reading text) | 6.4:1 paper, 5.8:1 paper-2                       |
+| `--rule`      | `#E3CCA8` | Decorative dividers only (fails 3:1 on purpose)          | decorative                                       |
+| `--edge`      | `#8C7F6A` | Borders of inputs and controls (non-text contrast)       | 3.5:1 paper, 3.7:1 card                          |
 | `--poppy`     | `#C8402B` | Ink 1: warmth, primary action fill                       | white text on it 4.97:1                          |
-| `--poppy-ink` | `#A3311F` | Poppy used as text or links                              | 6.4:1 paper                                      |
-| `--lagoon`    | `#0F6E6A` | Ink 2: calm, links, "play"                               | 5.6:1 paper, white on it 6.1:1                   |
+| `--poppy-ink` | `#A3311F` | Poppy used as text or links                              | 6.2:1 paper                                      |
+| `--lagoon`    | `#0F6E6A` | Ink 2: calm, links, "play"                               | 5.4:1 paper, white on it 6.1:1                   |
 | `--honey`     | `#F2B33D` | Ink 3: light, focus halo, word highlight base            | ink on it 8.5:1, **never text on paper** (1.7:1) |
 | `--plum`      | `#6B3E75` | Ink 4: night, wonder, bilingual secondary accent         | 7.5:1 paper                                      |
 | `--moss`      | `#3F6B2E` | Ink 5: growth, outdoors                                  | 5.8:1 paper                                      |
@@ -230,12 +230,31 @@ least 44 px with an 8 px gap.
 | Token       | Value                                                  | Use                               |
 | ----------- | ------------------------------------------------------ | --------------------------------- |
 | `--e-0`     | none                                                   | Flat on paper                     |
-| `--e-1`     | `3px 4px 0 rgb(36 33 46 / .14)`                        | Covers, cards                     |
-| `--e-2`     | `5px 7px 0 rgb(36 33 46 / .16)`                        | Pressed-up: dialogs, active cover |
-| `--e-press` | `1px 1px 0 rgb(36 33 46 / .14)` + `translate(2px,3px)` | Pressed state: the card "lands"   |
+| `--e-1`     | `3px 4px 0 rgb(110 62 28 / .2)`                        | Covers, cards                     |
+| `--e-2`     | `6px 8px 0 rgb(110 62 28 / .22)`                       | Pressed-up: dialogs, active cover |
+| `--e-press` | `1px 1px 0 rgb(110 62 28 / .2)` + `translate(2px,3px)` | Pressed state: the card "lands"   |
 
 In RTL the shadow x-offset flips (`-3px`) so the light source mirrors with the reading direction.
 In Lamp the shadow is `rgb(0 0 0 / .5)`.
+
+Shadows are a warm cocoa, not cold ink, so a lifted card sits on sunlit paper.
+
+**Outline.** Story tiles, chips, the picture-book door, the filter panel and the search field carry a
+2 px `--ink` outline (`--outline`), like the drawn edge of a board-book page. The outline is what makes
+the shelf read as printed rather than as an app.
+
+**Hand-made accents.** These are the only decorations, and each appears at most once per view:
+
+- A wavy hand-drawn underline (`.squiggle`) under section titles, in the shelf's ink: poppy for
+  picture books, lagoon for read-along, plum for chapters, moss for long reads, honey for "find by
+  situation".
+- A scalloped paper edge under the top bar instead of a hairline.
+- A band of two flat hills above the footer (`--hill-back`, `--hill-front`).
+- A flat `--sun` disc: behind a placeholder cover's emoji, in the corner of the picture-book door,
+  and in the wordmark. In Lamp it is the rose moon colour; in HC it is removed.
+
+**Motion on cards.** On hover a tile lifts 3 px and tips 1° (mirrored in RTL), and its emoji wobbles
+once. On press it lands (`--e-press`). Both are off under `prefers-reduced-motion`.
 
 **Grain.** One tiled 256×256 PNG of monochrome noise at 4% opacity with `mix-blend-mode: multiply`
 on `--paper` and `--card`. It is disabled in HC themes and under `prefers-reduced-transparency`.
@@ -279,6 +298,8 @@ RTL comes free.
 
 ## Imagery treatment
 
+- A story without a cover shows a flat plate in its first palette colour, a sun disc in the second,
+  printed slightly off-register, a pale hill, and the story's emoji. No gradients.
 - Covers sit on `--card` with `--r-l` corners and `--e-1`. The title is set in HTML **below** the
   image, never baked into it, because titles change per locale.
 - Story frames are shown at full stage width with no border and no rounded corners. A frame is a
@@ -296,12 +317,12 @@ RTL comes free.
 /* Paper & Ink tokens. Source of truth: docs/roadmap/ux/02-visual-language.md */
 :root {
   color-scheme: light;
-  --paper: #fbf5ea;
-  --paper-2: #f3eada;
-  --card: #fffdf8;
+  --paper: #fbf0de;
+  --paper-2: #f5e4ca;
+  --card: #fff9ef;
   --ink: #24212e;
   --ink-2: #5a5466;
-  --rule: #d9cdb8;
+  --rule: #e3cca8;
   --edge: #8c7f6a;
   --poppy: #c8402b;
   --poppy-ink: #a3311f;
@@ -324,7 +345,7 @@ RTL comes free.
   --on-accent: #ffffff;
   --listen: var(--lagoon);
 
-  --font-display: 'Fraunces', 'Andika', system-ui, sans-serif;
+  --font-display: 'Fraunces Variable', 'Andika', system-ui, sans-serif;
   --font-read: 'Andika', system-ui, sans-serif;
   --font-ui: 'Andika', system-ui, sans-serif;
   --t-story: 24px;
@@ -355,9 +376,13 @@ RTL comes free.
   --r-l: 24px;
   --r-round: 999px;
   --shadow-x: 1; /* flipped to -1 in RTL */
-  --e-1: calc(3px * var(--shadow-x)) 4px 0 rgb(36 33 46 / 0.14);
-  --e-2: calc(5px * var(--shadow-x)) 7px 0 rgb(36 33 46 / 0.16);
-  --e-press: calc(1px * var(--shadow-x)) 1px 0 rgb(36 33 46 / 0.14);
+  --e-1: calc(3px * var(--shadow-x)) 4px 0 rgb(110 62 28 / 0.2);
+  --e-2: calc(6px * var(--shadow-x)) 8px 0 rgb(110 62 28 / 0.22);
+  --e-press: calc(1px * var(--shadow-x)) 1px 0 rgb(110 62 28 / 0.2);
+  --outline: 2px solid var(--ink);
+  --sun: var(--honey);
+  --hill-back: var(--moss-tint);
+  --hill-front: var(--paper-2);
   --tap-child: 64px;
   --tap-adult: 44px;
   --tap-gap-child: 24px;

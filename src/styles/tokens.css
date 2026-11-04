@@ -1,12 +1,12 @@
 /* Paper & Ink tokens. Source of truth: docs/roadmap/ux/02-visual-language.md */
 :root {
   color-scheme: light;
-  --paper: #fbf5ea;
-  --paper-2: #f3eada;
-  --card: #fffdf8;
+  --paper: #fbf0de;
+  --paper-2: #f5e4ca;
+  --card: #fff9ef;
   --ink: #24212e;
   --ink-2: #5a5466;
-  --rule: #d9cdb8;
+  --rule: #e3cca8;
   --edge: #8c7f6a;
   --poppy: #c8402b;
   --poppy-ink: #a3311f;
@@ -29,7 +29,7 @@
   --on-accent: #ffffff;
   --listen: var(--lagoon);
 
-  --font-display: 'Fraunces', 'Andika', system-ui, sans-serif;
+  --font-display: 'Fraunces Variable', 'Andika', system-ui, sans-serif;
   --font-read: 'Andika', system-ui, sans-serif;
   --font-ui: 'Andika', system-ui, sans-serif;
   --t-story: 24px;
@@ -60,9 +60,14 @@
   --r-l: 24px;
   --r-round: 999px;
   --shadow-x: 1; /* flipped to -1 in RTL */
-  --e-1: calc(3px * var(--shadow-x)) 4px 0 rgb(36 33 46 / 0.14);
-  --e-2: calc(5px * var(--shadow-x)) 7px 0 rgb(36 33 46 / 0.16);
-  --e-press: calc(1px * var(--shadow-x)) 1px 0 rgb(36 33 46 / 0.14);
+  /* Shadows are a warm cocoa, not cold ink: card lifted off sunlit paper. */
+  --e-1: calc(3px * var(--shadow-x)) 4px 0 rgb(110 62 28 / 0.2);
+  --e-2: calc(6px * var(--shadow-x)) 8px 0 rgb(110 62 28 / 0.22);
+  --e-press: calc(1px * var(--shadow-x)) 1px 0 rgb(110 62 28 / 0.2);
+  --outline: 2px solid var(--ink);
+  --sun: var(--honey);
+  --hill-back: var(--moss-tint);
+  --hill-front: var(--paper-2);
   --tap-child: 64px;
   --tap-adult: 44px;
   --tap-gap-child: 24px;
@@ -218,7 +223,11 @@
   --sky-tint: #261e16;
   --moss-tint: #261e16;
   --e-1: calc(3px * var(--shadow-x)) 4px 0 rgb(0 0 0 / 0.5);
-  --e-2: calc(5px * var(--shadow-x)) 7px 0 rgb(0 0 0 / 0.5);
+  --e-2: calc(6px * var(--shadow-x)) 8px 0 rgb(0 0 0 / 0.5);
+  --e-press: calc(1px * var(--shadow-x)) 1px 0 rgb(0 0 0 / 0.5);
+  --outline: 2px solid var(--ink-2);
+  --sun: #d98263;
+  --hill-back: var(--rule);
   --grain-opacity: 0.03;
 }
 :root[data-theme='lamp'] .frame img {
@@ -227,6 +236,15 @@
 
 /* High contrast */
 :root[data-theme='hc-light'] {
+  --poppy-tint: #ffffff;
+  --lagoon-tint: #ffffff;
+  --honey-tint: #ffffff;
+  --plum-tint: #ffffff;
+  --sky-tint: #ffffff;
+  --moss-tint: #ffffff;
+  --outline: 2px solid var(--ink);
+  --sun: transparent;
+  --hill-back: transparent;
   --paper: #ffffff;
   --paper-2: #ffffff;
   --card: #ffffff;
@@ -246,6 +264,15 @@
   --grain-opacity: 0;
 }
 :root[data-theme='hc-dark'] {
+  --poppy-tint: #000000;
+  --lagoon-tint: #000000;
+  --honey-tint: #000000;
+  --plum-tint: #000000;
+  --sky-tint: #000000;
+  --moss-tint: #000000;
+  --outline: 2px solid var(--ink);
+  --sun: transparent;
+  --hill-back: transparent;
   color-scheme: dark;
   --paper: #000000;
   --paper-2: #000000;
