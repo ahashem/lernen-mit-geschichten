@@ -69,7 +69,7 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
       <a class="btn btn--primary" data-continue-link href="#">{t('continueReading')}</a>
     </section>
 
-    <div data-body="reader">
+    <div data-body="reader" class="painted">
       {
         hasPictures && (
           <button class="door surface" type="button" data-set-home="picture">
@@ -91,7 +91,7 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
           shelves.map(shelf => (
             <section class="shelf" data-shelf={shelf.band} aria-labelledby={`shelf-${shelf.band}`}>
               <div class="shelf-head">
-                <h2 id={`shelf-${shelf.band}`} class="squiggle">
+                <h2 id={`shelf-${shelf.band}`} class="wash">
                   {t(SHELF_KEY[shelf.band])}
                 </h2>
                 <a href={`${library}?shelf=${shelf.band}`}>
@@ -120,10 +120,8 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
 
       {
         situations.length > 0 && (
-          <section class="situations" aria-labelledby="situations-title">
-            <h2 id="situations-title" class="squiggle">
-              {t('findBySituation')}
-            </h2>
+          <section class="situations torn" aria-labelledby="situations-title">
+            <h2 id="situations-title">{t('findBySituation')}</h2>
             <ul class="chips">
               {situations.map(s => (
                 <li>
@@ -167,7 +165,7 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
           </section>
 
           <section class="shelf" aria-labelledby="more-title">
-            <h2 id="more-title" class="squiggle">
+            <h2 id="more-title" class="wash">
               {t('moreStories')}
             </h2>
             <ul class="tiles">
@@ -338,7 +336,7 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
     font: inherit;
     font-family: var(--font-display);
     font-size: 1.375rem;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.25;
     text-align: start;
     cursor: pointer;
@@ -439,16 +437,16 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
     margin-block-end: var(--s-4);
   }
   [data-shelf='1'] h2 {
-    --squiggle: var(--poppy);
+    --wash: var(--poppy);
   }
   [data-shelf='2'] h2 {
-    --squiggle: var(--lagoon);
+    --wash: var(--lagoon);
   }
   [data-shelf='3'] h2 {
-    --squiggle: var(--plum);
+    --wash: var(--plum);
   }
   [data-shelf='4'] h2 {
-    --squiggle: var(--moss);
+    --wash: var(--moss);
   }
   .shelf-head a {
     display: inline-flex;
@@ -466,7 +464,6 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
   }
   .situations {
     margin-block-start: var(--s-7);
-    --squiggle: var(--honey);
   }
   .situations h2 {
     margin-block-end: var(--s-4);

@@ -133,11 +133,11 @@ Each feeling group gets a tint, loosely following the RULER Mood Meter quadrants
 
 ### Families (all OFL, self-hosted as WOFF2 and subset per script)
 
-| Script             | Display (titles, covers)                                                                                | Reading, bands 1-2                                                                        | Reading, bands 3-4                                                                                                      | UI                        |
-| ------------------ | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| Latin (de, en, tr) | **Fraunces** variable: `opsz` 72-144, `SOFT` 100 in bands 1-2 and 50 in bands 3-4, `WONK` 0, weight 600 | **Andika**: designed by SIL for new readers, with a single-storey a and g and clear I/l/1 | **Literata** variable (OFL, built for long-form screen reading, used by Google Play Books)                              | **Andika**                |
-| Arabic (ar)        | **Baloo Bhaijaan 2** 600-700 in bands 1-2. **Noto Naskh Arabic** 700 in bands 3-4.                      | **Noto Naskh Arabic**, **fully vocalised** (tashkeel)                                     | **Noto Naskh Arabic**, **partially vocalised** (harakat only where ambiguous, as in school readers from about Klasse 3) | **Noto Naskh Arabic** 500 |
-| Urdu (ur)          | **Gulzar** (Nastaliq)                                                                                   | **Gulzar**, with **Noto Nastaliq Urdu** as fallback (see 07)                              | Same                                                                                                                    | **Gulzar**                |
+| Script             | Display (titles, covers)                                                           | Reading, bands 1-2                                                                        | Reading, bands 3-4                                                                                                      | UI                        |
+| ------------------ | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| Latin (de, en, tr) | **Baloo 2** 700                                                                    | **Andika**: designed by SIL for new readers, with a single-storey a and g and clear I/l/1 | **Literata** variable (OFL, built for long-form screen reading, used by Google Play Books)                              | **Andika**                |
+| Arabic (ar)        | **Baloo Bhaijaan 2** 600-700 in bands 1-2. **Noto Naskh Arabic** 700 in bands 3-4. | **Noto Naskh Arabic**, **fully vocalised** (tashkeel)                                     | **Noto Naskh Arabic**, **partially vocalised** (harakat only where ambiguous, as in school readers from about Klasse 3) | **Noto Naskh Arabic** 500 |
+| Urdu (ur)          | **Gulzar** (Nastaliq)                                                              | **Gulzar**, with **Noto Nastaliq Urdu** as fallback (see 07)                              | Same                                                                                                                    | **Gulzar**                |
 
 Why Literata for bands 3-4: at 10-12, readers move to "real books", and the single-storey Andika
 reads as a primer. Literata gives the chapter reader a credible book voice while Andika stays the
@@ -148,8 +148,10 @@ Why these fonts:
 - **Andika.** It was built for beginning readers. Its letterforms match the shapes children are
   taught to write, and it covers Turkish (ı İ ş ğ) and German. One family serves both reading and
   UI, which saves a download.
-- **Fraunces SOFT.** Soft, ink-trap-like terminals give a printed picture-book voice. It is used
-  only at 28 px and above.
+- **Baloo 2 for Latin headings.** Round, chunky and friendly without being a cartoon. It is the
+  Latin sibling of Baloo Bhaijaan 2, the Arabic display face, so headings in German, English,
+  Turkish and Arabic share one voice. One weight (700, about 19 KB for Latin) is loaded; story and
+  UI text stay in Andika. It replaced Fraunces, whose bookish serif read as too grown-up.
 - **Naskh for reading, not Kufi or geometric Arabic.** Arabic children's books and school primers
   are set in vocalised Naskh, so it is what children are learning to read. Noto Naskh positions
   harakat reliably.
@@ -245,13 +247,31 @@ the shelf read as printed rather than as an app.
 
 **Hand-made accents.** These are the only decorations, and each appears at most once per view:
 
-- A wavy hand-drawn underline (`.squiggle`) under section titles, in the shelf's ink: poppy for
-  picture books, lagoon for read-along, plum for chapters, moss for long reads, honey for "find by
-  situation".
+- **Watercolour wash** (`.wash`, ink in `--wash`): a pale, unevenly pooled patch behind shelf
+  titles, in the shelf's ink: poppy for picture books, lagoon for read-along, plum for chapters,
+  moss for long reads. Ink on it stays at least 6.9:1. In Lamp it fades to a stain.
+- A wavy hand-drawn underline (`.squiggle`) for page titles that are not shelves (the Library).
+- **Painted backdrop** (`.painted`): two large pale blobs (lagoon tint, poppy tint) behind the main
+  block of a page: the home page's first screen and the story cover. Tints only, so text keeps its
+  contrast; in Lamp they are `--card`.
+- **Torn paper** (`.torn`, colour in `--torn`): a section on a strip of honey-tinted paper with
+  torn top and bottom edges, at most 8 px deep. Used for "Find by situation" and the grown-ups box
+  on a story cover. Teal links on it are 4.8:1.
+- **Splatter** (`.splatter`): a few drops of poppy and honey flicked onto the corners of the
+  end-of-story picture. Only there.
 - A scalloped paper edge under the top bar instead of a hairline.
 - A band of two flat hills above the footer (`--hill-back`, `--hill-front`).
 - A flat `--sun` disc: behind a placeholder cover's emoji, in the corner of the picture-book door,
-  and in the wordmark. In Lamp it is the rose moon colour; in HC it is removed.
+  and in the logo. In Lamp it is the rose moon colour; in HC it is removed.
+
+All paint edges come from SVG turbulence filters inside CSS masks, so there are no image files.
+Every effect sits behind content and is removed in the HC themes and under `forced-colors`.
+
+**Logo and wordmark.** The mark is an open book with the sun rising behind it
+(`src/components/Logo.astro`, also `public/favicon.svg`). The name is stacked: its last word, the
+one that carries it ("Geschichten", "Stories", "القصص"), sits large over a hand-drawn swash in
+`--sun`, with the lead words small above it. On phones the language button is icon-only and the
+book mark is dropped below 360 px, so the bar stays one row.
 
 **Motion on cards.** On hover a tile lifts 3 px and tips 1° (mirrored in RTL), and its emoji wobbles
 once. On press it lands (`--e-press`). Both are off under `prefers-reduced-motion`.
@@ -359,7 +379,7 @@ RTL comes free.
   --on-accent: #ffffff;
   --listen: var(--lagoon);
 
-  --font-display: 'Fraunces Variable', 'Andika', system-ui, sans-serif;
+  --font-display: 'Baloo 2', 'Andika', system-ui, sans-serif;
   --font-read: 'Andika', system-ui, sans-serif;
   --font-ui: 'Andika', system-ui, sans-serif;
   --t-story: 24px;

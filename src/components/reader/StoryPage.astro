@@ -155,7 +155,7 @@ const description = summary || `${title} | ${t('siteName')}`;
     data-story-id={storyId}
   >
     <section class="view cover" data-view="cover" aria-labelledby="story-title" tabindex="-1">
-      <div class="container cover-grid">
+      <div class="container cover-grid painted">
         <div class="cover-art surface">
           <StoryArt picture={cover} emoji={emoji} palette={palette} eager />
         </div>
@@ -215,7 +215,7 @@ const description = summary || `${title} | ${t('siteName')}`;
               </div>
             )
           }
-          <details class="grownups surface">
+          <details class="grownups torn">
             <summary>{t('forGrownUps')}</summary>
             <div class="grownups-body">
               {area && <p class="area">{area}</p>}
@@ -506,7 +506,7 @@ const description = summary || `${title} | ${t('siteName')}`;
     {
       hasBook && (
         <section class="view end" data-view="end" hidden tabindex="-1" aria-labelledby="end-title">
-          <div class="container end-inner">
+          <div class="container end-inner splatter">
             <div class="end-art surface">
               <StoryArt picture={cover} emoji={emoji} palette={palette} />
             </div>
@@ -662,7 +662,7 @@ const description = summary || `${title} | ${t('siteName')}`;
           tabindex="-1"
           aria-labelledby="chapters-end-title"
         >
-          <div class="container end-inner">
+          <div class="container end-inner splatter">
             <div class="end-art surface">
               <StoryArt picture={cover} emoji={emoji} palette={palette} />
             </div>
@@ -1163,7 +1163,8 @@ const description = summary || `${title} | ${t('siteName')}`;
   }
 
   .grownups {
-    padding: var(--s-4);
+    --torn: var(--honey-tint);
+    padding: var(--s-5) var(--s-4);
     margin-block-end: var(--s-5);
   }
 
@@ -1800,10 +1801,12 @@ const description = summary || `${title} | ${t('siteName')}`;
     display: none;
   }
 
+  /* As wide as the art plus a margin, so the splatter lands on the picture's corners rather than the screen's. */
   .end-inner {
     display: grid;
     justify-items: center;
     gap: var(--s-5);
+    max-inline-size: 40rem;
     padding-block: var(--s-7);
     text-align: center;
   }
@@ -1814,6 +1817,8 @@ const description = summary || `${title} | ${t('siteName')}`;
     aspect-ratio: 3 / 2;
     overflow: hidden;
     background: var(--paper-2);
+    border: var(--outline);
+    box-shadow: var(--e-2);
   }
 
   .end-choices {
@@ -1900,9 +1905,10 @@ const description = summary || `${title} | ${t('siteName')}`;
 
   /* The cover splits once there is room, whatever the window's shape. */
   @media (min-width: 900px) {
+    /* Top-aligned: opening the grown-ups panel grows the right column and must not move the picture. */
     .cover-grid {
       grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-      align-items: center;
+      align-items: start;
     }
   }
 
