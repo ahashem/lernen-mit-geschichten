@@ -170,13 +170,13 @@ child's name.
 a one-tap removal of the most restrictive filter. Loading shows skeleton covers in `--paper-2` with
 no shimmer.
 
-**Layout:** the filters are a toolbar above a full-width grid, not a column. Skill areas come first (a ticked area
-opens its skills on the row below), then the result count with the shelf as one segmented control; length and
-"Available in" wait behind "More filters (n)", a popover under its button and a bottom sheet on phones. Each option
-shows how many stories it would leave with the other filters as they are, and an option that would leave none is
-dimmed, so a choice never lands on an empty page. A choice stays where it was made; there is no separate row of
-active filters. **Mobile:** the area and skill rows scroll sideways on one line each, so the stories start on the
-first screen.
+**Layout:** the filters read as one sentence above a full-width grid: "Stories about [any topic] [on every shelf]",
+each language in its own word order. Each blank opens a picker under it (a sheet from the bottom on phones): the
+topic picker holds the whole taxonomy, areas with their skills, where an area ticks all its skills; the shelf picker
+holds the shelves. Length and "Available in" wait behind "More filters (n)". Each option shows how many stories it
+would leave with the other filters as they are, and an option that would leave none is dimmed, so a choice never
+lands on an empty page. A card's skill tag filters by that skill ("more like this"); outside the Library it links to
+it.
 
 Filters persist in the URL query string (shareable between educators) and not in storage.
 

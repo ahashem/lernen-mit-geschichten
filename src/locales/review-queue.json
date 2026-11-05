@@ -214,7 +214,13 @@
     "privacyVoice",
     "ownVersion",
     "moreFilters",
-    "moreFiltersWithCount"
+    "moreFiltersWithCount",
+    "filterSentence",
+    "anyTopic",
+    "shelfAny",
+    "shelfOne",
+    "shelfMany",
+    "moreAboutSkill"
   ],
   "tr": [
     "skipToContent",
@@ -431,7 +437,13 @@
     "privacyVoice",
     "ownVersion",
     "moreFilters",
-    "moreFiltersWithCount"
+    "moreFiltersWithCount",
+    "filterSentence",
+    "anyTopic",
+    "shelfAny",
+    "shelfOne",
+    "shelfMany",
+    "moreAboutSkill"
   ],
   "ur": [
     "skipToContent",
@@ -648,6 +660,12 @@
     "privacyVoice",
     "ownVersion",
     "moreFilters",
-    "moreFiltersWithCount"
+    "moreFiltersWithCount",
+    "filterSentence",
+    "anyTopic",
+    "shelfAny",
+    "shelfOne",
+    "shelfMany",
+    "moreAboutSkill"
   ]
 }
