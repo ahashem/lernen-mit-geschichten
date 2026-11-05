@@ -56,6 +56,21 @@ export function startReader() {
   const book = $<HTMLElement>(app, '.view.book');
   const pages = book ? $$(book, '.page') : [];
 
+  // Read-along keeps the sentence being read in view: a third of the way down the box, so the next lines show too.
+  // Only scrolls when the sentence is not already comfortably visible, so short pages never move.
+  const follow = (el: Element | undefined) => {
+    const box = el?.closest<HTMLElement>('.texts');
+    if (!el || !box || box.scrollHeight <= box.clientHeight) return;
+    const r = el.getBoundingClientRect();
+    const b = box.getBoundingClientRect();
+    const margin = Math.min(48, b.height / 5);
+    if (r.top >= b.top + margin && r.bottom <= b.bottom - margin) return;
+    box.scrollTo({
+      top: box.scrollTop + (r.top - b.top) - b.height / 3,
+      behavior: reduceMotion.matches ? 'auto' : 'smooth',
+    });
+  };
+
   // A page whose text runs past the sheet says so (a fade and an arrow), so a child knows to scroll.
   const markOverflow = (box: HTMLElement) => {
     box.toggleAttribute('data-more', box.scrollTop + box.clientHeight < box.scrollHeight - 4);
@@ -168,6 +183,9 @@ export function startReader() {
     write(resumeKey, String(current));
     write(LAST_KEY, `${data.storyId}:${data.locale}`);
     syncPageUi();
+    // A page always opens at its first line, even if the reader scrolled it on an earlier visit.
+    const intoText = $<HTMLElement>(into, '.texts');
+    if (intoText) intoText.scrollTop = 0;
     into.focus({ preventScroll: true });
     if (narrating && !keyboardTurn) window.setTimeout(() => startNarration(), 400);
     else if (keyboardTurn && narrating) setNarrating(false);
@@ -262,14 +280,33 @@ export function startReader() {
       setNarrating(false);
     });
     if (!timings) {
-      // No word timings: the whole page is lit instead.
+      // No word timings: the whole page is lit instead, and a long page scrolls along with the recording, so the
+      // last lines are in view by the time they are read.
       $$(block(current, data.locale), '.s').forEach(el => el.classList.add('is-on'));
+      const box = $<HTMLElement>(pages[current], '.texts');
+      audio.ontimeupdate = () => {
+        if (mine !== token || !box || !audio.duration) return;
+        const max = box.scrollHeight - box.clientHeight;
+        if (max <= 0) return;
+        const progress = Math.min(
+          1,
+          Math.max(0, (audio.currentTime / audio.duration - 0.15) / 0.75)
+        );
+        box.scrollTop = max * progress;
+      };
       return;
     }
+    audio.ontimeupdate = null;
+    let followed: Element | null = null;
     const tick = () => {
       const at = audio.currentTime;
       const active = timings.find(x => at >= x.start && at < x.end);
       words.forEach((el, i) => el.classList.toggle('is-on', active?.w === i));
+      const lit = active ? words[active.w]?.closest('.s') : null;
+      if (lit && lit !== followed) {
+        followed = lit;
+        follow(lit);
+      }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
@@ -293,6 +330,7 @@ export function startReader() {
       clearMarks();
       const sentence = sentences[i];
       sentence.classList.add('is-on');
+      follow(sentence);
       const words = $$(sentence, '.w');
       const spoken = words.map(speakable);
       if (!spoken.some(Boolean)) return next(i + 1);
@@ -438,7 +476,7 @@ export function startReader() {
     const first = pair?.first ?? data.locale;
     if (pair) book.dir = isRtl(first) ? 'rtl' : 'ltr';
     else book.removeAttribute('dir');
-    if (pair && isRtl(pair.first) === isRtl(pair.second)) app!.dataset.pairWide = '';
+    if (pair) app!.dataset.pairWide = '';
     else delete app!.dataset.pairWide;
     for (const el of $$(book, '[data-lang-block]')) {
       const index = pair

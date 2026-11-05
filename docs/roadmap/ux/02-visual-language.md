@@ -321,8 +321,16 @@ sheet (an open book on the table), centred, with the top bar and page bar aligne
   side; otherwise stacked. Each text carries a small language tag (lagoon tint, then honey).
 - Story type scales up on big screens (x1.15 from 1100x820, x1.3 from 1500x1100); the band size is
   the floor.
-- When a page's text is longer than the sheet, its last lines fade and a round arrow bobs in the
-  sheet's corner until the reader scrolls to the end.
+- A long page makes room before it scrolls. In the tall layout the picture shrinks first, down to a
+  quarter of the page (the art letterboxes inside it). In the wide layout a page the build knows is long
+  (over 260 characters) gives the text a larger share of the sheet.
+- Two languages sit side by side whenever the page area is at least 720 px wide, whatever their
+  directions: each column keeps its own `dir`.
+- Only then does text scroll. Its last lines fade and a round arrow bobs in the sheet's corner until
+  the reader reaches the end. Read-along keeps the sentence being read in view (a third of the way
+  down the box); a recording without word timings scrolls the page in step with the audio.
+- Scrolling is a safety net, not a layout: `node scripts/content-report.mjs` lists every page over
+  its band's sentence limit so editors can split it.
 - Page dots: read pages filled, the current page a long accent pill, pages to come hollow.
 
 Use logical properties only (`margin-inline-start`, `inset-inline-end`, `padding-block`) so that

@@ -80,6 +80,9 @@ for (const sibling of siblings) {
 }
 const allLocales: Locale[] = ['de', 'ar', 'en', 'tr', 'ur'];
 const canPair = hasBook && Object.keys(aligned).length >= 2;
+// A page with more text than a picture-book spread holds comfortably; the wide layout gives it a larger text share.
+const LONG_PAGE = 260;
+const isLong = (i: number) => pages[i].sentences.join(' ').length > LONG_PAGE;
 
 const keys = [
   'pageOf',
@@ -421,6 +424,7 @@ const description = summary || `${title} | ${t('siteName')}`;
                 <section
                   class="page"
                   data-page={i}
+                  data-long={isLong(i) || undefined}
                   hidden={i > 0}
                   tabindex="-1"
                   aria-label={fmt(t('pageOf'), { n: i + 1, total: pages.length })}
@@ -1468,8 +1472,11 @@ const description = summary || `${title} | ${t('siteName')}`;
     overflow: hidden;
   }
 
+  /* The picture shrinks before the text scrolls (flex-shrink 100 against the text's 1), down to a floor of a quarter
+     of the page; the art letterboxes inside it. */
   .frame {
-    flex: none;
+    flex: 0 100 auto;
+    min-block-size: 26cqb;
     container-type: inline-size;
     aspect-ratio: 4 / 3;
     background: var(--paper-2);
@@ -1556,6 +1563,20 @@ const description = summary || `${title} | ${t('siteName')}`;
   .story-app[data-pair] .text-block + .text-block:not([hidden]) {
     padding-block-start: var(--s-4);
     border-block-start: 2px dashed var(--rule);
+  }
+
+  @container (min-width: 720px) {
+    .story-app[data-pair-wide] .texts {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-6);
+    }
+
+    .story-app[data-pair-wide] .text-block + .text-block:not([hidden]) {
+      padding-block-start: 0;
+      padding-inline-start: var(--s-6);
+      border-block-start: 0;
+      border-inline-start: 2px dashed var(--rule);
+    }
   }
 
   .story-app:not([data-pair]) [data-pair-only] {
@@ -1930,6 +1951,10 @@ const description = summary || `${title} | ${t('siteName')}`;
       --art: 0.5;
     }
 
+    .page[data-long] .sheet {
+      --art: 0.44;
+    }
+
     .frame {
       aspect-ratio: auto;
       border-block-end: 0;
@@ -1942,7 +1967,7 @@ const description = summary || `${title} | ${t('siteName')}`;
       padding: var(--s-6);
     }
 
-    /* Two languages that read the same way: picture on top, the languages side by side underneath. */
+    /* Two languages: picture on top as a strip, the languages side by side underneath (see the container query). */
     .story-app[data-pair-wide] .sheet {
       display: flex;
       inline-size: min(100cqi, 1400px);
@@ -1952,20 +1977,9 @@ const description = summary || `${title} | ${t('siteName')}`;
     .story-app[data-pair-wide] .frame {
       aspect-ratio: auto;
       block-size: 38dvh;
+      flex: 0 100 auto;
       border-inline-end: 0;
       border-block-end: var(--outline);
-    }
-
-    .story-app[data-pair-wide] .texts {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--s-6);
-    }
-
-    .story-app[data-pair-wide] .text-block + .text-block:not([hidden]) {
-      padding-block-start: 0;
-      padding-inline-start: var(--s-6);
-      border-block-start: 0;
-      border-inline-start: 2px dashed var(--rule);
     }
   }
 </style>
