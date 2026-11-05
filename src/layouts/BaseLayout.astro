@@ -15,6 +15,14 @@ import { getTranslation, isRTL } from '@utils/i18n';
 import { BASE_PATH as base, OFFLINE } from '@utils/site';
 import { buildMarker } from '@utils/build-marker';
 import { LOCALES } from '@utils/story-availability';
+import balooLatin from '@fontsource/baloo-2/files/baloo-2-latin-700-normal.woff2?url';
+import balooLatinExt from '@fontsource/baloo-2/files/baloo-2-latin-ext-700-normal.woff2?url';
+import andikaLatin from '@fontsource/andika/files/andika-latin-400-normal.woff2?url';
+import andikaLatinBold from '@fontsource/andika/files/andika-latin-700-normal.woff2?url';
+import andikaLatinExt from '@fontsource/andika/files/andika-latin-ext-400-normal.woff2?url';
+import bhaijaanArabic from '@fontsource/baloo-bhaijaan-2/files/baloo-bhaijaan-2-arabic-700-normal.woff2?url';
+import naskhArabic from '@fontsource/noto-naskh-arabic/files/noto-naskh-arabic-arabic-400-normal.woff2?url';
+import gulzarArabic from '@fontsource/gulzar/files/gulzar-arabic-400-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -28,6 +36,16 @@ interface Props {
 
 const { title, description, locale = 'de', image, type = 'website', storyHrefs } = Astro.props;
 const dir = isRTL(locale) ? 'rtl' : 'ltr';
+// The faces a first screen is set in, per language. Preloaded, they arrive with the page instead of after the CSS
+// is read; until they do, Latin text sits in a metric-matched stand-in (font-fallbacks.css), so nothing reflows.
+const latin = [balooLatin, andikaLatin, andikaLatinBold];
+const FIRST_FONTS: Record<Locale, string[]> = {
+  de: latin,
+  en: latin,
+  tr: [...latin, balooLatinExt, andikaLatinExt],
+  ar: [bhaijaanArabic, naskhArabic],
+  ur: [gulzarArabic],
+};
 const siteName = getTranslation(locale, 'siteName');
 // The wordmark stacks the name: the last word, the one that carries it ("Geschichten", "Stories", "القصص"), goes big on
 // its own line over a swash. A one-word name stays on one line.
@@ -80,11 +98,79 @@ const jsonLd =
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <script is:inline>
+      // Scripts are on: pages can lay out their script-only controls in the first frame instead of jumping later.
+      document.documentElement.dataset.js = '';
       // Apply the saved Lamp theme before first paint so a bedtime reader is never flashed with day colours.
       try {
         if (JSON.parse(localStorage.getItem('reader-prefs') || '{}').theme === 'lamp')
           document.documentElement.dataset.theme = 'lamp';
       } catch (e) {}
+    </script>
+    <script is:inline>
+      // Page transitions (global.css): a story's cover grows out of the card that was opened and shrinks back into
+      // it on the way home. The motion is CSS; this only says which card is in play, which CSS cannot know. A name
+      // may sit on one element per page, so only that card gets it. Inline in the head so `pagereveal` is heard
+      // before the first frame.
+      (function () {
+        var NAME = 'story-art';
+        var KEY = 'lmg-story-cover';
+        var named = null;
+        var path = function (href) {
+          return new URL(href, location.href).pathname.replace(/\/$/, '');
+        };
+        var name = function (el) {
+          if (named) named.style.viewTransitionName = '';
+          named = el;
+          if (el) el.style.viewTransitionName = NAME;
+        };
+        document.addEventListener('click', function (e) {
+          if (
+            e.defaultPrevented ||
+            e.button !== 0 ||
+            e.metaKey ||
+            e.ctrlKey ||
+            e.shiftKey ||
+            e.altKey
+          )
+            return;
+          var link = e.target.closest && e.target.closest('a[href]');
+          var card = link && link.closest('.tile, .hero');
+          var cover = card && card.querySelector('.tile-cover, .hero-cover');
+          if (cover) name(cover);
+        });
+        // The story page remembers itself, so the page it leaves for can find the card that belongs to it.
+        document.addEventListener('DOMContentLoaded', function () {
+          try {
+            if (document.querySelector('.cover-art'))
+              sessionStorage.setItem(KEY, path(location.href));
+          } catch {
+            // Storage blocked: the cover simply fades instead.
+          }
+        });
+        addEventListener('pageshow', function () {
+          name(null);
+        });
+        addEventListener('pagereveal', function (e) {
+          if (!e.viewTransition) return;
+          var story = null;
+          try {
+            story = sessionStorage.getItem(KEY);
+          } catch {
+            return;
+          }
+          if (!story) return;
+          var covers = document.querySelectorAll('a.tile-cover, a.hero-cover');
+          for (var i = 0; i < covers.length; i++) {
+            if (covers[i].offsetParent && path(covers[i].href) === story) {
+              name(covers[i]);
+              e.viewTransition.finished.finally(function () {
+                name(null);
+              });
+              return;
+            }
+          }
+        });
+      })();
     </script>
 
     <GTMTracking />
@@ -136,6 +222,12 @@ const jsonLd =
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
     {OFFLINE && <link rel="manifest" href={`${base}/manifest.webmanifest`} />}
+
+    {
+      FIRST_FONTS[locale].map(href => (
+        <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />
+      ))
+    }
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />

@@ -29,9 +29,9 @@
   --on-accent: #ffffff;
   --listen: var(--lagoon);
 
-  --font-display: 'Baloo 2', 'Andika', system-ui, sans-serif;
-  --font-read: 'Andika', system-ui, sans-serif;
-  --font-ui: 'Andika', system-ui, sans-serif;
+  --font-display: 'Baloo 2', 'Baloo 2 Fallback', system-ui, sans-serif;
+  --font-read: 'Andika', 'Andika Fallback', system-ui, sans-serif;
+  --font-ui: 'Andika', 'Andika Fallback', system-ui, sans-serif;
   --t-story: 24px;
   --lh-story: 1.5;
   --t-prose: 20px;
@@ -97,9 +97,11 @@
 }
 
 :root:lang(ar) {
-  --font-display: 'Baloo Bhaijaan 2', 'Noto Naskh Arabic', system-ui, sans-serif;
-  --font-read: 'Noto Naskh Arabic', system-ui, serif;
-  --font-ui: 'Noto Naskh Arabic', system-ui, sans-serif;
+  --font-display:
+    'Baloo Bhaijaan 2', 'Baloo Bhaijaan 2 Fallback', 'Noto Naskh Arabic',
+    'Noto Naskh Arabic Fallback', system-ui, sans-serif;
+  --font-read: 'Noto Naskh Arabic', 'Noto Naskh Arabic Fallback', system-ui, serif;
+  --font-ui: 'Noto Naskh Arabic', 'Noto Naskh Arabic Fallback', system-ui, sans-serif;
   --t-story: 28px;
   --lh-story: 1.9;
   --t-prose: 22px;
@@ -111,9 +113,9 @@
   --lh-ui: 1.7;
 }
 :root:lang(ur) {
-  --font-display: 'Gulzar', 'Noto Nastaliq Urdu', serif;
-  --font-read: 'Gulzar', 'Noto Nastaliq Urdu', serif;
-  --font-ui: 'Gulzar', 'Noto Nastaliq Urdu', serif;
+  --font-display: 'Gulzar', 'Gulzar Fallback', 'Noto Nastaliq Urdu', serif;
+  --font-read: 'Gulzar', 'Gulzar Fallback', 'Noto Nastaliq Urdu', serif;
+  --font-ui: 'Gulzar', 'Gulzar Fallback', 'Noto Nastaliq Urdu', serif;
   --t-story: 26px;
   --lh-story: 2.3;
   --t-prose: 22px;
@@ -182,7 +184,7 @@
 :lang(ar) [data-band='3'],
 :lang(ar)[data-band='4'],
 :lang(ar) [data-band='4'] {
-  --font-read: 'Noto Naskh Arabic', serif;
+  --font-read: 'Noto Naskh Arabic', 'Noto Naskh Arabic Fallback', serif;
   --t-story: 21px;
   --lh-story: 1.9;
 }
@@ -190,7 +192,7 @@
 :lang(ur) [data-band='3'],
 :lang(ur)[data-band='4'],
 :lang(ur) [data-band='4'] {
-  --font-read: 'Gulzar', 'Noto Nastaliq Urdu', serif;
+  --font-read: 'Gulzar', 'Gulzar Fallback', 'Noto Nastaliq Urdu', serif;
   --t-story: 20px;
   --lh-story: 2.3;
 }

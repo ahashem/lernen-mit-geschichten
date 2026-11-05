@@ -1,4 +1,5 @@
 /* Self-hosted, subset per script by the packages' unicode-range: a page only fetches the faces it draws. */
+@import './font-fallbacks.css';
 @import '@fontsource/andika/400.css';
 @import '@fontsource/andika/700.css';
 @import '@fontsource/baloo-2/700.css';

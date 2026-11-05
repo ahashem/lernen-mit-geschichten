@@ -273,8 +273,10 @@ one that carries it ("Geschichten", "Stories", "القصص"), sits large over a 
 `--sun`, with the lead words small above it. On phones the language button is icon-only and the
 book mark is dropped below 360 px, so the bar stays one row.
 
-**Motion on cards.** On hover a tile lifts 3 px and tips 1° (mirrored in RTL), and its emoji wobbles
-once. On press it lands (`--e-press`). Both are off under `prefers-reduced-motion`.
+**Motion on cards.** A story card is a little pop-up book (04): under a mouse it rises and tips toward the pointer,
+and its art moves by depth. Controls rise 2 px; everything lands when pressed. The card physics are `.lift` and
+`.press` in `global.css`, the depth layers are in `StoryArt.astro`, and `stylelint.config.mjs` enforces the motion
+rules (allowed animations, no overshoot, no loops, only transform and opacity).
 
 **Grain.** One tiled 256×256 PNG of monochrome noise at 4% opacity with `mix-blend-mode: multiply`
 on `--paper` and `--card`. It is disabled in HC themes and under `prefers-reduced-transparency`.
