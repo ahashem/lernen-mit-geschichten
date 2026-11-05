@@ -1,5 +1,6 @@
 import { fmt } from '@utils/i18n';
 import { applyTheme, loadPrefs, read, savePrefs, write } from './prefs';
+import { switchFor, switchView } from './view-switch';
 
 const $ = <T extends HTMLElement>(root: ParentNode, selector: string) =>
   root.querySelector<T>(selector);
@@ -43,7 +44,18 @@ export function startChapters(
   const saved = (read(key) ?? '').split(':').map(Number);
   const titleOf = (i: number) => chapters[i][0].textContent ?? '';
 
-  function show(name: 'cover' | 'chapters' | 'text' | 'end', push = true) {
+  // Views switch instantly at start-up and through a transition after that (view-switch.ts); `then` runs once the
+  // new view is in place, so a scroll or a measure sees the right layout.
+  let settled = false;
+
+  function show(name: 'cover' | 'chapters' | 'text' | 'end', push = true, then?: () => void) {
+    switchView(settled ? switchFor(app.dataset.view, name) : null, () => {
+      applyView(name, push);
+      then?.();
+    });
+  }
+
+  function applyView(name: 'cover' | 'chapters' | 'text' | 'end', push: boolean) {
     for (const v of views) v.hidden = v.dataset.view !== name;
     app.dataset.view = name;
     document.body.dataset.reading = String(name === 'chapters');
@@ -64,9 +76,10 @@ export function startChapters(
         ? fmt(strings.chapterDoneNext, { n: current + 1, title: titleOf(current + 1) })
         : strings.theEnd;
     next.setAttribute('aria-label', nextLabel.textContent);
-    show('chapters', push);
-    window.scrollTo(0, offset * (document.documentElement.scrollHeight - innerHeight));
-    track();
+    show('chapters', push, () => {
+      window.scrollTo(0, offset * (document.documentElement.scrollHeight - innerHeight));
+      track();
+    });
   }
 
   function track() {
@@ -146,4 +159,5 @@ export function startChapters(
   if (initial)
     open(Number(initial[1]) - 1, (saved[0] === Number(initial[1]) - 1 && saved[1]) || 0, false);
   else show(viewOf(location.hash), false);
+  settled = true;
 }

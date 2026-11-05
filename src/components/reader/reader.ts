@@ -4,6 +4,7 @@ import { applyTheme, loadPrefs, read, savePrefs, write } from './prefs';
 import { startChapters } from './chapters';
 import { startClassroom } from './classroom';
 import { startVoice } from './voice';
+import { switchFor, switchView } from './view-switch';
 
 interface Timing {
   w: number;
@@ -98,7 +99,17 @@ export function startReader() {
 
   app.dataset.ready = '';
 
+  // Views switch instantly while the reader starts up (a shared #book link), and through a transition after that.
+  let settled = false;
+
   function showView(name: string, push = true) {
+    const kind = settled ? switchFor(app!.dataset.view, name) : null;
+    // Into or out of the book, the current page's sheet and the cover are one picture that grows or shrinks.
+    const sheet = kind === 'book' ? $<HTMLElement>(pages[current], '.sheet') : null;
+    switchView(kind, () => applyView(name, push), sheet);
+  }
+
+  function applyView(name: string, push: boolean) {
     for (const v of views) v.hidden = v.dataset.view !== name;
     app!.dataset.view = name;
     const reading = name === 'book' || name === 'end' || name === 'cards';
@@ -159,26 +170,24 @@ export function startReader() {
     const sign = (forward ? -1 : 1) * (pageRtl() ? -1 : 1);
     stopNarration(true);
     into.hidden = false;
-    const ms = dur();
-    const easing = getComputedStyle(app!).getPropertyValue('--ease-in-out') || 'ease-in-out';
-    const move = (pct: number) => (reduceMotion.matches ? 'none' : `translateX(${pct}%)`);
-    out.animate(
-      [
-        { transform: 'none', opacity: 1 },
-        { transform: move(sign * 24), opacity: 0 },
-      ],
-      { duration: ms, easing, fill: 'forwards' }
-    ).onfinish = () => {
+    // The motion is CSS (StoryPage, .is-leaving / .is-entering); here only the direction and the clean-up.
+    for (const el of [out, into]) el.style.setProperty('--turn', String(sign));
+    out.classList.add('is-leaving');
+    into.classList.add('is-entering');
+    let settled = false;
+    const settle = (e?: Event) => {
+      if (settled || (e && e.target !== out)) return;
+      settled = true;
       out.hidden = true;
-      out.getAnimations().forEach(a => a.cancel());
+      out.classList.remove('is-leaving');
+      into.classList.remove('is-entering');
+      out.removeEventListener('animationend', settle);
+      out.removeEventListener('animationcancel', settle);
     };
-    into.animate(
-      [
-        { transform: move(-sign * 24), opacity: 0 },
-        { transform: 'none', opacity: 1 },
-      ],
-      { duration: ms, easing }
-    );
+    out.addEventListener('animationend', settle);
+    out.addEventListener('animationcancel', settle);
+    // In case no animation runs at all, the old page still goes.
+    window.setTimeout(settle, dur() + 100);
     current = next;
     write(resumeKey, String(current));
     write(LAST_KEY, `${data.storyId}:${data.locale}`);
@@ -755,6 +764,7 @@ export function startReader() {
       showView(initial === 'cards' ? 'cover' : initial, false);
       if (initial === 'book') syncPageUi();
     } else showView('cover', false);
+    settled = true;
     startVoice(
       app,
       {

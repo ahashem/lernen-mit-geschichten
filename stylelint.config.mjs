@@ -7,10 +7,15 @@
 /** Every animation the site may play. A new one is a design decision: name it here with its reason. */
 const KEYFRAMES = [
   'pulse', // the invitation pulse on the next arrow once narration ends, played once
-  'bob', // the reader's "more text below" cue
+  'bob', // the reader's "more text below" cue, once per page
+  'panel-open', // the grown-ups panel on a story cover
   'spin', // the booklet export overlay, a grown-ups tool
   'page-sink', // page transitions: the page being left
   'page-rise', // page transitions: the page arriving
+  'page-fade-out', // in-story transitions: crossfade out
+  'page-fade-in', // in-story transitions: crossfade in
+  'turn-out', // the reader's page turn: the page being left
+  'turn-in', // the reader's page turn: the next page
 ];
 
 /** What a transition may change: motion through transforms and opacity, plus plain colour fades. */

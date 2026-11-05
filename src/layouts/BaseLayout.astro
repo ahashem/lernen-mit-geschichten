@@ -80,6 +80,8 @@ const jsonLd =
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <script is:inline>
+      // Scripts are on: pages can lay out their script-only controls in the first frame instead of jumping later.
+      document.documentElement.dataset.js = '';
       // Apply the saved Lamp theme before first paint so a bedtime reader is never flashed with day colours.
       try {
         if (JSON.parse(localStorage.getItem('reader-prefs') || '{}').theme === 'lamp')
@@ -88,8 +90,9 @@ const jsonLd =
     </script>
     <script is:inline>
       // Page transitions (global.css): a story's cover grows out of the card that was opened and shrinks back into
-      // it on the way home. A name may sit on one element per page, so only the card in play gets it. Inline in the
-      // head so `pagereveal` is heard before the first frame.
+      // it on the way home. The motion is CSS; this only says which card is in play, which CSS cannot know. A name
+      // may sit on one element per page, so only that card gets it. Inline in the head so `pagereveal` is heard
+      // before the first frame.
       (function () {
         var NAME = 'story-art';
         var KEY = 'lmg-story-cover';
@@ -122,7 +125,9 @@ const jsonLd =
           try {
             if (document.querySelector('.cover-art'))
               sessionStorage.setItem(KEY, path(location.href));
-          } catch (e) {}
+          } catch {
+            // Storage blocked: the cover simply fades instead.
+          }
         });
         addEventListener('pageshow', function () {
           name(null);
@@ -132,7 +137,9 @@ const jsonLd =
           var story = null;
           try {
             story = sessionStorage.getItem(KEY);
-          } catch (err) {}
+          } catch {
+            return;
+          }
           if (!story) return;
           var covers = document.querySelectorAll('a.tile-cover, a.hero-cover');
           for (var i = 0; i < covers.length; i++) {

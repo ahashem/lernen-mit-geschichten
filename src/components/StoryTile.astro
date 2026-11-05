@@ -39,7 +39,13 @@ const href =
     />
   </a>
   <div class="tile-body">
-    <h3 class="tile-title"><a href={href}>{title}</a></h3>
+    <h3 class="tile-title">
+      <a href={href}
+        >{title}<span class="tilt" aria-hidden="true"
+          >{Array.from({ length: 25 }, () => <span />)}</span
+        ></a
+      >
+    </h3>
     {summary && <p class="tile-summary">{summary}</p>}
     <p class="tile-meta">
       {shelf && <span>{shelf}</span>}
@@ -54,50 +60,6 @@ const href =
     </p>
   </div>
 </article>
-
-<script>
-  // Under a mouse or pen, a card tips toward the pointer and its art shifts by depth (global.css, StoryArt). The
-  // pointer is read once per frame; the CSS transition does the easing, so the card trails the pointer softly.
-  const fine = matchMedia('(hover: hover) and (pointer: fine)');
-  const calm = matchMedia('(prefers-reduced-motion: reduce)');
-  let card: HTMLElement | null = null;
-  let box: DOMRect | null = null;
-  let frame = 0;
-  let x = 0;
-  let y = 0;
-  const clamp = (n: number) => Math.max(-1, Math.min(1, n));
-  const paint = () => {
-    frame = 0;
-    if (!card || !box) return;
-    card.style.setProperty('--tilt-x', clamp(((x - box.left) / box.width) * 2 - 1).toFixed(3));
-    card.style.setProperty('--tilt-y', clamp(((y - box.top) / box.height) * 2 - 1).toFixed(3));
-  };
-  const leave = () => {
-    card?.style.removeProperty('--tilt-x');
-    card?.style.removeProperty('--tilt-y');
-    card = box = null;
-  };
-  document.addEventListener(
-    'pointermove',
-    e => {
-      if (e.pointerType === 'touch' || !fine.matches || calm.matches) return;
-      const over = (e.target as Element | null)?.closest?.<HTMLElement>('.tile') ?? null;
-      if (over !== card) {
-        leave();
-        if (!over) return;
-        card = over;
-        // Measured on entry, before the card moves, so the tilt never feeds back into its own measure.
-        box = over.getBoundingClientRect();
-      }
-      x = e.clientX;
-      y = e.clientY;
-      frame ||= requestAnimationFrame(paint);
-    },
-    { passive: true }
-  );
-  document.addEventListener('pointerleave', leave);
-  addEventListener('scroll', leave, { passive: true });
-</script>
 
 <style>
   .tile {
@@ -131,15 +93,45 @@ const href =
     font-size: var(--t-ui);
     line-height: var(--lh-display);
   }
-  /* The whole card is the target, but only the title is a link for assistive technology. */
+  /* The whole card is the target, but only the title is a link for assistive technology. The target is a 5×5 grid
+     of empty zones inside the link: which zone is under the mouse tips the card toward it (global.css, --tilt-x and
+     --tilt-y from -1 to 1), and the card's transition eases between zones. No script reads the pointer. */
   .tile-title a {
     color: var(--ink);
     text-decoration: none;
   }
-  .tile-title a::after {
-    content: '';
+  .tilt {
     position: absolute;
     inset: 0;
+    display: grid;
+    grid-template: repeat(5, 1fr) / repeat(5, 1fr);
+    direction: ltr;
+  }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .tile:has(.tilt > :nth-child(5n + 1):hover) {
+      --tilt-x: -1;
+    }
+    .tile:has(.tilt > :nth-child(5n + 2):hover) {
+      --tilt-x: -0.5;
+    }
+    .tile:has(.tilt > :nth-child(5n + 4):hover) {
+      --tilt-x: 0.5;
+    }
+    .tile:has(.tilt > :nth-child(5n):hover) {
+      --tilt-x: 1;
+    }
+    .tile:has(.tilt > :nth-child(-n + 5):hover) {
+      --tilt-y: -1;
+    }
+    .tile:has(.tilt > :nth-child(n + 6):nth-child(-n + 10):hover) {
+      --tilt-y: -0.5;
+    }
+    .tile:has(.tilt > :nth-child(n + 16):nth-child(-n + 20):hover) {
+      --tilt-y: 0.5;
+    }
+    .tile:has(.tilt > :nth-child(n + 21):hover) {
+      --tilt-y: 1;
+    }
   }
   .tile {
     position: relative;

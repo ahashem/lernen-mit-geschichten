@@ -915,9 +915,38 @@ const description = summary || `${title} | ${t('siteName')}`;
     display: none;
   }
 
-  /* Without JS the cover and the full text are all there is; the book needs scripts. */
-  .story-app:not([data-ready]) [data-js-only] {
+  /* Without JS the cover and the full text are all there is; the book needs scripts. BaseLayout marks scripts as
+     on before the first paint, so the buttons hold their place from the start and nothing below them jumps. */
+  :global(:root:not([data-js])) [data-js-only] {
     display: none;
+  }
+  /* With scripts on, only the cover shows until the reader has picked the view (a shared #book or #text link), so
+     the full text never flashes under the cover and the footer never jumps up. */
+  :global(:root[data-js]) .story-app:not([data-ready]) .view:not(.cover) {
+    display: none;
+  }
+
+  /* Page transitions (global.css): the cover's parts are named, so switching to another language of this story
+     glides them to their new place instead of jumping. */
+  .view.cover {
+    view-transition-name: story-cover;
+    view-transition-class: part;
+  }
+  .cover-title {
+    view-transition-name: story-title;
+    view-transition-class: part;
+  }
+  .cover-main > .cover-actions:first-of-type {
+    view-transition-name: story-actions;
+    view-transition-class: part;
+  }
+  .grownups {
+    view-transition-name: story-grownups;
+    view-transition-class: part;
+  }
+  .other-languages {
+    view-transition-name: story-languages;
+    view-transition-class: part;
   }
 
   .view.classroom {
@@ -1147,6 +1176,7 @@ const description = summary || `${title} | ${t('siteName')}`;
   /* Page transitions: the card that was opened grows into this cover (global.css, BaseLayout). */
   .cover-art {
     view-transition-name: story-art;
+    view-transition-class: part;
     container-type: inline-size;
     aspect-ratio: 3 / 2;
     overflow: hidden;
@@ -1245,6 +1275,18 @@ const description = summary || `${title} | ${t('siteName')}`;
     display: grid;
     gap: var(--s-3);
     padding-block-start: var(--s-3);
+  }
+  /* Opening the grown-ups panel is quiet: its text settles in from just above. */
+  @media (prefers-reduced-motion: no-preference) {
+    .grownups[open] .grownups-body {
+      animation: panel-open var(--dur-base) var(--ease-out);
+    }
+  }
+  @keyframes panel-open {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
   }
 
   .grownups-body ul:not(.chips) {
@@ -1452,6 +1494,33 @@ const description = summary || `${title} | ${t('siteName')}`;
     display: none;
   }
 
+  /* Page turn (ux/04): the page being left slides toward the reading start and fades, the next slides in from the
+     reading end. reader.ts only sets --turn (the direction, 1 or -1) and the classes; under reduced motion it is a
+     plain crossfade. */
+  @media (prefers-reduced-motion: no-preference) {
+    .page {
+      --turn-by: 24%;
+    }
+  }
+  .page.is-leaving {
+    animation: turn-out var(--dur-page) var(--ease-in-out) both;
+  }
+  .page.is-entering {
+    animation: turn-in var(--dur-page) var(--ease-in-out) both;
+  }
+  @keyframes turn-out {
+    to {
+      opacity: 0;
+      transform: translateX(calc(var(--turn, 1) * var(--turn-by, 0%)));
+    }
+  }
+  @keyframes turn-in {
+    from {
+      opacity: 0;
+      transform: translateX(calc(var(--turn, 1) * var(--turn-by, 0%) * -1));
+    }
+  }
+
   /* Tall screens (phones, tablets, a portrait monitor): picture over text on one sheet, as wide as the picture can be
      without pushing the text off screen. */
   .sheet {
@@ -1525,8 +1594,8 @@ const description = summary || `${title} | ${t('siteName')}`;
   @media (prefers-reduced-motion: no-preference) {
     .sheet:has(.texts[data-more])::after,
     .sheet:has(.texts[data-more])::before {
-      /* stylelint-disable-next-line declaration-property-value-disallowed-list -- known loop, 04 wants it to play once */
-      animation: bob 1.6s var(--ease-in-out) infinite;
+      /* Once per page: a new page draws a new arrow, which bobs again. */
+      animation: bob 1.6s var(--ease-in-out) 1;
     }
   }
   @keyframes bob {

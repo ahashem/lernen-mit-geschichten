@@ -501,6 +501,37 @@ body > header {
   block-size: 100%;
   object-fit: cover;
 }
+/* In a story (view-switch.ts): opening the book, the cover grows into the open book while everything else
+   crossfades in place. A text view or a chapter is laid on like a sheet, the default above. */
+html[data-vt='book']::view-transition-old(root) {
+  animation: page-fade-out var(--dur-quick) var(--ease-in-out) both;
+}
+html[data-vt='book']::view-transition-new(root) {
+  animation: page-fade-in var(--dur-base) var(--ease-out) both;
+}
+/* Named parts of a page (`view-transition-class: part`, e.g. a story's title and buttons) glide from where they
+   were to where they are when both pages have them, so another language of the same story, with a longer title or a
+   mirrored layout, eases into place. When only one page has them they rise and sink with it. */
+::view-transition-group(*.part) {
+  animation-duration: var(--dur-page);
+  animation-timing-function: var(--ease-in-out);
+}
+::view-transition-old(*.part):only-child {
+  animation: page-sink var(--dur-quick) var(--ease-in-out) both;
+}
+::view-transition-new(*.part):only-child {
+  animation: page-rise var(--dur-page) var(--ease-out) both;
+}
+@keyframes page-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+}
 @keyframes page-sink {
   to {
     opacity: 0;
