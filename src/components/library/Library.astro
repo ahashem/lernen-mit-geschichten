@@ -636,6 +636,11 @@ const strings = {
     }
   }
   @media (max-width: 899px) {
+    /* With scripts on, phones get the filters as a sheet behind "Filter": closed from the first frame, so the
+       results do not jump up when the script closes it. */
+    :global(:root[data-js]) .sheet:not(:modal) {
+      display: none;
+    }
     .layout {
       gap: var(--s-3);
     }

@@ -492,9 +492,15 @@ body > header {
 ::view-transition-new(root) {
   animation: page-rise var(--dur-page) var(--ease-out) both;
 }
+/* Groups stack with those on both pages first and new-only ones above them, so the paint behind a story cover
+   (new-only) would cover the arriving picture. The picture in flight goes on top, the pinned header above it. */
 ::view-transition-group(story-art) {
+  z-index: 1;
   animation-duration: var(--dur-page);
   animation-timing-function: var(--ease-in-out);
+}
+::view-transition-group(site-header) {
+  z-index: 2;
 }
 ::view-transition-old(story-art),
 ::view-transition-new(story-art) {

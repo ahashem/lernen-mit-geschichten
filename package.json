@@ -75,6 +75,7 @@
     "@rollup/rollup-linux-x64-musl": "^4.67.4"
   },
   "devDependencies": {
+    "@capsizecss/unpack": "^4.0.1",
     "@typescript-eslint/eslint-plugin": "^8.72.1",
     "@typescript-eslint/parser": "^8.69.0",
     "eslint": "^10.14.0",

@@ -15,6 +15,14 @@ import { getTranslation, isRTL } from '@utils/i18n';
 import { BASE_PATH as base, OFFLINE } from '@utils/site';
 import { buildMarker } from '@utils/build-marker';
 import { LOCALES } from '@utils/story-availability';
+import balooLatin from '@fontsource/baloo-2/files/baloo-2-latin-700-normal.woff2?url';
+import balooLatinExt from '@fontsource/baloo-2/files/baloo-2-latin-ext-700-normal.woff2?url';
+import andikaLatin from '@fontsource/andika/files/andika-latin-400-normal.woff2?url';
+import andikaLatinBold from '@fontsource/andika/files/andika-latin-700-normal.woff2?url';
+import andikaLatinExt from '@fontsource/andika/files/andika-latin-ext-400-normal.woff2?url';
+import bhaijaanArabic from '@fontsource/baloo-bhaijaan-2/files/baloo-bhaijaan-2-arabic-700-normal.woff2?url';
+import naskhArabic from '@fontsource/noto-naskh-arabic/files/noto-naskh-arabic-arabic-400-normal.woff2?url';
+import gulzarArabic from '@fontsource/gulzar/files/gulzar-arabic-400-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -28,6 +36,16 @@ interface Props {
 
 const { title, description, locale = 'de', image, type = 'website', storyHrefs } = Astro.props;
 const dir = isRTL(locale) ? 'rtl' : 'ltr';
+// The faces a first screen is set in, per language. Preloaded, they arrive with the page instead of after the CSS
+// is read; until they do, Latin text sits in a metric-matched stand-in (font-fallbacks.css), so nothing reflows.
+const latin = [balooLatin, andikaLatin, andikaLatinBold];
+const FIRST_FONTS: Record<Locale, string[]> = {
+  de: latin,
+  en: latin,
+  tr: [...latin, balooLatinExt, andikaLatinExt],
+  ar: [bhaijaanArabic, naskhArabic],
+  ur: [gulzarArabic],
+};
 const siteName = getTranslation(locale, 'siteName');
 // The wordmark stacks the name: the last word, the one that carries it ("Geschichten", "Stories", "القصص"), goes big on
 // its own line over a swash. A one-word name stays on one line.
@@ -204,6 +222,12 @@ const jsonLd =
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
     {OFFLINE && <link rel="manifest" href={`${base}/manifest.webmanifest`} />}
+
+    {
+      FIRST_FONTS[locale].map(href => (
+        <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />
+      ))
+    }
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
