@@ -368,21 +368,6 @@ button {
   font-weight: 600;
   text-decoration: none;
   box-shadow: var(--e-1);
-  transition:
-    transform var(--dur-quick) var(--ease-settle),
-    box-shadow var(--dur-quick) var(--ease-out);
-}
-
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--e-2);
-  }
-}
-
-.btn:active {
-  transform: translate(calc(2px * var(--shadow-x)), 3px);
-  box-shadow: var(--e-press);
 }
 
 .btn--primary {
@@ -403,6 +388,74 @@ button {
   background: var(--card);
   border-radius: var(--r-l);
   box-shadow: var(--e-1);
+}
+
+/* Card physics (ux/04): paper on a table. A control lands when it is pressed (`.press`, and every `.btn`); a card
+   also lifts straight up under a mouse (`.lift`). Nothing tips, wobbles or overshoots, and only transform and
+   opacity move: a card's two shadows are layers that crossfade, so box-shadow itself is never animated. */
+.btn,
+.press,
+.lift {
+  transition: transform var(--dur-quick) var(--ease-out);
+}
+.btn:not([disabled]):active,
+.press:not([disabled]):active,
+.lift:active {
+  transform: translate(calc(2px * var(--shadow-x)), 3px);
+  box-shadow: var(--e-press);
+  transition-duration: var(--dur-instant);
+}
+.lift {
+  position: relative;
+  box-shadow: none;
+}
+/* The layers sit on the outline's outer edge; the card's content and its links stay on top and clickable. */
+.lift::before,
+.lift::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  pointer-events: none;
+  transition: opacity var(--dur-quick) var(--ease-out);
+}
+.lift::before {
+  box-shadow: var(--e-1);
+}
+.lift::after {
+  box-shadow: var(--e-2);
+  opacity: 0;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .lift:hover {
+    transform: translateY(-3px);
+  }
+  .lift:hover::before {
+    opacity: 0;
+  }
+  .lift:hover::after {
+    opacity: 1;
+  }
+}
+/* Held up without moving: a picture-book cover that has just said its name and opens on the next touch. */
+.lift[data-armed]::before {
+  opacity: 0;
+}
+.lift[data-armed]::after {
+  opacity: 1;
+}
+.lift:active::before,
+.lift:active::after {
+  opacity: 0;
+  transition-duration: var(--dur-instant);
+}
+/* Reduced motion: a press changes the shadow only. */
+@media (prefers-reduced-motion: reduce) {
+  .btn:active,
+  .press:active,
+  .lift:active {
+    transform: none;
+  }
 }
 
 .notice {

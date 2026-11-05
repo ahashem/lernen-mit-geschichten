@@ -67,18 +67,4 @@ const { picture, emoji, palette, eager = false } = Astro.props;
     line-height: 1;
     text-decoration: none;
   }
-  @media (prefers-reduced-motion: no-preference) {
-    :global(.tile:hover) .emoji,
-    :global(.hero-cover:hover) .emoji {
-      animation: wobble var(--dur-gentle) var(--ease-settle);
-    }
-  }
-  @keyframes wobble {
-    40% {
-      rotate: -6deg;
-    }
-    70% {
-      rotate: 4deg;
-    }
-  }
 </style>

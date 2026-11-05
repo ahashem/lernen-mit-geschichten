@@ -72,7 +72,8 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
     <div data-body="reader" class="painted">
       {
         hasPictures && (
-          <button class="door surface" type="button" data-set-home="picture">
+          <button class="door surface lift" type="button" data-set-home="picture">
+            <span class="door-sun" aria-hidden="true" />
             <span class="door-faces" aria-hidden="true">
               {small.slice(0, 3).map(i => (
                 <span class="door-face">{i.emoji ?? i.meta?.emoji ?? '📖'}</span>
@@ -125,7 +126,7 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
             <ul class="chips">
               {situations.map(s => (
                 <li>
-                  <a class="chip" data-group={s.category} href={`${library}?skill=${s.id}`}>
+                  <a class="chip press" data-group={s.category} href={`${library}?skill=${s.id}`}>
                     {s.label}
                   </a>
                 </li>
@@ -235,6 +236,14 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
     let armed: Element | null = null;
     let timer = 0;
     let pointer = '';
+    // The armed cover is held up (data-armed) so the child can see which one is talking.
+    const arm = (card: Element | null) => {
+      armed?.removeAttribute('data-armed');
+      card?.setAttribute('data-armed', '');
+      armed = card;
+    };
+    // Coming back from the story, the cover is not still waiting for a second touch.
+    window.addEventListener('pageshow', () => arm(null));
     const say = (text: string) => {
       const voice = findVoice();
       if (!voice) return;
@@ -256,9 +265,9 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
       const card = hit.closest('.hero, .tile')!;
       if (armed === card) return;
       e.preventDefault();
-      armed = card;
+      arm(card);
       window.clearTimeout(timer);
-      timer = window.setTimeout(() => (armed = null), 8000);
+      timer = window.setTimeout(() => arm(null), 8000);
       say(card.querySelector('.hero-title, .tile-title')?.textContent?.trim() ?? '');
     });
   }
@@ -341,12 +350,15 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
     text-align: start;
     cursor: pointer;
     margin-block-end: var(--s-6);
-    overflow: hidden;
-    transition:
-      transform var(--dur-base) var(--ease-settle),
-      box-shadow var(--dur-base) var(--ease-out);
   }
-  .door::before {
+  /* The sun is clipped by its own layer, not by the door, so the door's lift shadows (.lift) are not cut off. */
+  .door-sun {
+    position: absolute;
+    inset: 0;
+    border-radius: calc(var(--r-l) - 2px);
+    overflow: hidden;
+  }
+  .door-sun::before {
     content: '';
     position: absolute;
     inset-block-start: -60px;
@@ -357,18 +369,8 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
     background: var(--sun);
     opacity: 0.55;
   }
-  .door > * {
+  .door > :not(.door-sun) {
     position: relative;
-  }
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .door:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--e-2);
-    }
-  }
-  .door:active {
-    transform: translate(calc(2px * var(--shadow-x)), 3px);
-    box-shadow: var(--e-press);
   }
   .door-faces {
     display: flex;
@@ -488,16 +490,6 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
     font-weight: 700;
     text-decoration: none;
     box-shadow: var(--e-1);
-    transition: transform var(--dur-quick) var(--ease-settle);
-  }
-  .chip:active {
-    transform: translate(calc(2px * var(--shadow-x)), 3px);
-    box-shadow: var(--e-press);
-  }
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .chip:hover {
-      transform: translateY(-2px);
-    }
   }
   .chip[data-group='self'] {
     --chip: var(--plum-tint);
@@ -547,6 +539,11 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
     color: var(--on-accent);
     border: 3px solid var(--card);
     box-shadow: var(--e-1);
+  }
+  /* Said its name; the next touch opens it. The hero holds still, so only the outline says so. */
+  .hero[data-armed] .hero-cover {
+    outline: 4px solid var(--listen);
+    outline-offset: 3px;
   }
   .hero-cover:focus-visible {
     outline: 4px solid var(--focus);

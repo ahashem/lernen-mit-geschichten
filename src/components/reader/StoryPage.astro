@@ -303,12 +303,12 @@ const description = summary || `${title} | ${t('siteName')}`;
         >
           <h1 class="visually-hidden">{title}</h1>
           <div class="topbar" data-topbar>
-            <a class="icon-btn" href={home} aria-label={t('home')}>
+            <a class="icon-btn press" href={home} aria-label={t('home')}>
               <Icon name="home" size={28} />
             </a>
             <div class="topbar-end">
               <button
-                class="icon-btn icon-btn--listen"
+                class="icon-btn icon-btn--listen press"
                 type="button"
                 data-action="toggle-narration"
                 aria-pressed="false"
@@ -322,7 +322,7 @@ const description = summary || `${title} | ${t('siteName')}`;
                 </span>
               </button>
               <button
-                class="icon-btn"
+                class="icon-btn press"
                 type="button"
                 data-action="lights-out"
                 hidden
@@ -331,7 +331,7 @@ const description = summary || `${title} | ${t('siteName')}`;
                 <Icon name="moon" size={28} />
               </button>
               <button
-                class="icon-btn"
+                class="icon-btn press"
                 type="button"
                 data-action="menu"
                 aria-expanded="false"
@@ -481,7 +481,12 @@ const description = summary || `${title} | ${t('siteName')}`;
           </button>
 
           <div class="pagebar">
-            <button class="nav-btn" type="button" data-action="prev" aria-label={t('previousPage')}>
+            <button
+              class="nav-btn press"
+              type="button"
+              data-action="prev"
+              aria-label={t('previousPage')}
+            >
               <Icon name="prev" size={32} />
               <span class="nav-label">{t('backLabel')}</span>
             </button>
@@ -495,7 +500,12 @@ const description = summary || `${title} | ${t('siteName')}`;
                 <span />
               ))}
             </div>
-            <button class="nav-btn" type="button" data-action="next" aria-label={t('nextPage')}>
+            <button
+              class="nav-btn press"
+              type="button"
+              data-action="next"
+              aria-label={t('nextPage')}
+            >
               <span class="nav-label">{t('nextLabel')}</span>
               <Icon name="next" size={32} />
             </button>
@@ -1383,17 +1393,6 @@ const description = summary || `${title} | ${t('siteName')}`;
     box-shadow: var(--e-1);
     text-decoration: none;
     font-weight: 700;
-    transition:
-      transform var(--dur-quick) var(--ease-settle),
-      box-shadow var(--dur-quick) var(--ease-out);
-  }
-
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .icon-btn:hover,
-    .nav-btn:not([disabled]):hover {
-      transform: translateY(-2px);
-      box-shadow: var(--e-2);
-    }
   }
 
   .nav-btn:has(.nav-label) {
@@ -1406,12 +1405,6 @@ const description = summary || `${title} | ${t('siteName')}`;
   .icon-btn--listen {
     background: var(--listen);
     color: var(--on-accent);
-  }
-
-  .icon-btn:active,
-  .nav-btn:active {
-    transform: translate(calc(2px * var(--shadow-x)), 3px);
-    box-shadow: var(--e-press);
   }
 
   .nav-btn[disabled] {
@@ -1699,7 +1692,6 @@ const description = summary || `${title} | ${t('siteName')}`;
     border: 2px solid var(--edge);
     border-radius: var(--r-round);
     background: transparent;
-    transition: inline-size var(--dur-base) var(--ease-settle);
   }
 
   .dots span.is-done {
