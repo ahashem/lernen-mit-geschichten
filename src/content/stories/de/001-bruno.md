@@ -23,17 +23,35 @@ keyMessage: "Wenn ich auf meinen Körper achte (mein Herz klopft, mein Bauch kri
 ---
 Es war einmal ein kleiner Bär namens Bruno. Bruno liebte Honig, Spielen im Wald und – ganz besonders – Klettern auf Bäume.
 
+---
+
 Eines Tages wollte Bruno seiner Freundin, der Eule Mila, zeigen, wie hoch er klettern konnte. Er kletterte… höher… und noch höher… doch plötzlich rutschte er aus!
 
-„Oh nein!“, rief Bruno. Sein Herz klopfte laut wie eine Trommel. Er setzte sich unten auf den Boden und sagte: „Mein Bauch fühlt sich komisch an. Ich glaube, ich habe Angst.“
+---
+
+„Oh nein!“, rief Bruno. Sein Herz klopfte laut wie eine Trommel.
+
+---
+
+Er setzte sich unten auf den Boden und sagte: „Mein Bauch fühlt sich komisch an. Ich glaube, ich habe Angst.“
 
 ---
 
 Mila flatterte zu ihm und meinte: „Gut, dass du das bemerkst, Bruno! Wenn du weißt, was du fühlst, kannst du besser damit umgehen.“
 
+---
+
 Bruno überlegte. Dann grinste er: „Wenn ich Angst habe, brauche ich eine Pause. Ich atme tief ein… und wieder aus.“
 
-Später, beim Spielen, stolperte Bruno über einen Stein. Er knurrte: „Grrr, jetzt bin ich wütend!“ Mila nickte: „Du hast es erkannt! Und was machst du, wenn du wütend bist?“
+---
+
+Später, beim Spielen, stolperte Bruno über einen Stein. Er knurrte: „Grrr, jetzt bin ich wütend!“
+
+---
+
+Mila nickte: „Du hast es erkannt! Und was machst du, wenn du wütend bist?“
+
+---
 
 Bruno dachte kurz nach. „Ich stampfe einmal mit den Füßen, dann geht es mir besser!“ – stampf, stampf! Beide lachten.
 

@@ -13,7 +13,7 @@ export interface BookPages {
 }
 
 /** Max sentences per storybook page, by band (ux/02 Typography). */
-const SENTENCES_PER_PAGE: Record<number, number> = { 1: 3, 2: 5 };
+export const SENTENCES_PER_PAGE: Record<number, number> = { 1: 3, 2: 5 };
 
 const plain = (text: string) =>
   text

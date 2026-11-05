@@ -75,11 +75,17 @@ Bir zamanlar Bruno adında küçük bir ayı vardı.
 
 Bruno balı, ormanda oynamayı ve – özellikle – ağaçlara tırmanmayı çok severdi.
 
+---
+
 Bir gün Bruno, arkadaşı baykuş Mila'ya ne kadar yükseğe tırmanabildiğini göstermek istedi.
 
 Tırmandı… daha yükseğe… daha yükseğe… ama birden kaydı!
 
+---
+
 "Ah hayır!" diye bağırdı Bruno. Kalbi davul gibi atıyordu.
+
+---
 
 Yere oturdu ve şöyle dedi:
 
@@ -91,15 +97,23 @@ Mila yanına uçtu ve dedi ki:
 
 "Bunu fark etmen çok iyi Bruno! Ne hissettiğini bilirsen, daha kolay başa çıkabilirsin."
 
+---
+
 Bruno biraz düşündü, sonra gülümsedi:
 
 "Korktuğumda ara vermem gerekiyor. Derin nefes alırım… içeri… ve dışarı."
+
+---
 
 Daha sonra, oynarken Bruno bir taşa takıldı.
 
 Homurdandı: "Grrr, şimdi kızgınım!"
 
+---
+
 Mila başını salladı: "Bunu fark ettin! Peki kızgın olduğunda ne yapıyorsun?"
+
+---
 
 Bruno biraz düşündü, sonra dedi ki:
 

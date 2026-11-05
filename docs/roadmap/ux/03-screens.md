@@ -90,7 +90,7 @@ not on the child surface.
 
 ### Anatomy (in order)
 
-1. **Top bar (adult surface, 56 px):** wordmark (Fraunces) at the start. At the end: language
+1. **Top bar (adult surface, 56 px):** stacked wordmark (Baloo 2, see 02 Logo and wordmark) at the start. At the end: language
    (endonym of the current language plus a speech-bubble icon) and "Grown-ups". No hamburger.
 2. **Hero, "Your story":** one large cover, 60% of the viewport width on tablet and 100% on phone.
    If a story is in progress, its bookmark ribbon shows and tapping resumes it. Otherwise it is the

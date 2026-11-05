@@ -79,11 +79,17 @@ Once upon a time, there was a little bear named Bruno.
 
 Bruno loved honey, playing in the forest, and – especially – climbing trees.
 
+---
+
 One day, Bruno wanted to show his friend, the owl Mila, how high he could climb.
 
 He climbed… higher… and higher… but suddenly he slipped!
 
+---
+
 "Oh no!" cried Bruno. His heart was beating like a drum.
+
+---
 
 He sat down on the ground and said:
 
@@ -95,15 +101,23 @@ Mila flew to him and said:
 
 "Good that you noticed, Bruno! When you know what you feel, it's easier to handle it."
 
+---
+
 Bruno thought for a moment, then smiled:
 
 "When I'm scared, I need a break. I take a deep breath… in… and out."
+
+---
 
 Later, while playing, Bruno stumbled over a stone.
 
 He growled: "Grrr, now I am angry!"
 
+---
+
 Mila nodded: "You noticed it! And what do you do when you are angry?"
+
+---
 
 Bruno thought for a moment and said:
 

@@ -36,16 +36,16 @@ All ratios are WCAG 2.1 contrast ratios, computed against the background named i
 
 | Token         | Hex       | Role                                                     | Contrast                                         |
 | ------------- | --------- | -------------------------------------------------------- | ------------------------------------------------ |
-| `--paper`     | `#FBF5EA` | Page background                                          | n/a                                              |
-| `--paper-2`   | `#F3EADA` | Recessed areas, panels, the reading band under frames    | ink 13.2:1                                       |
-| `--card`      | `#FFFDF8` | Raised surfaces: covers, dialogs, question cards         | ink 15.5:1                                       |
-| `--ink`       | `#24212E` | Body text, icons, line art                               | 14.5:1 on paper                                  |
-| `--ink-2`     | `#5A5466` | Secondary text (adult UI only, never child reading text) | 6.7:1 paper, 6.1:1 paper-2                       |
-| `--rule`      | `#D9CDB8` | Decorative dividers only (fails 3:1 on purpose)          | 1.45:1, decorative                               |
-| `--edge`      | `#8C7F6A` | Borders of inputs and controls (non-text contrast)       | 3.6:1 paper, 3.85:1 card                         |
+| `--paper`     | `#FBF0DE` | Page background                                          | n/a                                              |
+| `--paper-2`   | `#F5E4CA` | Recessed areas, panels, the reading band under frames    | ink 12.6:1                                       |
+| `--card`      | `#FFF9EF` | Raised surfaces: covers, dialogs, question cards         | ink 15.1:1                                       |
+| `--ink`       | `#24212E` | Body text, icons, line art                               | 14.0:1 on paper                                  |
+| `--ink-2`     | `#5A5466` | Secondary text (adult UI only, never child reading text) | 6.4:1 paper, 5.8:1 paper-2                       |
+| `--rule`      | `#E3CCA8` | Decorative dividers only (fails 3:1 on purpose)          | decorative                                       |
+| `--edge`      | `#8C7F6A` | Borders of inputs and controls (non-text contrast)       | 3.5:1 paper, 3.7:1 card                          |
 | `--poppy`     | `#C8402B` | Ink 1: warmth, primary action fill                       | white text on it 4.97:1                          |
-| `--poppy-ink` | `#A3311F` | Poppy used as text or links                              | 6.4:1 paper                                      |
-| `--lagoon`    | `#0F6E6A` | Ink 2: calm, links, "play"                               | 5.6:1 paper, white on it 6.1:1                   |
+| `--poppy-ink` | `#A3311F` | Poppy used as text or links                              | 6.2:1 paper                                      |
+| `--lagoon`    | `#0F6E6A` | Ink 2: calm, links, "play"                               | 5.4:1 paper, white on it 6.1:1                   |
 | `--honey`     | `#F2B33D` | Ink 3: light, focus halo, word highlight base            | ink on it 8.5:1, **never text on paper** (1.7:1) |
 | `--plum`      | `#6B3E75` | Ink 4: night, wonder, bilingual secondary accent         | 7.5:1 paper                                      |
 | `--moss`      | `#3F6B2E` | Ink 5: growth, outdoors                                  | 5.8:1 paper                                      |
@@ -133,11 +133,11 @@ Each feeling group gets a tint, loosely following the RULER Mood Meter quadrants
 
 ### Families (all OFL, self-hosted as WOFF2 and subset per script)
 
-| Script             | Display (titles, covers)                                                                                | Reading, bands 1-2                                                                        | Reading, bands 3-4                                                                                                      | UI                        |
-| ------------------ | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| Latin (de, en, tr) | **Fraunces** variable: `opsz` 72-144, `SOFT` 100 in bands 1-2 and 50 in bands 3-4, `WONK` 0, weight 600 | **Andika**: designed by SIL for new readers, with a single-storey a and g and clear I/l/1 | **Literata** variable (OFL, built for long-form screen reading, used by Google Play Books)                              | **Andika**                |
-| Arabic (ar)        | **Baloo Bhaijaan 2** 600-700 in bands 1-2. **Noto Naskh Arabic** 700 in bands 3-4.                      | **Noto Naskh Arabic**, **fully vocalised** (tashkeel)                                     | **Noto Naskh Arabic**, **partially vocalised** (harakat only where ambiguous, as in school readers from about Klasse 3) | **Noto Naskh Arabic** 500 |
-| Urdu (ur)          | **Gulzar** (Nastaliq)                                                                                   | **Gulzar**, with **Noto Nastaliq Urdu** as fallback (see 07)                              | Same                                                                                                                    | **Gulzar**                |
+| Script             | Display (titles, covers)                                                           | Reading, bands 1-2                                                                        | Reading, bands 3-4                                                                                                      | UI                        |
+| ------------------ | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| Latin (de, en, tr) | **Baloo 2** 700                                                                    | **Andika**: designed by SIL for new readers, with a single-storey a and g and clear I/l/1 | **Literata** variable (OFL, built for long-form screen reading, used by Google Play Books)                              | **Andika**                |
+| Arabic (ar)        | **Baloo Bhaijaan 2** 600-700 in bands 1-2. **Noto Naskh Arabic** 700 in bands 3-4. | **Noto Naskh Arabic**, **fully vocalised** (tashkeel)                                     | **Noto Naskh Arabic**, **partially vocalised** (harakat only where ambiguous, as in school readers from about Klasse 3) | **Noto Naskh Arabic** 500 |
+| Urdu (ur)          | **Gulzar** (Nastaliq)                                                              | **Gulzar**, with **Noto Nastaliq Urdu** as fallback (see 07)                              | Same                                                                                                                    | **Gulzar**                |
 
 Why Literata for bands 3-4: at 10-12, readers move to "real books", and the single-storey Andika
 reads as a primer. Literata gives the chapter reader a credible book voice while Andika stays the
@@ -148,8 +148,10 @@ Why these fonts:
 - **Andika.** It was built for beginning readers. Its letterforms match the shapes children are
   taught to write, and it covers Turkish (ı İ ş ğ) and German. One family serves both reading and
   UI, which saves a download.
-- **Fraunces SOFT.** Soft, ink-trap-like terminals give a printed picture-book voice. It is used
-  only at 28 px and above.
+- **Baloo 2 for Latin headings.** Round, chunky and friendly without being a cartoon. It is the
+  Latin sibling of Baloo Bhaijaan 2, the Arabic display face, so headings in German, English,
+  Turkish and Arabic share one voice. One weight (700, about 19 KB for Latin) is loaded; story and
+  UI text stay in Andika. It replaced Fraunces, whose bookish serif read as too grown-up.
 - **Naskh for reading, not Kufi or geometric Arabic.** Arabic children's books and school primers
   are set in vocalised Naskh, so it is what children are learning to read. Noto Naskh positions
   harakat reliably.
@@ -230,12 +232,49 @@ least 44 px with an 8 px gap.
 | Token       | Value                                                  | Use                               |
 | ----------- | ------------------------------------------------------ | --------------------------------- |
 | `--e-0`     | none                                                   | Flat on paper                     |
-| `--e-1`     | `3px 4px 0 rgb(36 33 46 / .14)`                        | Covers, cards                     |
-| `--e-2`     | `5px 7px 0 rgb(36 33 46 / .16)`                        | Pressed-up: dialogs, active cover |
-| `--e-press` | `1px 1px 0 rgb(36 33 46 / .14)` + `translate(2px,3px)` | Pressed state: the card "lands"   |
+| `--e-1`     | `3px 4px 0 rgb(110 62 28 / .2)`                        | Covers, cards                     |
+| `--e-2`     | `6px 8px 0 rgb(110 62 28 / .22)`                       | Pressed-up: dialogs, active cover |
+| `--e-press` | `1px 1px 0 rgb(110 62 28 / .2)` + `translate(2px,3px)` | Pressed state: the card "lands"   |
 
 In RTL the shadow x-offset flips (`-3px`) so the light source mirrors with the reading direction.
 In Lamp the shadow is `rgb(0 0 0 / .5)`.
+
+Shadows are a warm cocoa, not cold ink, so a lifted card sits on sunlit paper.
+
+**Outline.** Story tiles, chips, the picture-book door, the filter panel and the search field carry a
+2 px `--ink` outline (`--outline`), like the drawn edge of a board-book page. The outline is what makes
+the shelf read as printed rather than as an app.
+
+**Hand-made accents.** These are the only decorations, and each appears at most once per view:
+
+- **Watercolour wash** (`.wash`, ink in `--wash`): a pale, unevenly pooled patch behind shelf
+  titles, in the shelf's ink: poppy for picture books, lagoon for read-along, plum for chapters,
+  moss for long reads. Ink on it stays at least 6.9:1. In Lamp it fades to a stain.
+- A wavy hand-drawn underline (`.squiggle`) for page titles that are not shelves (the Library).
+- **Painted backdrop** (`.painted`): two large pale blobs (lagoon tint, poppy tint) behind the main
+  block of a page: the home page's first screen and the story cover. Tints only, so text keeps its
+  contrast; in Lamp they are `--card`.
+- **Torn paper** (`.torn`, colour in `--torn`): a section on a strip of honey-tinted paper with
+  torn top and bottom edges, at most 8 px deep. Used for "Find by situation" and the grown-ups box
+  on a story cover. Teal links on it are 4.8:1.
+- **Splatter** (`.splatter`): a few drops of poppy and honey flicked onto the corners of the
+  end-of-story picture. Only there.
+- A scalloped paper edge under the top bar instead of a hairline.
+- A band of two flat hills above the footer (`--hill-back`, `--hill-front`).
+- A flat `--sun` disc: behind a placeholder cover's emoji, in the corner of the picture-book door,
+  and in the logo. In Lamp it is the rose moon colour; in HC it is removed.
+
+All paint edges come from SVG turbulence filters inside CSS masks, so there are no image files.
+Every effect sits behind content and is removed in the HC themes and under `forced-colors`.
+
+**Logo and wordmark.** The mark is an open book with the sun rising behind it
+(`src/components/Logo.astro`, also `public/favicon.svg`). The name is stacked: its last word, the
+one that carries it ("Geschichten", "Stories", "القصص"), sits large over a hand-drawn swash in
+`--sun`, with the lead words small above it. On phones the language button is icon-only and the
+book mark is dropped below 360 px, so the bar stays one row.
+
+**Motion on cards.** On hover a tile lifts 3 px and tips 1° (mirrored in RTL), and its emoji wobbles
+once. On press it lands (`--e-press`). Both are off under `prefers-reduced-motion`.
 
 **Grain.** One tiled 256×256 PNG of monochrome noise at 4% opacity with `mix-blend-mode: multiply`
 on `--paper` and `--card`. It is disabled in HC themes and under `prefers-reduced-transparency`.
@@ -272,6 +311,28 @@ on `--paper` and `--card`. It is disabled in HC themes and under `prefers-reduce
 Content max width is 1200 px. The storybook stage keeps a **3:2** image ratio in landscape and
 **4:3** (cropped from the 3:2 master's safe area) in portrait.
 
+**Storybook layout follows the window's shape, not a breakpoint.** Picture and text sit on one
+sheet (an open book on the table), centred, with the top bar and page bar aligned to the same width:
+
+- Wider than 900 px and wider than 5:4: picture and text side by side. The sheet is sized from the
+  height left between the bars, so the whole spread always fits; it caps at 1400 px.
+- Anything taller (phones, tablets, a portrait monitor): picture over text, at most 72 rem wide.
+- Two languages that read the same way, on a wide screen: picture on top, the two texts side by
+  side; otherwise stacked. Each text carries a small language tag (lagoon tint, then honey).
+- Story type scales up on big screens (x1.15 from 1100x820, x1.3 from 1500x1100); the band size is
+  the floor.
+- A long page makes room before it scrolls. In the tall layout the picture shrinks first, down to a
+  quarter of the page (the art letterboxes inside it). In the wide layout a page the build knows is long
+  (over 260 characters) gives the text a larger share of the sheet.
+- Two languages sit side by side whenever the page area is at least 720 px wide, whatever their
+  directions: each column keeps its own `dir`.
+- Only then does text scroll. Its last lines fade and a round arrow bobs in the sheet's corner until
+  the reader reaches the end. Read-along keeps the sentence being read in view (a third of the way
+  down the box); a recording without word timings scrolls the page in step with the audio.
+- Scrolling is a safety net, not a layout: `node scripts/content-report.mjs` lists every page over
+  its band's sentence limit so editors can split it.
+- Page dots: read pages filled, the current page a long accent pill, pages to come hollow.
+
 Use logical properties only (`margin-inline-start`, `inset-inline-end`, `padding-block`) so that
 RTL comes free.
 
@@ -279,10 +340,12 @@ RTL comes free.
 
 ## Imagery treatment
 
+- A story without a cover shows a flat plate in its first palette colour, a sun disc in the second,
+  printed slightly off-register, a pale hill, and the story's emoji. No gradients.
 - Covers sit on `--card` with `--r-l` corners and `--e-1`. The title is set in HTML **below** the
   image, never baked into it, because titles change per locale.
-- Story frames are shown at full stage width with no border and no rounded corners. A frame is a
-  page, not a card.
+- A story frame fills its half (or top) of the storybook sheet. The sheet, not the frame, carries the
+  `--outline`, `--r-l` corners and `--e-1`; the frame is separated from the text by one outline rule.
 - Line-art frames (the black-line variant) are shown on `--paper`. In Lamp they are drawn in
   `--ink` (ember) via an inline SVG `currentColor`, so line art needs no filter.
 - Never crop a character's face. A focal point is stored per image (`focus: [x,y]` in 0-1) and
@@ -296,12 +359,12 @@ RTL comes free.
 /* Paper & Ink tokens. Source of truth: docs/roadmap/ux/02-visual-language.md */
 :root {
   color-scheme: light;
-  --paper: #fbf5ea;
-  --paper-2: #f3eada;
-  --card: #fffdf8;
+  --paper: #fbf0de;
+  --paper-2: #f5e4ca;
+  --card: #fff9ef;
   --ink: #24212e;
   --ink-2: #5a5466;
-  --rule: #d9cdb8;
+  --rule: #e3cca8;
   --edge: #8c7f6a;
   --poppy: #c8402b;
   --poppy-ink: #a3311f;
@@ -324,7 +387,7 @@ RTL comes free.
   --on-accent: #ffffff;
   --listen: var(--lagoon);
 
-  --font-display: 'Fraunces', 'Andika', system-ui, sans-serif;
+  --font-display: 'Baloo 2', 'Andika', system-ui, sans-serif;
   --font-read: 'Andika', system-ui, sans-serif;
   --font-ui: 'Andika', system-ui, sans-serif;
   --t-story: 24px;
@@ -355,9 +418,13 @@ RTL comes free.
   --r-l: 24px;
   --r-round: 999px;
   --shadow-x: 1; /* flipped to -1 in RTL */
-  --e-1: calc(3px * var(--shadow-x)) 4px 0 rgb(36 33 46 / 0.14);
-  --e-2: calc(5px * var(--shadow-x)) 7px 0 rgb(36 33 46 / 0.16);
-  --e-press: calc(1px * var(--shadow-x)) 1px 0 rgb(36 33 46 / 0.14);
+  --e-1: calc(3px * var(--shadow-x)) 4px 0 rgb(110 62 28 / 0.2);
+  --e-2: calc(6px * var(--shadow-x)) 8px 0 rgb(110 62 28 / 0.22);
+  --e-press: calc(1px * var(--shadow-x)) 1px 0 rgb(110 62 28 / 0.2);
+  --outline: 2px solid var(--ink);
+  --sun: var(--honey);
+  --hill-back: var(--moss-tint);
+  --hill-front: var(--paper-2);
   --tap-child: 64px;
   --tap-adult: 44px;
   --tap-gap-child: 24px;
