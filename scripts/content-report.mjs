@@ -158,7 +158,9 @@ if (longPages.length) {
   const byStory = new Map();
   for (const p of longPages) byStory.set(p.id, [...(byStory.get(p.id) ?? []), p]);
   console.log(`\nStorybook pages over their band's sentence limit (${longPages.length}) — split them with a --- break`);
-  for (const [id, list] of byStory) {
+  // Worst first: the story whose longest page is furthest over its limit is the one children will notice.
+  const excess = list => Math.max(...list.map(p => p.sentences - p.limit));
+  for (const [id, list] of [...byStory].sort((a, b) => excess(b[1]) - excess(a[1]) || a[0].localeCompare(b[0]))) {
     console.log(`  ${id} (limit ${list[0].limit})`);
     for (const locale of LOCALES) {
       const mine = list.filter(p => p.locale === locale);
