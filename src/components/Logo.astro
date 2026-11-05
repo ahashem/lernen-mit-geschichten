@@ -1,0 +1,68 @@
+---
+/* The site mark: Bruno the bear peeking over an open book. Decorative; the wordmark next to it carries the name. */
+interface Props {
+  size?: number;
+}
+const { size = 40 } = Astro.props;
+---
+
+<svg class="logo" viewBox="0 0 48 48" width={size} height={size} aria-hidden="true">
+  <circle class="fur line" cx="16.5" cy="10.5" r="3.6"></circle>
+  <circle class="fur line" cx="31.5" cy="10.5" r="3.6"></circle>
+  <circle class="fur line" cx="24" cy="18" r="9.5"></circle>
+  <circle class="dot" cx="20.3" cy="16.6" r="1.35"></circle>
+  <circle class="dot" cx="27.7" cy="16.6" r="1.35"></circle>
+  <ellipse class="page" cx="24" cy="21" rx="3.6" ry="2.7"></ellipse>
+  <ellipse class="dot" cx="24" cy="20" rx="1.4" ry="1"></ellipse>
+  <path
+    class="cover"
+    d="M3.5 25.5c7-3 14-3 20.5 1 6.5-4 13.5-4 20.5-1V44c-7-3-14-3-20.5 1-6.5-4-13.5-4-20.5-1z"
+  ></path>
+  <path class="page line" d="M6 24c6-2.5 12-2.3 18 1.2v17c-6-3.4-12-3.6-18-1.2z"></path>
+  <path class="page line" d="M42 24c-6-2.5-12-2.3-18 1.2v17c6-3.4 12-3.6 18-1.2z"></path>
+  <ellipse class="fur line" cx="18.5" cy="24.6" rx="3" ry="2.2"></ellipse>
+  <ellipse class="fur line" cx="29.5" cy="24.6" rx="3" ry="2.2"></ellipse>
+</svg>
+
+<style>
+  .logo {
+    flex-shrink: 0;
+    --logo-line: var(--ink);
+    --logo-fur: #e9a24a;
+    --logo-page: var(--card);
+    --logo-cover: var(--poppy);
+  }
+  :global(:root[data-theme='lamp']) .logo {
+    --logo-fur: #8a5a2e;
+    --logo-cover: #d98263;
+  }
+  :global(:root[data-theme^='hc']) .logo {
+    --logo-fur: var(--card);
+    --logo-cover: var(--ink);
+  }
+  .line {
+    stroke: var(--logo-line);
+    stroke-width: 2.4;
+    stroke-linejoin: round;
+  }
+  .fur {
+    fill: var(--logo-fur);
+  }
+  .page {
+    fill: var(--logo-page);
+  }
+  .cover {
+    fill: var(--logo-cover);
+  }
+  .dot {
+    fill: var(--logo-line);
+  }
+  @media (forced-colors: active) {
+    .logo {
+      --logo-line: CanvasText;
+      --logo-fur: Canvas;
+      --logo-page: Canvas;
+      --logo-cover: CanvasText;
+    }
+  }
+</style>

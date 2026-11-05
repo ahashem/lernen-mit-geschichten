@@ -299,6 +299,13 @@
   box-shadow: 0 0 0 7px var(--focus-halo);
   border-radius: inherit;
 }
+/* Views and pages take focus from script (tabindex -1) so a screen reader starts in the right place; they are not
+   controls, so they draw no ring. */
+[tabindex='-1']:focus,
+[tabindex='-1']:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
 @media (prefers-reduced-motion: reduce) {
   :root {
     --dur-quick: 0ms;

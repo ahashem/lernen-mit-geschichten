@@ -59,8 +59,7 @@ const { picture, emoji, palette, eager = false } = Astro.props;
     inset-block-end: -30%;
     block-size: 48%;
     border-radius: 50%;
-    background: var(--card);
-    opacity: 0.55;
+    background: color-mix(in srgb, var(--card) 60%, var(--a));
   }
   .emoji {
     position: relative;

@@ -7,6 +7,7 @@ import ClassLinkCard from '@components/ClassLinkCard.astro';
 import LanguageSelector from '@components/LanguageSelector.astro';
 import GrownUpsMenu from '@components/GrownUpsMenu.astro';
 import Icon from '@components/reader/Icon.astro';
+import Logo from '@components/Logo.astro';
 import GTMTracking from '@components/GTMTracking.astro';
 import ConsentBanner from '@components/ConsentBanner.astro';
 import type { Locale } from '@utils/i18n';
@@ -140,13 +141,7 @@ const jsonLd =
     <header>
       <div class="container bar">
         <a class="wordmark" href={locale === 'de' ? `${base}/` : `${base}/${locale}`}>
-          <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
-            <circle class="mark-sun" cx="26" cy="13" r="9"></circle>
-            <path
-              class="mark-book"
-              d="M5 14c5-2 10-2 15 1 5-3 10-3 15-1v19c-5-2-10-2-15 1-5-3-10-3-15-1z"></path>
-            <path class="mark-spine" d="M20 15v19"></path>
-          </svg>
+          <Logo size={44} />
           <span>{siteName}</span>
         </a>
         <nav class="bar-end" aria-label={getTranslation(locale, 'mainNav')}>
@@ -295,31 +290,8 @@ const jsonLd =
         text-decoration: none;
         min-inline-size: 0;
       }
-      .mark {
-        flex-shrink: 0;
-        inline-size: 36px;
-        block-size: 36px;
-      }
-      .mark-sun {
-        fill: var(--sun);
-      }
-      .mark-book {
-        fill: var(--card);
-        stroke: var(--poppy-ink);
-        stroke-width: 2.6;
-        stroke-linejoin: round;
-      }
-      .mark-spine {
-        stroke: var(--poppy-ink);
-        stroke-width: 2.6;
-        stroke-linecap: round;
-      }
       :root[data-theme='lamp'] .wordmark {
         color: var(--ink);
-      }
-      :root[data-theme='lamp'] .mark-book,
-      :root[data-theme='lamp'] .mark-spine {
-        stroke: var(--ink);
       }
 
       .bar-end {
@@ -353,9 +325,9 @@ const jsonLd =
         .wordmark {
           font-size: var(--t-ui-sm);
         }
-        .mark {
-          inline-size: 30px;
-          block-size: 30px;
+        .wordmark :global(.logo) {
+          inline-size: 36px;
+          block-size: 36px;
         }
         .bar-label {
           position: absolute;
@@ -367,7 +339,9 @@ const jsonLd =
         }
       }
 
+      /* Short pages keep the footer at the foot of the window. */
       main {
+        flex: 1 0 auto;
         min-block-size: 60vh;
         padding-block: var(--s-6);
       }

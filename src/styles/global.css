@@ -21,6 +21,9 @@ body {
   line-height: var(--lh-ui);
   color: var(--ink);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvh;
   background: var(--paper);
   -webkit-font-smoothing: antialiased;
 }

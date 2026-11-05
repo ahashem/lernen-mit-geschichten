@@ -1,4 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <circle cx="50" cy="50" r="50" fill="#FF9F40"/>
-  <text x="50" y="70" font-size="60" text-anchor="middle" fill="#fff">📚</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <g stroke="#24212e" stroke-width="2.4" stroke-linejoin="round">
+    <circle cx="16.5" cy="10.5" r="3.6" fill="#e9a24a"/>
+    <circle cx="31.5" cy="10.5" r="3.6" fill="#e9a24a"/>
+    <circle cx="24" cy="18" r="9.5" fill="#e9a24a"/>
+  </g>
+  <circle cx="20.3" cy="16.6" r="1.35" fill="#24212e"/>
+  <circle cx="27.7" cy="16.6" r="1.35" fill="#24212e"/>
+  <ellipse cx="24" cy="21" rx="3.6" ry="2.7" fill="#fff9ef"/>
+  <ellipse cx="24" cy="20" rx="1.4" ry="1" fill="#24212e"/>
+  <path d="M3.5 25.5c7-3 14-3 20.5 1 6.5-4 13.5-4 20.5-1V44c-7-3-14-3-20.5 1-6.5-4-13.5-4-20.5-1z" fill="#c8402b"/>
+  <g stroke="#24212e" stroke-width="2.4" stroke-linejoin="round">
+    <path d="M6 24c6-2.5 12-2.3 18 1.2v17c-6-3.4-12-3.6-18-1.2z" fill="#fff9ef"/>
+    <path d="M42 24c-6-2.5-12-2.3-18 1.2v17c6-3.4 12-3.6 18-1.2z" fill="#fff9ef"/>
+    <ellipse cx="18.5" cy="24.6" rx="3" ry="2.2" fill="#e9a24a"/>
+    <ellipse cx="29.5" cy="24.6" rx="3" ry="2.2" fill="#e9a24a"/>
+  </g>
 </svg>
