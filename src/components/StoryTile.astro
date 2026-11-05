@@ -60,18 +60,32 @@ const href =
     display: flex;
     flex-direction: column;
     background: var(--card);
+    border: var(--outline);
     border-radius: var(--r-l);
     box-shadow: var(--e-1);
     overflow: hidden;
     container-type: inline-size;
+    transition:
+      transform var(--dur-base) var(--ease-settle),
+      box-shadow var(--dur-base) var(--ease-out);
   }
-  .tile:hover {
-    box-shadow: var(--e-2);
+  /* The card lifts and tips a little, like picking a book off the pile; it lands when pressed. */
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .tile:hover {
+      transform: translateY(-3px) rotate(calc(-1deg * var(--shadow-x)));
+      box-shadow: var(--e-2);
+    }
+  }
+  .tile:active {
+    transform: translate(calc(2px * var(--shadow-x)), 3px);
+    box-shadow: var(--e-press);
   }
   .tile-cover {
     display: block;
     aspect-ratio: 4 / 3;
     background: var(--paper-2);
+    border-block-end: var(--outline);
+    text-decoration: none;
   }
   .tile-body {
     padding: var(--s-4);
@@ -79,7 +93,8 @@ const href =
     gap: var(--s-2);
   }
   .tile-title {
-    font-family: var(--font-display);
+    font-family: var(--font-ui);
+    font-weight: 700;
     font-size: var(--t-ui);
     line-height: var(--lh-display);
   }
@@ -116,6 +131,8 @@ const href =
       flex-direction: row;
     }
     .tile--row .tile-cover {
+      border-block-end: 0;
+      border-inline-end: var(--outline);
       flex: 0 0 7rem;
       aspect-ratio: auto;
       min-block-size: 7rem;

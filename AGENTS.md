@@ -52,7 +52,7 @@ Stories live at `src/content/stories/<locale>/<slug>.md` and are joined across l
 translation exists:
 
 ```sh
-node scripts/content-report.mjs            # which stories are missing which languages
+node scripts/content-report.mjs            # which stories are missing which languages, and pages over the band limit
 node scripts/content-report.mjs --matrix   # the full per-story grid
 ```
 

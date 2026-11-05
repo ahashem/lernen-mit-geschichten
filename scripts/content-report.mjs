@@ -6,6 +6,9 @@
  *   node scripts/content-report.mjs --matrix  # full per-story grid
  *   node scripts/content-report.mjs --json    # machine-readable, for tooling
  *
+ * It also lists storybook pages longer than their band allows (ux/02: 3 sentences in band 1, 5 in band 2). That is
+ * advice for editors: such a page scrolls inside the reader, and a child does not scroll. Split it with a `---` break.
+ *
  * Stories live at src/content/stories/<locale>/<slug>.md and are joined across
  * locales by the `storyId` in their frontmatter, not by filename — a
  * translation is free to use a different slug.
@@ -15,6 +18,8 @@
  */
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { parse as parseYaml } from 'yaml';
+import { alignTo, paginate, SENTENCES_PER_PAGE } from '../src/utils/story-pages.ts';
 
 const ROOT = 'src/content/stories';
 const SOURCE = 'de';
@@ -39,6 +44,8 @@ function frontmatterField(text, field) {
 const stories = new Map();
 const noId = [];
 const drafts = [];
+// storyId -> { locale -> { fm, body } }, for the page-length check
+const texts = new Map();
 
 for (const locale of LOCALES) {
   const dir = join(ROOT, locale);
@@ -55,6 +62,9 @@ for (const locale of LOCALES) {
     if (!frontmatterField(text, 'storyId')) noId.push(`${locale}/${file}`);
     if (!stories.has(id)) stories.set(id, {});
     stories.get(id)[locale] = file;
+    const parts = text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+    if (!texts.has(id)) texts.set(id, {});
+    texts.get(id)[locale] = { fm: (parts && parseYaml(parts[1])) ?? {}, body: parts?.[2] ?? '' };
   }
 }
 
@@ -69,6 +79,24 @@ for (const id of sourced) {
   }
 }
 
+// Pages as the reader cuts them: each language's own pages, and the pages a translation gets when it is read beside
+// the German. Band is the German file's; only picture books and read-along (bands 1-2) have a per-page limit.
+const longPages = [];
+for (const [id, group] of texts) {
+  const band = Number(group[SOURCE]?.fm.band) || undefined;
+  const limit = SENTENCES_PER_PAGE[band];
+  if (!limit) continue;
+  const base = group[SOURCE] ? paginate(group[SOURCE].body, SOURCE, band, group[SOURCE].fm.pages) : null;
+  for (const locale of LOCALES) {
+    const f = group[locale];
+    if (!f) continue;
+    const own = paginate(f.body, locale, band, f.fm.pages).pages;
+    const beside = base && locale !== SOURCE ? alignTo(base, f.body, locale, band, f.fm.pages) : null;
+    const counts = own.map((p, i) => Math.max(p.sentences.length, beside?.[i]?.sentences.length ?? 0));
+    counts.forEach((n, i) => n > limit && longPages.push({ id, locale, page: i + 1, sentences: n, limit }));
+  }
+}
+
 if (args.has('--json')) {
   console.log(
     JSON.stringify(
@@ -79,6 +107,7 @@ if (args.has('--json')) {
         missing,
         orphans,
         drafts,
+        longPages,
       },
       null,
       2
@@ -122,6 +151,21 @@ if (args.has('--matrix')) {
   for (const id of ids) {
     const cells = LOCALES.map(l => (stories.get(id)[l] ? ' ✓' : ' ·')).join('  ');
     console.log(`  ${id.padEnd(width)}  ${cells}`);
+  }
+}
+
+if (longPages.length) {
+  const byStory = new Map();
+  for (const p of longPages) byStory.set(p.id, [...(byStory.get(p.id) ?? []), p]);
+  console.log(`\nStorybook pages over their band's sentence limit (${longPages.length}) — split them with a --- break`);
+  // Worst first: the story whose longest page is furthest over its limit is the one children will notice.
+  const excess = list => Math.max(...list.map(p => p.sentences - p.limit));
+  for (const [id, list] of [...byStory].sort((a, b) => excess(b[1]) - excess(a[1]) || a[0].localeCompare(b[0]))) {
+    console.log(`  ${id} (limit ${list[0].limit})`);
+    for (const locale of LOCALES) {
+      const mine = list.filter(p => p.locale === locale);
+      if (mine.length) console.log(`    ${locale}: ${mine.map(p => `p${p.page}=${p.sentences}`).join(', ')}`);
+    }
   }
 }
 

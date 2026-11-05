@@ -80,6 +80,9 @@ for (const sibling of siblings) {
 }
 const allLocales: Locale[] = ['de', 'ar', 'en', 'tr', 'ur'];
 const canPair = hasBook && Object.keys(aligned).length >= 2;
+// A page with more text than a picture-book spread holds comfortably; the wide layout gives it a larger text share.
+const LONG_PAGE = 260;
+const isLong = (i: number) => pages[i].sentences.join(' ').length > LONG_PAGE;
 
 const keys = [
   'pageOf',
@@ -155,7 +158,7 @@ const description = summary || `${title} | ${t('siteName')}`;
     data-story-id={storyId}
   >
     <section class="view cover" data-view="cover" aria-labelledby="story-title" tabindex="-1">
-      <div class="container cover-grid">
+      <div class="container cover-grid painted">
         <div class="cover-art surface">
           <StoryArt picture={cover} emoji={emoji} palette={palette} eager />
         </div>
@@ -215,7 +218,7 @@ const description = summary || `${title} | ${t('siteName')}`;
               </div>
             )
           }
-          <details class="grownups surface">
+          <details class="grownups torn">
             <summary>{t('forGrownUps')}</summary>
             <div class="grownups-body">
               {area && <p class="area">{area}</p>}
@@ -421,48 +424,51 @@ const description = summary || `${title} | ${t('siteName')}`;
                 <section
                   class="page"
                   data-page={i}
+                  data-long={isLong(i) || undefined}
                   hidden={i > 0}
                   tabindex="-1"
                   aria-label={fmt(t('pageOf'), { n: i + 1, total: pages.length })}
                 >
-                  <div class="frame">
-                    <StoryArt
-                      picture={frameFor(meta, i + 1, locale)}
-                      emoji={emoji}
-                      palette={palette}
-                      eager={i === 0}
-                    />
-                  </div>
-                  <div class="texts">
-                    {Object.entries(aligned).map(([loc, locPages]) => {
-                      let w = 0;
-                      return (
-                        <div
-                          class="text-block"
-                          data-lang-block={loc}
-                          lang={loc}
-                          dir={isRTL(loc as Locale) ? 'rtl' : 'ltr'}
-                          hidden={loc !== locale}
-                        >
-                          <p class="lang-label">{endonyms[loc as Locale]}</p>
-                          <p class="story-text">
-                            {locPages[i].sentences.map((sentence, s) => (
-                              <>
-                                <span class="s" data-s={s}>
-                                  {wordsOf(sentence).map(word => (
-                                    <>
-                                      <span class="w" data-w={w++}>
-                                        {word}
-                                      </span>{' '}
-                                    </>
-                                  ))}
-                                </span>{' '}
-                              </>
-                            ))}
-                          </p>
-                        </div>
-                      );
-                    })}
+                  <div class="sheet">
+                    <div class="frame">
+                      <StoryArt
+                        picture={frameFor(meta, i + 1, locale)}
+                        emoji={emoji}
+                        palette={palette}
+                        eager={i === 0}
+                      />
+                    </div>
+                    <div class="texts">
+                      {Object.entries(aligned).map(([loc, locPages]) => {
+                        let w = 0;
+                        return (
+                          <div
+                            class="text-block"
+                            data-lang-block={loc}
+                            lang={loc}
+                            dir={isRTL(loc as Locale) ? 'rtl' : 'ltr'}
+                            hidden={loc !== locale}
+                          >
+                            <p class="lang-label">{endonyms[loc as Locale]}</p>
+                            <p class="story-text">
+                              {locPages[i].sentences.map((sentence, s) => (
+                                <>
+                                  <span class="s" data-s={s}>
+                                    {wordsOf(sentence).map(word => (
+                                      <>
+                                        <span class="w" data-w={w++}>
+                                          {word}
+                                        </span>{' '}
+                                      </>
+                                    ))}
+                                  </span>{' '}
+                                </>
+                              ))}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </section>
               );
@@ -504,7 +510,7 @@ const description = summary || `${title} | ${t('siteName')}`;
     {
       hasBook && (
         <section class="view end" data-view="end" hidden tabindex="-1" aria-labelledby="end-title">
-          <div class="container end-inner">
+          <div class="container end-inner splatter">
             <div class="end-art surface">
               <StoryArt picture={cover} emoji={emoji} palette={palette} />
             </div>
@@ -660,7 +666,7 @@ const description = summary || `${title} | ${t('siteName')}`;
           tabindex="-1"
           aria-labelledby="chapters-end-title"
         >
-          <div class="container end-inner">
+          <div class="container end-inner splatter">
             <div class="end-art surface">
               <StoryArt picture={cover} emoji={emoji} palette={palette} />
             </div>
@@ -1120,11 +1126,21 @@ const description = summary || `${title} | ${t('siteName')}`;
     align-items: start;
   }
 
+  /* Tall screens: the cover sits in the middle of the page, not under the header with a void below. */
+  @media (min-height: 1000px) and (min-width: 900px) {
+    .cover-grid {
+      min-block-size: 60dvh;
+      align-content: center;
+    }
+  }
+
   .cover-art {
     container-type: inline-size;
     aspect-ratio: 3 / 2;
     overflow: hidden;
     background: var(--paper-2);
+    border: var(--outline);
+    box-shadow: var(--e-2);
   }
 
   .cover-title {
@@ -1151,7 +1167,8 @@ const description = summary || `${title} | ${t('siteName')}`;
   }
 
   .grownups {
-    padding: var(--s-4);
+    --torn: var(--honey-tint);
+    padding: var(--s-5) var(--s-4);
     margin-block-end: var(--s-5);
   }
 
@@ -1303,19 +1320,36 @@ const description = summary || `${title} | ${t('siteName')}`;
 
   /* The book is the screen (the site header is hidden while reading), never more: long text (Arabic, Urdu) scrolls
      inside the page so the page controls always stay on screen. */
+  /* The book is an open spread centred on the paper. One width (--spread) is shared by the top bar, the sheet and the
+     page bar, so the controls line up with the page at every size. */
   .view.book {
+    --spread: min(100%, 1400px);
+    --story-scale: 1;
     position: relative;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr) auto;
     block-size: 100dvh;
     min-block-size: 22rem;
     margin-block: calc(-1 * var(--s-6));
-    background: var(--paper);
+  }
+
+  /* Big screens get big type: the band size is the floor, not the ceiling. */
+  @media (min-width: 1100px) and (min-height: 820px) {
+    .view.book {
+      --story-scale: 1.15;
+    }
+  }
+  @media (min-width: 1500px) and (min-height: 1100px) {
+    .view.book {
+      --story-scale: 1.3;
+    }
   }
 
   .topbar {
     display: flex;
     justify-content: space-between;
+    inline-size: var(--spread);
+    margin-inline: auto;
     padding: var(--s-3) var(--gutter);
     transition: opacity var(--dur-quick);
   }
@@ -1341,18 +1375,36 @@ const description = summary || `${title} | ${t('siteName')}`;
     gap: var(--s-2);
     min-inline-size: var(--tap-child);
     min-block-size: var(--tap-child);
-    border: 2px solid var(--edge);
+    padding-inline: var(--s-3);
+    border: var(--outline);
     border-radius: var(--r-m);
     background: var(--card);
     color: var(--ink);
     box-shadow: var(--e-1);
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
+    transition:
+      transform var(--dur-quick) var(--ease-settle),
+      box-shadow var(--dur-quick) var(--ease-out);
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .icon-btn:hover,
+    .nav-btn:not([disabled]):hover {
+      transform: translateY(-2px);
+      box-shadow: var(--e-2);
+    }
+  }
+
+  .nav-btn:has(.nav-label) {
+    padding-inline: var(--s-3) var(--s-4);
+  }
+  .nav-btn[data-action='next']:has(.nav-label) {
+    padding-inline: var(--s-4) var(--s-3);
   }
 
   .icon-btn--listen {
     background: var(--listen);
-    border-color: var(--listen);
     color: var(--on-accent);
   }
 
@@ -1363,7 +1415,8 @@ const description = summary || `${title} | ${t('siteName')}`;
   }
 
   .nav-btn[disabled] {
-    opacity: 0.4;
+    opacity: 0.35;
+    box-shadow: none;
   }
 
   .nav-btn.pulse {
@@ -1387,12 +1440,16 @@ const description = summary || `${title} | ${t('siteName')}`;
     position: relative;
     overflow: hidden;
     min-block-size: 0;
+    padding-inline: var(--gutter);
   }
 
+  /* The page is a size container, so the sheet can be measured against the space actually left between the bars. */
   .page {
+    container-type: size;
     display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
+    place-items: center;
     block-size: 100%;
+    padding-block: var(--s-2) var(--s-3);
     outline: none;
   }
 
@@ -1400,26 +1457,103 @@ const description = summary || `${title} | ${t('siteName')}`;
     display: none;
   }
 
+  /* Tall screens (phones, tablets, a portrait monitor): picture over text on one sheet, as wide as the picture can be
+     without pushing the text off screen. */
+  .sheet {
+    display: flex;
+    flex-direction: column;
+    inline-size: min(100cqi, 72rem, calc(60cqb * 4 / 3));
+    max-block-size: 100cqb;
+    min-block-size: 0;
+    background: var(--card);
+    border: var(--outline);
+    border-radius: var(--r-l);
+    box-shadow: var(--e-1);
+    overflow: hidden;
+  }
+
+  /* The picture shrinks before the text scrolls (flex-shrink 100 against the text's 1), down to a floor of a quarter
+     of the page; the art letterboxes inside it. */
   .frame {
+    flex: 0 100 auto;
+    min-block-size: 26cqb;
     container-type: inline-size;
     aspect-ratio: 4 / 3;
-    max-block-size: 42dvh;
     background: var(--paper-2);
+    border-block-end: var(--outline);
   }
 
   .texts {
+    flex: 0 1 auto;
     display: grid;
     align-content: start;
+    gap: var(--s-4);
     min-block-size: 0;
     overflow-y: auto;
+    padding: var(--s-5) var(--s-5) var(--s-4);
+  }
+
+  /* reader.ts sets data-more while text continues below: the last lines fade and a round arrow bobs at the sheet's
+     foot, so a child knows to scroll. */
+  .sheet {
+    position: relative;
+  }
+  .texts[data-more] {
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 4.5rem), transparent);
+  }
+  .sheet:has(.texts[data-more])::after {
+    content: '';
+    position: absolute;
+    inset-block-end: var(--s-3);
+    inset-inline-end: var(--s-4);
+    inline-size: 36px;
+    block-size: 36px;
+    border-radius: var(--r-round);
+    background: var(--accent) center / 18px no-repeat;
+    pointer-events: none;
+  }
+  .sheet:has(.texts[data-more])::before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    inset-block-end: calc(var(--s-3) + 9px);
+    inset-inline-end: calc(var(--s-4) + 9px);
+    inline-size: 18px;
+    block-size: 18px;
+    background: var(--on-accent);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .sheet:has(.texts[data-more])::after,
+    .sheet:has(.texts[data-more])::before {
+      animation: bob 1.6s var(--ease-in-out) infinite;
+    }
+  }
+  @keyframes bob {
+    50% {
+      translate: 0 4px;
+    }
   }
 
   .lang-label {
     display: none;
-    color: var(--ink-2);
+    justify-self: start;
+    inline-size: fit-content;
+    margin-block-end: var(--s-2);
+    padding: var(--s-1) var(--s-3);
+    border-radius: var(--r-s);
+    background: var(--lagoon-tint);
+    color: var(--ink);
     font-size: var(--t-ui-sm);
-    padding-inline: var(--gutter);
-    padding-block-start: var(--s-3);
+    font-weight: 700;
+  }
+
+  .text-block + .text-block .lang-label {
+    background: var(--honey-tint);
   }
 
   .story-app[data-pair] .lang-label {
@@ -1427,7 +1561,22 @@ const description = summary || `${title} | ${t('siteName')}`;
   }
 
   .story-app[data-pair] .text-block + .text-block:not([hidden]) {
-    border-block-start: 1px solid var(--rule);
+    padding-block-start: var(--s-4);
+    border-block-start: 2px dashed var(--rule);
+  }
+
+  @container (min-width: 720px) {
+    .story-app[data-pair-wide] .texts {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-6);
+    }
+
+    .story-app[data-pair-wide] .text-block + .text-block:not([hidden]) {
+      padding-block-start: 0;
+      padding-inline-start: var(--s-6);
+      border-block-start: 0;
+      border-inline-start: 2px dashed var(--rule);
+    }
   }
 
   .story-app:not([data-pair]) [data-pair-only] {
@@ -1470,10 +1619,8 @@ const description = summary || `${title} | ${t('siteName')}`;
   }
 
   .story-text {
-    align-self: stretch;
-    padding: var(--s-5) var(--gutter);
-    background: var(--paper-2);
     font-family: var(--font-read);
+    font-size: calc(var(--t-story) * var(--story-scale) * (1 + 0.12 * var(--text-step, 0)));
     line-height: var(--lh-story);
     max-inline-size: none;
   }
@@ -1520,7 +1667,9 @@ const description = summary || `${title} | ${t('siteName')}`;
     align-items: center;
     justify-content: space-between;
     gap: var(--s-3);
-    padding: var(--s-3) var(--gutter) var(--s-4);
+    inline-size: var(--spread);
+    margin-inline: auto;
+    padding: var(--s-2) var(--gutter) var(--s-4);
   }
 
   .nav-label {
@@ -1538,21 +1687,49 @@ const description = summary || `${title} | ${t('siteName')}`;
     gap: var(--s-2);
   }
 
+  /* Read pages are filled, the current page is a long pill in the accent, pages to come are hollow: shape and fill
+     both change, so the position never depends on colour alone. */
+  .dots {
+    align-items: center;
+  }
+
   .dots span {
-    inline-size: 10px;
-    block-size: 10px;
+    inline-size: 14px;
+    block-size: 14px;
+    border: 2px solid var(--edge);
     border-radius: var(--r-round);
-    background: var(--rule);
+    background: transparent;
+    transition: inline-size var(--dur-base) var(--ease-settle);
   }
 
   .dots span.is-done {
+    border-color: var(--ink-2);
     background: var(--ink-2);
   }
 
   .dots span.is-current {
-    background: var(--ink);
-    outline: 2px solid var(--ink);
-    outline-offset: 2px;
+    inline-size: 32px;
+    border-color: var(--ink);
+    background: var(--accent);
+  }
+
+  @media (max-width: 479px) {
+    .dots {
+      flex-wrap: nowrap;
+      gap: 6px;
+    }
+    .dots span {
+      inline-size: 10px;
+      block-size: 10px;
+    }
+    .dots span.is-current {
+      inline-size: 22px;
+    }
+    .nav-btn:has(.nav-label),
+    .nav-btn[data-action='next']:has(.nav-label) {
+      padding-inline: var(--s-2);
+      gap: var(--s-1);
+    }
   }
 
   .menu {
@@ -1645,10 +1822,12 @@ const description = summary || `${title} | ${t('siteName')}`;
     display: none;
   }
 
+  /* As wide as the art plus a margin, so the splatter lands on the picture's corners rather than the screen's. */
   .end-inner {
     display: grid;
     justify-items: center;
     gap: var(--s-5);
+    max-inline-size: 40rem;
     padding-block: var(--s-7);
     text-align: center;
   }
@@ -1659,6 +1838,8 @@ const description = summary || `${title} | ${t('siteName')}`;
     aspect-ratio: 3 / 2;
     overflow: hidden;
     background: var(--paper-2);
+    border: var(--outline);
+    box-shadow: var(--e-2);
   }
 
   .end-choices {
@@ -1743,48 +1924,62 @@ const description = summary || `${title} | ${t('siteName')}`;
     filter: brightness(0.62) sepia(0.35) saturate(0.8);
   }
 
-  @media (min-width: 1024px) and (orientation: landscape) {
+  /* The cover splits once there is room, whatever the window's shape. */
+  @media (min-width: 900px) {
+    /* Top-aligned: opening the grown-ups panel grows the right column and must not move the picture. */
     .cover-grid {
       grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: start;
+    }
+  }
+
+  /* Wide screens (anything clearly wider than tall): picture and text side by side on one sheet, the way an open
+     picture book lies on the table. The sheet's width follows the screen height so the spread always fits. */
+  @media (min-width: 900px) and (min-aspect-ratio: 5 / 4) {
+    /* --art is the picture's share of the sheet; the sheet is exactly as tall as a 4:3 picture in that share. */
+    .sheet {
+      --art: 0.56;
+      --w: min(100cqi, 1400px, calc(100cqb / (var(--art) * 0.75)));
+      display: grid;
+      grid-template-columns: calc(var(--w) * var(--art)) minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
+      inline-size: var(--w);
+      block-size: calc(var(--w) * var(--art) * 0.75);
     }
 
-    .view.book .page {
-      grid-template-rows: none;
-      grid-template-columns: 62fr 38fr;
+    [data-band='2'] .sheet {
+      --art: 0.5;
     }
 
-    [data-band='2'] .view.book .page {
-      grid-template-columns: 56fr 44fr;
+    .page[data-long] .sheet {
+      --art: 0.44;
     }
 
     .frame {
-      aspect-ratio: 3 / 2;
-      align-self: center;
-      max-block-size: none;
+      aspect-ratio: auto;
+      border-block-end: 0;
+      border-inline-end: var(--outline);
     }
 
-    .story-text {
-      align-self: center;
-      background: none;
+    /* safe: a page longer than the sheet starts at its first line instead of overflowing both ends. */
+    .texts {
+      align-content: safe center;
+      padding: var(--s-6);
     }
 
-    .story-app[data-pair-wide] .view.book .page {
-      grid-template-columns: none;
-      grid-template-rows: auto 1fr;
+    /* Two languages: picture on top as a strip, the languages side by side underneath (see the container query). */
+    .story-app[data-pair-wide] .sheet {
+      display: flex;
+      inline-size: min(100cqi, 1400px);
+      block-size: auto;
     }
 
     .story-app[data-pair-wide] .frame {
       aspect-ratio: auto;
-      block-size: 40dvh;
-    }
-
-    .story-app[data-pair-wide] .texts {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--s-5);
-    }
-
-    .story-app[data-pair-wide] .text-block + .text-block:not([hidden]) {
-      border-block-start: 0;
+      block-size: 38dvh;
+      flex: 0 100 auto;
+      border-inline-end: 0;
+      border-block-end: var(--outline);
     }
   }
 </style>

@@ -149,9 +149,15 @@ const available = rows.filter(r => !r.missing);
   summary::-webkit-details-marker {
     display: none;
   }
-  /* The narrowest phones keep the endonym and drop the bubble, so the top bar stays one row. */
-  @media (max-width: 359px) {
-    summary :global(.icon) {
+  /* Phones show only the bubble, so the top bar keeps one row next to the stacked wordmark. The summary's
+     aria-label still names the current language, and the panel lists every language by name. */
+  @media (max-width: 479px) {
+    summary {
+      padding-inline: var(--s-2);
+      min-inline-size: var(--tap-adult);
+      justify-content: center;
+    }
+    summary > span {
       display: none;
     }
   }

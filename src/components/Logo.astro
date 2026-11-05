@@ -1,0 +1,50 @@
+---
+/* The site mark: an open book with the sun rising behind it. Decorative; the wordmark next to it carries the name. */
+interface Props {
+  size?: number;
+}
+const { size = 40 } = Astro.props;
+---
+
+<svg class="logo" viewBox="0 0 48 48" width={size} height={size} aria-hidden="true">
+  <circle class="sun" cx="33" cy="13" r="9"></circle>
+  <path
+    class="leaf line"
+    d="M5 18c6.5-2.6 13-2.4 19 1.3 6-3.7 12.5-3.9 19-1.3v22c-6.5-2.6-13-2.4-19 1.3-6-3.7-12.5-3.9-19-1.3z"
+  ></path>
+  <path class="line" d="M24 19.3v22"></path>
+  <path class="line thin" d="M10 25c3-1 6-.8 9 .6M10 31c3-1 6-.8 9 .6M29 25.6c3-1.4 6-1.6 9-.6"
+  ></path>
+</svg>
+
+<style>
+  .logo {
+    flex-shrink: 0;
+    --logo-line: var(--ink);
+    --logo-leaf: var(--card);
+    --logo-sun: var(--sun);
+  }
+  .line {
+    fill: none;
+    stroke: var(--logo-line);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .thin {
+    stroke-width: 1.8;
+  }
+  .leaf {
+    fill: var(--logo-leaf);
+  }
+  .sun {
+    fill: var(--logo-sun);
+  }
+  @media (forced-colors: active) {
+    .logo {
+      --logo-line: CanvasText;
+      --logo-leaf: Canvas;
+      --logo-sun: CanvasText;
+    }
+  }
+</style>
