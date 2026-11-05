@@ -295,8 +295,10 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
 </script>
 
 <style>
+  /* minmax(0, 1fr): a long word or the banner never widens the page past a small phone. */
   .home {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s-6);
   }
   h2 {
@@ -395,6 +397,13 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
   }
   .door-label {
     flex: 1;
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+  @media (max-width: 359px) {
+    .door-face:nth-child(3) {
+      display: none;
+    }
   }
   .door-go {
     display: grid;
@@ -423,6 +432,7 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
   }
   .shelf-head {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: baseline;
     gap: var(--s-4);
