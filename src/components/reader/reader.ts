@@ -55,6 +55,23 @@ export function startReader() {
   const views = $$(app, '.view');
   const book = $<HTMLElement>(app, '.view.book');
   const pages = book ? $$(book, '.page') : [];
+
+  // A page whose text runs past the sheet says so (a fade and an arrow), so a child knows to scroll.
+  const markOverflow = (box: HTMLElement) => {
+    box.toggleAttribute('data-more', box.scrollTop + box.clientHeight < box.scrollHeight - 4);
+  };
+  if (typeof ResizeObserver !== 'undefined') {
+    const watch = new ResizeObserver(entries =>
+      entries.forEach(e => markOverflow(e.target.closest<HTMLElement>('.texts')!))
+    );
+    pages.forEach(page => {
+      const box = $<HTMLElement>(page, '.texts');
+      if (!box) return;
+      watch.observe(box);
+      box.querySelectorAll<HTMLElement>('.text-block').forEach(b => watch.observe(b));
+      box.addEventListener('scroll', () => markOverflow(box), { passive: true });
+    });
+  }
   let current = 0;
   let narrating = false;
   let keyboardTurn = false;

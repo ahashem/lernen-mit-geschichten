@@ -291,6 +291,20 @@ on `--paper` and `--card`. It is disabled in HC themes and under `prefers-reduce
 Content max width is 1200 px. The storybook stage keeps a **3:2** image ratio in landscape and
 **4:3** (cropped from the 3:2 master's safe area) in portrait.
 
+**Storybook layout follows the window's shape, not a breakpoint.** Picture and text sit on one
+sheet (an open book on the table), centred, with the top bar and page bar aligned to the same width:
+
+- Wider than 900 px and wider than 5:4: picture and text side by side. The sheet is sized from the
+  height left between the bars, so the whole spread always fits; it caps at 1400 px.
+- Anything taller (phones, tablets, a portrait monitor): picture over text, at most 72 rem wide.
+- Two languages that read the same way, on a wide screen: picture on top, the two texts side by
+  side; otherwise stacked. Each text carries a small language tag (lagoon tint, then honey).
+- Story type scales up on big screens (x1.15 from 1100x820, x1.3 from 1500x1100); the band size is
+  the floor.
+- When a page's text is longer than the sheet, its last lines fade and a round arrow bobs in the
+  sheet's corner until the reader scrolls to the end.
+- Page dots: read pages filled, the current page a long accent pill, pages to come hollow.
+
 Use logical properties only (`margin-inline-start`, `inset-inline-end`, `padding-block`) so that
 RTL comes free.
 
@@ -302,8 +316,8 @@ RTL comes free.
   printed slightly off-register, a pale hill, and the story's emoji. No gradients.
 - Covers sit on `--card` with `--r-l` corners and `--e-1`. The title is set in HTML **below** the
   image, never baked into it, because titles change per locale.
-- Story frames are shown at full stage width with no border and no rounded corners. A frame is a
-  page, not a card.
+- A story frame fills its half (or top) of the storybook sheet. The sheet, not the frame, carries the
+  `--outline`, `--r-l` corners and `--e-1`; the frame is separated from the text by one outline rule.
 - Line-art frames (the black-line variant) are shown on `--paper`. In Lamp they are drawn in
   `--ink` (ember) via an inline SVG `currentColor`, so line art needs no filter.
 - Never crop a character's face. A focal point is stored per image (`focus: [x,y]` in 0-1) and
