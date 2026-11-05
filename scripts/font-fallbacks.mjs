@@ -17,6 +17,7 @@
  */
 import { writeFileSync } from 'node:fs';
 import { fromFile } from '@capsizecss/unpack/fs';
+import { format, resolveConfig } from 'prettier';
 
 // Capsize's metrics for Arial (the same numbers Astro ships).
 const ARIAL = { unitsPerEm: 2048, xWidthAvg: 913 };
@@ -77,5 +78,6 @@ for (const { family, weight, file, local, latin, width } of FACES) {
 }
 `;
 }
-writeFileSync(new URL('../src/styles/font-fallbacks.css', import.meta.url), css);
+const out = new URL('../src/styles/font-fallbacks.css', import.meta.url);
+writeFileSync(out, await format(css, { ...(await resolveConfig(out.pathname)), filepath: out.pathname }));
 console.log('wrote src/styles/font-fallbacks.css');
