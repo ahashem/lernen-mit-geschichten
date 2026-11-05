@@ -105,15 +105,11 @@ p + p {
   margin-block-start: var(--s-3);
 }
 
+/* The link colour is a token, not a themed rule, so a link styled as a button keeps its button colours. */
 a {
-  color: var(--lagoon);
+  color: var(--link);
   text-decoration: underline;
   text-underline-offset: 0.2em;
-}
-
-/* Lamp has no blue-green: links are ember, still underlined (ux/02 Semantic roles). */
-:root[data-theme='lamp'] a {
-  color: var(--ink);
 }
 
 img,
