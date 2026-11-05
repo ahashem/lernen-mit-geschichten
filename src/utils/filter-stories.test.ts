@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
+  countWith,
   matchesFilter,
   filterStories,
   mostRestrictiveFilter,
@@ -295,5 +296,29 @@ describe('skillsForAreas', () => {
 
   it('is empty when nothing is ticked', () => {
     expect(skillsForAreas([], [], areaOf)).toEqual([]);
+  });
+});
+
+describe('countWith', () => {
+  const stories = [
+    { title: 'A', skills: ['patience'], languages: ['de', 'en'], band: 1, minutes: 2 },
+    { title: 'B', skills: ['patience', 'empathy'], languages: ['de'], band: 2, minutes: 8 },
+    { title: 'C', skills: ['empathy'], languages: ['de', 'ar'], band: 1, minutes: 3 },
+  ];
+
+  it('counts an option as the only choice of its type, with the other types applied', () => {
+    const criteria = { selectedBands: [1] };
+    expect(countWith(stories, criteria, 'selectedSkills', ['patience'])).toBe(1);
+    expect(countWith(stories, criteria, 'selectedSkills', ['empathy'])).toBe(1);
+  });
+
+  it('replaces the choices already made in the same type instead of adding to them', () => {
+    const criteria = { selectedSkills: ['empathy'] };
+    expect(countWith(stories, criteria, 'selectedSkills', ['patience'])).toBe(2);
+  });
+
+  it('is zero for an option that would leave nothing', () => {
+    const criteria = { selectedLanguages: ['ar'] };
+    expect(countWith(stories, criteria, 'selectedBands', [2])).toBe(0);
   });
 });

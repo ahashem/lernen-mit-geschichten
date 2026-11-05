@@ -42,6 +42,9 @@ const lengths = [
   { id: '30+', text: fmt(t('lengthOver'), { n: 30 }) },
 ].filter((_, i) => items.some(it => it.minutes > (reach[i - 1] ?? 0) && it.minutes <= reach[i]));
 const languages = LOCALES.filter(l => items.some(i => i.languages.includes(l)));
+// Length and language are rarely what a grown-up comes for, so they wait behind "More filters".
+const hasMore = lengths.length > 1 || languages.length > 1;
+const countText = (n: number) => fmt(n === 1 ? t('libraryCountOne') : t('libraryCount'), { n });
 
 const data = items.map(i => ({
   title: i.title,
@@ -54,10 +57,9 @@ const data = items.map(i => ({
 const strings = {
   count: t('libraryCount'),
   countOne: t('libraryCountOne'),
-  filterWith: t('filterWithCount'),
-  filter: t('filterButton'),
+  more: t('moreFilters'),
+  moreWith: t('moreFiltersWithCount'),
   noFit: t('noStoryFits'),
-  remove: t('removeFilterName'),
   removeNamed: t('removeFilterNamed'),
   searchWord: t('searchWord'),
   shelfLabel: t('shelfLabel'),
@@ -79,142 +81,153 @@ const strings = {
       <button class="btn btn--primary" type="submit">{t('searchWord')}</button>
     </form>
 
-    <div class="layout">
-      <div class="filters">
-        <button class="btn filter-open" type="button" aria-haspopup="dialog" data-filter-open>
-          {t('filterButton')}
-        </button>
-        <!-- Open in the markup so the filters show without JS; on phones the script closes it into a bottom sheet. -->
-        <dialog class="sheet" open aria-labelledby="filter-title" data-sheet>
-          <div class="sheet-head">
-            <h2 id="filter-title">{t('filterButton')}</h2>
-            <button class="sheet-close" type="button" aria-label={t('closeLabel')} data-sheet-close>
-              ×
-            </button>
-          </div>
-          <div class="filter-groups">
-            <fieldset>
-              <legend>{t('skills')}</legend>
-              <div class="chips">
-                {
-                  areas.map(a => (
-                    <label class="chip" data-group={a.id}>
-                      <input type="checkbox" name="area" value={a.id} />
-                      <span>{a.label}</span>
-                    </label>
-                  ))
-                }
-              </div>
-              {
-                areas.map(a => (
-                  <div class="chips sub" data-area={a.id} role="group" aria-label={a.label} hidden>
-                    {a.skills.map(s => (
-                      <label class="chip" data-group={a.id}>
-                        <input type="checkbox" name="skill" value={s.id} />
-                        <span>{s.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                ))
-              }
-            </fieldset>
-
-            {
-              bands.length > 1 && (
-                <fieldset>
-                  <legend>{t('shelfLabel')}</legend>
-                  <div class="chips">
-                    {bands.map(b => (
-                      <label class="chip">
-                        <input type="checkbox" name="shelf" value={b} />
-                        <span>{t(SHELF_KEY[b as 1 | 2 | 3 | 4])}</span>
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
-              )
-            }
-
-            {
-              lengths.length > 1 && (
-                <fieldset>
-                  <legend>{t('lengthLabel')}</legend>
-                  <div class="chips">
-                    {lengths.map(l => (
-                      <label class="chip">
-                        <input type="checkbox" name="length" value={l.id} />
-                        <span>{l.text}</span>
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
-              )
-            }
-
-            <fieldset>
-              <legend>{t('availableInLabel')}</legend>
-              <div class="chips">
-                {
-                  languages.map(l => (
-                    <label class="chip">
-                      <input type="checkbox" name="lang" value={l} />
-                      <span lang={l}>{endonyms[l]}</span>
-                    </label>
-                  ))
-                }
-              </div>
-            </fieldset>
-          </div>
-          <div class="sheet-foot">
-            <button class="btn btn--primary" type="button" data-sheet-done
-              >{t('showStories')}</button
-            >
-          </div>
-        </dialog>
-      </div>
-
-      <section class="results" aria-labelledby="results-heading">
-        <h2 id="results-heading" class="visually-hidden">{t('library')}</h2>
-        <div class="bar">
-          <p class="count" role="status" data-count>
-            {
-              fmt(items.length === 1 ? t('libraryCountOne') : t('libraryCount'), {
-                n: items.length,
-              })
-            }
-          </p>
-          <button class="btn" type="button" data-clear hidden>{t('clearFilters')}</button>
-        </div>
-        <ul class="active" aria-label={t('filterButton')} data-active hidden></ul>
-
-        <ul class="grid-tiles" data-grid>
+    <!-- Filters (ux/03 §2): what a story is about comes first, who it is for second, and the rarely used ones wait
+         behind "More filters". A choice stays where it was made, and each option shows how many stories it leaves. -->
+    <div class="filters" data-filters>
+      <fieldset class="topics">
+        <legend class="visually-hidden">{t('skills')}</legend>
+        <div class="chips row">
           {
-            items.map((item, i) => (
-              <li data-i={i}>
-                <StoryTile
-                  locale={locale}
-                  slug={item.slug}
-                  storyId={item.storyId}
-                  title={item.title}
-                  meta={item.meta}
-                  emoji={item.emoji}
-                  summary={item.summary}
-                  skillLabels={item.skills.map(id => label.get(id)).filter((x): x is string => !!x)}
-                  minutes={item.minutes}
-                  shelf={t(SHELF_KEY[item.band as 1 | 2 | 3 | 4])}
-                  row
-                />
-              </li>
+            areas.map(a => (
+              <label class="chip" data-group={a.id}>
+                <input type="checkbox" name="area" value={a.id} />
+                <span>
+                  {a.label}
+                  <small class="n" data-n />
+                </span>
+              </label>
             ))
           }
-        </ul>
-
-        <div class="empty surface" data-empty hidden>
-          <p data-empty-text></p>
-          <button class="btn btn--primary" type="button" data-empty-remove hidden></button>
         </div>
-      </section>
+        <!-- A ticked area opens its skills on the row below, so the two levels never stack into a column. -->
+        <div class="chips row sub" data-sub hidden>
+          {
+            areas.map(a => (
+              <div class="sub-group" data-area={a.id} role="group" aria-label={a.label} hidden>
+                {a.skills.map(sk => (
+                  <label class="chip" data-group={a.id}>
+                    <input type="checkbox" name="skill" value={sk.id} />
+                    <span>
+                      {sk.label}
+                      <small class="n" data-n />
+                    </span>
+                  </label>
+                ))}
+              </div>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <div class="bar">
+        <p class="count" role="status" data-count>{countText(items.length)}</p>
+        {
+          bands.length > 1 && (
+            <fieldset class="shelves">
+              <legend class="visually-hidden">{t('shelfLabel')}</legend>
+              {bands.map(b => (
+                <label class="segment">
+                  <input type="checkbox" name="shelf" value={b} />
+                  <span>
+                    {t(SHELF_KEY[b as 1 | 2 | 3 | 4])}
+                    <small class="n" data-n />
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+          )
+        }
+        <span class="bar-end">
+          {
+            hasMore && (
+              <button class="btn more" type="button" popovertarget="more-filters" data-more>
+                {t('moreFilters')}
+              </button>
+            )
+          }
+          <button class="btn" type="button" data-clear hidden>{t('clearFilters')}</button>
+        </span>
+      </div>
+
+      {
+        hasMore && (
+          <div id="more-filters" class="more-panel" popover aria-labelledby="more-title">
+            <h2 id="more-title">{t('moreFilters')}</h2>
+            {lengths.length > 1 && (
+              <fieldset>
+                <legend>{t('lengthLabel')}</legend>
+                <div class="chips">
+                  {lengths.map(l => (
+                    <label class="chip">
+                      <input type="checkbox" name="length" value={l.id} />
+                      <span>
+                        {l.text}
+                        <small class="n" data-n />
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+            {languages.length > 1 && (
+              <fieldset>
+                <legend>{t('availableInLabel')}</legend>
+                <div class="chips">
+                  {languages.map(l => (
+                    <label class="chip">
+                      <input type="checkbox" name="lang" value={l} />
+                      <span>
+                        <span lang={l}>{endonyms[l]}</span>
+                        <small class="n" data-n />
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+            <button
+              class="btn btn--primary show"
+              type="button"
+              popovertarget="more-filters"
+              popovertargetaction="hide"
+              data-show
+            >
+              {fmt(t('showStories'), { n: items.length })}
+            </button>
+          </div>
+        )
+      }
     </div>
+
+    <section class="results" aria-labelledby="results-heading">
+      <h2 id="results-heading" class="visually-hidden">{t('library')}</h2>
+      <ul class="grid-tiles" data-grid>
+        {
+          items.map((item, i) => (
+            <li data-i={i}>
+              <StoryTile
+                locale={locale}
+                slug={item.slug}
+                storyId={item.storyId}
+                title={item.title}
+                meta={item.meta}
+                emoji={item.emoji}
+                summary={item.summary}
+                skillLabels={item.skills.map(id => label.get(id)).filter((x): x is string => !!x)}
+                minutes={item.minutes}
+                shelf={t(SHELF_KEY[item.band as 1 | 2 | 3 | 4])}
+                row
+              />
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="empty surface" data-empty hidden>
+        <p data-empty-text></p>
+        <button class="btn btn--primary" type="button" data-empty-remove hidden></button>
+      </div>
+    </section>
     <script type="application/json" id="library-data" set:html={JSON.stringify(data)} />
     <script type="application/json" id="library-areas" set:html={JSON.stringify(areaOf)} />
   </div>
@@ -223,6 +236,7 @@ const strings = {
 <script>
   import {
     LENGTH_BUCKETS,
+    countWith,
     matchesFilter,
     mostRestrictiveFilter,
     skillsForAreas,
@@ -239,19 +253,19 @@ const strings = {
   );
   const form = root.querySelector<HTMLFormElement>('[data-search]')!;
   const q = form.elements.namedItem('q') as HTMLInputElement;
-  const boxes = [...root.querySelectorAll<HTMLInputElement>('.filters input[type="checkbox"]')];
+  const boxes = [
+    ...root.querySelectorAll<HTMLInputElement>('[data-filters] input[type="checkbox"]'),
+  ];
   const tiles = [...root.querySelectorAll<HTMLElement>('[data-grid] > li')];
   const count = root.querySelector<HTMLElement>('[data-count]')!;
   const clear = root.querySelector<HTMLButtonElement>('[data-clear]')!;
-  const active = root.querySelector<HTMLElement>('[data-active]')!;
+  const more = root.querySelector<HTMLButtonElement>('[data-more]');
+  const show = root.querySelector<HTMLButtonElement>('[data-show]');
+  const sub = root.querySelector<HTMLElement>('[data-sub]')!;
   const empty = root.querySelector<HTMLElement>('[data-empty]')!;
   const emptyText = root.querySelector<HTMLElement>('[data-empty-text]')!;
   const emptyRemove = root.querySelector<HTMLButtonElement>('[data-empty-remove]')!;
   const grid = root.querySelector<HTMLElement>('[data-grid]')!;
-  const sheet = root.querySelector<HTMLDialogElement>('[data-sheet]')!;
-  const openButton = root.querySelector<HTMLButtonElement>('[data-filter-open]')!;
-  const done = root.querySelector<HTMLButtonElement>('[data-sheet-done]')!;
-  const phone = matchMedia('(max-width: 899px)');
   const fmt = (text: string, v: Record<string, string | number>) =>
     text.replace(/\{(\w+)\}/g, (_, k) => String(v[k] ?? ''));
 
@@ -279,6 +293,20 @@ const strings = {
     selectedLengths: values('length') as LengthBucket[],
     selectedLanguages: values('lang'),
   });
+
+  // What one option would choose on its own, for the count beside it.
+  const alone = (b: HTMLInputElement) => {
+    switch (b.name) {
+      case 'area':
+        return skillsForAreas([b.value], [], areaOf);
+      case 'skill':
+        return [b.value];
+      case 'shelf':
+        return [Number(b.value)];
+      default:
+        return [b.value];
+    }
+  };
 
   // The URL is the state, so a shared link reproduces the view. replaceState keeps Back from stepping through every tick.
   function writeUrl(c: FilterCriteria) {
@@ -310,17 +338,14 @@ const strings = {
     for (const b of boxes) b.checked = sets[b.name].includes(b.value);
   }
 
-  // A ticked area shows its skills; unticking it clears them.
+  // A ticked area opens its skills on the row below; unticking it clears them.
   function syncAreas() {
-    for (const row of root.querySelectorAll<HTMLElement>('.chips.sub')) {
-      const on = boxes.some(b => b.name === 'area' && b.value === row.dataset.area && b.checked);
-      row.hidden = !on;
-      if (!on) row.querySelectorAll('input').forEach(b => (b.checked = false));
+    for (const group of sub.querySelectorAll<HTMLElement>('[data-area]')) {
+      const on = boxes.some(b => b.name === 'area' && b.value === group.dataset.area && b.checked);
+      group.hidden = !on;
+      if (!on) group.querySelectorAll('input').forEach(b => (b.checked = false));
     }
-  }
-
-  function chipLabel(b: HTMLInputElement) {
-    return b.parentElement!.querySelector('span')!.textContent!;
+    sub.hidden = !values('area').length;
   }
 
   function render() {
@@ -332,78 +357,44 @@ const strings = {
     const n = shown.filter(Boolean).length;
     count.textContent = fmt(n === 1 ? s.countOne : s.count, { n });
     grid.hidden = n === 0;
+    if (show) show.textContent = n === 1 ? s.showOne : fmt(s.show, { n });
 
-    const set = boxes.filter(b => b.checked);
+    // Each option: how many stories it would show with everything else as it is. One that would show none is
+    // dimmed and cannot be ticked, unless it already is, so it can always be unticked.
+    for (const b of boxes) {
+      const k = countWith(
+        data,
+        c,
+        keyOf[b.name] as Exclude<FilterKey, 'searchQuery'>,
+        alone(b) as never
+      );
+      b.closest('label')!.querySelector('[data-n]')!.textContent = String(k);
+      b.disabled = k === 0 && !b.checked;
+    }
+
     const query = c.searchQuery?.trim() ?? '';
-    const total = set.length + (query ? 1 : 0);
-    clear.hidden = total === 0;
-    openButton.textContent = total ? fmt(s.filterWith, { n: total }) : s.filter;
-    done.textContent = n === 1 ? s.showOne : fmt(s.show, { n });
-
-    active.replaceChildren();
-    const addChip = (text: string, onRemove: () => void) => {
-      const li = document.createElement('li');
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'removable';
-      button.textContent = text;
-      button.setAttribute('aria-label', fmt(s.remove, { name: text }));
-      button.addEventListener('click', () => {
-        onRemove();
-        render();
-      });
-      li.append(button);
-      active.append(li);
-    };
-    if (query)
-      addChip(`“${query}”`, () => {
-        q.value = '';
-      });
-    for (const b of set)
-      addChip(chipLabel(b), () => {
-        b.checked = false;
-      });
-    active.hidden = total === 0;
+    const set = boxes.filter(b => b.checked);
+    clear.hidden = set.length === 0 && !query;
+    const hidden = set.filter(b => b.name === 'length' || b.name === 'lang').length;
+    if (more) more.textContent = hidden ? fmt(s.moreWith, { n: hidden }) : s.more;
 
     empty.hidden = n > 0;
     if (n === 0) {
       const key = mostRestrictiveFilter(data, c);
       emptyRemove.hidden = !key;
+      emptyText.textContent = s.noFit;
       if (key) {
-        emptyText.textContent = s.noFit;
         emptyRemove.textContent = fmt(s.removeNamed, { name: names[key] });
         emptyRemove.onclick = () => {
           if (key === 'searchQuery') q.value = '';
           else for (const b of boxes) if (keyOf[b.name] === key) b.checked = false;
           render();
         };
-      } else emptyText.textContent = s.noFit;
+      }
     }
   }
-
-  // Phones get the filters as a modal bottom sheet behind "Filter (n)"; wider screens keep them open as a column.
-  function layout() {
-    if (phone.matches) {
-      if (sheet.open && !sheet.matches(':modal')) sheet.close();
-    } else if (!sheet.open) sheet.show();
-    else if (sheet.matches(':modal')) {
-      sheet.close();
-      sheet.show();
-    }
-  }
-  openButton.addEventListener('click', () => sheet.showModal());
-  for (const b of root.querySelectorAll('[data-sheet-close], [data-sheet-done]'))
-    b.addEventListener('click', () => {
-      sheet.close();
-      openButton.focus();
-    });
-  sheet.addEventListener('click', e => {
-    if (e.target === sheet && sheet.matches(':modal')) sheet.close();
-  });
-  phone.addEventListener('change', layout);
 
   fromUrl();
-  layout();
   render();
   form.addEventListener('submit', e => {
     e.preventDefault();
@@ -432,7 +423,7 @@ const strings = {
   .search {
     display: flex;
     gap: var(--s-3);
-    margin-block-end: var(--s-5);
+    margin-block-end: var(--s-4);
   }
   .search input {
     flex: 1;
@@ -446,64 +437,6 @@ const strings = {
     font: inherit;
     box-shadow: var(--e-1);
   }
-  .layout {
-    display: grid;
-    gap: var(--s-5);
-    align-items: start;
-  }
-  .sheet {
-    position: static;
-    inline-size: auto;
-    max-inline-size: none;
-    margin: 0;
-    border: 0;
-    color: inherit;
-    background: var(--card);
-    border: var(--outline);
-    border-radius: var(--r-l);
-    box-shadow: var(--e-1);
-    padding: var(--s-3) var(--s-4);
-  }
-  .sheet-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .sheet-head h2 {
-    font-size: var(--t-ui);
-    min-block-size: var(--tap-adult);
-    display: flex;
-    align-items: center;
-  }
-  .sheet-close {
-    display: none;
-    min-block-size: var(--tap-adult);
-    min-inline-size: var(--tap-adult);
-    border: 0;
-    border-radius: var(--r-m);
-    background: transparent;
-    color: var(--ink);
-    font-size: 1.75rem;
-    cursor: pointer;
-  }
-  .sheet-foot,
-  .filter-open {
-    display: none;
-  }
-  /* An area's skills sit under the area chips, indented, so the two levels read as one tree. */
-  .chips.sub {
-    margin-block-start: var(--s-3);
-    padding-inline-start: var(--s-3);
-    border-inline-start: 3px solid var(--edge);
-  }
-  .chips.sub[hidden] {
-    display: none;
-  }
-  .filter-groups {
-    display: grid;
-    gap: var(--s-4);
-    padding-block: var(--s-3);
-  }
   fieldset {
     border: 0;
     padding: 0;
@@ -515,35 +448,60 @@ const strings = {
     margin-block-end: var(--s-2);
     padding: 0;
   }
+
+  /* The toolbar above a full-width grid. */
+  .filters {
+    display: grid;
+    gap: var(--s-3);
+    margin-block-end: var(--s-5);
+  }
+  .topics {
+    display: grid;
+    gap: var(--s-3);
+  }
   .chips {
     display: flex;
     flex-wrap: wrap;
     gap: var(--s-2);
   }
-  .chip {
+  /* The skills of the ticked areas: one row, set in from the areas so the two levels read as one tree. */
+  .sub {
+    padding-inline-start: var(--s-3);
+    border-inline-start: 3px solid var(--edge);
+  }
+  .sub[hidden],
+  .sub-group[hidden] {
+    display: none;
+  }
+  .sub-group {
+    display: contents;
+  }
+  .chip,
+  .segment {
     position: relative;
     display: inline-flex;
   }
-  .chip input {
+  .chip input,
+  .segment input {
     position: absolute;
     inset: 0;
     opacity: 0;
     margin: 0;
     cursor: pointer;
   }
-  .chip span,
-  .removable {
+  .chip > span {
     display: inline-flex;
     align-items: center;
+    gap: var(--s-2);
     min-block-size: var(--tap-adult);
     padding: var(--s-1) var(--s-4);
     border: 2px solid var(--edge);
     border-radius: var(--r-m);
     background: var(--chip, var(--card));
     color: var(--ink);
-    font: inherit;
     font-size: var(--t-ui-sm);
     font-weight: 600;
+    white-space: nowrap;
   }
   .chip[data-group='self'] {
     --chip: var(--plum-tint);
@@ -571,48 +529,135 @@ const strings = {
       var(--e-1);
     font-weight: 700;
   }
-  .chip input:checked + span::before {
+  .chip input:checked + span::before,
+  .segment input:checked + span::before {
     content: '✓';
-    margin-inline-end: var(--s-2);
     font-weight: 700;
   }
+  /* How many stories an option leaves: quiet, after the label. An option that leaves none is dimmed. */
+  .n {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .n:empty {
+    display: none;
+  }
+  .chip:has(input:disabled) > span,
+  .segment:has(input:disabled) > span {
+    opacity: 0.45;
+  }
+  .chip input:disabled,
+  .segment input:disabled {
+    cursor: not-allowed;
+  }
   .chip input:focus-visible + span,
-  .removable:focus-visible,
   .search input:focus-visible {
     outline: 3px solid var(--focus);
     outline-offset: 2px;
   }
-  .removable {
-    cursor: pointer;
-    background: var(--honey-tint);
-  }
-  .removable::after {
-    content: '×';
-    margin-inline-start: var(--s-2);
-    font-weight: 700;
-  }
+
   .bar {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
     gap: var(--s-3);
-    margin-block-end: var(--s-3);
   }
   .count {
     font-weight: 700;
   }
-  .active {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 var(--s-4);
+  .bar-end {
     display: flex;
-    flex-wrap: wrap;
     gap: var(--s-2);
+    margin-inline-start: auto;
   }
-  .active[hidden],
-  .grid-tiles[hidden] {
-    display: none;
+
+  /* Shelf: one outlined control; a picked shelf is filled and ticked. */
+  .shelves {
+    display: inline-flex;
+    border: var(--outline);
+    border-radius: var(--r-m);
+    background: var(--card);
+    box-shadow: var(--e-1);
+    overflow: hidden;
   }
+  .segment + .segment {
+    border-inline-start: 2px solid var(--edge);
+  }
+  .segment > span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-block-size: calc(var(--tap-adult) - 4px);
+    padding-inline: var(--s-4);
+    color: var(--ink);
+    font-size: var(--t-ui-sm);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .segment input:checked + span {
+    background: var(--honey-tint);
+    font-weight: 700;
+  }
+  .segment input:focus-visible + span {
+    outline: 3px solid var(--focus);
+    outline-offset: -4px;
+  }
+
+  /* More filters: a popover under its button (anchor positioning; centred where that is missing), a bottom sheet
+     on phones. Native popover: Escape and a click outside close it without script. */
+  .more {
+    anchor-name: --more-filters;
+  }
+  .more-panel {
+    inline-size: min(26rem, calc(100vw - 2 * var(--s-4)));
+    padding: var(--s-4);
+    border: var(--outline);
+    border-radius: var(--r-l);
+    background: var(--card);
+    color: var(--ink);
+    box-shadow: var(--e-2);
+  }
+  @supports (position-area: block-end) {
+    .more-panel {
+      inset: auto;
+      margin: var(--s-2) 0 0;
+      position-anchor: --more-filters;
+      position-area: block-end span-inline-start;
+      position-try-fallbacks: flip-inline;
+    }
+  }
+  .more-panel:popover-open {
+    display: grid;
+    gap: var(--s-4);
+  }
+  .more-panel h2 {
+    font-size: var(--t-ui);
+  }
+  .show {
+    justify-content: center;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .more-panel {
+      transition:
+        opacity var(--dur-quick) var(--ease-out),
+        transform var(--dur-quick) var(--ease-out),
+        display var(--dur-quick) allow-discrete,
+        overlay var(--dur-quick) allow-discrete;
+    }
+    .more-panel:not(:popover-open) {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    @starting-style {
+      .more-panel:popover-open {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+    }
+  }
+
   .grid-tiles {
     list-style: none;
     padding: 0;
@@ -621,6 +666,7 @@ const strings = {
     gap: var(--s-5);
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
   }
+  .grid-tiles[hidden],
   .grid-tiles > li[hidden] {
     display: none;
   }
@@ -630,57 +676,57 @@ const strings = {
     gap: var(--s-4);
     justify-items: start;
   }
-  @media (min-width: 900px) {
-    .layout {
-      grid-template-columns: 18rem 1fr;
+
+  /* Phones: the area and skill rows scroll sideways and stay one line high, so the stories start on the first
+     screen; the shelf control takes its own line and "More filters" is a sheet from the bottom edge. */
+  @media (max-width: 599px) {
+    .row {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-inline: calc(-1 * var(--gutter));
+      padding: 2px var(--gutter) 6px;
+      scroll-padding-inline: var(--gutter);
     }
-  }
-  @media (max-width: 899px) {
-    /* With scripts on, phones get the filters as a sheet behind "Filter": closed from the first frame, so the
-       results do not jump up when the script closes it. */
-    :global(:root[data-js]) .sheet:not(:modal) {
-      display: none;
+    .sub {
+      border-inline-start: 0;
     }
-    .layout {
-      gap: var(--s-3);
+    .shelves {
+      order: 1;
+      inline-size: 100%;
     }
-    .filter-open {
-      display: inline-flex;
+    .segment {
+      flex: 1;
     }
-    .sheet:modal {
-      position: fixed;
+    .segment > span {
+      inline-size: 100%;
+      justify-content: center;
+    }
+    .more-panel {
+      position-area: none;
       inset: auto 0 0;
+      margin: 0;
       inline-size: 100%;
       max-block-size: 85dvh;
-      padding: 0;
+      overflow-y: auto;
+      border-block-end: 0;
       border-radius: var(--r-l) var(--r-l) 0 0;
-      display: flex;
-      flex-direction: column;
     }
-    .sheet::backdrop {
+    .more-panel::backdrop {
       background: rgb(0 0 0 / 0.4);
     }
-    .sheet:modal .sheet-head {
-      padding: var(--s-2) var(--s-4);
-      border-block-end: 1px solid var(--rule);
-    }
-    .sheet:modal .sheet-close {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .sheet:modal .filter-groups {
-      overflow-y: auto;
-      padding: var(--s-3) var(--s-4);
-    }
-    .sheet:modal .sheet-foot {
-      display: block;
-      padding: var(--s-3) var(--s-4);
-      border-block-start: 1px solid var(--rule);
-    }
-    .sheet-foot .btn {
+    .show {
       inline-size: 100%;
-      justify-content: center;
+    }
+  }
+  @media (max-width: 599px) and (prefers-reduced-motion: no-preference) {
+    .more-panel:not(:popover-open) {
+      transform: translateY(100%);
+    }
+    @starting-style {
+      .more-panel:popover-open {
+        transform: translateY(100%);
+      }
     }
   }
 </style>

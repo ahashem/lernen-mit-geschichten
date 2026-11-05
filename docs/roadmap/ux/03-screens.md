@@ -170,8 +170,13 @@ child's name.
 a one-tap removal of the most restrictive filter. Loading shows skeleton covers in `--paper-2` with
 no shimmer.
 
-**Mobile:** filters sit in a bottom sheet opened by "Filter (2)", and the situation chips stay
-visible above the grid. **Large:** a filter column on the start side and a 3-4 column grid.
+**Layout:** the filters are a toolbar above a full-width grid, not a column. Skill areas come first (a ticked area
+opens its skills on the row below), then the result count with the shelf as one segmented control; length and
+"Available in" wait behind "More filters (n)", a popover under its button and a bottom sheet on phones. Each option
+shows how many stories it would leave with the other filters as they are, and an option that would leave none is
+dimmed, so a choice never lands on an empty page. A choice stays where it was made; there is no separate row of
+active filters. **Mobile:** the area and skill rows scroll sideways on one line each, so the stories start on the
+first screen.
 
 Filters persist in the URL query string (shareable between educators) and not in storage.
 

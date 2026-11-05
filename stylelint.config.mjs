@@ -19,8 +19,9 @@ const KEYFRAMES = [
 ];
 
 /** What a transition may change: motion through transforms and opacity, plus plain colour fades. */
+// display and overlay only switch at the end, so a popover can fade out before it goes (allow-discrete).
 const MOVES =
-  '(transform|translate|scale|rotate|opacity|color|background|background-color|border-color|outline-color)';
+  '(transform|translate|scale|rotate|opacity|color|background|background-color|border-color|outline-color|display|overlay)';
 const ITEM = `${MOVES}\\b(\\([^)]*\\)|[^,(])*`;
 
 export default {

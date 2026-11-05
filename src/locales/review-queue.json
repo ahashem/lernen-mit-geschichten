@@ -87,7 +87,6 @@
     "libraryCount",
     "libraryCountOne",
     "noStoryFits",
-    "removeFilterName",
     "removeFilterNamed",
     "continueReading",
     "pictureDoor",
@@ -213,7 +212,9 @@
     "betterVoiceHint",
     "privacyVoiceTitle",
     "privacyVoice",
-    "ownVersion"
+    "ownVersion",
+    "moreFilters",
+    "moreFiltersWithCount"
   ],
   "tr": [
     "skipToContent",
@@ -303,7 +304,6 @@
     "libraryCount",
     "libraryCountOne",
     "noStoryFits",
-    "removeFilterName",
     "removeFilterNamed",
     "continueReading",
     "pictureDoor",
@@ -429,7 +429,9 @@
     "betterVoiceHint",
     "privacyVoiceTitle",
     "privacyVoice",
-    "ownVersion"
+    "ownVersion",
+    "moreFilters",
+    "moreFiltersWithCount"
   ],
   "ur": [
     "skipToContent",
@@ -519,7 +521,6 @@
     "libraryCount",
     "libraryCountOne",
     "noStoryFits",
-    "removeFilterName",
     "removeFilterNamed",
     "continueReading",
     "pictureDoor",
@@ -645,6 +646,8 @@
     "betterVoiceHint",
     "privacyVoiceTitle",
     "privacyVoice",
-    "ownVersion"
+    "ownVersion",
+    "moreFilters",
+    "moreFiltersWithCount"
   ]
 }
