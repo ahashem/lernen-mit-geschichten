@@ -30,7 +30,7 @@ const href =
   locale === 'de' ? `${BASE_PATH}/stories/${slug}` : `${BASE_PATH}/${locale}/stories/${slug}`;
 ---
 
-<article class:list={['tile', { 'tile--row': row }]}>
+<article class:list={['tile', 'lift', { 'tile--row': row }]}>
   <a class="tile-cover" href={href} tabindex="-1" aria-hidden="true">
     <StoryArt
       picture={coverOf(meta, locale)}
@@ -39,7 +39,13 @@ const href =
     />
   </a>
   <div class="tile-body">
-    <h3 class="tile-title"><a href={href}>{title}</a></h3>
+    <h3 class="tile-title">
+      <a href={href}
+        >{title}<span class="tilt" aria-hidden="true"
+          >{Array.from({ length: 25 }, () => <span />)}</span
+        ></a
+      >
+    </h3>
     {summary && <p class="tile-summary">{summary}</p>}
     <p class="tile-meta">
       {shelf && <span>{shelf}</span>}
@@ -62,26 +68,15 @@ const href =
     background: var(--card);
     border: var(--outline);
     border-radius: var(--r-l);
-    box-shadow: var(--e-1);
-    overflow: hidden;
     container-type: inline-size;
-    transition:
-      transform var(--dur-base) var(--ease-settle),
-      box-shadow var(--dur-base) var(--ease-out);
   }
-  /* The card lifts and tips a little, like picking a book off the pile; it lands when pressed. */
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .tile:hover {
-      transform: translateY(-3px) rotate(calc(-1deg * var(--shadow-x)));
-      box-shadow: var(--e-2);
-    }
-  }
-  .tile:active {
-    transform: translate(calc(2px * var(--shadow-x)), 3px);
-    box-shadow: var(--e-press);
-  }
+  /* Lift and press come from `.lift` (global.css). The cover, not the card, clips to the rounded corners, so the
+     card's shadow layers can sit outside it. */
   .tile-cover {
     display: block;
+    overflow: hidden;
+    border-start-start-radius: calc(var(--r-l) - 2px);
+    border-start-end-radius: calc(var(--r-l) - 2px);
     aspect-ratio: 4 / 3;
     background: var(--paper-2);
     border-block-end: var(--outline);
@@ -98,15 +93,45 @@ const href =
     font-size: var(--t-ui);
     line-height: var(--lh-display);
   }
-  /* The whole card is the target, but only the title is a link for assistive technology. */
+  /* The whole card is the target, but only the title is a link for assistive technology. The target is a 5×5 grid
+     of empty zones inside the link: which zone is under the mouse tips the card toward it (global.css, --tilt-x and
+     --tilt-y from -1 to 1), and the card's transition eases between zones. No script reads the pointer. */
   .tile-title a {
     color: var(--ink);
     text-decoration: none;
   }
-  .tile-title a::after {
-    content: '';
+  .tilt {
     position: absolute;
     inset: 0;
+    display: grid;
+    grid-template: repeat(5, 1fr) / repeat(5, 1fr);
+    direction: ltr;
+  }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .tile:has(.tilt > :nth-child(5n + 1):hover) {
+      --tilt-x: -1;
+    }
+    .tile:has(.tilt > :nth-child(5n + 2):hover) {
+      --tilt-x: -0.5;
+    }
+    .tile:has(.tilt > :nth-child(5n + 4):hover) {
+      --tilt-x: 0.5;
+    }
+    .tile:has(.tilt > :nth-child(5n):hover) {
+      --tilt-x: 1;
+    }
+    .tile:has(.tilt > :nth-child(-n + 5):hover) {
+      --tilt-y: -1;
+    }
+    .tile:has(.tilt > :nth-child(n + 6):nth-child(-n + 10):hover) {
+      --tilt-y: -0.5;
+    }
+    .tile:has(.tilt > :nth-child(n + 16):nth-child(-n + 20):hover) {
+      --tilt-y: 0.5;
+    }
+    .tile:has(.tilt > :nth-child(n + 21):hover) {
+      --tilt-y: 1;
+    }
   }
   .tile {
     position: relative;
@@ -133,6 +158,8 @@ const href =
     .tile--row .tile-cover {
       border-block-end: 0;
       border-inline-end: var(--outline);
+      border-start-end-radius: 0;
+      border-end-start-radius: calc(var(--r-l) - 2px);
       flex: 0 0 7rem;
       aspect-ratio: auto;
       min-block-size: 7rem;
@@ -144,6 +171,10 @@ const href =
   }
   .tile:focus-within {
     outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .tile[data-armed] {
+    outline: 3px solid var(--listen);
     outline-offset: 2px;
   }
 </style>
