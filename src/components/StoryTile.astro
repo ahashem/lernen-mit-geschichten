@@ -55,6 +55,50 @@ const href =
   </div>
 </article>
 
+<script>
+  // Under a mouse or pen, a card tips toward the pointer and its art shifts by depth (global.css, StoryArt). The
+  // pointer is read once per frame; the CSS transition does the easing, so the card trails the pointer softly.
+  const fine = matchMedia('(hover: hover) and (pointer: fine)');
+  const calm = matchMedia('(prefers-reduced-motion: reduce)');
+  let card: HTMLElement | null = null;
+  let box: DOMRect | null = null;
+  let frame = 0;
+  let x = 0;
+  let y = 0;
+  const clamp = (n: number) => Math.max(-1, Math.min(1, n));
+  const paint = () => {
+    frame = 0;
+    if (!card || !box) return;
+    card.style.setProperty('--tilt-x', clamp(((x - box.left) / box.width) * 2 - 1).toFixed(3));
+    card.style.setProperty('--tilt-y', clamp(((y - box.top) / box.height) * 2 - 1).toFixed(3));
+  };
+  const leave = () => {
+    card?.style.removeProperty('--tilt-x');
+    card?.style.removeProperty('--tilt-y');
+    card = box = null;
+  };
+  document.addEventListener(
+    'pointermove',
+    e => {
+      if (e.pointerType === 'touch' || !fine.matches || calm.matches) return;
+      const over = (e.target as Element | null)?.closest?.<HTMLElement>('.tile') ?? null;
+      if (over !== card) {
+        leave();
+        if (!over) return;
+        card = over;
+        // Measured on entry, before the card moves, so the tilt never feeds back into its own measure.
+        box = over.getBoundingClientRect();
+      }
+      x = e.clientX;
+      y = e.clientY;
+      frame ||= requestAnimationFrame(paint);
+    },
+    { passive: true }
+  );
+  document.addEventListener('pointerleave', leave);
+  addEventListener('scroll', leave, { passive: true });
+</script>
+
 <style>
   .tile {
     display: flex;

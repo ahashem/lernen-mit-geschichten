@@ -390,26 +390,23 @@ button {
   box-shadow: var(--e-1);
 }
 
-/* Card physics (ux/04): paper on a table. A control lands when it is pressed (`.press`, and every `.btn`); a card
-   also lifts straight up under a mouse (`.lift`). Nothing tips, wobbles or overshoots, and only transform and
-   opacity move: a card's two shadows are layers that crossfade, so box-shadow itself is never animated. */
+/* Card physics (ux/04): paper on a table, and a story card is a little pop-up book.
+   - Controls (`.btn`, `.press`) rise 2px under a mouse and land when pressed.
+   - Cards (`.lift`) rise 4px, tip toward the pointer (StoryTile sets --tilt-x/--tilt-y, at most 4deg) and set
+     --pop, which raises the art's layers at different depths (StoryArt). A card held up on touch (data-armed)
+     pops its art without tipping.
+   Every move is one eased transform: nothing loops or overshoots. A card's two shadows are layers that crossfade,
+   so box-shadow itself never animates. */
 .btn,
-.press,
-.lift {
+.press {
   transition: transform var(--dur-quick) var(--ease-out);
-}
-.btn:not([disabled]):active,
-.press:not([disabled]):active,
-.lift:active {
-  transform: translate(calc(2px * var(--shadow-x)), 3px);
-  box-shadow: var(--e-press);
-  transition-duration: var(--dur-instant);
 }
 .lift {
   position: relative;
   box-shadow: none;
+  transition: transform var(--dur-base) var(--ease-out);
 }
-/* The layers sit on the outline's outer edge; the card's content and its links stay on top and clickable. */
+/* The shadow layers sit on the outline's outer edge; the card's content and its links stay on top and clickable. */
 .lift::before,
 .lift::after {
   content: '';
@@ -427,8 +424,14 @@ button {
   opacity: 0;
 }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .btn:not([disabled]):hover,
+  .press:not([disabled]):hover {
+    transform: translateY(-2px);
+  }
   .lift:hover {
-    transform: translateY(-3px);
+    --pop: 1;
+    transform: perspective(60rem) translateY(-4px) rotateX(calc(var(--tilt-y, 0) * -4deg))
+      rotateY(calc(var(--tilt-x, 0) * 4deg));
   }
   .lift:hover::before {
     opacity: 0;
@@ -437,12 +440,25 @@ button {
     opacity: 1;
   }
 }
-/* Held up without moving: a picture-book cover that has just said its name and opens on the next touch. */
+@media (prefers-reduced-motion: no-preference) {
+  .lift[data-armed] {
+    --pop: 1;
+  }
+}
 .lift[data-armed]::before {
   opacity: 0;
 }
 .lift[data-armed]::after {
   opacity: 1;
+}
+/* After hover, so a press always wins. */
+.btn:not([disabled]):active,
+.press:not([disabled]):active,
+.lift:active {
+  --pop: 0;
+  transform: translate(calc(2px * var(--shadow-x)), 3px);
+  box-shadow: var(--e-press);
+  transition-duration: var(--dur-instant);
 }
 .lift:active::before,
 .lift:active::after {
@@ -455,6 +471,46 @@ button {
   .press:active,
   .lift:active {
     transform: none;
+  }
+}
+
+/* Page transitions (ux/04): the page being left sinks and fades, the next one rises into place, and the header
+   stays put. A story's cover grows out of the card that was opened and shrinks back into it on the way home
+   (`story-art`, named by the script in BaseLayout and on the story cover). Browsers without cross-document view
+   transitions simply navigate. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+body > header {
+  view-transition-name: site-header;
+}
+::view-transition-old(root) {
+  animation: page-sink var(--dur-quick) var(--ease-in-out) both;
+}
+::view-transition-new(root) {
+  animation: page-rise var(--dur-page) var(--ease-out) both;
+}
+::view-transition-group(story-art) {
+  animation-duration: var(--dur-page);
+  animation-timing-function: var(--ease-in-out);
+}
+::view-transition-old(story-art),
+::view-transition-new(story-art) {
+  block-size: 100%;
+  object-fit: cover;
+}
+@keyframes page-sink {
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+@keyframes page-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
   }
 }
 
@@ -676,6 +732,7 @@ button {
   border: 4px solid rgba(255, 159, 64, 0.2);
   border-top-color: var(--color-primary);
   border-radius: 50%;
+  /* stylelint-disable-next-line declaration-property-value-disallowed-list -- a grown-ups overlay, shown while it works */
   animation: spin 1s linear infinite;
   margin: 0 auto;
 }

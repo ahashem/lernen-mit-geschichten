@@ -395,6 +395,26 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
   .door-face:nth-child(3) {
     background: var(--lagoon-tint);
   }
+  /* The door lifts like a card (--pop): the characters peek up one after another and the arrow leans toward the
+     reading direction. */
+  @media (prefers-reduced-motion: no-preference) {
+    .door-face,
+    .door-go {
+      transition: transform var(--dur-base) var(--ease-out);
+    }
+    .door-face {
+      transform: translateY(calc(var(--pop, 0) * -6px));
+    }
+    .door-face:nth-child(2) {
+      transition-delay: 50ms;
+    }
+    .door-face:nth-child(3) {
+      transition-delay: 100ms;
+    }
+    .door-go {
+      transform: translateX(calc(var(--pop, 0) * 4px * var(--shadow-x)));
+    }
+  }
   .door-label {
     flex: 1;
     min-inline-size: 0;

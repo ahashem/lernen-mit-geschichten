@@ -67,4 +67,33 @@ const { picture, emoji, palette, eager = false } = Astro.props;
     line-height: 1;
     text-decoration: none;
   }
+  /* Pop-up depth (global.css, card physics). A card that lifts sets --pop and, under a mouse, --tilt-x/--tilt-y
+     (-1 to 1). Layers then move by depth: the sun far back barely, against the pointer; the hill a little; the emoji
+     rises off the page and follows the pointer most. A picture drifts against the pointer and leans in. Outside a
+     card (the hero, the story cover) nothing is set, so nothing moves. */
+  @media (prefers-reduced-motion: no-preference) {
+    img,
+    .sun,
+    .hill,
+    .emoji {
+      transition: transform var(--dur-base) var(--ease-out);
+    }
+    img {
+      transform: translate(calc(var(--tilt-x, 0) * -2cqi), calc(var(--tilt-y, 0) * -2cqi))
+        scale(calc(1 + var(--pop, 0) * 0.05));
+    }
+    .sun {
+      transform: translate(calc(var(--tilt-x, 0) * -3cqi), calc(var(--tilt-y, 0) * -3cqi));
+    }
+    .hill {
+      transform: translate(calc(var(--tilt-x, 0) * 2cqi), calc(var(--pop, 0) * -2cqi));
+    }
+    .emoji {
+      transform: translate(
+          calc(var(--tilt-x, 0) * 5cqi),
+          calc(var(--tilt-y, 0) * 4cqi - var(--pop, 0) * 5cqi)
+        )
+        scale(calc(1 + var(--pop, 0) * 0.12));
+    }
+  }
 </style>

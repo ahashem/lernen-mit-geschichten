@@ -1144,7 +1144,9 @@ const description = summary || `${title} | ${t('siteName')}`;
     }
   }
 
+  /* Page transitions: the card that was opened grows into this cover (global.css, BaseLayout). */
   .cover-art {
+    view-transition-name: story-art;
     container-type: inline-size;
     aspect-ratio: 3 / 2;
     overflow: hidden;
@@ -1523,6 +1525,7 @@ const description = summary || `${title} | ${t('siteName')}`;
   @media (prefers-reduced-motion: no-preference) {
     .sheet:has(.texts[data-more])::after,
     .sheet:has(.texts[data-more])::before {
+      /* stylelint-disable-next-line declaration-property-value-disallowed-list -- known loop, 04 wants it to play once */
       animation: bob 1.6s var(--ease-in-out) infinite;
     }
   }
