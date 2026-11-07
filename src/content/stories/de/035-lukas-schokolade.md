@@ -2,6 +2,7 @@
 storyId: "035-lukas-schokolade"
 cover:
   src: /assets/stories/035-lukas-schokolade/cover.webp
+  alt: "Lukas schaut traurig auf das kaputte Spielzeugauto. Seine Freundin Mia hält es und lächelt ihn freundlich an."
 status: draft
 title: "Lukas und die Schokoladen-Katastrophe"
 emoji: "🍫"

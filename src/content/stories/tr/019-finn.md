@@ -1,5 +1,6 @@
 ---
 title: "Finn ve Dev Ceviz"
+coverAlt: "Rakun Finn dev cevizi itiyor. Sincap Mila ve bir sıra karınca ona yardım ediyor, üstte bir kuş uçuyor."
 ageGroup: "3-7"
 storyId: "019-finn"
 publishDate: 2024-01-15

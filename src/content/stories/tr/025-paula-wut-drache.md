@@ -2,6 +2,7 @@
 storyId: "025-paula-wut-drache"
 status: published
 title: "Paula ve Küçük Öfke Ejderhası"
+coverAlt: "Paula öfkeyle yumruklarını sıkıyor. Yanında, bir bulutun içinde küçük öfke ejderhası Funkel hırlıyor."
 questions:
   - id: "q1"
     text: "Hikâyedeki kızın adı nedir?"

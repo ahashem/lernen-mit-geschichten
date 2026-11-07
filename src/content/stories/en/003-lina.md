@@ -1,5 +1,6 @@
 ---
 title: "Lina and the Big Cookie"
+coverAlt: "Lina the mouse climbs a twig ladder to the big cookie. Pico the sparrow waits beside it, and Tilda the turtle smiles below by a toy car."
 ageGroup: "3-7"
 storyId: "003-lina"
 publishDate: 2024-01-15

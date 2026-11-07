@@ -7,6 +7,7 @@ band: "2"
 storyId: "019-finn"
 cover:
   src: /assets/stories/019-finn/cover.webp
+  alt: "Finn, der Waschbär, schiebt die Riesen-Nuss. Das Eichhörnchen Mila und viele Ameisen helfen mit, ein Vogel flattert darüber."
 publishDate: 2024-01-15
 difficulty: "beginner"
 questions:

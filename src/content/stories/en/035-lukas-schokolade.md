@@ -2,6 +2,7 @@
 storyId: "035-lukas-schokolade"
 status: draft
 title: "Lukas and the Chocolate Disaster"
+coverAlt: "Lukas looks sadly at the broken toy car. His friend Mia holds it and gives him a kind smile."
 keyMessage: "An honest “I’m sorry” is stronger than chocolate! 🍫✨"
 questions:
   - id: "q1"
