@@ -6,7 +6,7 @@ ageGroup: "3-7"
 band: "2"
 storyId: "021-emil-flattergeist"
 cover:
-  src: /assets/stories/021-emil-flattergeist/021-emil-flattergeist_cover.webp
+  src: /assets/stories/021-emil-flattergeist/cover.webp
 publishDate: 2024-01-15
 difficulty: "beginner"
 questions:

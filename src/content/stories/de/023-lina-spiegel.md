@@ -1,7 +1,7 @@
 ---
 storyId: "023-lina-spiegel"
 cover:
-  src: /assets/stories/023-lina-spiegel/023-lina-spiegel_cover.webp
+  src: /assets/stories/023-lina-spiegel/cover.webp
 status: published
 title: "Lina und der singende Spiegel"
 emoji: "🪞"

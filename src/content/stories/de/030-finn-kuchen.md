@@ -1,7 +1,7 @@
 ---
 storyId: "030-finn-kuchen"
 cover:
-  src: /assets/stories/030-finn-kuchen/030-finn-kuchen_cover.webp
+  src: /assets/stories/030-finn-kuchen/cover.webp
 status: published
 title: "Die Geschichte von Finn und dem fliegenden Kuchen"
 emoji: "🐾"

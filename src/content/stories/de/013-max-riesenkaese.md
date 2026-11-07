@@ -1,7 +1,7 @@
 ---
 storyId: "013-max-riesenkaese"
 cover:
-  src: /assets/stories/013-max-riesenkaese/013-max-riesenkaese_cover.webp
+  src: /assets/stories/013-max-riesenkaese/cover.webp
 status: draft
 title: "Max, die Maus und der Riesenkäse-Stress"
 emoji: "🐭"

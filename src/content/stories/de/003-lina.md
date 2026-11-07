@@ -6,7 +6,7 @@ ageGroup: "3-7"
 band: "1"
 storyId: "003-lina"
 cover:
-  src: /assets/stories/003-lina/003-lina_cover.webp
+  src: /assets/stories/003-lina/cover.webp
 difficulty: "beginner"
 publishDate: 2024-01-15
 status: published

@@ -1,7 +1,7 @@
 ---
 storyId: "028-timmy-morgen"
 cover:
-  src: /assets/stories/028-timmy-morgen/028-timmy-morgen_cover.webp
+  src: /assets/stories/028-timmy-morgen/cover.webp
 status: published
 title: "Timmy und der verschwundene Morgen"
 emoji: "⏰"

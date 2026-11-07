@@ -6,7 +6,7 @@ ageGroup: "3-7"
 band: "2"
 storyId: "022-emil-plan"
 cover:
-  src: /assets/stories/022-emil-plan/022-emil-plan_cover.webp
+  src: /assets/stories/022-emil-plan/cover.webp
 publishDate: 2024-01-15
 difficulty: "beginner"
 status: published

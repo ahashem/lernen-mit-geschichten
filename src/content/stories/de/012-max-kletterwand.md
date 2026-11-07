@@ -1,7 +1,7 @@
 ---
 storyId: "012-max-kletterwand"
 cover:
-  src: /assets/stories/012-max-kletterwand/012-max-kletterwand_cover.webp
+  src: /assets/stories/012-max-kletterwand/cover.webp
 status: published
 title: "Max und die große Kletterwand"
 emoji: "🧗"

@@ -1,7 +1,7 @@
 ---
 storyId: "036-benno-stop-knopf"
 cover:
-  src: /assets/stories/036-benno-stop-knopf/036-benno-stop-knopf_cover.webp
+  src: /assets/stories/036-benno-stop-knopf/cover.webp
 status: published
 title: "Die Geschichte von Benno und dem Zauber-Stop-Knopf"
 emoji: "🛑"

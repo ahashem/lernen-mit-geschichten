@@ -1,7 +1,7 @@
 ---
 storyId: "014-leo-bruellen"
 cover:
-  src: /assets/stories/014-leo-bruellen/014-leo-bruellen_cover.webp
+  src: /assets/stories/014-leo-bruellen/cover.webp
 status: draft
 title: "Leo der Löwe lernt, ruhig zu brüllen"
 emoji: "🦁"

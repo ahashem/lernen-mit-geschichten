@@ -1,7 +1,7 @@
 ---
 storyId: "033-milo-ohne-worte"
 cover:
-  src: /assets/stories/033-milo-ohne-worte/033-milo-ohne-worte_cover.webp
+  src: /assets/stories/033-milo-ohne-worte/cover.webp
 status: published
 title: "Milo und die Sprache ohne Worte"
 emoji: "🐵"

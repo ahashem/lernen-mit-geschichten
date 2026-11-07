@@ -1,7 +1,7 @@
 ---
 storyId: "025-paula-wut-drache"
 cover:
-  src: /assets/stories/025-paula-wut-drache/025-paula-wut-drache_cover.webp
+  src: /assets/stories/025-paula-wut-drache/cover.webp
 status: published
 title: "Paula und der kleine Wut-Drache"
 emoji: "🐉"
