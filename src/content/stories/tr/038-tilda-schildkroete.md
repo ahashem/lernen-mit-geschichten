@@ -45,6 +45,7 @@ questions:
     text: "Hikâyenin mesajı: Herkes farklıdır ve bu güzeldir."
     type: "truefalse"
     correctAnswer: "true"
+summary: "Küçük kaplumbağa Tilda yüzme yarışında en yavaş olandır. Ama yolda renkli taşlar, uyuyan bir yengeç ve gümüş rengi bir deniz kabuğu keşfeder. Herkesin kendi hızı olduğunu ve güçlü yanların bazen ilk bakışta görünmeyen yerlerde saklı olduğunu öğrenir."
 ---
 
 Bir zamanlar Tilda adında küçük bir kaplumbağa varmış. Tilda gölette yüzmeyi çok severmiş. Ama sık sık kendi kendine dermiş ki: “Bacaklarım çok kısa. Balıklar kadar hızlı yüzemem!”

@@ -68,6 +68,8 @@ questions:
       - "Öfke normaldir ama kontrol edilebilir."
       - "İnsan her zaman yüksek sesle bağırmalıdır."
     correctAnswer: "Öfke normaldir ama kontrol edilebilir."
+summary: "Paula’nın karnında Funkel adında küçük bir öfke ejderhası vardır. Paula öfkesini fark etmeyi ve bağırmak yerine sakin nefes almayı öğrenir."
+keyMessage: "Öfkelenmek normaldir – ama bağırmadan onu dışarı atmayı öğrenebilirsin."
 ---
 
 Bir zamanlar Paula adında bir kız varmış. Paula neşeli ve meraklıymış – ama bazen çok çabuk sinirlenirmiş.

@@ -8,7 +8,7 @@ title: "Timmy und der verschwundene Morgen"
 emoji: "⏰"
 skills: ["routines"]
 band: "1"
-summary: "Timmy, ein kleiner Bär, vergisst ständig seinen Tagesablauf. Seine Freundin Frida zeigt ihm, dass ein fester Tagesablauf wie ein stabiler Turm Halt gibt."
+summary: "Timmy, ein kleiner Bär, vergisst ständig seinen Tagesablauf. Seine Freundin Frieda zeigt ihm, dass ein fester Tagesablauf wie ein stabiler Turm Halt gibt."
 questions:
   - id: "q1"
     text: "Wer ist die Hauptfigur in der Geschichte?"

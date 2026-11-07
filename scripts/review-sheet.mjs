@@ -47,16 +47,6 @@ for (const locale of LOCALES) {
 }
 const ready = readiness(root);
 
-// Machine drafts (drafts/<storyId>.yaml) for moderators to check and copy into the CMS; the site never reads them.
-const draftsDir = join(root, 'drafts');
-const drafts = new Map(
-  existsSync(draftsDir)
-    ? readdirSync(draftsDir)
-        .filter(f => f.endsWith('.yaml'))
-        .map(f => [f.replace(/\.yaml$/, ''), parseYaml(readFileSync(join(draftsDir, f), 'utf8')) ?? {}])
-    : []
-);
-
 // Everything after the story section (the afterword, exercises), as plain paragraphs.
 function afterword(body) {
   const parts = body.replace(/^# .*$/gm, '').split(/^## /m);
@@ -112,13 +102,9 @@ function storyPage(id, group, lang, up) {
     const note = notes[l] ? ` <small class="note">${esc(notes[l])}</small>` : '';
     return `<li><b lang="${l}">${NAMES[l]}</b> ${chip(ui, f)}${reviewed} <a href="${preview(l)}">${ui.open}</a>${note}${list(v?.mustItems, ui.needs)}${list(should, ui.worth)}</li>`;
   }).join('');
-  // A field the story already has always wins; a draft shows only while the field is still empty.
   const field = (l, key) => {
     const value = group[l].fm[key];
-    if (value) return `<p>${esc(value)}</p>`;
-    const draft = drafts.get(id)?.[l]?.[key];
-    if (!draft) return `<p>${missing}</p>`;
-    return `<div class="draft"><span class="label" ${ui_}>${ui.draftLabel}</span><p>${esc(draft)}</p><button type="button" class="copy" data-copy="${esc(draft)}" ${ui_}>${ui.copy}</button></div>`;
+    return value ? `<p>${esc(value)}</p>` : `<p>${missing}</p>`;
   };
   const about = row(ui.about, l => {
     const f = group[l].fm;
@@ -191,7 +177,7 @@ a{color:#2f6f62}h1{font-size:1.4rem;margin:.4rem 0}h2{font-size:1.1rem;margin:1.
 .box{scroll-snap-align:start;padding:.55rem .7rem;border:1px solid #e2d6c1;border-radius:8px;background:#fffdf8}.box p{margin:0 0 .3rem}.box[dir=rtl]{font-size:1.08em;line-height:1.75}
 .tag{display:block;margin-bottom:.2rem;font-size:.72rem;font-weight:700;color:#2f6f62}
 .label{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#5b5566}
-.missing{color:#a02c1c}.draft{margin:.2rem 0 .4rem;padding:.35rem .55rem;border:1px dashed #b98a2e;border-radius:6px;background:#fff8e8}.copy{min-height:44px;padding:.3rem .9rem;border:1px solid #2f6f62;border-radius:8px;background:#fff;color:#2f6f62;font:600 .85rem system-ui,sans-serif;cursor:pointer}.note{color:#7a4800}.alt{margin-top:.4rem;padding:.35rem .55rem;border-radius:6px;background:#fbf5ea;font-size:.85rem;color:#5b5566}
+.missing{color:#a02c1c}.note{color:#7a4800}.alt{margin-top:.4rem;padding:.35rem .55rem;border-radius:6px;background:#fbf5ea;font-size:.85rem;color:#5b5566}
 .more{margin:.6rem 0;padding:.5rem .8rem;background:#fff;border:1px solid #e2d6c1;border-radius:10px}.more .row{grid-template-columns:1fr;border:0}
 .lists{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}fieldset{border:1px solid #e2d6c1;border-radius:10px;background:#fff}
 label{display:flex;gap:.5rem;align-items:flex-start;min-height:44px;padding:.2rem 0}input{width:22px;height:22px;flex:none}ul{padding-inline-start:1.2rem;margin:.2rem 0}
@@ -204,16 +190,6 @@ document.querySelectorAll('input[data-key]').forEach(b => {
   const k = 'review-' + b.dataset.key;
   try { b.checked = localStorage.getItem(k) === '1'; } catch (e) {}
   b.addEventListener('change', () => { try { b.checked ? localStorage.setItem(k, '1') : localStorage.removeItem(k); } catch (e) {} });
-});
-// Copy a machine draft so a moderator can paste it into the CMS field.
-document.querySelectorAll('button[data-copy]').forEach(b => {
-  const text = b.textContent;
-  b.addEventListener('click', () => {
-    navigator.clipboard?.writeText(b.dataset.copy).then(() => {
-      b.textContent = ${JSON.stringify(ui.copied)};
-      setTimeout(() => (b.textContent = text), 1500);
-    });
-  });
 });
 // The same page in another language: English has no prefix, the others add ar/ or de/ after review/.
 document.querySelectorAll('a[data-lang]').forEach(a => {

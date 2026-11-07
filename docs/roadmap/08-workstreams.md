@@ -302,10 +302,9 @@ true`) so the reader never pairs it with the German and readiness stops asking f
 4. **Agent: machine drafts.** A suggested `summary`, `keyMessage`, alt text, `feelings` and page breaks per story
    and language, written into the story files through a reviewed pull request (owner decision 2026-11-07).
    `feelings` unlocks Find by feeling.
-   Started 2026-11-04: `drafts/<storyId>.yaml` holds 60 summaries and 14 key messages for the translations of the 16
-   stories published that day, translated from their reviewed German text; the review sheet shows each with a copy
-   button until the field is filled; they still have to be moved into the story files. Next: alt text, `feelings` and
-   page breaks.
+   Done: 60 summaries and 14 key messages for the translations of the 16 stories published on 2026-11-04 (moved from
+   the retired `drafts/` folder on 2026-11-07), and cover alt text for all 40 stories. Next: `feelings` and page
+   breaks.
 5. **Agent: polish for the five families,** led by the feedback from step 3. Candidates now: Library performance
    (Lighthouse mobile 72 in Run 3, Chromium is now available to re-measure), the drafts left out of step 1 once their
    translations line up, and the remaining items under step 9.

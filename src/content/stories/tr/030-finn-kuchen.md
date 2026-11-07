@@ -33,6 +33,7 @@ questions:
     text: "Sonunda Finn hiç pasta alamaz."
     type: "truefalse"
     correctAnswer: "false"
+summary: "Finn dayanamaz ve gizlice pastadan bir dilim keser. Her şey ters gidince dürüst olmayı ve sorumluluk almayı öğrenir."
 ---
 
 Bir zamanlar Finn adında küçük bir çocuk vardı. Finn pastayı çok severdi. Çikolatalı pasta, elmalı pasta, çilekli pasta – aslında her türlü pastayı severdi.

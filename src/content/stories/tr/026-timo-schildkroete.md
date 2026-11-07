@@ -35,6 +35,7 @@ questions:
   - id: "q10"
     text: "Hikâyenin sonunda Timo hangi önemli dersi öğrendi?"
     type: "fillinblank"
+summary: "Küçük kaplumbağa Timo yavaş ve utangaçtır. Ama herkesin kendine özgü güçlü yanları olduğunu ve olduğu gibi iyi olduğunu öğrenir."
 ---
 
 Bir varmış, bir yokmuş. Küçük bir kaplumbağa varmış, adı Timo imiş. Timo ne tavşanlar kadar hızlıymış, ne ayılar kadar güçlüymüş, ne de papağanlar kadar gürültülüymüş.

@@ -68,6 +68,8 @@ questions:
       - "Anger is normal, but you can control it."
       - "You should always shout loudly."
     correctAnswer: "Anger is normal, but you can control it."
+summary: "Paula has a little anger dragon called Funkel in her tummy. She learns to notice her anger and breathe calmly instead of shouting."
+keyMessage: "Anger is normal – but you can learn to let it out without shouting."
 ---
 
 Once upon a time there was a girl named Paula. Paula was cheerful and curious – but sometimes she became angry very quickly.

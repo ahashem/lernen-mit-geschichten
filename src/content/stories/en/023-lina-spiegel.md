@@ -41,6 +41,7 @@ questions:
   - id: "q12"
     text: "What can you do yourself if you practice something new and it feels hard?"
     type: "fillinblank"
+summary: "Lina falls while practising riding her bike without training wheels, but her mirror sings to her how to cheer herself on – and the next try already goes better."
 ---
 
 Once upon a time, there was a little girl named Lina. Lina was cheerful, curious – and sometimes a little impatient.

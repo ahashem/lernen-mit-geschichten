@@ -35,6 +35,7 @@ questions:
   - id: "q10"
     text: "What important lesson did Timo learn at the end of the story?"
     type: "fillinblank"
+summary: "Timo, the little turtle, is slow and shy. But Timo learns that everyone has their own strengths – and that it is good to be just the way you are."
 ---
 
 Once upon a time, there was a little turtle named Timo. Timo was not as fast as the rabbits, not as strong as the bears, and not as loud as the parrots.
