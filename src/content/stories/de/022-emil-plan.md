@@ -1,5 +1,5 @@
 ---
-title: "Emil und dem verrückten Plan"
+title: "Emil und der verrückte Plan"
 emoji: "📝"
 skills: [ "adaptability", "goal-setting", "problem-solving" ]
 ageGroup: "3-7"
