@@ -35,6 +35,7 @@ questions:
   - id: "q10"
     text: "What can we also do when we get angry?"
     type: "fillinblank"
+summary: "Lina, a little mouse, is given away during hide-and-seek and gets angry – but she counts to three, takes a deep breath and tames her anger."
 ---
 
 Once upon a time, there was a little mouse named Lina. Lina was quick and clever, but sometimes she was also a bit impatient.

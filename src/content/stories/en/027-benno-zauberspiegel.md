@@ -64,6 +64,8 @@ questions:
       - "Benno the Behavior Detective"
       - "Benno the King"
     correctAnswer: "Benno the Behavior Detective"
+summary: "Little Benno finds a magic mirror that helps him watch his own behaviour and ask himself three questions."
+keyMessage: "Look honestly in the mirror: knowing yourself helps you grow."
 ---
 
 Once upon a time, there was a cheerful boy named Benno. Benno loved to play, laugh, and make jokes all day long, but sometimes he didn’t realize that his behavior could bother others.

@@ -101,6 +101,7 @@ questions:
       - "Benno ile top oynamak"
       - "Yeni bir köpek almak"
     correctAnswer: "Onların da Sihirli Durdurma Düğmesi olsun"
+summary: "Benno ne zaman kızsa ya da sabırsızlansa hemen tepki verirdi – ta ki sihirli durdurma düğmesini keşfedip önce “Bir dakika” diye düşünene kadar."
 ---
 
 Küçük bir köyde Benno adında neşeli bir çocuk yaşardı. Benno iyi kalpli ve eğlenceliydi – ama küçük bir sorunu vardı: Bir şey olduğunda hemen tepki verirdi. Bazen bağırır, bazen ayaklarını yere vurur, bazen de çok yüksek sesle gülerdi.

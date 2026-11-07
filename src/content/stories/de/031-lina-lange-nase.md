@@ -9,7 +9,7 @@ emoji: "🐭"
 skills: ["self-discipline", "anger-management", "emotional-regulation"]
 band: "1"
 summary: "Die kleine Maus Lina wird beim Verstecken verraten und wütend – doch sie zählt bis drei, atmet tief durch und zähmt ihre Wut."
-keyMessage: "Botschaft der Geschichte Manchmal fühlt man sich wütend oder unfair behandelt. Aber wer tief atmet, bis drei zählt und überlegt, der bleibt Herr über seine Gefühle – so wie Lina mit ihrer „langen Nase“."
+keyMessage: "Manchmal fühlt man sich wütend oder unfair behandelt. Aber wer tief atmet, bis drei zählt und überlegt, der bleibt Herr über seine Gefühle – so wie Lina mit ihrer „langen Nase“."
 questions:
   - id: "q1"
     text: "Wie heißt die kleine Maus in der Geschichte?"

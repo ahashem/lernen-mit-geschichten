@@ -29,6 +29,7 @@ questions:
   - id: "q8"
     text: "Timmy’den ne öğrenebiliriz?"
     type: "fillinblank"
+summary: "Küçük ayı Timmy günlük rutinini sürekli unutur. Arkadaşı Frieda ona, düzenli bir günlük rutinin sağlam bir kule gibi destek verdiğini gösterir."
 ---
 
 Bir varmış bir yokmuş, Timmy adında küçük bir ayı varmış. Timmy sevimli ve neşeliymiş – ama küçük bir sorunu varmış: Her zaman günlük rutinini unutuyormuş!

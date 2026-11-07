@@ -29,6 +29,7 @@ questions:
   - id: "q8"
     text: "What can we learn from Timmy?"
     type: "fillinblank"
+summary: "Timmy, a little bear, keeps forgetting his daily routine. His friend Frieda shows him that a steady routine gives support, like a solid tower."
 ---
 
 Once upon a time, there was a little bear named Timmy. Timmy was kind and cheerful – but he had a small problem: He always forgot his daily routine!

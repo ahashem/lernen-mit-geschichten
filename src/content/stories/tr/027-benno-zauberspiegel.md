@@ -64,6 +64,8 @@ questions:
       - "Benno, Davranış Dedektifi"
       - "Benno, Kral"
     correctAnswer: "Benno, Davranış Dedektifi"
+summary: "Küçük Benno, kendi davranışlarını gözlemlemesine ve kendine üç soru sormasına yardım eden sihirli bir ayna bulur."
+keyMessage: "Aynaya dürüstçe bak: Kendini tanıyan büyür."
 ---
 
 Bir zamanlar Benno adında neşeli bir çocuk varmış. Benno bütün gün oynamayı, gülmeyi ve şaka yapmayı çok severmiş. Ama bazen davranışlarının başkalarını rahatsız edebileceğini fark etmezmiş.

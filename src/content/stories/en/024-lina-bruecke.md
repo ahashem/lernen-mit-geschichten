@@ -92,6 +92,7 @@ questions:
   - id: "q19"
     text: "What nickname did the villagers give Lina at the end of the story?"
     type: "fillinblank"
+summary: "The bridge over the river has disappeared. While the villagers just wait, unsure what to do, Lina builds a raft out of pumpkins and finds a surprising way to the other bank."
 ---
 ---
 

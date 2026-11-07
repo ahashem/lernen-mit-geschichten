@@ -92,6 +92,7 @@ questions:
   - id: "q19"
     text: "Köylüler hikâyenin sonunda Lina’ya hangi adı verdiler?"
     type: "fillinblank"
+summary: "Nehrin üzerindeki köprü kaybolmuştur. Köylüler ne yapacaklarını bilemeden beklerken Lina balkabaklarından bir sal yapar ve karşı kıyıya şaşırtıcı bir yol bulur."
 ---
 ---
 

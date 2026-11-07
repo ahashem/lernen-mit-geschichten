@@ -101,6 +101,7 @@ questions:
       - "To play ball with Benno"
       - "To buy a new dog"
     correctAnswer: "To also have a Magic Stop Button"
+summary: "Whenever Benno got angry or impatient, he reacted straight away – until he found the magic stop button and first thought “Wait a moment”."
 ---
 
 In a small village, there lived a cheerful boy named Benno. Benno was kind and funny – but he had a little problem: Whenever something happened, he reacted immediately. Sometimes he shouted, sometimes he stamped his feet, and sometimes he laughed far too loudly.

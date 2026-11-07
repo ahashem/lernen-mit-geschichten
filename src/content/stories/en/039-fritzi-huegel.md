@@ -101,6 +101,7 @@ questions:
       - "Mistakes show us how to do better"
       - "You should never try again"
     correctAnswer: "Mistakes show us how to do better"
+summary: "Fritzi wants to ride his scooter down the highest hill and falls twice. With courage and the encouraging words of his friend Lotte, he learns that mistakes are not the end but the start of a new try."
 ---
 
 Once upon a time, there was a little raccoon named Fritzi. Fritzi had a big idea: he wanted to ride his small scooter down the tallest hill in the forest.

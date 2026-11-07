@@ -32,6 +32,7 @@ questions:
   - id: "q9"
     text: "🐒 Let’s play Milo’s game: One of us makes a face or a gesture, and the others try to guess what it means!"
     type: "fillinblank"
+summary: "Milo, a curious monkey in a small zoo, understands the gestures and looks of the other animals – and shows that you can understand each other even without words."
 ---
 
 In a small zoo lived a curious monkey named Milo. Milo could speak, but he had a special talent: He understood every gesture and every facial expression.

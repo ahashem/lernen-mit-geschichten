@@ -132,6 +132,8 @@ questions:
       - "“Merhaba!”"
       - "“Hayır!”"
     correctAnswer: "“Yaşasın!”"
+summary: "Meraklı rakun Benno her şeyi düşünmeden denemek ister – ta ki şunu öğrenene kadar: önce gözle, sonra düşün, sonra harekete geç. Ve ilk balığını yakalar."
+keyMessage: "Hatalar öğrenmenin bir parçasıdır – onlardan ders alan daha akıllı olur."
 ---
 
 Bir varmış, bir yokmuş, küçük bir rakun varmış. Adı Benno’ymuş. Benno çok meraklıymış – belki de fazla meraklı. Her şeyi denemek istermiş ama önce pek düşünmezmiş.
