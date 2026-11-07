@@ -2,6 +2,7 @@
 storyId: "040-lilo-maus"
 cover:
   src: /assets/stories/040-lilo-maus/cover.webp
+  alt: "Lilo und der Igel Fips lachen über den Ball, der mitten in der Pfütze schwimmt. Lilo zeigt mit der Pfote darauf, und eine Biene summt herum."
 status: published
 title: "Die Geschichte von Lilo der Maus"
 emoji: "🐭"

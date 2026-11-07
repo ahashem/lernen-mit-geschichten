@@ -2,6 +2,7 @@
 storyId: "016-benno-toaster"
 status: draft
 title: "Benno and the Talking Toaster"
+coverAlt: "Benno kneels in front of the toaster, smiling and pointing at it. The toaster warns him: “Watch it, kid!” – and a little fish flies through the air."
 keyMessage: "Moral of the Story If you listen carefully, follow instructions, and take things step by step — you can do just about anything. Maybe even earn yourself a chocolate toast! 😄"
 questions:
   - id: "q1"
