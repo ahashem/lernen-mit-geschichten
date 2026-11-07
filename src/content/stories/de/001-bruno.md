@@ -16,7 +16,6 @@ publishDate: 2024-01-15
 status: published
 art:
   reviewedAt: 2026-10-23
-  aiGenerated: false
 narration:
   timing: false
 keyMessage: "Wenn ich auf meinen Körper achte (mein Herz klopft, mein Bauch kribbelt …), dann merke ich: Ich fühle etwas. Wenn ich das Gefühl benenne (ängstlich, wütend, glücklich …), dann kann ich besser entscheiden, was ich tun möchte. So werde ich ein kleiner Experte für mich selbst – das ist Selbstbewusstsein!"

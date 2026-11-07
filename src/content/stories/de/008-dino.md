@@ -84,7 +84,6 @@ questions:
 status: published
 art:
   reviewedAt: 2026-10-23
-  aiGenerated: false
 narration:
   timing: false
 cover:

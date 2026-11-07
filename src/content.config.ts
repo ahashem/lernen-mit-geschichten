@@ -63,7 +63,6 @@ const storiesCollection = defineCollection({
         styleVersion: z.string().optional(),
         reviewedBy: z.string().optional(),
         reviewedAt: z.date().optional(),
-        aiGenerated: z.boolean().optional(),
       })
       .optional()
       .describe('SHARED, German file only. Provenance for any art; required once a story carries art.'),
