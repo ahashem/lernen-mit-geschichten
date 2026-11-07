@@ -5,6 +5,8 @@ skills: ["problem-solving", "impulse-control", "decision-making"]
 ageGroup: "3-7"
 band: "1"
 storyId: "003-lina"
+cover:
+  src: /assets/stories/003-lina/cover.webp
 difficulty: "beginner"
 publishDate: 2024-01-15
 status: published

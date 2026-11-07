@@ -1,5 +1,7 @@
 ---
 storyId: "038-tilda-schildkroete"
+cover:
+  src: /assets/stories/038-tilda-schildkroete/cover.webp
 status: published
 title: "Tilda die kleine Schildkröte"
 emoji: "✨"

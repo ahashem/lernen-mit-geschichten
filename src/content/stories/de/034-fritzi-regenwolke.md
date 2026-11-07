@@ -1,5 +1,7 @@
 ---
 storyId: "034-fritzi-regenwolke"
+cover:
+  src: /assets/stories/034-fritzi-regenwolke/cover.webp
 status: draft
 title: "Fritzi und die Regenwolke"
 emoji: "🐇"

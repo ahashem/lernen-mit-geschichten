@@ -5,6 +5,8 @@ skills: ["empathy", "self-confidence"]
 ageGroup: "3-7"
 band: "1"
 storyId: "006-moritz"
+cover:
+  src: /assets/stories/006-moritz/cover.webp
 publishDate: 2024-01-15
 difficulty: "beginner"
 questions:

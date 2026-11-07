@@ -1,5 +1,7 @@
 ---
 storyId: "037-timo-zahnputz"
+cover:
+  src: /assets/stories/037-timo-zahnputz/cover.webp
 status: published
 title: "Timo und der lustige Zahnputz-Wecker"
 emoji: "🪥"

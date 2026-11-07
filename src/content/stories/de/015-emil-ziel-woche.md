@@ -1,5 +1,7 @@
 ---
 storyId: "015-emil-ziel-woche"
+cover:
+  src: /assets/stories/015-emil-ziel-woche/cover.webp
 status: draft
 title: "Emils Super-Ziel-Woche!"
 emoji: "🦖"
