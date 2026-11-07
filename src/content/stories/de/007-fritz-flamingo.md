@@ -7,6 +7,8 @@ skills:
 ageGroup: 3-7
 band: "1"
 storyId: 007-fritz-flamingo
+cover:
+  src: /assets/stories/007-fritz-flamingo/cover.webp
 publishDate: 2024-01-15
 difficulty: beginner
 questions:

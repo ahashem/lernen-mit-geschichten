@@ -1,5 +1,7 @@
 ---
 storyId: "031-lina-lange-nase"
+cover:
+  src: /assets/stories/031-lina-lange-nase/cover.webp
 status: published
 title: "Linas Lange Nase"
 emoji: "🐭"

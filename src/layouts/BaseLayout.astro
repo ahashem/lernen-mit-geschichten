@@ -115,6 +115,10 @@ const jsonLd =
         var NAME = 'story-art';
         var KEY = 'lmg-story-cover';
         var named = null;
+        var leaving = null;
+        var smooth = function () {
+          return !matchMedia('(prefers-reduced-motion: reduce)').matches;
+        };
         var path = function (href) {
           return new URL(href, location.href).pathname.replace(/\/$/, '');
         };
@@ -134,7 +138,32 @@ const jsonLd =
           )
             return;
           var link = e.target.closest && e.target.closest('a[href]');
-          var card = link && link.closest('.tile, .hero');
+          if (!link || (link.target && link.target !== '_self') || link.hasAttribute('download'))
+            return;
+          var to = new URL(link.href, location.href);
+          var same = to.origin === location.origin;
+          var here = same && path(to.href) === path(location.href) && to.search === location.search;
+          // A link to the page already open (the logo on the shelf, home tapped twice) would reload it and replay the
+          // page transition, which reads as a flash; it goes back to the top instead. A second tap on a link that is
+          // already loading would restart the load and the transition, so it is ignored.
+          if (here && !to.hash) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: smooth() ? 'smooth' : 'auto' });
+            return;
+          }
+          if (leaving === to.href) return e.preventDefault();
+          if (same && !here) {
+            var href = (leaving = to.href);
+            var forget = function () {
+              if (leaving === href) leaving = null;
+            };
+            // Forgotten if a later handler cancels the click or the load never commits, so the link still works.
+            setTimeout(function () {
+              if (e.defaultPrevented) forget();
+            });
+            setTimeout(forget, 3000);
+          }
+          var card = link.closest('.tile, .hero');
           var cover = card && card.querySelector('.tile-cover, .hero-cover');
           if (cover) name(cover);
         });
@@ -149,6 +178,7 @@ const jsonLd =
         });
         addEventListener('pageshow', function () {
           name(null);
+          leaving = null;
         });
         addEventListener('pagereveal', function (e) {
           if (!e.viewTransition) return;
@@ -500,9 +530,11 @@ const jsonLd =
         }
       }
 
-      /* Short pages keep the footer at the foot of the window. */
+      /* Short pages keep the footer at the foot of the window. The paint washes bleed past the gutter; clipped here,
+         not only on body, because phones widen the page to fit overflow that body's clip does not count. */
       main {
         flex: 1 0 auto;
+        overflow-x: clip;
         min-block-size: 60vh;
         padding-block: var(--s-6);
       }

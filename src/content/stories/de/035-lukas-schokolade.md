@@ -1,5 +1,7 @@
 ---
 storyId: "035-lukas-schokolade"
+cover:
+  src: /assets/stories/035-lukas-schokolade/cover.webp
 status: draft
 title: "Lukas und die Schokoladen-Katastrophe"
 emoji: "🍫"

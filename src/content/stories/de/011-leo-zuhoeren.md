@@ -1,5 +1,7 @@
 ---
 storyId: "011-leo-zuhoeren"
+cover:
+  src: /assets/stories/011-leo-zuhoeren/cover.webp
 status: draft
 title: "Die Geschichte von Leo, dem kleinen Löwen, der zuhören lernte"
 emoji: "🦁"

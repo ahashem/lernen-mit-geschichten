@@ -1,5 +1,7 @@
 ---
 storyId: "024-lina-bruecke"
+cover:
+  src: /assets/stories/024-lina-bruecke/cover.webp
 status: published
 title: "Lina und die verschwundene Brücke"
 emoji: "🐴"

@@ -3,9 +3,11 @@ name: Publish stories
 # Moderators save in the CMS, which commits to `editorial`. When the checks pass, this opens a pull request from
 # `editorial` to `main` and squash-merges it with the built-in GITHUB_TOKEN, so both deploys follow with no human
 # merge and no personal token: a squash merge made through the API is signed by GitHub and linear, which the `main`
-# ruleset requires. A story goes live when its status is `published`. The publishing gate
-# (scripts/publish-gates.mjs --changed) refuses a save that would lose a field; with the STRICT_PUBLISHING repository
-# variable set to 1 it also refuses a published file that is incomplete or unreviewed.
+# ruleset requires. Main comes into `editorial` through GitHub's merge endpoint, never a local `git merge`: GitHub
+# signs the merge commits it writes, and unsigned ones would sit in every publish pull request. A story goes live
+# when its status is `published`. The publishing gate (scripts/publish-gates.mjs --changed) refuses a save that would
+# lose a field; with the STRICT_PUBLISHING repository variable set to 1 it also refuses a published file that is
+# incomplete or unreviewed.
 #
 # Needs one repository setting: Settings > Actions > General > "Allow GitHub Actions to create and approve pull
 # requests". Pull requests and merges made with GITHUB_TOKEN start no other workflow, so the Pages deploy is
@@ -38,10 +40,9 @@ jobs:
 
       - name: Bring main into editorial
         run: |
-          git config user.name "editorial-bot"
-          git config user.email "editorial-bot@users.noreply.github.com"
-          git merge --no-edit origin/main
-          git push origin HEAD:editorial
+          gh api "repos/$GITHUB_REPOSITORY/merges" -f base=editorial -f head=main --silent
+          git fetch origin main editorial
+          git reset --hard origin/editorial
 
       - uses: actions/setup-node@v7
         with:
@@ -71,8 +72,12 @@ jobs:
           if [ -z "$number" ]; then
             number=$(gh pr create --base main --head editorial --title "content: publish editorial changes" --body "" | grep -o '[0-9]*$')
           fi
-          gh pr merge "$number" --squash --subject "content: publish editorial changes" --body ""
-          git fetch origin main
-          git merge --no-edit origin/main
-          git push origin HEAD:editorial
+          # The REST endpoint, not `gh pr merge`: the CLI refuses on its own whenever GitHub reports the pull request
+          # as BLOCKED, which older unsigned commits on `editorial` cause, although the squash commit GitHub writes is
+          # signed and the server accepts it. `sha` merges only the commit checked above; a later save fails this
+          # merge and is published by its own run.
+          gh api -X PUT "repos/$GITHUB_REPOSITORY/pulls/$number/merge" --silent \
+            -f merge_method=squash -f sha="$(git rev-parse HEAD)" \
+            -f commit_title="content: publish editorial changes" -f commit_message=""
+          gh api "repos/$GITHUB_REPOSITORY/merges" -f base=editorial -f head=main --silent
           gh workflow run deploy.yml --ref main

@@ -1,5 +1,7 @@
 ---
 storyId: "016-benno-toaster"
+cover:
+  src: /assets/stories/016-benno-toaster/cover.webp
 status: draft
 title: "Benno und der sprechende Toaster"
 emoji: "🍞"

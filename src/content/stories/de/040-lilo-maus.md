@@ -1,5 +1,7 @@
 ---
 storyId: "040-lilo-maus"
+cover:
+  src: /assets/stories/040-lilo-maus/cover.webp
 status: published
 title: "Die Geschichte von Lilo der Maus"
 emoji: "🐭"
