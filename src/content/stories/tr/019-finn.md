@@ -46,10 +46,6 @@ questions:
     text: Cevizi ilk kim buldu?
     type: fillinblank
     correctAnswer: Küçük rakun Finn.
-  - id: q2
-    text: Finn ilk önce kiminle karşılaştı?
-    type: fillinblank
-    correctAnswer: Sincap Mila ile.
   - id: q3
     text: Başka kim yardım etti?
     type: fillinblank
@@ -58,10 +54,6 @@ questions:
     text: Herkes birlikte çalışınca ne oldu?
     type: fillinblank
     correctAnswer: Dev cevizi taşıyabildiler ve yediler.
-  - id: q5
-    text: Bu hikâyeden ne öğreniyoruz?
-    type: fillinblank
-    correctAnswer: Birlikte daha güçlüyüz! / Takım çalışması eğlenceli!
 status: published
 summary: "Küçük rakun Finn tek başına yerinden oynatamadığı dev bir ceviz bulur. Sincap Mila, kuş Kiko ve bir sürü karıncayla birlikte bunu başarır."
 keyMessage: "Birlikte çalışan, en büyük işlerin bile üstesinden gelir – hem de eğlenerek."
