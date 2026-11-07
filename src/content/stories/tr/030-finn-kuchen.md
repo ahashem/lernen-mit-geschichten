@@ -2,6 +2,7 @@
 storyId: "030-finn-kuchen"
 status: published
 title: "Finn ve Uçan Pasta Hikâyesi"
+coverAlt: "Yukarıda büyükanne parmağını kaldırıp Finn’i uyarıyor: Pasta önce soğumalı. Aşağıda Finn şaşkın, devrilen pastayı tutuyor; köpek Bello da bakıyor."
 keyMessage: "Hata yaptığında dürüst olmak ve sorumluluk almak en iyisidir. Bu seni güçlü kılar – ve çoğu zaman hayatın sonunda hâlâ küçük bir “pasta dilimi” vardır."
 questions:
   - id: "q1"

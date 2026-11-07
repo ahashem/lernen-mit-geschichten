@@ -7,6 +7,7 @@ band: "1"
 storyId: "006-moritz"
 cover:
   src: /assets/stories/006-moritz/cover.webp
+  alt: "Moritz lächelt und reicht dem traurigen Igel Fritz die Pfote. Zwischen ihnen liegt ein Dorn im Gras, und zwei Herzen schweben in der Luft."
 publishDate: 2024-01-15
 difficulty: "beginner"
 questions:

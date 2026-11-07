@@ -2,6 +2,7 @@
 storyId: "040-lilo-maus"
 status: published
 title: "The Story of Lilo the Mouse"
+coverAlt: "Lilo the mouse and Fips the hedgehog laugh about the ball floating in the puddle. Lilo points at it, and a bee buzzes by."
 keyMessage: "Humor helps us make conflicts smaller and reduce stress. A funny thought or a good joke can bring friends back together."
 questions:
   - id: "q1"

@@ -7,6 +7,7 @@ band: "1"
 storyId: "020-timmi-denkt"
 cover:
   src: /assets/stories/020-timmi-denkt/cover.webp
+  alt: "Hoch oben am Baum greift Timmi der Waschbär nachdenklich nach einem Apfel. Lilli das Eichhörnchen hält lächelnd einen langen Stock nach oben."
 publishDate: 2024-01-15
 difficulty: "beginner"
 questions:

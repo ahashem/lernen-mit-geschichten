@@ -2,6 +2,7 @@
 storyId: "024-lina-bruecke"
 status: published
 title: "Lina ve Kayıp Köprü"
+coverAlt: "Lina, balkabaklarından yaptığı sala binmiş, gülümseyerek nehirde kürek çekiyor. Balkabakları iplerle birbirine bağlı."
 keyMessage: "Bazen ilk çözüm en iyisi değildir. Ama yaratıcı düşündüğümüzde, sorunları çözmek için yeni, eğlenceli ve şaşırtıcı yollar bulabiliriz."
 questions:
   - id: "q1"

@@ -2,6 +2,7 @@
 storyId: "030-finn-kuchen"
 cover:
   src: /assets/stories/030-finn-kuchen/cover.webp
+  alt: "Oben warnt Oma Finn mit erhobenem Finger: Der Kuchen muss noch abkühlen. Unten hält Finn den Kuchen schief, ganz erschrocken, und Bello schaut zu."
 status: published
 title: "Die Geschichte von Finn und dem fliegenden Kuchen"
 emoji: "🐾"

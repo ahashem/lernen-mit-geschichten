@@ -2,6 +2,7 @@
 storyId: "016-benno-toaster"
 cover:
   src: /assets/stories/016-benno-toaster/cover.webp
+  alt: "Benno kniet lächelnd vor dem Toaster und zeigt auf ihn. Der Toaster mit Gesicht warnt: „Pass auf, Junge!“ – und ein kleiner Fisch fliegt vorbei."
 status: draft
 title: "Benno und der sprechende Toaster"
 emoji: "🍞"

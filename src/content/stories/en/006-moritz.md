@@ -1,5 +1,6 @@
 ---
 title: "Moritz, the Little Mouse"
+coverAlt: "Moritz the mouse smiles and holds out his paw to Fritz, the sad hedgehog. A thorn lies in the grass between them, and two hearts float in the air."
 ageGroup: "3-7"
 storyId: "006-moritz"
 publishDate: 2024-01-15
