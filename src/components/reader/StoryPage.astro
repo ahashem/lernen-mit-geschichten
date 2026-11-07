@@ -1381,6 +1381,8 @@ const description = summary || `${title} | ${t('siteName')}`;
     --story-scale: 1;
     position: relative;
     display: grid;
+    /* One column no wider than the screen: a long row of page dots must shrink, not widen the reader past it. */
+    grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr) auto;
     block-size: 100dvh;
     min-block-size: 22rem;
@@ -1564,6 +1566,18 @@ const description = summary || `${title} | ${t('siteName')}`;
   }
   .texts[data-more] {
     mask-image: linear-gradient(to bottom, #000 calc(100% - 4.5rem), transparent);
+  }
+  .texts[data-scrolled] {
+    mask-image: linear-gradient(to bottom, transparent, #000 2.5rem);
+  }
+  .texts[data-scrolled][data-more] {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 2.5rem,
+      #000 calc(100% - 4.5rem),
+      transparent
+    );
   }
   .sheet:has(.texts[data-more])::after {
     content: '';
@@ -1780,14 +1794,21 @@ const description = summary || `${title} | ${t('siteName')}`;
   @media (max-width: 479px) {
     .dots {
       flex-wrap: nowrap;
-      gap: 6px;
+      gap: clamp(3px, 1.5vw, 6px);
+      min-inline-size: 0;
     }
+    /* A long story's dots narrow to fit between the buttons; they stay round at any width. */
     .dots span {
       inline-size: 10px;
-      block-size: 10px;
+      block-size: auto;
+      aspect-ratio: 1;
+      min-inline-size: 6px;
     }
     .dots span.is-current {
       inline-size: 22px;
+      min-inline-size: 14px;
+      block-size: 10px;
+      aspect-ratio: auto;
     }
     .nav-btn:has(.nav-label),
     .nav-btn[data-action='next']:has(.nav-label) {

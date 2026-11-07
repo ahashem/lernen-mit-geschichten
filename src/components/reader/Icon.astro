@@ -3,7 +3,7 @@
 interface Props {
   name:
     | 'home'
-    | 'bubble'
+    | 'globe'
     | 'play'
     | 'pause'
     | 'prev'
@@ -17,7 +17,8 @@ interface Props {
 }
 const { name, size = 24 } = Astro.props;
 const paths: Record<string, string> = {
-  bubble: 'M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-5 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z',
+  globe:
+    'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3.5 9h17M3.5 15h17M12 3c-2.4 2.6-3.6 5.6-3.6 9s1.2 6.4 3.6 9M12 3c2.4 2.6 3.6 5.6 3.6 9s-1.2 6.4-3.6 9',
   home: 'M4 11.5 12 4l8 7.5M6.5 10v9.5h11V10M10 19.5v-5h4v5',
   play: 'M8 5.5v13l11-6.5z',
   pause: 'M8 5.5v13M16 5.5v13',
