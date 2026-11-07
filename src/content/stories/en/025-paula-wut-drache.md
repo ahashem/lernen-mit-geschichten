@@ -2,6 +2,7 @@
 storyId: "025-paula-wut-drache"
 status: published
 title: "Paula and the Little Anger Dragon"
+coverAlt: "Paula clenches her fists, angry. Beside her, in a cloud, Funkel the little anger dragon snarls."
 questions:
   - id: "q1"
     text: "What is the name of the girl in the story?"

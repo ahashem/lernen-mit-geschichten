@@ -7,6 +7,7 @@ band: "1"
 storyId: "003-lina"
 cover:
   src: /assets/stories/003-lina/cover.webp
+  alt: "Lina, die Maus, klettert eine Leiter hinauf zum großen Keks. Ein Vogel sitzt daneben, unten warten eine Schildkröte und ein Spielzeugauto."
 difficulty: "beginner"
 publishDate: 2024-01-15
 status: published

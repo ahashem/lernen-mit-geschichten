@@ -2,6 +2,7 @@
 storyId: "012-max-kletterwand"
 status: published
 title: "Max and the Big Climbing Wall"
+coverAlt: "Max clings to the climbing wall and shouts “Help! Help!”. Below, his friend Anna smiles and waves up at him."
 questions:
   - id: "q1"
     text: "Where is Max today?"

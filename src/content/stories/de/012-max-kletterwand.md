@@ -2,6 +2,7 @@
 storyId: "012-max-kletterwand"
 cover:
   src: /assets/stories/012-max-kletterwand/cover.webp
+  alt: "Max hängt an der Kletterwand und ruft ängstlich „Hilfe! Hilfe!“. Unten winkt ihm seine Freundin Anna lächelnd zu."
 status: published
 title: "Max und die große Kletterwand"
 emoji: "🧗"

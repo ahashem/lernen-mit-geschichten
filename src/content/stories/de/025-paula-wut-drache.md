@@ -2,6 +2,7 @@
 storyId: "025-paula-wut-drache"
 cover:
   src: /assets/stories/025-paula-wut-drache/cover.webp
+  alt: "Paula ballt wütend die Fäuste. Neben ihr faucht in einer Wolke der kleine Wut-Drache Funkel. Darüber steht „Wut-Drache“."
 status: published
 title: "Paula und der kleine Wut-Drache"
 emoji: "🐉"

@@ -1,5 +1,6 @@
 ---
 title: "Lina ve Büyük Kurabiye"
+coverAlt: "Fare Lina merdivenle büyük kurabiyeye tırmanıyor. Yanında bir serçe var, aşağıda kaplumbağa Tilda gülümsüyor."
 ageGroup: "3-7"
 storyId: "003-lina"
 publishDate: 2024-01-15
