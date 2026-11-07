@@ -45,6 +45,7 @@ questions:
     text: "The message of the story is: Everyone is different, and that’s good."
     type: "truefalse"
     correctAnswer: "true"
+summary: "Tilda, a little turtle, is the slowest in the swimming race. But on the way she discovers colourful stones, a sleeping crab and a silver shell. She learns: everyone has their own pace, and strengths are sometimes hidden where you do not see them at first."
 ---
 
 Once upon a time there was a little turtle named Tilda. Tilda loved swimming in the pond. But she often thought to herself: “My legs are so short. I can’t swim as fast as the fish!”

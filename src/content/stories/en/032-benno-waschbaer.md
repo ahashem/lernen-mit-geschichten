@@ -132,6 +132,8 @@ questions:
       - "“Hello!”"
       - "“No!”"
     correctAnswer: "“Hooray!”"
+summary: "Benno, a curious raccoon, wants to try everything without thinking – until he learns: first watch, then think, then act. And he catches his first fish."
+keyMessage: "Mistakes are part of learning – if you learn from them, you get wiser."
 ---
 
 Once upon a time, there was a little raccoon named Benno. Benno was very curious – maybe too curious. He wanted to try everything without really thinking first.

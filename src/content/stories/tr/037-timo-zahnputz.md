@@ -36,6 +36,7 @@ questions:
   - id: "q7"
     text: "Timo birkaç hafta sonra neden artık çalar saate ihtiyaç duymuyor?"
     type: "fillinblank"
+summary: "Timo neşeli ama unutkan bir çocuktur ve sabahları sık sık dişlerini fırçalamayı unutur. Sincap şeklindeki konuşan bir çalar saat, rutinine uymasına yardım eder."
 ---
 
 Bir zamanlar Timo adında küçük bir çocuk vardı. Timo neşeliydi, meraklıydı – ama biraz da unutkandı.

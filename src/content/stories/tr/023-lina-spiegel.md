@@ -41,6 +41,7 @@ questions:
   - id: "q12"
     text: "Sen yeni bir şey denerken ve zor olduğunda ne yapabilirsin?"
     type: "fillinblank"
+summary: "Lina, yardımcı tekerlekler olmadan bisiklete binmeyi denerken düşer; ama aynası ona kendini nasıl cesaretlendireceğini şarkıyla anlatır – ve bir sonraki deneme daha iyi gider."
 ---
 
 Bir zamanlar Lina adında küçük bir kız vardı. Lina neşeli, meraklı – ama bazen biraz sabırsızdı.

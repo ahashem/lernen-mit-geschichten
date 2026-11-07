@@ -101,6 +101,7 @@ questions:
       - "Hatalar bize nasıl daha iyi olabileceğimizi gösterir"
       - "Bir daha denememek gerekir"
     correctAnswer: "Hatalar bize nasıl daha iyi olabileceğimizi gösterir"
+summary: "Fritzi scooter’ıyla en yüksek tepeden aşağı inmek ister ve iki kez düşer. Cesareti ve arkadaşı Lotte’nin cesaret veren sözleriyle, hataların son değil, yeni bir denemenin başlangıcı olduğunu öğrenir."
 ---
 
 Bir varmış, bir yokmuş. Küçük bir rakun varmış, adı Fritzi imiş. Fritzi’nin büyük bir fikri varmış: Küçük scooter’ıyla ormandaki en yüksek tepeden aşağıya inmek istemiş.

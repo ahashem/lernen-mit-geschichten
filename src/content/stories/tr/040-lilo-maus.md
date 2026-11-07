@@ -81,6 +81,7 @@ questions:
       - "İnsanların asla oynamaması gerektiğini 🙅‍♂️"
       - "Yalnız kalmanın daha iyi olduğunu 🙇‍♀️"
     correctAnswer: "Mizahın sorunları çözmeye yardımcı olduğunu 🤗"
+summary: "Fare Lilo ile arkadaşı Fips, topları bir su birikintisine düşünce tartışır. “Yüzen domates”e gülmek kavgayı bitirir ve mizahın sorunları nasıl küçülttüğünü gösterir."
 ---
 
 Bir varmış bir yokmuş, küçük bir fare varmış. Adı Lilo imiş. Lilo, çiçekler, arılar ve kelebeklerle dolu büyük bir bahçede yaşıyormuş.

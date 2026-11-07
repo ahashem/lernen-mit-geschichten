@@ -81,6 +81,7 @@ questions:
       - "That you should never play 🙅‍♂️"
       - "That it’s better to stay alone 🙇‍♀️"
     correctAnswer: "That humor helps solve problems 🤗"
+summary: "Lilo the mouse and her friend Fips argue when their ball falls into a puddle. Laughing about the “swimming tomato” ends the quarrel and shows how humour makes problems smaller."
 ---
 
 Once upon a time, there was a little mouse named Lilo. Lilo lived in a big garden full of flowers, bees, and butterflies.

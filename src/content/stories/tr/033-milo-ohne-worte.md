@@ -32,6 +32,7 @@ questions:
   - id: "q9"
     text: "🐒 Haydi Milo’nun oyununu oynayalım: Birimiz bir yüz ifadesi ya da hareket yapar, diğerleri bunun ne anlama geldiğini tahmin eder!"
     type: "fillinblank"
+summary: "Küçük bir hayvanat bahçesinde yaşayan meraklı maymun Milo, diğer hayvanların jestlerini ve bakışlarını anlar – ve kelimeler olmadan da anlaşılabileceğini gösterir."
 ---
 
 Küçük bir hayvanat bahçesinde Milo adında meraklı bir maymun yaşardı. Milo konuşabiliyordu, ama onun özel bir yeteneği vardı: Her jesti ve her yüz ifadesini anlayabiliyordu.

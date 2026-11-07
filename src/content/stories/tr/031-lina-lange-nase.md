@@ -35,6 +35,7 @@ questions:
   - id: "q10"
     text: "Biz de öfkelendiğimizde ne yapabiliriz?"
     type: "fillinblank"
+summary: "Küçük fare Lina saklambaçta ele verilir ve kızar – ama üçe kadar sayar, derin bir nefes alır ve öfkesini yatıştırır."
 ---
 
 Bir zamanlar Lina adında küçük bir fare vardı. Lina hızlı ve akıllıydı, ama bazen biraz sabırsızdı.

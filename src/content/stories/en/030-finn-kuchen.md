@@ -33,6 +33,7 @@ questions:
     text: "In the end, Finn doesn’t get any cake."
     type: "truefalse"
     correctAnswer: "false"
+summary: "Finn cannot resist and secretly cuts a piece of the cake. When everything goes wrong, he learns to be honest and take responsibility."
 ---
 
 Once upon a time, there was a little boy named Finn. Finn loved cake. He loved chocolate cake, apple cake, strawberry cake – actually, he loved every kind of cake.

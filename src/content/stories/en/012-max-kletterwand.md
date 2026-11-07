@@ -71,6 +71,8 @@ questions:
   - id: "q13"
     text: "Max learns that asking for help is a good thing."
     type: "truefalse"
+summary: "Max gets stuck on the big climbing wall and cannot go on alone. He calls out for help and learns that accepting help is strong."
+keyMessage: "Asking for help is not a weakness – it is a brave step towards your goal."
 ---
 
 Max is a little boy. Today, he is at the park. In the park, there is a big climbing wall. Max wants to climb it, but the wall is very, very tall!

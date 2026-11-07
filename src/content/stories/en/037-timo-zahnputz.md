@@ -36,6 +36,7 @@ questions:
   - id: "q7"
     text: "Why does Timo no longer need the alarm clock after a few weeks?"
     type: "fillinblank"
+summary: "Timo is a cheerful but forgetful boy who often forgets to brush his teeth in the morning. A talking alarm clock shaped like a squirrel helps him keep to his routine."
 ---
 
 Once upon a time, there was a little boy named Timo. Timo was cheerful, curious – and a little forgetful.
