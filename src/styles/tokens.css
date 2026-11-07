@@ -66,6 +66,7 @@
   --e-press: calc(1px * var(--shadow-x)) 1px 0 rgb(110 62 28 / 0.2);
   --outline: 2px solid var(--ink);
   --sun: var(--honey);
+  --link: var(--lagoon);
   --hill-back: var(--moss-tint);
   --hill-front: var(--paper-2);
   --tap-child: 64px;
@@ -203,6 +204,8 @@
 
 /* Lamp (bedtime) */
 :root[data-theme='lamp'] {
+  /* Lamp has no blue-green: links are ember, still underlined (ux/02 Semantic roles). */
+  --link: var(--ink);
   color-scheme: dark;
   --paper: #14100c;
   --paper-2: #1e1812;

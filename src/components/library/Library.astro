@@ -30,7 +30,6 @@ const areas = (await getSkillsByCategory(locale))
       .sort((a, b) => counts.get(b.id)! - counts.get(a.id)!),
   }))
   .filter(g => g.skills.length > 0);
-const areaOf = Object.fromEntries(areas.flatMap(g => g.skills.map(s => [s.id, g.id])));
 
 const bands = [1, 2, 3, 4].filter(b => items.some(i => i.band === b));
 // A length is offered only when it adds stories the shorter one does not; one length alone filters nothing.
@@ -42,6 +41,15 @@ const lengths = [
   { id: '30+', text: fmt(t('lengthOver'), { n: 30 }) },
 ].filter((_, i) => items.some(it => it.minutes > (reach[i - 1] ?? 0) && it.minutes <= reach[i]));
 const languages = LOCALES.filter(l => items.some(i => i.languages.includes(l)));
+// Length and language are rarely what a grown-up comes for, so they wait behind "More filters".
+const hasMore = lengths.length > 1 || languages.length > 1;
+const countText = (n: number) => fmt(n === 1 ? t('libraryCountOne') : t('libraryCount'), { n });
+const hasShelves = bands.length > 1;
+// The filters read as one sentence, "Stories about {topic} {shelf}", in each language's own word order. Its blanks are
+// buttons that open a picker; with a single shelf there is nothing to pick, so that blank is left out.
+const sentence = t('filterSentence')
+  .split(/(\{topic\}|\{shelf\})/)
+  .filter(part => part && (part !== '{shelf}' || hasShelves));
 
 const data = items.map(i => ({
   title: i.title,
@@ -54,10 +62,13 @@ const data = items.map(i => ({
 const strings = {
   count: t('libraryCount'),
   countOne: t('libraryCountOne'),
-  filterWith: t('filterWithCount'),
-  filter: t('filterButton'),
+  more: t('moreFilters'),
+  anyTopic: t('anyTopic'),
+  shelfAny: t('shelfAny'),
+  shelfOne: t('shelfOne'),
+  shelfMany: t('shelfMany'),
+  moreWith: t('moreFiltersWithCount'),
   noFit: t('noStoryFits'),
-  remove: t('removeFilterName'),
   removeNamed: t('removeFilterNamed'),
   searchWord: t('searchWord'),
   shelfLabel: t('shelfLabel'),
@@ -79,153 +90,204 @@ const strings = {
       <button class="btn btn--primary" type="submit">{t('searchWord')}</button>
     </form>
 
-    <div class="layout">
-      <div class="filters">
-        <button class="btn filter-open" type="button" aria-haspopup="dialog" data-filter-open>
-          {t('filterButton')}
-        </button>
-        <!-- Open in the markup so the filters show without JS; on phones the script closes it into a bottom sheet. -->
-        <dialog class="sheet" open aria-labelledby="filter-title" data-sheet>
-          <div class="sheet-head">
-            <h2 id="filter-title">{t('filterButton')}</h2>
-            <button class="sheet-close" type="button" aria-label={t('closeLabel')} data-sheet-close>
-              ×
+    <!-- Filters (ux/03 §2) as one sentence: "Stories about [any topic] [on every shelf]". Each blank opens a picker;
+         the whole skill taxonomy waits in the topic picker, length and language behind "More filters". Every option
+         shows how many stories it would leave, and a card's skill tag filters by that skill ("more like this"). -->
+    <div class="filters" data-filters>
+      <p class="sentence">
+        {
+          sentence.map(part =>
+            part === '{topic}' ? (
+              <button
+                class="blank blank--topic"
+                type="button"
+                popovertarget="pick-topic"
+                data-topic
+              >
+                {t('anyTopic')}
+              </button>
+            ) : part === '{shelf}' ? (
+              <button
+                class="blank blank--shelf"
+                type="button"
+                popovertarget="pick-shelf"
+                data-shelf
+              >
+                {t('shelfAny')}
+              </button>
+            ) : (
+              <span>{part}</span>
+            )
+          )
+        }
+      </p>
+      <div class="bar">
+        {
+          hasMore && (
+            <button class="btn more" type="button" popovertarget="more-filters" data-more>
+              {t('moreFilters')}
             </button>
-          </div>
-          <div class="filter-groups">
-            <fieldset>
-              <legend>{t('skills')}</legend>
-              <div class="chips">
-                {
-                  areas.map(a => (
-                    <label class="chip" data-group={a.id}>
-                      <input type="checkbox" name="area" value={a.id} />
-                      <span>{a.label}</span>
-                    </label>
-                  ))
-                }
-              </div>
-              {
-                areas.map(a => (
-                  <div class="chips sub" data-area={a.id} role="group" aria-label={a.label} hidden>
-                    {a.skills.map(s => (
-                      <label class="chip" data-group={a.id}>
-                        <input type="checkbox" name="skill" value={s.id} />
-                        <span>{s.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                ))
-              }
-            </fieldset>
-
-            {
-              bands.length > 1 && (
-                <fieldset>
-                  <legend>{t('shelfLabel')}</legend>
-                  <div class="chips">
-                    {bands.map(b => (
-                      <label class="chip">
-                        <input type="checkbox" name="shelf" value={b} />
-                        <span>{t(SHELF_KEY[b as 1 | 2 | 3 | 4])}</span>
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
-              )
-            }
-
-            {
-              lengths.length > 1 && (
-                <fieldset>
-                  <legend>{t('lengthLabel')}</legend>
-                  <div class="chips">
-                    {lengths.map(l => (
-                      <label class="chip">
-                        <input type="checkbox" name="length" value={l.id} />
-                        <span>{l.text}</span>
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
-              )
-            }
-
-            <fieldset>
-              <legend>{t('availableInLabel')}</legend>
-              <div class="chips">
-                {
-                  languages.map(l => (
-                    <label class="chip">
-                      <input type="checkbox" name="lang" value={l} />
-                      <span lang={l}>{endonyms[l]}</span>
-                    </label>
-                  ))
-                }
-              </div>
-            </fieldset>
-          </div>
-          <div class="sheet-foot">
-            <button class="btn btn--primary" type="button" data-sheet-done
-              >{t('showStories')}</button
-            >
-          </div>
-        </dialog>
+          )
+        }
+        <p class="count" role="status" data-count>{countText(items.length)}</p>
+        <button class="btn" type="button" data-clear hidden>{t('clearFilters')}</button>
       </div>
 
-      <section class="results" aria-labelledby="results-heading">
-        <h2 id="results-heading" class="visually-hidden">{t('library')}</h2>
-        <div class="bar">
-          <p class="count" role="status" data-count>
-            {
-              fmt(items.length === 1 ? t('libraryCountOne') : t('libraryCount'), {
-                n: items.length,
-              })
-            }
-          </p>
-          <button class="btn" type="button" data-clear hidden>{t('clearFilters')}</button>
-        </div>
-        <ul class="active" aria-label={t('filterButton')} data-active hidden></ul>
-
-        <ul class="grid-tiles" data-grid>
+      <div id="pick-topic" class="picker picker--topic" popover aria-labelledby="pick-topic-title">
+        <h2 id="pick-topic-title">{t('skills')}</h2>
+        <div class="areas">
           {
-            items.map((item, i) => (
-              <li data-i={i}>
-                <StoryTile
-                  locale={locale}
-                  slug={item.slug}
-                  storyId={item.storyId}
-                  title={item.title}
-                  meta={item.meta}
-                  emoji={item.emoji}
-                  summary={item.summary}
-                  skillLabels={item.skills.map(id => label.get(id)).filter((x): x is string => !!x)}
-                  minutes={item.minutes}
-                  shelf={t(SHELF_KEY[item.band as 1 | 2 | 3 | 4])}
-                  row
-                />
-              </li>
+            areas.map(a => (
+              <fieldset class="area" data-group={a.id}>
+                <legend class="visually-hidden">{a.label}</legend>
+                <label class="opt opt--area">
+                  <input type="checkbox" name="area" value={a.id} />
+                  <span class="opt-label">{a.label}</span>
+                  <small class="n" data-n />
+                </label>
+                <ul class="opts">
+                  {a.skills.map(sk => (
+                    <li>
+                      <label class="opt">
+                        <input type="checkbox" name="skill" value={sk.id} data-area={a.id} />
+                        <span class="opt-label">{sk.label}</span>
+                        <small class="n" data-n />
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </fieldset>
             ))
           }
-        </ul>
-
-        <div class="empty surface" data-empty hidden>
-          <p data-empty-text></p>
-          <button class="btn btn--primary" type="button" data-empty-remove hidden></button>
         </div>
-      </section>
+        <button
+          class="btn btn--primary show"
+          type="button"
+          popovertarget="pick-topic"
+          popovertargetaction="hide"
+          data-show
+        >
+          {fmt(t('showStories'), { n: items.length })}
+        </button>
+      </div>
+
+      {
+        hasShelves && (
+          <div id="pick-shelf" class="picker" popover aria-labelledby="pick-shelf-title">
+            <h2 id="pick-shelf-title">{t('shelfLabel')}</h2>
+            <div class="opts">
+              {bands.map(b => (
+                <label class="opt">
+                  <input type="checkbox" name="shelf" value={b} />
+                  <span class="opt-label">{t(SHELF_KEY[b as 1 | 2 | 3 | 4])}</span>
+                  <small class="n" data-n />
+                </label>
+              ))}
+            </div>
+            <button
+              class="btn btn--primary show"
+              type="button"
+              popovertarget="pick-shelf"
+              popovertargetaction="hide"
+              data-show
+            >
+              {fmt(t('showStories'), { n: items.length })}
+            </button>
+          </div>
+        )
+      }
+
+      {
+        hasMore && (
+          <div id="more-filters" class="picker" popover aria-labelledby="more-title">
+            <h2 id="more-title">{t('moreFilters')}</h2>
+            {lengths.length > 1 && (
+              <fieldset>
+                <legend>{t('lengthLabel')}</legend>
+                <div class="opts">
+                  {lengths.map(l => (
+                    <label class="opt">
+                      <input type="checkbox" name="length" value={l.id} />
+                      <span class="opt-label">{l.text}</span>
+                      <small class="n" data-n />
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+            {languages.length > 1 && (
+              <fieldset>
+                <legend>{t('availableInLabel')}</legend>
+                <div class="opts">
+                  {languages.map(l => (
+                    <label class="opt">
+                      <input type="checkbox" name="lang" value={l} />
+                      <span class="opt-label" lang={l}>
+                        {endonyms[l]}
+                      </span>
+                      <small class="n" data-n />
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+            <button
+              class="btn btn--primary show"
+              type="button"
+              popovertarget="more-filters"
+              popovertargetaction="hide"
+              data-show
+            >
+              {fmt(t('showStories'), { n: items.length })}
+            </button>
+          </div>
+        )
+      }
     </div>
+
+    <section class="results" aria-labelledby="results-heading">
+      <h2 id="results-heading" class="visually-hidden">{t('library')}</h2>
+      <ul class="grid-tiles" data-grid>
+        {
+          items.map((item, i) => (
+            <li data-i={i}>
+              <StoryTile
+                locale={locale}
+                slug={item.slug}
+                storyId={item.storyId}
+                title={item.title}
+                meta={item.meta}
+                emoji={item.emoji}
+                summary={item.summary}
+                skill={
+                  item.skills[0] && label.has(item.skills[0])
+                    ? { id: item.skills[0], label: label.get(item.skills[0])! }
+                    : undefined
+                }
+                minutes={item.minutes}
+                shelf={t(SHELF_KEY[item.band as 1 | 2 | 3 | 4])}
+                row
+              />
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="empty surface" data-empty hidden>
+        <p data-empty-text></p>
+        <button class="btn btn--primary" type="button" data-empty-remove hidden></button>
+      </div>
+    </section>
     <script type="application/json" id="library-data" set:html={JSON.stringify(data)} />
-    <script type="application/json" id="library-areas" set:html={JSON.stringify(areaOf)} />
   </div>
 </BaseLayout>
 
 <script>
   import {
     LENGTH_BUCKETS,
+    countWith,
     matchesFilter,
     mostRestrictiveFilter,
-    skillsForAreas,
     type FilterCriteria,
     type FilterKey,
     type LengthBucket,
@@ -234,26 +296,28 @@ const strings = {
   const root = document.querySelector<HTMLElement>('.library')!;
   const s = JSON.parse(root.dataset.strings!);
   const data = JSON.parse(document.getElementById('library-data')!.textContent!);
-  const areaOf: Record<string, string> = JSON.parse(
-    document.getElementById('library-areas')!.textContent!
-  );
   const form = root.querySelector<HTMLFormElement>('[data-search]')!;
   const q = form.elements.namedItem('q') as HTMLInputElement;
-  const boxes = [...root.querySelectorAll<HTMLInputElement>('.filters input[type="checkbox"]')];
+  const boxes = [
+    ...root.querySelectorAll<HTMLInputElement>('[data-filters] input[type="checkbox"]'),
+  ];
+  const skillBoxes = boxes.filter(b => b.name === 'skill');
+  const areaBoxes = boxes.filter(b => b.name === 'area');
   const tiles = [...root.querySelectorAll<HTMLElement>('[data-grid] > li')];
   const count = root.querySelector<HTMLElement>('[data-count]')!;
   const clear = root.querySelector<HTMLButtonElement>('[data-clear]')!;
-  const active = root.querySelector<HTMLElement>('[data-active]')!;
+  const topic = root.querySelector<HTMLButtonElement>('[data-topic]')!;
+  const shelf = root.querySelector<HTMLButtonElement>('[data-shelf]');
+  const more = root.querySelector<HTMLButtonElement>('[data-more]');
+  const shows = [...root.querySelectorAll<HTMLButtonElement>('[data-show]')];
   const empty = root.querySelector<HTMLElement>('[data-empty]')!;
   const emptyText = root.querySelector<HTMLElement>('[data-empty-text]')!;
   const emptyRemove = root.querySelector<HTMLButtonElement>('[data-empty-remove]')!;
   const grid = root.querySelector<HTMLElement>('[data-grid]')!;
-  const sheet = root.querySelector<HTMLDialogElement>('[data-sheet]')!;
-  const openButton = root.querySelector<HTMLButtonElement>('[data-filter-open]')!;
-  const done = root.querySelector<HTMLButtonElement>('[data-sheet-done]')!;
-  const phone = matchMedia('(max-width: 899px)');
   const fmt = (text: string, v: Record<string, string | number>) =>
     text.replace(/\{(\w+)\}/g, (_, k) => String(v[k] ?? ''));
+  const labelOf = (b: HTMLInputElement) =>
+    b.closest('label')!.querySelector('.opt-label')!.textContent!.trim();
 
   const names: Record<FilterKey, string> = {
     searchQuery: s.searchWord,
@@ -262,7 +326,7 @@ const strings = {
     selectedLengths: s.lengthLabel,
     selectedLanguages: s.availableIn,
   };
-  const keyOf: Record<string, FilterKey> = {
+  const keyOf: Record<string, Exclude<FilterKey, 'searchQuery'>> = {
     area: 'selectedSkills',
     skill: 'selectedSkills',
     shelf: 'selectedBands',
@@ -270,22 +334,42 @@ const strings = {
     lang: 'selectedLanguages',
   };
 
+  // The skills are the state; an area is ticked when all its skills are, and half-ticked when some are.
+  const skillsIn = (area: string) => skillBoxes.filter(b => b.dataset.area === area);
   const values = (name: string) =>
     boxes.filter(b => b.name === name && b.checked).map(b => b.value);
   const read = (): FilterCriteria => ({
     searchQuery: q.value,
-    selectedSkills: skillsForAreas(values('area'), values('skill'), areaOf),
+    selectedSkills: values('skill'),
     selectedBands: values('shelf').map(Number),
     selectedLengths: values('length') as LengthBucket[],
     selectedLanguages: values('lang'),
   });
+  // What one option would choose on its own, for the count beside it.
+  const alone = (b: HTMLInputElement) =>
+    b.name === 'area'
+      ? skillsIn(b.value).map(k => k.value)
+      : b.name === 'shelf'
+        ? [Number(b.value)]
+        : [b.value];
 
-  // The URL is the state, so a shared link reproduces the view. replaceState keeps Back from stepping through every tick.
+  function syncAreas() {
+    for (const a of areaBoxes) {
+      const on = skillsIn(a.value).filter(b => b.checked).length;
+      a.checked = on > 0 && on === skillsIn(a.value).length;
+      a.indeterminate = on > 0 && !a.checked;
+    }
+  }
+
+  // The URL is the state, so a shared link reproduces the view: a whole area as `area`, single skills as `skill`.
+  // replaceState keeps Back from stepping through every tick.
   function writeUrl(c: FilterCriteria) {
     const p = new URLSearchParams();
     if (c.searchQuery?.trim()) p.set('q', c.searchQuery.trim());
-    if (values('area').length) p.set('area', values('area').join(','));
-    if (values('skill').length) p.set('skill', values('skill').join(','));
+    const whole = areaBoxes.filter(a => a.checked).map(a => a.value);
+    const single = skillBoxes.filter(b => b.checked && !whole.includes(b.dataset.area!));
+    if (whole.length) p.set('area', whole.join(','));
+    if (single.length) p.set('skill', single.map(b => b.value).join(','));
     if (c.selectedBands?.length) p.set('shelf', c.selectedBands.join(','));
     if (c.selectedLengths?.length) p.set('length', c.selectedLengths.join(','));
     if (c.selectedLanguages?.length) p.set('lang', c.selectedLanguages.join(','));
@@ -295,32 +379,40 @@ const strings = {
 
   function fromUrl() {
     const p = new URLSearchParams(location.search);
+    const list = (key: string) => (p.get(key) ?? '').split(',').filter(Boolean);
     q.value = p.get('q') ?? '';
-    const skills = (p.get('skill') ?? '').split(',');
+    const areas = list('area');
+    const skills = list('skill');
     const sets: Record<string, string[]> = {
-      // A skill from a shared link opens its area, so the ticked chip is visible.
-      area: [...(p.get('area') ?? '').split(','), ...skills.map(id => areaOf[id])],
-      skill: skills,
-      shelf: (p.get('shelf') ?? '').split(','),
-      length: (p.get('length') ?? '')
-        .split(',')
-        .filter(v => (LENGTH_BUCKETS as string[]).includes(v)),
-      lang: (p.get('lang') ?? '').split(','),
+      shelf: list('shelf'),
+      length: list('length').filter(v => (LENGTH_BUCKETS as string[]).includes(v)),
+      lang: list('lang'),
     };
-    for (const b of boxes) b.checked = sets[b.name].includes(b.value);
-  }
-
-  // A ticked area shows its skills; unticking it clears them.
-  function syncAreas() {
-    for (const row of root.querySelectorAll<HTMLElement>('.chips.sub')) {
-      const on = boxes.some(b => b.name === 'area' && b.value === row.dataset.area && b.checked);
-      row.hidden = !on;
-      if (!on) row.querySelectorAll('input').forEach(b => (b.checked = false));
+    for (const b of boxes) {
+      if (b.name === 'skill')
+        b.checked = skills.includes(b.value) || areas.includes(b.dataset.area!);
+      else if (b.name !== 'area') b.checked = sets[b.name].includes(b.value);
     }
   }
 
-  function chipLabel(b: HTMLInputElement) {
-    return b.parentElement!.querySelector('span')!.textContent!;
+  // The topic blank names what is picked: a whole area by its name, otherwise the skill; more than one adds "+n".
+  function topicText() {
+    const picked: string[] = [];
+    for (const a of areaBoxes) {
+      if (a.checked) picked.push(labelOf(a));
+      else for (const b of skillsIn(a.value)) if (b.checked) picked.push(labelOf(b));
+    }
+    return picked.length
+      ? picked[0] + (picked.length > 1 ? ` +${picked.length - 1}` : '')
+      : s.anyTopic;
+  }
+
+  function shelfText() {
+    const picked = boxes.filter(b => b.name === 'shelf' && b.checked);
+    if (!picked.length) return s.shelfAny;
+    return picked.length === 1
+      ? fmt(s.shelfOne, { shelf: labelOf(picked[0]) })
+      : fmt(s.shelfMany, { n: picked.length });
   }
 
   function render() {
@@ -332,84 +424,65 @@ const strings = {
     const n = shown.filter(Boolean).length;
     count.textContent = fmt(n === 1 ? s.countOne : s.count, { n });
     grid.hidden = n === 0;
+    for (const b of shows) b.textContent = n === 1 ? s.showOne : fmt(s.show, { n });
 
-    const set = boxes.filter(b => b.checked);
-    const query = c.searchQuery?.trim() ?? '';
-    const total = set.length + (query ? 1 : 0);
-    clear.hidden = total === 0;
-    openButton.textContent = total ? fmt(s.filterWith, { n: total }) : s.filter;
-    done.textContent = n === 1 ? s.showOne : fmt(s.show, { n });
+    // Each option: how many stories it would show with everything else as it is. One that would show none is
+    // dimmed and cannot be ticked, unless it already is (or holds a ticked skill), so it can always be unticked.
+    for (const b of boxes) {
+      const k = countWith(data, c, keyOf[b.name], alone(b) as never);
+      b.closest('label')!.querySelector('[data-n]')!.textContent = String(k);
+      b.disabled = k === 0 && !b.checked && !b.indeterminate;
+    }
 
-    active.replaceChildren();
-    const addChip = (text: string, onRemove: () => void) => {
-      const li = document.createElement('li');
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'removable';
-      button.textContent = text;
-      button.setAttribute('aria-label', fmt(s.remove, { name: text }));
-      button.addEventListener('click', () => {
-        onRemove();
-        render();
-      });
-      li.append(button);
-      active.append(li);
-    };
-    if (query)
-      addChip(`“${query}”`, () => {
-        q.value = '';
-      });
-    for (const b of set)
-      addChip(chipLabel(b), () => {
-        b.checked = false;
-      });
-    active.hidden = total === 0;
+    topic.textContent = topicText();
+    topic.toggleAttribute('data-set', values('skill').length > 0);
+    if (shelf) {
+      shelf.textContent = shelfText();
+      shelf.toggleAttribute('data-set', values('shelf').length > 0);
+    }
+    const hidden = values('length').length + values('lang').length;
+    if (more) more.textContent = hidden ? fmt(s.moreWith, { n: hidden }) : s.more;
+    clear.hidden = !boxes.some(b => b.checked) && !c.searchQuery?.trim();
 
     empty.hidden = n > 0;
     if (n === 0) {
       const key = mostRestrictiveFilter(data, c);
       emptyRemove.hidden = !key;
+      emptyText.textContent = s.noFit;
       if (key) {
-        emptyText.textContent = s.noFit;
         emptyRemove.textContent = fmt(s.removeNamed, { name: names[key] });
         emptyRemove.onclick = () => {
           if (key === 'searchQuery') q.value = '';
           else for (const b of boxes) if (keyOf[b.name] === key) b.checked = false;
           render();
         };
-      } else emptyText.textContent = s.noFit;
+      }
     }
   }
-
-  // Phones get the filters as a modal bottom sheet behind "Filter (n)"; wider screens keep them open as a column.
-  function layout() {
-    if (phone.matches) {
-      if (sheet.open && !sheet.matches(':modal')) sheet.close();
-    } else if (!sheet.open) sheet.show();
-    else if (sheet.matches(':modal')) {
-      sheet.close();
-      sheet.show();
-    }
-  }
-  openButton.addEventListener('click', () => sheet.showModal());
-  for (const b of root.querySelectorAll('[data-sheet-close], [data-sheet-done]'))
-    b.addEventListener('click', () => {
-      sheet.close();
-      openButton.focus();
-    });
-  sheet.addEventListener('click', e => {
-    if (e.target === sheet && sheet.matches(':modal')) sheet.close();
-  });
-  phone.addEventListener('change', layout);
 
   fromUrl();
-  layout();
   render();
   form.addEventListener('submit', e => {
     e.preventDefault();
     render();
   });
-  boxes.forEach(b => b.addEventListener('change', render));
+  // Ticking an area ticks or clears all its skills; every other box is its own choice.
+  for (const a of areaBoxes)
+    a.addEventListener('change', () => {
+      skillsIn(a.value).forEach(b => (b.checked = a.checked));
+      render();
+    });
+  for (const b of boxes) if (b.name !== 'area') b.addEventListener('change', render);
+  // A card's skill tag: "more like this". The topic becomes that skill; the other filters stay.
+  root.addEventListener('click', e => {
+    const tag = (e.target as Element).closest<HTMLAnchorElement>('a.tile-skill');
+    if (!tag || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    skillBoxes.forEach(b => (b.checked = b.value === tag.dataset.skill));
+    render();
+    root.querySelector('[data-filters]')!.scrollIntoView({ block: 'nearest' });
+    topic.focus({ preventScroll: true });
+  });
   clear.addEventListener('click', () => {
     q.value = '';
     boxes.forEach(b => (b.checked = false));
@@ -432,7 +505,7 @@ const strings = {
   .search {
     display: flex;
     gap: var(--s-3);
-    margin-block-end: var(--s-5);
+    margin-block-end: var(--s-4);
   }
   .search input {
     flex: 1;
@@ -446,63 +519,9 @@ const strings = {
     font: inherit;
     box-shadow: var(--e-1);
   }
-  .layout {
-    display: grid;
-    gap: var(--s-5);
-    align-items: start;
-  }
-  .sheet {
-    position: static;
-    inline-size: auto;
-    max-inline-size: none;
-    margin: 0;
-    border: 0;
-    color: inherit;
-    background: var(--card);
-    border: var(--outline);
-    border-radius: var(--r-l);
-    box-shadow: var(--e-1);
-    padding: var(--s-3) var(--s-4);
-  }
-  .sheet-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .sheet-head h2 {
-    font-size: var(--t-ui);
-    min-block-size: var(--tap-adult);
-    display: flex;
-    align-items: center;
-  }
-  .sheet-close {
-    display: none;
-    min-block-size: var(--tap-adult);
-    min-inline-size: var(--tap-adult);
-    border: 0;
-    border-radius: var(--r-m);
-    background: transparent;
-    color: var(--ink);
-    font-size: 1.75rem;
-    cursor: pointer;
-  }
-  .sheet-foot,
-  .filter-open {
-    display: none;
-  }
-  /* An area's skills sit under the area chips, indented, so the two levels read as one tree. */
-  .chips.sub {
-    margin-block-start: var(--s-3);
-    padding-inline-start: var(--s-3);
-    border-inline-start: 3px solid var(--edge);
-  }
-  .chips.sub[hidden] {
-    display: none;
-  }
-  .filter-groups {
-    display: grid;
-    gap: var(--s-4);
-    padding-block: var(--s-3);
+  .search input:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
   }
   fieldset {
     border: 0;
@@ -515,104 +534,217 @@ const strings = {
     margin-block-end: var(--s-2);
     padding: 0;
   }
-  .chips {
+
+  /* One line of filters: the sentence, then "More filters", the count and "Clear". */
+  .filters {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--s-2);
+    align-items: center;
+    gap: var(--s-2) var(--s-4);
+    margin-block-end: var(--s-5);
   }
-  .chip {
-    position: relative;
-    display: inline-flex;
+  .sentence {
+    flex: 1 1 26rem;
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.9;
   }
-  .chip input {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    margin: 0;
-    cursor: pointer;
-  }
-  .chip span,
-  .removable {
+  /* A blank is a fill-in line under the words; once something is picked it is filled in honey. */
+  .blank {
     display: inline-flex;
     align-items: center;
+    gap: 0.3em;
     min-block-size: var(--tap-adult);
-    padding: var(--s-1) var(--s-4);
-    border: 2px solid var(--edge);
-    border-radius: var(--r-m);
-    background: var(--chip, var(--card));
+    margin-inline: 0.1em;
+    padding: 0 0.35em;
+    border: 0;
+    border-block-end: 3px solid var(--edge);
+    border-radius: var(--r-s) var(--r-s) 0 0;
+    background: transparent;
     color: var(--ink);
     font: inherit;
-    font-size: var(--t-ui-sm);
-    font-weight: 600;
-  }
-  .chip[data-group='self'] {
-    --chip: var(--plum-tint);
-  }
-  .chip[data-group='emotions'] {
-    --chip: var(--poppy-tint);
-  }
-  .chip[data-group='thinking'] {
-    --chip: var(--sky-tint);
-  }
-  .chip[data-group='everyday'] {
-    --chip: var(--honey-tint);
-  }
-  .chip[data-group='social'] {
-    --chip: var(--lagoon-tint);
-  }
-  .chip[data-group='responsibility'] {
-    --chip: var(--moss-tint);
-  }
-  /* Selected is an ink outline plus a check (ux/02 Semantic roles), never colour alone. */
-  .chip input:checked + span {
-    border-color: var(--ink);
-    box-shadow:
-      inset 0 0 0 1px var(--ink),
-      var(--e-1);
-    font-weight: 700;
-  }
-  .chip input:checked + span::before {
-    content: '✓';
-    margin-inline-end: var(--s-2);
-    font-weight: 700;
-  }
-  .chip input:focus-visible + span,
-  .removable:focus-visible,
-  .search input:focus-visible {
-    outline: 3px solid var(--focus);
-    outline-offset: 2px;
-  }
-  .removable {
+    vertical-align: baseline;
     cursor: pointer;
-    background: var(--honey-tint);
+    transition: background-color var(--dur-quick) var(--ease-out);
   }
-  .removable::after {
-    content: '×';
-    margin-inline-start: var(--s-2);
-    font-weight: 700;
+  .blank::after {
+    content: '▾';
+    font-size: 0.7em;
+    color: var(--ink-2);
+  }
+  .blank:hover {
+    background: var(--paper-2);
+  }
+  .blank[data-set] {
+    background: var(--honey-tint);
+    border-block-end-color: var(--ink);
   }
   .bar {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
     gap: var(--s-3);
-    margin-block-end: var(--s-3);
+    margin-inline-start: auto;
   }
   .count {
     font-weight: 700;
   }
-  .active {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 var(--s-4);
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-2);
+
+  /* Pickers: native popovers under their blank (anchor positioning; centred where that is missing) and sheets from
+     the bottom edge on phones. Escape and a click outside close them without script. */
+  .blank--topic {
+    anchor-name: --pick-topic;
   }
-  .active[hidden],
-  .grid-tiles[hidden] {
+  .blank--shelf {
+    anchor-name: --pick-shelf;
+  }
+  .more {
+    anchor-name: --more-filters;
+  }
+  .picker {
+    inline-size: min(22rem, calc(100vw - 2 * var(--s-4)));
+    max-block-size: calc(100dvh - 6rem);
+    overflow-y: auto;
+    padding: var(--s-4);
+    border: var(--outline);
+    border-radius: var(--r-l);
+    background: var(--card);
+    color: var(--ink);
+    box-shadow: var(--e-2);
+  }
+  .picker--topic {
+    inline-size: min(46rem, calc(100vw - 2 * var(--s-4)));
+  }
+  @supports (position-area: block-end) {
+    .picker {
+      inset: auto;
+      margin: var(--s-2) 0 0;
+      position-area: block-end span-inline-end;
+      position-try-fallbacks: flip-inline;
+    }
+    #pick-topic {
+      position-anchor: --pick-topic;
+    }
+    #pick-shelf {
+      position-anchor: --pick-shelf;
+    }
+    #more-filters {
+      position-anchor: --more-filters;
+      position-area: block-end span-inline-start;
+    }
+  }
+  .picker:popover-open {
+    display: grid;
+    gap: var(--s-4);
+  }
+  .picker h2 {
+    font-size: var(--t-ui);
+  }
+  .show {
+    justify-content: center;
+  }
+
+  /* The topic picker: each area with its skills under it, in two columns where there is room. */
+  .areas {
+    columns: 2 18rem;
+    column-gap: var(--s-5);
+  }
+  .area {
+    break-inside: avoid;
+    margin-block-end: var(--s-3);
+  }
+  .area[data-group='self'] {
+    --chip: var(--plum-tint);
+  }
+  .area[data-group='emotions'] {
+    --chip: var(--poppy-tint);
+  }
+  .area[data-group='thinking'] {
+    --chip: var(--sky-tint);
+  }
+  .area[data-group='everyday'] {
+    --chip: var(--honey-tint);
+  }
+  .area[data-group='social'] {
+    --chip: var(--lagoon-tint);
+  }
+  .area[data-group='responsibility'] {
+    --chip: var(--moss-tint);
+  }
+  .opts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .area .opts {
+    padding-inline-start: var(--s-5);
+  }
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-block-size: var(--tap-adult);
+    padding-inline: var(--s-2);
+    border-radius: var(--r-s);
+    font-size: var(--t-ui-sm);
+    cursor: pointer;
+  }
+  .opt:hover {
+    background: var(--paper-2);
+  }
+  .opt--area {
+    font-weight: 700;
+    background: var(--chip);
+  }
+  .opt--area:hover {
+    background: var(--chip);
+  }
+  .opt input {
+    flex: none;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    margin: 0;
+    accent-color: var(--ink);
+    cursor: inherit;
+  }
+  .opt-label {
+    flex: 1;
+  }
+  /* How many stories an option leaves: quiet, at the end of the row. An option that leaves none is dimmed. */
+  .n {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .n:empty {
     display: none;
   }
+  .opt:has(input:disabled) {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .picker {
+      transition:
+        opacity var(--dur-quick) var(--ease-out),
+        transform var(--dur-quick) var(--ease-out),
+        display var(--dur-quick) allow-discrete,
+        overlay var(--dur-quick) allow-discrete;
+    }
+    .picker:not(:popover-open) {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    @starting-style {
+      .picker:popover-open {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+    }
+  }
+
   .grid-tiles {
     list-style: none;
     padding: 0;
@@ -621,6 +753,7 @@ const strings = {
     gap: var(--s-5);
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
   }
+  .grid-tiles[hidden],
   .grid-tiles > li[hidden] {
     display: none;
   }
@@ -630,57 +763,47 @@ const strings = {
     gap: var(--s-4);
     justify-items: start;
   }
-  @media (min-width: 900px) {
-    .layout {
-      grid-template-columns: 18rem 1fr;
+
+  /* Phones: the sentence wraps over two lines, the bar takes the next, and pickers are sheets from the bottom. */
+  @media (max-width: 599px) {
+    .sentence {
+      font-size: 1.25rem;
     }
-  }
-  @media (max-width: 899px) {
-    /* With scripts on, phones get the filters as a sheet behind "Filter": closed from the first frame, so the
-       results do not jump up when the script closes it. */
-    :global(:root[data-js]) .sheet:not(:modal) {
-      display: none;
-    }
-    .layout {
-      gap: var(--s-3);
-    }
-    .filter-open {
-      display: inline-flex;
-    }
-    .sheet:modal {
-      position: fixed;
-      inset: auto 0 0;
+    .bar {
       inline-size: 100%;
-      max-block-size: 85dvh;
-      padding: 0;
-      border-radius: var(--r-l) var(--r-l) 0 0;
-      display: flex;
-      flex-direction: column;
     }
-    .sheet::backdrop {
+    .count {
+      order: -1;
+      margin-inline-end: auto;
+    }
+    .picker,
+    .picker--topic,
+    #more-filters {
+      position-area: none;
+      inset: auto 0 0;
+      margin: 0;
+      inline-size: 100%;
+      max-inline-size: none;
+      max-block-size: 85dvh;
+      border-block-end: 0;
+      border-radius: var(--r-l) var(--r-l) 0 0;
+    }
+    .picker::backdrop {
       background: rgb(0 0 0 / 0.4);
     }
-    .sheet:modal .sheet-head {
-      padding: var(--s-2) var(--s-4);
-      border-block-end: 1px solid var(--rule);
+    .show {
+      position: sticky;
+      inset-block-end: 0;
     }
-    .sheet:modal .sheet-close {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+  }
+  @media (max-width: 599px) and (prefers-reduced-motion: no-preference) {
+    .picker:not(:popover-open) {
+      transform: translateY(100%);
     }
-    .sheet:modal .filter-groups {
-      overflow-y: auto;
-      padding: var(--s-3) var(--s-4);
-    }
-    .sheet:modal .sheet-foot {
-      display: block;
-      padding: var(--s-3) var(--s-4);
-      border-block-start: 1px solid var(--rule);
-    }
-    .sheet-foot .btn {
-      inline-size: 100%;
-      justify-content: center;
+    @starting-style {
+      .picker:popover-open {
+        transform: translateY(100%);
+      }
     }
   }
 </style>

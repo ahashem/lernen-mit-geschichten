@@ -94,6 +94,20 @@ export function filterStories<T extends StoryFilterData>(
   return stories.filter(story => matchesFilter(story, criteria));
 }
 
+/**
+ * How many stories one option of a filter would show: the other filter types as they are, and this option as the
+ * only choice of its own type. The Library prints it beside the option and dims an option that would show none, so
+ * a choice never leads to an empty page.
+ */
+export function countWith<K extends Exclude<FilterKey, 'searchQuery'>>(
+  stories: StoryFilterData[],
+  criteria: FilterCriteria,
+  key: K,
+  value: NonNullable<FilterCriteria[K]>
+): number {
+  return filterStories(stories, { ...criteria, [key]: value }).length;
+}
+
 export type FilterKey =
   'searchQuery' | 'selectedSkills' | 'selectedLanguages' | 'selectedBands' | 'selectedLengths';
 
