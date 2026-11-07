@@ -2039,8 +2039,8 @@ const description = summary || `${title} | ${t('siteName')}`;
       padding: var(--s-4) var(--gutter) var(--s-3);
     }
 
-    /* Two languages: each in its own tinted block, so the eye finds its language without reading labels; the picture
-       takes at most two fifths of the page and steps back to a strip once the text is scrolled (reader.ts). */
+    /* Two languages: the picture takes at most two fifths of the page and steps back to a strip once the text is
+       scrolled (reader.ts). */
     .story-app[data-pair] .frame {
       max-block-size: 40cqb;
     }
@@ -2048,6 +2048,11 @@ const description = summary || `${title} | ${t('siteName')}`;
       max-block-size: 20cqb;
       min-block-size: 20cqb;
     }
+  }
+
+  /* Two languages on a phone, upright or on its side: each in its own tinted block, so the eye finds its language
+     without reading labels. */
+  @media (max-width: 599px), (orientation: landscape) and (max-height: 500px) {
     .story-app[data-pair] .texts {
       gap: var(--s-3);
       padding-block-start: var(--s-3);
@@ -2124,6 +2129,122 @@ const description = summary || `${title} | ${t('siteName')}`;
       flex: 0 100 auto;
       border-inline-end: 0;
       border-block-end: var(--outline);
+    }
+  }
+
+  /* A phone on its side (any short, wide window): the bars would take half the height, so the buttons stand in rails
+     beside the page (home and the reader's controls at the top, the page turns under the thumbs at the bottom) and
+     the page fills the height between them, picture beside text. Locking the phone upright is not an option: WCAG
+     1.3.4 asks that a page work in both orientations. */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .view.book {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: var(--s-2) var(--s-3);
+      min-block-size: 0;
+      padding: var(--s-2) var(--s-3);
+    }
+    .topbar,
+    .pagebar {
+      display: contents;
+    }
+    .topbar > a {
+      grid-area: 1 / 1;
+      align-self: start;
+    }
+    .topbar-end {
+      grid-area: 1 / 3;
+      flex-direction: column;
+      align-self: start;
+    }
+    .topbar.is-quiet > *:not(:focus-within, :focus) {
+      opacity: 0;
+      transition: opacity var(--dur-quick);
+    }
+    .pages {
+      grid-area: 1 / 2 / 4 / 3;
+      padding-inline: 0;
+    }
+    .page {
+      padding-block: 0 var(--s-4);
+    }
+    .nav-btn[data-action='prev'] {
+      grid-area: 3 / 1;
+      align-self: end;
+    }
+    .nav-btn[data-action='next'] {
+      grid-area: 3 / 3;
+      align-self: end;
+    }
+    .dots {
+      position: absolute;
+      inset-block-end: var(--s-1);
+      inset-inline: 0;
+      flex-wrap: nowrap;
+      gap: var(--s-1);
+    }
+    .dots span {
+      inline-size: 8px;
+      block-size: 8px;
+      border-width: 1.5px;
+    }
+    .dots span.is-current {
+      inline-size: 18px;
+    }
+    .restart {
+      inset-block-end: 0;
+      translate: -50% 0;
+      min-block-size: 0;
+      max-inline-size: 60%;
+    }
+    .notice {
+      inset-block-end: var(--s-5);
+    }
+    .menu {
+      inset-block-start: var(--s-2);
+      inset-inline-end: calc(var(--tap-child) + 2 * var(--s-3));
+      max-block-size: calc(100% - 2 * var(--s-2));
+      overflow-y: auto;
+    }
+
+    /* Picture beside text: the picture's column is as wide as a 4:3 picture of the page's height, up to just over
+       half the page (two fifths with two languages); it letterboxes, never crops. */
+    .story-app .view.book .sheet {
+      --art: min(55%, calc(100cqb * 4 / 3));
+      display: grid;
+      grid-template-columns: var(--art) minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
+      inline-size: 100cqi;
+      block-size: 100cqb;
+      max-block-size: 100cqb;
+      border: var(--outline);
+      border-radius: var(--r-l);
+      box-shadow: var(--e-1);
+    }
+    .story-app[data-pair] .view.book .sheet {
+      --art: min(40%, calc(100cqb * 4 / 3));
+    }
+    .story-app .view.book .frame,
+    .story-app .view.book .page[data-compact] .frame {
+      aspect-ratio: auto;
+      block-size: auto;
+      min-block-size: 0;
+      max-block-size: none;
+      border-block-end: 0;
+      border-inline-end: var(--outline);
+    }
+    .story-app .view.book .texts {
+      grid-template-columns: none;
+      align-content: safe center;
+      padding: var(--s-4) var(--s-5);
+    }
+    .story-app[data-pair] .view.book .texts {
+      align-content: start;
+      padding: var(--s-3);
+    }
+    .story-app[data-pair] .view.book .text-block + .text-block:not([hidden]) {
+      padding-inline-start: var(--s-4);
+      border-inline-start: 0;
     }
   }
 </style>
