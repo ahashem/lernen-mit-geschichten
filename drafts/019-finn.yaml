@@ -1,0 +1,11 @@
+# Machine drafts for moderators (owner decision 2026-11-04, docs/roadmap/08-workstreams.md Next step 4).
+# Not read by the site. Shown on the review sheet only while the story file lacks the field; a moderator
+# checks a draft, edits it if needed and copies it into the CMS, which then replaces the draft.
+storyId: 019-finn
+de:
+  coverAlt: Finn, der Waschbär, schiebt die Riesen-Nuss. Das Eichhörnchen Mila und viele Ameisen helfen mit, ein Vogel flattert darüber.
+en:
+  coverAlt: Finn the raccoon pushes the giant nut. Mila the squirrel and a line of ants help, while a bird flutters above.
+tr:
+  coverAlt: Rakun Finn dev cevizi itiyor. Sincap Mila ve bir sıra karınca ona yardım ediyor, üstte bir kuş uçuyor.
+coverAltDrafted: '2026-11-07'

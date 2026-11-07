@@ -93,7 +93,10 @@ function storyPage(id, group, lang, up) {
   const missing = `<em class="missing" ${ui_}>${ui.missing}</em>`;
   const label = text => `<span class="label" ${ui_}>${text}</span>`;
   const preview = l => `${up}${l === 'de' ? '' : `${l}/`}stories/${group[l].slug}/`;
-  const altBlock = text => `<div class="alt">${label(ui.altText)}${text ? esc(text) : `<em class="missing" ${ui_}>${ui.noAlt}</em>`}</div>`;
+  const draftBox = draft =>
+    `<div class="draft"><span class="label" ${ui_}>${ui.draftLabel}</span><p>${esc(draft)}</p><button type="button" class="copy" data-copy="${esc(draft)}" ${ui_}>${ui.copy}</button></div>`;
+  const altBlock = (text, draft) =>
+    `<div class="alt">${label(ui.altText)}${text ? esc(text) : draft ? draftBox(draft) : `<em class="missing" ${ui_}>${ui.noAlt}</em>`}</div>`;
   const imgSrc = src => (src ? `${up}${String(src).replace(/^\//, '')}` : '');
   const thumb = src => `<a href="${imgSrc(src)}"><img src="${imgSrc(src)}" alt="" loading="lazy"></a>`;
   // One row per page: a label with the picture, then one box per language in a strip that swipes sideways when it does not fit.
@@ -117,14 +120,13 @@ function storyPage(id, group, lang, up) {
     const value = group[l].fm[key];
     if (value) return `<p>${esc(value)}</p>`;
     const draft = drafts.get(id)?.[l]?.[key];
-    if (!draft) return `<p>${missing}</p>`;
-    return `<div class="draft"><span class="label" ${ui_}>${ui.draftLabel}</span><p>${esc(draft)}</p><button type="button" class="copy" data-copy="${esc(draft)}" ${ui_}>${ui.copy}</button></div>`;
+    return draft ? draftBox(draft) : `<p>${missing}</p>`;
   };
   const about = row(ui.about, l => {
     const f = group[l].fm;
     return `<p><strong>${esc(f.title)}</strong></p>${label(ui.summary)}${field(l, 'summary')}${label(ui.keyMessage)}${field(l, 'keyMessage')}`;
   });
-  const cover = de?.fm.cover?.src ? row(`${ui.picture}${thumb(de.fm.cover.src)}`, l => altBlock(l === 'de' ? de.fm.cover.alt : group[l].fm.coverAlt)) : '';
+  const cover = de?.fm.cover?.src ? row(`${ui.picture}${thumb(de.fm.cover.src)}`, l => altBlock(l === 'de' ? de.fm.cover.alt : group[l].fm.coverAlt, drafts.get(id)?.[l]?.coverAlt)) : '';
   const pages = Array.from({ length: rows }, (_, i) => {
     const frame = frames.find(fr => fr.pageRef === i + 1) ?? frames[i];
     const fi = frame ? frames.indexOf(frame) : -1;

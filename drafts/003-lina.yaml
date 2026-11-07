@@ -1,0 +1,13 @@
+# Machine drafts for moderators (owner decision 2026-11-04, docs/roadmap/08-workstreams.md Next step 4).
+# Not read by the site. Shown on the review sheet only while the story file lacks the field; a moderator
+# checks a draft, edits it if needed and copies it into the CMS, which then replaces the draft.
+storyId: 003-lina
+de:
+  coverAlt: Lina, die Maus, klettert eine Leiter hinauf zum großen Keks. Ein Vogel sitzt daneben, unten warten eine Schildkröte und ein Spielzeugauto.
+en:
+  coverAlt: Lina the mouse climbs a twig ladder to the big cookie. Pico the sparrow waits beside it, and Tilda the turtle smiles below by a toy car.
+tr:
+  coverAlt: Fare Lina merdivenle büyük kurabiyeye tırmanıyor. Yanında bir serçe var, aşağıda kaplumbağa Tilda gülümsüyor.
+ur:
+  coverAlt: چوہیا لینا سیڑھی پر چڑھ کر بڑے بسکٹ تک پہنچ رہی ہے۔ پاس ایک چڑیا بیٹھی ہے اور نیچے کچھوا ٹِلڈا مسکرا رہا ہے۔
+coverAltDrafted: '2026-11-07'
