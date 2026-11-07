@@ -2,6 +2,7 @@
 storyId: "035-lukas-schokolade"
 status: draft
 title: "Lukas ve Çikolata Felaketi"
+coverAlt: "Lukas kırık oyuncak arabaya üzgün bakıyor. Arkadaşı Mia arabayı tutuyor ve ona sevecen gülümsüyor."
 keyMessage: "Samimi bir “özür dilerim” çikolatadan daha güçlüdür! 🍫✨"
 questions:
   - id: "q1"

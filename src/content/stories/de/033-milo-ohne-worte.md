@@ -2,6 +2,7 @@
 storyId: "033-milo-ohne-worte"
 cover:
   src: /assets/stories/033-milo-ohne-worte/cover.webp
+  alt: "Der Affe Milo winkt fröhlich. Neben ihm schaut die Schildkröte Lotte traurig, darüber flattert der Papagei Koko."
 status: published
 title: "Milo und die Sprache ohne Worte"
 emoji: "🐵"

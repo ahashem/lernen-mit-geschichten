@@ -1,5 +1,6 @@
 ---
 title: "Finn and the Giant Nut"
+coverAlt: "Finn the raccoon pushes the giant nut. Mila the squirrel and a line of ants help, while a bird flutters above."
 ageGroup: "3-7"
 storyId: "019-finn"
 publishDate: 2024-01-15

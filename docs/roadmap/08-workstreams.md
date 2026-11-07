@@ -212,9 +212,10 @@ Handover state after Run 6 and the moderator work (2026-10-18), updated 2026-10-
 - **Outcome for the next 4-6 weeks: more stories live, then polish for the five test families.** Their main
   complaint is too few stories. Publish what is ready now and already has good structure (below); stories can still be
   improved after they are live. The agent publishes through pull requests into `main`, not `editorial`.
-- **Machine drafts are allowed as suggestions.** The agent may draft `summary`, `keyMessage`, alt text, `feelings`
-  and page breaks for a moderator to accept or edit on the review sheet. A draft is never published by itself and is
-  marked as a draft until a named moderator accepts it.
+- **Machine drafts go straight into the story files.** The agent writes `summary`, `keyMessage`, alt text,
+  `feelings` and page breaks in the story files themselves, through a pull request into `main`; the owner approving
+  that pull request is the review (owner decision 2026-11-07, replacing the separate drafts files). A story that is not
+  ready to go live keeps `status: draft`.
 - **Translations that tell a different story are adaptations.** They stay published, are marked as adaptations and
   are never offered beside the German in Two languages (known issue 11).
 - **A lightweight feedback round** with the five families, through the existing feedback link.
@@ -298,12 +299,13 @@ true`) so the reader never pairs it with the German and readiness stops asking f
    feedback mail with three short questions (did the child finish, what did they like, what was hard) in the story's
    language. Owner: a short check-in with each family about two weeks after the batch is live: which stories, which
    language, which device, what was hard, what they would want next. In the same visit, try "Read it in my voice" on a real tablet and the first-tap labels with the device voices in `ar`, `tr` and `ur`.
-4. **Agent: machine drafts for moderators.** On the review sheet (`/preview/review/`), a suggested `summary`,
-   `keyMessage`, alt text, `feelings` and page breaks per story and language, marked as drafts, kept outside the
-   story files and copied into the CMS by a moderator who accepts them. `feelings` unlocks Find by feeling.
+4. **Agent: machine drafts.** A suggested `summary`, `keyMessage`, alt text, `feelings` and page breaks per story
+   and language, written into the story files through a reviewed pull request (owner decision 2026-11-07).
+   `feelings` unlocks Find by feeling.
    Started 2026-11-04: `drafts/<storyId>.yaml` holds 60 summaries and 14 key messages for the translations of the 16
    stories published that day, translated from their reviewed German text; the review sheet shows each with a copy
-   button until the field is filled. Next: alt text, `feelings` and page breaks.
+   button until the field is filled; they still have to be moved into the story files. Next: alt text, `feelings` and
+   page breaks.
 5. **Agent: polish for the five families,** led by the feedback from step 3. Candidates now: Library performance
    (Lighthouse mobile 72 in Run 3, Chromium is now available to re-measure), the drafts left out of step 1 once their
    translations line up, and the remaining items under step 9.
