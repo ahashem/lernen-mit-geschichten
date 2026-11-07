@@ -2,6 +2,7 @@
 storyId: "013-max-riesenkaese"
 status: draft
 title: "Max the Mouse and the Giant Cheese"
+coverAlt: "Max, the mouse, stands on top of the giant cheese with his arms raised in triumph, while the elephant, hedgehog, duck and ant watch happily."
 questions:
   - id: "q1"
     text: "Why was Max nervous at the big cheese?"

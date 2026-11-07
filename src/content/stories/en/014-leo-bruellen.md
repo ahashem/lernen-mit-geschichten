@@ -2,6 +2,7 @@
 storyId: "014-leo-bruellen"
 status: draft
 title: "Leo the Lion Learns to Roar Calmly"
+coverAlt: "Leo the lion stands there angrily. The monkey Milo looks scared, the parrot Lola screeches, and the turtle Tina smiles calmly."
 questions:
   - id: "q1"
     text: "Leo gets angry quickly."

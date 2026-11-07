@@ -1,5 +1,6 @@
 ---
 title: "Milo Learns to Adapt"
+coverAlt: "Milo the cat smiles contentedly on his cushion while Lina the spider hangs above him and an open moving box stands behind."
 ageGroup: "3-7"
 storyId: "009-milo"
 publishDate: 2024-01-15

@@ -2,6 +2,7 @@
 storyId: "037-timo-zahnputz"
 status: published
 title: "Timo and the Funny Toothbrush Alarm Clock"
+coverAlt: "Timo brushes his teeth in his pajamas while the squirrel-shaped alarm clock on the shelf smiles and waves at him."
 keyMessage: "And so, Timo learned that small habits make us stronger every day – and that even a funny alarm clock can sometimes be the best friend."
 questions:
   - id: "q1"

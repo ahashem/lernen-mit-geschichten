@@ -2,6 +2,7 @@
 storyId: "027-benno-zauberspiegel"
 status: published
 title: "Benno ve Sihirli Ayna"
+coverAlt: "Benno sihirli aynaya gülümseyerek başparmak kaldırıyor, aynadaki yüz ona dostça gülümsüyor."
 questions:
   - id: "q1"
     text: "Benno sihirli aynayı parkta buldu."

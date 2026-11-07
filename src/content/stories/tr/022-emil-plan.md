@@ -1,5 +1,6 @@
 ---
 title: "Emil ve Çılgın Plan"
+coverAlt: "Emil parmağını kaldırmış, fikriyle heyecanlı; Leni arkasında gülümsüyor. Kedi Minka elma dolu kabın içinde, fırın bozuk."
 ageGroup: "3-7"
 storyId: "022-emil-plan"
 publishDate: 2024-01-15

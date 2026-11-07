@@ -1,5 +1,6 @@
 ---
 title: "Timmi ve Sihirli Saat"
+coverAlt: "Timmi sihirli saatini gülümseyerek havaya kaldırıyor. Peluş kedisi Minka yanında oturuyor, odada oyuncaklar duruyor."
 ageGroup: "3-7"
 storyId: "018-timmi-zauberuhr"
 publishDate: 2024-01-15

@@ -2,6 +2,7 @@
 storyId: "034-fritzi-regenwolke"
 status: draft
 title: "Fritzi the Bunny and the Rain Cloud"
+coverAlt: "Fritzi the bunny waves happily with a carrot in his paw. Rain falls from the cloud, and a rainbow stretches across the sky behind him."
 keyMessage: "When we think positively, we can always find something good in every situation. Even a rainy cloud can bring joy, colors, and fun! 🌈✨"
 questions:
   - id: "q1"

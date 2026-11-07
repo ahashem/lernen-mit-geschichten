@@ -1,5 +1,6 @@
 ---
 title: "Dino Dino ve Büyük Bekleyiş"
+coverAlt: "Dino Dino’nun büyükannesi çikolatalı bir kurabiye uzatıyor, küçük Dino Dino ise iki elini istekle uzatıyor."
 ageGroup: "3-7"
 storyId: "008-dino"
 publishDate: 2024-01-15

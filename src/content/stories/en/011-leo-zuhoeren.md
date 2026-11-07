@@ -2,6 +2,7 @@
 storyId: "011-leo-zuhoeren"
 status: draft
 title: "Leo, the Little Lion Who Learned to Listen"
+coverAlt: "Leo, the little lion, sits on a tree stump in the forest, smiling, while two birds chirp around him."
 questions:
   - id: "q1"
     text: "What is the little lion’s name?"

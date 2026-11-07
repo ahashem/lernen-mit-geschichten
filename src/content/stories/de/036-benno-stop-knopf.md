@@ -2,6 +2,7 @@
 storyId: "036-benno-stop-knopf"
 cover:
   src: /assets/stories/036-benno-stop-knopf/cover.webp
+  alt: "Benno drückt mit geschlossenen Augen den Zauber-Stop-Knopf auf seiner Brust. Der Ball liegt im Wasser, und Lilli schaut zu."
 status: published
 title: "Die Geschichte von Benno und dem Zauber-Stop-Knopf"
 emoji: "🛑"

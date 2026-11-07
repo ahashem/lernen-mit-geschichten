@@ -7,6 +7,7 @@ band: "2"
 storyId: "022-emil-plan"
 cover:
   src: /assets/stories/022-emil-plan/cover.webp
+  alt: "Emil zeigt mit erhobenem Finger begeistert in die Luft. Minka sitzt in der Apfelschüssel, der Ofen ist kaputt, und Leni grinst."
 publishDate: 2024-01-15
 difficulty: "beginner"
 status: published

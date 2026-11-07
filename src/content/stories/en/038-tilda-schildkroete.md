@@ -2,6 +2,7 @@
 storyId: "038-tilda-schildkroete"
 status: published
 title: "Tilda the Little Turtle"
+coverAlt: "Tilda the turtle smiles as she swims across the pond. Fredi the frog sits on his rock, Dora the duck calls from the bank, a shell below."
 keyMessage: "Everyone is different – and that’s good. You can practice and get better without feeling bad. Sometimes strengths are hidden where you don’t expect them."
 questions:
   - id: "q1"

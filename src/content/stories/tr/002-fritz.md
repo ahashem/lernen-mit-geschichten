@@ -1,5 +1,6 @@
 ---
 title: "Fritzchen ve Kızgın Sincap"
+coverAlt: "Fritzchen ağacın altında elmasını tutarak, önünde bir ceviz kaldıran küçük sincaba öfkeyle bağırıyor."
 ageGroup: "3-7"
 storyId: "002-fritz"
 publishDate: 2024-01-15

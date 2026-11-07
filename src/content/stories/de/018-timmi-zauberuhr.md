@@ -7,6 +7,7 @@ band: "1"
 storyId: "018-timmi-zauberuhr"
 cover:
   src: /assets/stories/018-timmi-zauberuhr/cover.webp
+  alt: "Timmi hält lächelnd seine Zauberuhr hoch. Die Kuscheltierkatze Minka sitzt daneben, im Zimmer liegen Bauklötze und Spielzeug."
 publishDate: 2024-01-15
 difficulty: "beginner"
 questions:

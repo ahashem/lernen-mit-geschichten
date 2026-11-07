@@ -2,6 +2,7 @@
 storyId: "011-leo-zuhoeren"
 cover:
   src: /assets/stories/011-leo-zuhoeren/cover.webp
+  alt: "Leo, der kleine Löwe, sitzt auf einem Baumstumpf im Wald und lächelt, während zwei Vögel um ihn herum zwitschern."
 status: draft
 title: "Die Geschichte von Leo, dem kleinen Löwen, der zuhören lernte"
 emoji: "🦁"

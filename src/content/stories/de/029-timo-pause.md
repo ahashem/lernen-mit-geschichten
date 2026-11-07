@@ -2,6 +2,7 @@
 storyId: "029-timo-pause"
 cover:
   src: /assets/stories/029-timo-pause/cover.webp
+  alt: "Timo, das Eichhörnchen, steht mit verschränkten Armen an der Rutsche. Herr Bär hebt den Finger, Emma wartet unten, Fredi sitzt oben."
 status: draft
 title: "Die Geschichte von Timo und der großen Pause"
 emoji: "🐿️"

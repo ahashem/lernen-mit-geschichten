@@ -7,6 +7,7 @@ band: "1"
 storyId: "005-mila"
 cover:
   src: /assets/stories/005-mila/cover.webp
+  alt: "Mila rennt lachend auf Hoppel zu und streckt die Hand nach ihm aus. Der kleine Hase hält lächelnd die Schnur seines Ballons."
 publishDate: 2024-01-15
 difficulty: "beginner"
 questions:

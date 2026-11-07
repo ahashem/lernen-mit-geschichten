@@ -1,5 +1,6 @@
 ---
 title: "Tobi and the Big Apple Pie"
+coverAlt: "At the open door, Tobi excitedly points at Mrs. Schmidt’s big apple pie as she holds out a slice for him on a plate."
 ageGroup: "3-7"
 skills: ["sharing"]
 storyId: "004-tobi"

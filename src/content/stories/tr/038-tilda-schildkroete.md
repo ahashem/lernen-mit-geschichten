@@ -2,6 +2,7 @@
 storyId: "038-tilda-schildkroete"
 status: published
 title: "Küçük Kaplumbağa Tilda"
+coverAlt: "Tilda kaplumbağa gülümseyerek gölette yüzüyor. Kurbağa Fredi kayasında, ördek Dora kıyıdan sesleniyor, dipte bir deniz kabuğu parlıyor."
 keyMessage: "Herkes farklıdır – ve bu güzeldir. Kötü hissetmeden çalışabilir ve daha iyi olabilirsin. Bazen güçlü yönler hiç beklemediğin yerde gizlidir."
 questions:
   - id: "q1"

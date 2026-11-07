@@ -2,6 +2,7 @@
 storyId: "031-lina-lange-nase"
 cover:
   src: /assets/stories/031-lina-lange-nase/cover.webp
+  alt: "Lina, die Maus, stemmt ihre kleine Nase hoch in die Luft. Der freche Frosch Pipo grinst sie von unten an."
 status: published
 title: "Linas Lange Nase"
 emoji: "🐭"

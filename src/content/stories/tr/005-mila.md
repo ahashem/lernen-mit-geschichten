@@ -1,5 +1,6 @@
 ---
 title: "Mila ve Dilek Balonu"
+coverAlt: "Mila, Hoppel’a doğru gülerek koşuyor ve elini ona uzatıyor. Küçük tavşan gülümseyerek balonunun ipini tutuyor."
 ageGroup: "3-7"
 storyId: "005-mila"
 publishDate: 2024-01-15
