@@ -76,7 +76,8 @@ Moderators work in the CMS on the `editorial` branch and never see git. Steps 1 
   1. Create the branch: `git push origin origin/main:refs/heads/editorial`.
   2. Rulesets. Target branches **by name**, never "Default branch", because that follows the default when it moves.
      - `main`: block force pushes and deletion, require signed commits and linear history. No bypass is needed: the
-       workflow merges with a squash, which GitHub signs and keeps linear.
+       workflow merges with a squash, which GitHub signs and keeps linear. Both workflows bring `main` into
+       `editorial` through GitHub's merge endpoint, which signs the merge commit; a local `git merge` would not.
      - `editorial`: block force pushes and deletion only. It must **not** require a pull request, because the CMS
        commits to it directly.
   3. Make `editorial` the repository's default branch, so the CMS opens on it with no bookmark. Open PRs keep their
