@@ -89,7 +89,7 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
 
       <div class="shelves">
         {
-          shelves.map(shelf => (
+          shelves.map((shelf, n) => (
             <section class="shelf" data-shelf={shelf.band} aria-labelledby={`shelf-${shelf.band}`}>
               <div class="shelf-head">
                 <h2 id={`shelf-${shelf.band}`} class="wash">
@@ -110,6 +110,7 @@ const strings = { pageOf: t('pageOf'), chapterOf: t('chapterOf'), tour: t('tourT
                       title={i.title}
                       meta={i.meta}
                       emoji={i.emoji}
+                      eager={n === 0}
                     />
                   </li>
                 ))}
