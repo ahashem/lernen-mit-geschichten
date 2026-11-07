@@ -1,5 +1,6 @@
 ---
 title: "Moritz'in Hikâyesi – Küçük Fare"
+coverAlt: "Moritz gülümser ve üzgün kirpi Fritz'e patisini uzatır. İkisinin arasında çimde bir diken durur, havada iki kalp süzülür."
 ageGroup: "3-7"
 storyId: "006-moritz"
 publishDate: 2024-01-15

@@ -1,5 +1,6 @@
 ---
 title: "Timmi Düşünmeden Önce Düşünüyor"
+coverAlt: "Timmi rakun, elma ağacının tepesinde bir elmaya uzanıyor ve düşünüyor. Aşağıda sincap Lilli gülümseyerek uzun bir sopa kaldırıyor."
 ageGroup: "3-7"
 storyId: "020-timmi-denkt"
 publishDate: 2024-01-15

@@ -2,6 +2,7 @@
 storyId: "024-lina-bruecke"
 cover:
   src: /assets/stories/024-lina-bruecke/cover.webp
+  alt: "Lina grins breit und paddelt auf ihrem Kürbis-Floß über den Fluss. Das Floß ist aus großen Kürbissen gebaut, die mit Seilen verbunden sind."
 status: published
 title: "Lina und die verschwundene Brücke"
 emoji: "🐴"

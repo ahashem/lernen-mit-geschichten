@@ -2,6 +2,7 @@
 storyId: "024-lina-bruecke"
 status: published
 title: "Lina and the Missing Bridge"
+coverAlt: "Lina grins as she paddles her raft across the river. The raft is built from big pumpkins tied together with ropes."
 keyMessage: "Sometimes the first solution is not the best. But when we think creatively, we can find new, funny, and surprising ways to solve problems."
 questions:
   - id: "q1"

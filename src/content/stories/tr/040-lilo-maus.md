@@ -2,6 +2,7 @@
 storyId: "040-lilo-maus"
 status: published
 title: "Lilo Fare’nin Hikâyesi"
+coverAlt: "Fare Lilo ve kirpi Fips, su birikintisinde yüzen topa gülüyor. Lilo patisiyle onu gösteriyor, bir arı da vızıldıyor."
 keyMessage: "Mizah, tartışmaları küçültmeye ve stresi azaltmaya yardımcı olur. Komik bir düşünce ya da güzel bir şaka, arkadaşları yeniden bir araya getirebilir."
 questions:
   - id: "q1"

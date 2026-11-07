@@ -1,5 +1,6 @@
 ---
 title: "Timmi Thinks Before He Acts"
+coverAlt: "High up in the apple tree, Timmi the raccoon reaches thoughtfully for an apple. Below, Lilli the squirrel smiles and holds up a long stick."
 ageGroup: "3-7"
 storyId: "020-timmi-denkt"
 publishDate: 2024-01-15
