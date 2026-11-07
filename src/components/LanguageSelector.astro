@@ -35,10 +35,11 @@ const available = rows.filter(r => !r.missing);
 <div class="language-selector" data-lang-switch>
   <details>
     <summary aria-label={`${t('languageLabel')}: ${endonyms[currentLocale]}`}>
-      <Icon name="bubble" size={22} />
-      <span lang={currentLocale} dir={isRTL(currentLocale) ? 'rtl' : 'ltr'}>
+      <Icon name="globe" size={22} />
+      <span class="name" lang={currentLocale} dir={isRTL(currentLocale) ? 'rtl' : 'ltr'}>
         {endonyms[currentLocale]}
       </span>
+      <span class="code" aria-hidden="true">{currentLocale.toUpperCase()}</span>
     </summary>
     <ul class="panel">
       {
@@ -149,15 +150,32 @@ const available = rows.filter(r => !r.missing);
   summary::-webkit-details-marker {
     display: none;
   }
-  /* Phones show only the bubble, so the top bar keeps one row next to the stacked wordmark. The summary's
-     aria-label still names the current language, and the panel lists every language by name. */
-  @media (max-width: 479px) {
+  /* The globe says "language" in any script; beside it, the language that is on: its name where the bar has room,
+     its code on most phones, nothing on the narrowest, where the summary's aria-label still names it. */
+  /* A Latin code in every language, so it is set in the system face rather than an Arabic-script one. */
+  .code {
+    display: none;
+    font-family: system-ui, sans-serif;
+    font-size: var(--t-ui-sm);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  @media (max-width: 419px) {
     summary {
+      gap: var(--s-1);
       padding-inline: var(--s-2);
       min-inline-size: var(--tap-adult);
       justify-content: center;
     }
-    summary > span {
+    .name {
+      display: none;
+    }
+    .code {
+      display: inline;
+    }
+  }
+  @media (max-width: 359px) {
+    .code {
       display: none;
     }
   }

@@ -72,9 +72,11 @@ export function startReader() {
     });
   };
 
-  // A page whose text runs past the sheet says so (a fade and an arrow), so a child knows to scroll.
+  // A page whose text runs past the sheet says so (a fade and an arrow), so a child knows to scroll; once scrolled,
+  // the top edge fades too, so lines pass softly under the picture instead of being cut by it.
   const markOverflow = (box: HTMLElement) => {
     box.toggleAttribute('data-more', box.scrollTop + box.clientHeight < box.scrollHeight - 4);
+    box.toggleAttribute('data-scrolled', box.scrollTop > 4);
   };
   if (typeof ResizeObserver !== 'undefined') {
     const watch = new ResizeObserver(entries =>
