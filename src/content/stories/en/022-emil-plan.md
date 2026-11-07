@@ -80,6 +80,7 @@ questions:
       - You should always do things the same way as before.
     correctAnswer: If something doesn’t work, you must think differently.
 keyMessage: Sometimes things don’t go as we plan. But if we try new ways and think differently, we can find even better and tastier solutions!
+summary: "Emil wants to bake an apple pie, but the oven is broken. With his friend Leni he thinks again and invents brand-new apple treats."
 ---
 
 ## The Story

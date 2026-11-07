@@ -20,6 +20,7 @@ art:
 narration:
   timing: false
 keyMessage: "Wenn ich auf meinen Körper achte (mein Herz klopft, mein Bauch kribbelt …), dann merke ich: Ich fühle etwas. Wenn ich das Gefühl benenne (ängstlich, wütend, glücklich …), dann kann ich besser entscheiden, was ich tun möchte. So werde ich ein kleiner Experte für mich selbst – das ist Selbstbewusstsein!"
+summary: "Bruno, der kleine Bär, rutscht beim Klettern ab und merkt, dass er Angst hat. Mit der Eule Mila lernt er, seine Gefühle zu erkennen und gut mit ihnen umzugehen."
 ---
 Es war einmal ein kleiner Bär namens Bruno. Bruno liebte Honig, Spielen im Wald und – ganz besonders – Klettern auf Bäume.
 

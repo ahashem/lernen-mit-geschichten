@@ -89,6 +89,7 @@ questions:
     type: truefalse
     correctAnswer: "false"
 keyMessage: İlk çözüm işe yaramazsa, başka bir yol dene. Arkadaşlarla her sorun daha kolay ve daha eğlenceli olur.
+summary: "Fare Lina yüksek bir masadaki kocaman kurabiyeye ulaşmak ister. Serçe Pico ve kaplumbağa Tilda ile bir merdiven yapar, yukarı tırmanır ve kurabiyeyi paylaşır."
 ---
 
 🐭 "Lina ve Büyük Kurabiye"

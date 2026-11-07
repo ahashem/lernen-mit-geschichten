@@ -116,6 +116,7 @@ questions:
     correctAnswer: Bir şey işe yaramazsa, farklı düşünmelisin.
 status: published
 keyMessage: Bazen işler planladığımız gibi gitmez. Ama yeni yollar dener ve farklı düşünürsek, daha güzel ve daha lezzetli çözümler bulabiliriz!
+summary: "Emil elmalı pasta yapmak ister ama fırın bozuktur. Arkadaşı Leni ile farklı düşünür ve bambaşka elmalı lezzetler icat eder."
 ---
 
 ## Hikâye

@@ -89,6 +89,8 @@ narration:
 cover:
   src: /assets/stories/008-dino/dino.webp
   alt: "Oma Dino hält Dino Dino einen Keks mit Schokostückchen hin. Der kleine Dino streckt beide Hände voller Vorfreude danach aus."
+summary: "Dino Dino möchte sofort von Omas frischen Keksen essen, doch sie müssen erst abkühlen. Mit lustigen Spielen vertreibt er sich die Zeit – und das Warten lohnt sich."
+keyMessage: "Wer warten kann, bekommt am Ende den besten Geschmack."
 ---
 ## Die Geschichte
 

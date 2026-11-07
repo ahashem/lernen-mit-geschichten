@@ -82,6 +82,7 @@ questions:
       - Two pieces of pie
     correctAnswer: Two pieces of pie
 keyMessage: "Sometimes we have two voices in our heads: One wants the fast, wrong way, the other wants the wise, right way. When you choose the right decision, you don’t just get pie – you also get a warm, happy feeling inside."
+summary: "Tobi wants a piece of Mrs. Schmidt’s apple pie right away. He thinks about what could happen, decides to ask politely and helps with the dishes."
 ---
 
 📖 Story: Tobi and the Big Apple Pie

@@ -100,6 +100,7 @@ questions:
     type: fillinblank
     correctAnswer: İstekleri ve duyguları açık ve nazikçe ifade etmeliyiz.
 keyMessage: Duyguları ve istekleri açıkça ifade etmek önemlidir. Her zaman nazik ve saygılı konuşmalıyız. İyi dinlediğimizde, her iki tarafı da mutlu eden çözümler bulabiliriz. Dürüst sözler arkadaşlığı güçlendirir.
+summary: "Mila kovalamaca oynamak ister, ama arkadaşı tavşan Hoppel balonuyla oynamayı tercih eder. İkisi de ne hissettiğini dürüstçe söyleyince, ikisini de mutlu eden bir oyun bulurlar."
 ---
 
 ## Hikâye

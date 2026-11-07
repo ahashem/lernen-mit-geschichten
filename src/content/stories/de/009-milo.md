@@ -54,6 +54,8 @@ art:
   reviewedAt: 2026-11-07
 narration:
   timing: false
+summary: "Der Kater Milo zieht in ein neues Haus, in dem alles anders ist. Mit seiner Freundin, der Maus Nina, entdeckt er neue Lieblingssachen und lernt, sich anzupassen."
+keyMessage: "Veränderungen fühlen sich anfangs komisch an, aber wer offen für Neues ist, entdeckt tolle Dinge."
 ---
 ## Die Geschichte
 

@@ -71,6 +71,8 @@ questions:
       - Büyük kalpli küçük fare 💖
       - Hızlı ayaklı fare
     correctAnswer: Büyük kalpli küçük fare 💖
+summary: "Küçük fare Moritz, patisine diken batan kirpi Fritz’e güler. Sonra bunun ne kadar acıttığını görür, özür diler ve ona yardım eder."
+keyMessage: "Başkalarının duygularını ciddiye alan onları mutlu eder – ve kendisi de mutlu olur."
 ---
 
 ## Hikâye

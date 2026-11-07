@@ -11,6 +11,8 @@ cover:
 difficulty: "beginner"
 publishDate: 2024-01-15
 status: published
+summary: "Der kleine Igel Tobi will den größten Apfelkuchen der Welt backen, schafft es aber nicht allein. Mit Greta, Momo und Emma wird der Kuchen ein voller Erfolg."
+keyMessage: "Um Hilfe zu bitten ist klug – zusammen schaffen wir mehr."
 ---
 
 ## Die Geschichte

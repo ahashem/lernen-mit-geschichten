@@ -48,6 +48,7 @@ questions:
     type: fillinblank
     correctAnswer: Because it helps us make better and safer decisions.
 keyMessage: Children learn playfully that thinking about the consequences before acting leads to smarter and safer decisions.
+summary: "Timmi the raccoon climbs onto a wobbly branch without thinking. His friend Lilli makes him stop and think, and with a stick he finds a better way."
 ---
 Once upon a time, there was a little raccoon named Timmi.
 Timmi was curious, playful, and always full of ideas. But sometimes, he did things without thinking first.

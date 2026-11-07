@@ -48,6 +48,7 @@ questions:
     type: fillinblank
     correctAnswer: Çünkü bu şekilde daha iyi ve daha güvenli kararlar veririz.
 keyMessage: Çocuklar, bir şey yapmadan önce sonuçlarını düşünmenin daha akıllıca ve güvenli kararlar verdiğini öğrenirler.
+summary: "Rakun Timmi düşünmeden sallanan bir dala tırmanır. Arkadaşı Lilli onu düşünmeye yönlendirir ve Timmi bir sopayla daha iyi bir yol bulur."
 ---
 Bir zamanlar Timmi adında küçük bir rakun varmış.
 Timmi çok meraklı, oyunbaz ve hep yeni fikirlerle doluymuş. Ama bazen bir şeyleri düşünmeden yaparmış.

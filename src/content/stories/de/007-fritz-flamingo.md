@@ -59,6 +59,7 @@ art:
   reviewedAt: 2026-10-28
 narration:
   timing: false
+summary: "Der Flamingo Fritz will alles gleichzeitig machen und landet im Wasser. Die Spinne Susi zeigt ihm, wie er seine Zeit, sein Verhalten und seine Gefühle ordnet."
 ---
 ## Die Geschichte
 

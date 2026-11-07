@@ -71,6 +71,8 @@ questions:
       - The little mouse with the big heart 💖
       - The mouse with the fast feet
     correctAnswer: The little mouse with the big heart 💖
+summary: "Moritz, a little mouse, laughs at Fritz the hedgehog, who has a thorn in his paw. Then he sees how much it hurts, says sorry and helps him."
+keyMessage: "When you take other people’s feelings seriously, you make them happy – and you feel happy too."
 ---
 
 ## The Story

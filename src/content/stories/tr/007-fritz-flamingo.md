@@ -43,6 +43,8 @@ questions:
       - "Dans etmek"
     correctAnswer: "Dans etmek"
 status: published
+summary: "Flamingo Fritz her şeyi aynı anda yapmak ister ve suya düşer. Örümcek Susi ona zamanını, davranışlarını ve duygularını nasıl düzenleyeceğini gösterir."
+keyMessage: "Kendini düzenlemek, zamanımızı, davranışlarımızı ve duygularımızı düzene koymak demektir."
 ---
 
 ## Hikâye
