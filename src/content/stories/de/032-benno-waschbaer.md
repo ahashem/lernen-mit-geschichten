@@ -2,6 +2,7 @@
 storyId: "032-benno-waschbaer"
 cover:
   src: /assets/stories/032-benno-waschbaer/cover.webp
+  alt: "Benno, der Waschbär, hält stolz seinen ersten Fisch. Die Ente Lilli trägt einen Fisch im Schnabel, und der Frosch Fritz sitzt auf einem Seerosenblatt."
 status: published
 title: "Die Geschichte von Benno, dem neugierigen Waschbär"
 emoji: "🦝"

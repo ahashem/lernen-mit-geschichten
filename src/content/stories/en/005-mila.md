@@ -1,5 +1,6 @@
 ---
 title: "Mila and the Wish Balloon"
+coverAlt: "Mila runs toward Hoppel, laughing and reaching out her hand. The little rabbit smiles and holds the string of his balloon."
 ageGroup: "3-7"
 storyId: "005-mila"
 publishDate: 2024-01-15

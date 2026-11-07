@@ -2,6 +2,7 @@
 storyId: "032-benno-waschbaer"
 status: published
 title: "The Story of Benno, the Curious Raccoon"
+coverAlt: "Benno the raccoon proudly holds his first fish. Lilli the duck carries a fish in her beak, and Fritz the frog sits on a lily pad."
 questions:
   - id: "q1"
     text: "Benno is a little raccoon."

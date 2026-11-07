@@ -9,6 +9,7 @@ band: "1"
 storyId: 009-milo
 cover:
   src: /assets/stories/009-milo/cover.webp
+  alt: "Milo, der Kater, lächelt zufrieden auf seinem Kissen. Über ihm hängt eine Spinne an ihrem Faden, hinter ihm steht ein Umzugskarton."
 difficulty: beginner
 publishDate: 2024-01-15
 questions:

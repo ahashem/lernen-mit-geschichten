@@ -2,6 +2,7 @@
 storyId: "015-emil-ziel-woche"
 cover:
   src: /assets/stories/015-emil-ziel-woche/cover.webp
+  alt: "Emil beißt in seinen Brokkoli. In seiner Gedankenblase sieht er sich als Superheld mit Umhang, an der Tafel steht „Ziele“."
 status: draft
 title: "Emils Super-Ziel-Woche!"
 emoji: "🦖"

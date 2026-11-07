@@ -2,6 +2,7 @@
 storyId: "013-max-riesenkaese"
 cover:
   src: /assets/stories/013-max-riesenkaese/cover.webp
+  alt: "Max, die Maus, steht jubelnd auf dem riesigen Käse. Elefant, Igel, Ente und Ameise schauen fröhlich zu."
 status: draft
 title: "Max, die Maus und der Riesenkäse-Stress"
 emoji: "🐭"

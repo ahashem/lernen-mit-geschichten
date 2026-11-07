@@ -2,6 +2,7 @@
 storyId: "034-fritzi-regenwolke"
 status: draft
 title: "Tavşan Fritzi ve Yağmur Bulutu"
+coverAlt: "Tavşan Fritzi elinde havuçla neşeyle el sallıyor. Buluttan yağmur damlaları düşüyor, arkasında bir gökkuşağı yayılıyor."
 keyMessage: "Olumlu düşündüğümüzde, her durumda güzel bir şey bulabiliriz. Yağmur bulutu bile neşe, renkler ve oyun getirebilir! 🌈✨"
 questions:
   - id: "q1"

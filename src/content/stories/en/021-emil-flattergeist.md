@@ -1,5 +1,6 @@
 ---
 title: "Emil and the Flutter Ghost"
+coverAlt: "Emil concentrates on drawing his castle while the little flutter ghost hovers above him and his dog Bello watches closely."
 ageGroup: "3-7"
 storyId: "021-emil-flattergeist"
 publishDate: 2024-01-15

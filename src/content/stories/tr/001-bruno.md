@@ -1,5 +1,6 @@
 ---
 title: "Bruno'nun Renkli Duyguları"
+coverAlt: "Küçük ayı Bruno bal kavanozunu korkuyla tutuyor. Üstünde bir kalp süzülüyor, baykuş Mila dalında oturuyor."
 ageGroup: "3-7"
 storyId: "001-bruno"
 publishDate: 2024-01-15

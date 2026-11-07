@@ -1,5 +1,6 @@
 ---
 title: "Fritz the Flamingo Learns Self-Organization"
+coverAlt: "Fritz the flamingo stands in the water with spread wings, calling up to Susi the spider, who hangs from her thread above him."
 ageGroup: "3-7"
 storyId: "007-fritz-flamingo"
 publishDate: 2024-01-15

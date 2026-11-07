@@ -2,6 +2,7 @@
 storyId: "029-timo-pause"
 status: draft
 title: "The Story of Timo and the Big Break"
+coverAlt: "Timo the squirrel stands by the slide with crossed arms while Mr. Bear raises a finger to teach; Fredi sits atop, Emma waits below."
 keyMessage: "Children learn that rules in social interaction are important, such as: waiting, listening, sharing, and apologizing."
 questions:
   - id: "q1"

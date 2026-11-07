@@ -2,6 +2,7 @@
 storyId: "027-benno-zauberspiegel"
 cover:
   src: /assets/stories/027-benno-zauberspiegel/cover.webp
+  alt: "Benno zeigt dem Zauberspiegel lächelnd einen Daumen nach oben. Im Spiegel schaut ein freundliches Gesicht zurück."
 status: published
 title: "Die Geschichte von Benno und dem Zauberspiegel"
 emoji: "🪞"

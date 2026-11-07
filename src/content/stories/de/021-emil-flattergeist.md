@@ -7,6 +7,7 @@ band: "2"
 storyId: "021-emil-flattergeist"
 cover:
   src: /assets/stories/021-emil-flattergeist/cover.webp
+  alt: "Emil zeichnet konzentriert ein Schloss. Der kleine Flattergeist schwebt über ihm, und Hund Bello schaut gespannt zu."
 publishDate: 2024-01-15
 difficulty: "beginner"
 questions:

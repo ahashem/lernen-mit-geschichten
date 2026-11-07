@@ -7,6 +7,7 @@ band: "1"
 storyId: "004-tobi"
 cover:
   src: /assets/stories/004-tobi/cover.webp
+  alt: "An der Tür zeigt ein Junge begeistert auf einen großen Apfelkuchen. Eine Frau mit Brille und Schürze hält ihm eine Scheibe hin."
 difficulty: "beginner"
 publishDate: 2024-01-15
 status: published

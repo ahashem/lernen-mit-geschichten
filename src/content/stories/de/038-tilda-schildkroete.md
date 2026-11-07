@@ -2,6 +2,7 @@
 storyId: "038-tilda-schildkroete"
 cover:
   src: /assets/stories/038-tilda-schildkroete/cover.webp
+  alt: "Tilda, die Schildkröte, schwimmt lächelnd durchs Wasser. Frosch Fredi sitzt auf seinem Stein, Ente Dora ruft vom Ufer, unten liegt eine Muschel."
 status: published
 title: "Tilda die kleine Schildkröte"
 emoji: "✨"

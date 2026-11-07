@@ -2,6 +2,7 @@
 storyId: "036-benno-stop-knopf"
 status: published
 title: "The Story of Benno and the Magic Stop Button"
+coverAlt: "Benno calmly presses the magic stop button on his chest with his eyes closed. Lilli watches him, and the ball floats in the water."
 keyMessage: "The Magic Stop Button wasn’t a real button. It was in his heart – and everyone could have one."
 questions:
   - id: "q1"

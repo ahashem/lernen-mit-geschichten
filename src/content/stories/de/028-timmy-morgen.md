@@ -2,6 +2,7 @@
 storyId: "028-timmy-morgen"
 cover:
   src: /assets/stories/028-timmy-morgen/cover.webp
+  alt: "Timmy, der kleine Bär, putzt sich die Zähne und hält sein Honigbrot. Die Eule Frieda sitzt auf dem Ast, Schmetterlinge flattern umher."
 status: published
 title: "Timmy und der verschwundene Morgen"
 emoji: "⏰"

@@ -1,5 +1,6 @@
 ---
 title: "Fritz Flamingo Düzeni Öğreniyor"
+coverAlt: "Fritz flamingo kanatlarını açıp suda duruyor ve ipine asılı duran örümcek Susi’ye doğru sesleniyor."
 ageGroup: "3-7"
 storyId: "007-fritz-flamingo"
 publishDate: 2024-01-15

@@ -2,6 +2,7 @@
 storyId: "023-lina-spiegel"
 status: published
 title: "Lina and the Singing Mirror"
+coverAlt: "Lina rides her bike, beaming, while the singing mirror calls out: “I am strong, I’ll try again!”"
 keyMessage: "Sometimes there’s no applause or candy as a reward. But if you tell yourself: “I am strong, I can do it, I’ll try again!”, your inner strength grows – and that feels even better than chocolate. 🍫💪"
 questions:
   - id: "q1"

@@ -2,6 +2,7 @@
 storyId: "014-leo-bruellen"
 cover:
   src: /assets/stories/014-leo-bruellen/cover.webp
+  alt: "Leo, der Löwe, steht wütend da. Der Affe Milo schaut erschrocken, Papagei Lola kreischt, und die Schildkröte Tina lächelt ruhig."
 status: draft
 title: "Leo der Löwe lernt, ruhig zu brüllen"
 emoji: "🦁"

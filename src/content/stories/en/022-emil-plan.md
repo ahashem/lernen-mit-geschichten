@@ -1,5 +1,6 @@
 ---
 title: "Emil and the Crazy Plan"
+coverAlt: "Emil raises a finger, excited by his idea, while Leni grins behind him. The cat Minka sits in the bowl of apples; the oven is broken."
 ageGroup: "3-7"
 storyId: "022-emil-plan"
 publishDate: 2024-01-15

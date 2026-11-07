@@ -2,6 +2,7 @@
 storyId: "026-timo-schildkroete"
 status: published
 title: "The Story of Timo, the Little Turtle"
+coverAlt: "Timo, the turtle, walks step by step toward the finish line while the rabbit and the bear cheer him on."
 keyMessage: "Every child is special. You don’t need to be the fastest, the strongest, or the loudest. What matters is to believe in yourself and be proud of who you are."
 questions:
   - id: "q1"

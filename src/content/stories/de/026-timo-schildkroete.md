@@ -2,6 +2,7 @@
 storyId: "026-timo-schildkroete"
 cover:
   src: /assets/stories/026-timo-schildkroete/cover.webp
+  alt: "Timo, die Schildkröte, geht Schritt für Schritt auf das Ziel zu. Hase und Bär jubeln ihm an der Ziellinie zu."
 status: published
 title: "Die Geschichte von Timo, der kleine Schildkröte"
 emoji: "🐢"

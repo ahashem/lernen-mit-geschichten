@@ -1,5 +1,6 @@
 ---
 title: Fritzchen and the Angry Squirrel
+coverAlt: "Fritzchen sits under the tree, red with anger, shouting at a little squirrel that holds up a nut while he clutches his apple."
 ageGroup: 3-7
 storyId: 002-fritz
 publishDate: 2024-01-15

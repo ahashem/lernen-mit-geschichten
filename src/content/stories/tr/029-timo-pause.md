@@ -2,6 +2,7 @@
 storyId: "029-timo-pause"
 status: draft
 title: "Timo ve Büyük Teneffüs"
+coverAlt: "Timo sincap kaydırağın yanında kollarını kavuşturmuş duruyor. Bay Ayı parmağını kaldırıp anlatıyor, Fredi kaydırakta, Emma aşağıda."
 keyMessage: "Çocuklar şunları öğrenir: sosyal ilişkilerde kurallar önemlidir, örneğin beklemek, dinlemek, paylaşmak ve özür dilemek."
 questions:
   - id: "q1"

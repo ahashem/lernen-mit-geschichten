@@ -1,5 +1,6 @@
 ---
 title: "Timmy and the Magic Clock"
+coverAlt: "Timmy holds up his magic clock, smiling. His stuffed cat Minka sits beside him, and toys are scattered around the room."
 ageGroup: "3-7"
 storyId: "018-timmi-zauberuhr"
 publishDate: 2024-01-15

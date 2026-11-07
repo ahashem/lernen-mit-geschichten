@@ -2,6 +2,7 @@
 storyId: "034-fritzi-regenwolke"
 cover:
   src: /assets/stories/034-fritzi-regenwolke/cover.webp
+  alt: "Fritzi, der kleine Hase, winkt fröhlich mit einer Möhre in der Pfote. Aus der Wolke fällt Regen, und ein Regenbogen spannt sich über den Himmel."
 status: draft
 title: "Fritzi und die Regenwolke"
 emoji: "🐇"

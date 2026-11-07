@@ -9,6 +9,7 @@ band: "1"
 storyId: 007-fritz-flamingo
 cover:
   src: /assets/stories/007-fritz-flamingo/cover.webp
+  alt: "Fritz, der Flamingo, steht im Wasser, breitet die Flügel aus und ruft zur Spinne Susi hinauf, die an ihrem Faden über ihm hängt."
 publishDate: 2024-01-15
 difficulty: beginner
 questions:
