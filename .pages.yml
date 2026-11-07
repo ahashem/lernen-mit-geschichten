@@ -190,7 +190,6 @@ content:
           - { name: styleVersion, type: string, label: Style guide version }
           - { name: reviewedBy, type: string, label: Reviewed by }
           - { name: reviewedAt, type: date, label: Reviewed on }
-          - { name: aiGenerated, type: boolean, label: Made with AI }
       - { name: publishDate, type: date, label: First published }
       - { name: ageGroup, type: string, hidden: true, default: '3-7' }
       - { name: narration, component: narration }

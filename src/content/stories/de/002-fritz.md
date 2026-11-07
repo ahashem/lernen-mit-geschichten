@@ -15,7 +15,6 @@ cover:
   src: /assets/stories/002-fritz/002-fritz_frame-01_colour.webp
 art:
   reviewedAt: 2026-10-28
-  aiGenerated: false
 narration:
   timing: false
 ---

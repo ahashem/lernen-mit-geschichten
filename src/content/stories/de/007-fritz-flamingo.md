@@ -56,7 +56,6 @@ keyMessage: >-
   So können wir unsere Ziele erreichen und dabei mehr Freude haben.
 art:
   reviewedAt: 2026-10-28
-  aiGenerated: false
 narration:
   timing: false
 ---

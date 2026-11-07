@@ -51,7 +51,6 @@ questions:
 status: published
 art:
   reviewedAt: 2026-11-07
-  aiGenerated: false
 narration:
   timing: false
 ---

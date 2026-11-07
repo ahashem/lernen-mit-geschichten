@@ -322,7 +322,7 @@ art/stories/{story-id}/manifest.json
 { "file": "bruno-thunder_frame-03_colour.png", "band": "B1", "kind": "frame-colour",
   "source_line": "bruno-thunder_frame-03_line.svg", "tool": "{tool}", "model": "{model@version}",
   "seed": 123456, "prompt": "…", "negative": "…", "refs": ["bruno_b1_front.png"],
-  "focus": [0.42, 0.55], "ai_generated": true,
+  "focus": [0.42, 0.55],
   "reviewed_by": "{name}", "reviewed_on": "2026-10-17", "checks": ["anatomy","text","culture","character"] }
 ```
 
