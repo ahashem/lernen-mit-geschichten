@@ -1560,7 +1560,7 @@ const description = summary || `${title} | ${t('siteName')}`;
   }
 
   /* reader.ts sets data-more while text continues below: the last lines fade and a round arrow bobs at the sheet's
-     foot, so a child knows to scroll. */
+     foot, so a child knows to scroll. Centred, it stays clear of the language labels, which sit at either side. */
   .sheet {
     position: relative;
   }
@@ -1583,7 +1583,8 @@ const description = summary || `${title} | ${t('siteName')}`;
     content: '';
     position: absolute;
     inset-block-end: var(--s-3);
-    inset-inline-end: var(--s-4);
+    inset-inline: 0;
+    margin-inline: auto;
     inline-size: 36px;
     block-size: 36px;
     border-radius: var(--r-round);
@@ -1595,7 +1596,8 @@ const description = summary || `${title} | ${t('siteName')}`;
     position: absolute;
     z-index: 1;
     inset-block-end: calc(var(--s-3) + 9px);
-    inset-inline-end: calc(var(--s-4) + 9px);
+    inset-inline: 0;
+    margin-inline: auto;
     inline-size: 18px;
     block-size: 18px;
     background: var(--on-accent);
@@ -1616,6 +1618,24 @@ const description = summary || `${title} | ${t('siteName')}`;
     50% {
       translate: 0 4px;
     }
+  }
+
+  /* A language block reads in its own script's face and spacing, whatever the page's language: German beside Arabic
+     keeps Andika, Arabic beside German keeps Naskh. */
+  .text-block:is(:lang(de), :lang(en), :lang(tr)) {
+    --font-read: 'Andika', 'Andika Fallback', system-ui, sans-serif;
+    --lh-story: 1.5;
+    font-family: var(--font-read);
+  }
+  .text-block:lang(ar) {
+    --font-read: 'Noto Naskh Arabic', 'Noto Naskh Arabic Fallback', system-ui, serif;
+    --lh-story: 1.9;
+    font-family: var(--font-read);
+  }
+  .text-block:lang(ur) {
+    --font-read: 'Gulzar', 'Gulzar Fallback', 'Noto Nastaliq Urdu', serif;
+    --lh-story: 2.3;
+    font-family: var(--font-read);
   }
 
   .lang-label {
@@ -1873,14 +1893,25 @@ const description = summary || `${title} | ${t('siteName')}`;
     background: var(--card);
   }
 
+  /* A message from the reader ("no voice on this device") sits in the page bar over the dots, like "start again",
+     so it never covers a line of the story; a long one grows upward from the bar. */
   .notice {
     position: absolute;
-    inset-inline: var(--gutter);
-    inset-block-end: calc(var(--tap-child) + var(--s-6));
+    inset-inline-start: 50%;
+    inset-block-end: var(--pagebar-end, var(--s-4));
+    translate: -50% 0;
     z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: max-content;
+    max-inline-size: calc(100% - 2 * (var(--gutter) + var(--tap-child) + var(--s-2)));
+    min-block-size: var(--tap-child);
+    padding: var(--s-1) var(--s-3);
+    font-size: var(--t-ui-sm);
+    line-height: 1.25;
     text-align: center;
   }
-
   .notice[hidden] {
     display: none;
   }
@@ -2110,6 +2141,13 @@ const description = summary || `${title} | ${t('siteName')}`;
       border-inline-end: var(--outline);
     }
 
+    .sheet:has(.texts[data-more])::after {
+      inset-inline: auto var(--s-4);
+    }
+    .sheet:has(.texts[data-more])::before {
+      inset-inline: auto calc(var(--s-4) + 9px);
+    }
+
     /* safe: a page longer than the sheet starts at its first line instead of overflowing both ends. */
     .texts {
       align-content: safe center;
@@ -2197,8 +2235,20 @@ const description = summary || `${title} | ${t('siteName')}`;
       min-block-size: 0;
       max-inline-size: 60%;
     }
+    /* No bar here: a message rests low over the picture, the side the text is not on. */
     .notice {
-      inset-block-end: var(--s-5);
+      inset-inline-start: calc(var(--tap-child) + 3 * var(--s-3));
+      inset-block-end: var(--s-6);
+      translate: none;
+      max-inline-size: 30%;
+      min-block-size: 0;
+      box-shadow: var(--e-1);
+    }
+    .sheet:has(.texts[data-more])::after {
+      inset-inline: auto var(--s-4);
+    }
+    .sheet:has(.texts[data-more])::before {
+      inset-inline: auto calc(var(--s-4) + 9px);
     }
     .menu {
       inset-block-start: var(--s-2);
@@ -2224,6 +2274,17 @@ const description = summary || `${title} | ${t('siteName')}`;
     .story-app[data-pair] .view.book .sheet {
       --art: min(40%, calc(100cqb * 4 / 3));
     }
+  }
+  /* The smallest phones on their side: the picture gives up a little more width, so a line holds a few words. */
+  @media (orientation: landscape) and (max-height: 500px) and (max-width: 699px) {
+    .story-app .view.book .sheet {
+      --art: min(45%, calc(100cqb * 4 / 3));
+    }
+    .story-app[data-pair] .view.book .sheet {
+      --art: min(34%, calc(100cqb * 4 / 3));
+    }
+  }
+  @media (orientation: landscape) and (max-height: 500px) {
     .story-app .view.book .frame,
     .story-app .view.book .page[data-compact] .frame {
       aspect-ratio: auto;
