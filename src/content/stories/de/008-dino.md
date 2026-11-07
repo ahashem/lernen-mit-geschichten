@@ -88,55 +88,55 @@ art:
 narration:
   timing: false
 cover:
-  src: /assets/stories/dino.webp
+  src: /assets/stories/008-dino/dino.webp
 ---
 ## Die Geschichte
 
-Es war einmal ein kleiner Dinosaurier namens Dino Dino.
-Dino Dino war grün, rundlich und immer hungrig.
+Es war einmal ein kleiner Dinosaurier namens Dino Dino.  
+Dino Dino war grün, rundlich und immer hungrig.  
 Sein Lieblingsessen war – natürlich – Riesen-Kekse. 🍪
 
-Eines Tages backte seine Oma Dino einen Berg von frischen Keksen.
-Die ganze Höhle roch nach Schokolade.
-„Aber du musst warten, bis sie abgekühlt sind!“, sagte Oma streng.
+Eines Tages backte seine Oma Dino einen Berg von frischen Keksen.  
+Die ganze Höhle roch nach Schokolade.  
+„Aber du musst warten, bis sie abgekühlt sind!“, sagte Oma streng.  
 „Wenn du sie zu früh isst, verbrennst du dir die Zunge!“
 
-Dino Dino schnupperte.
-Er sabberte.
-Er tapste im Kreis und rief:
+Dino Dino schnupperte.  
+Er sabberte.  
+Er tapste im Kreis und rief:  
 „Ich will JETZT einen Keks!“
 
-Doch Oma nickte nur:
+Doch Oma nickte nur:  
 „Geduld, mein kleiner Dino.“
 
 ---
 
 Das lustige Warten
 
-Dino Dino versuchte, nicht an Kekse zu denken.
-Also spielte er mit seinem Schwanz – plopp! – er fiel um.
-Er zählte Steine in der Höhle – eins, zwei, drei… bis er die Zahlen vergaß.
-Dann machte er Grimassen vor dem Spiegel:
-„Grrrr!“, „Hiiii!“, „Blubb!“ 🤪
+Dino Dino versuchte, nicht an Kekse zu denken.  
+Also spielte er mit seinem Schwanz – plopp! – er fiel um.  
+Er zählte Steine in der Höhle – eins, zwei, drei… bis er die Zahlen vergaß.  
+Dann machte er Grimassen vor dem Spiegel:  
+„Grrrr!“, „Hiiii!“, „Blubb!“ 🤪  
 Das brachte ihn so sehr zum Lachen, dass er fast die Kekse vergaß.
 
 ---
 
 Die Belohnung
 
-Endlich rief Oma:
+Endlich rief Oma:  
 „Jetzt sind die Kekse kalt!“
 
-Dino Dino sprang hoch, fast bis zur Decke.
-Er nahm einen Bissen.
-„Mmmmh!“, rief er mit vollen Backen.
+Dino Dino sprang hoch, fast bis zur Decke.  
+Er nahm einen Bissen.  
+„Mmmmh!“, rief er mit vollen Backen.  
 „Es hat sich wirklich gelohnt zu warten!“
 
-Oma lächelte:
+Oma lächelte:  
 „Siehst du, wer warten kann, bekommt am Ende den besten Geschmack.“
 
-Dino Dino nickte und sagte:
+Dino Dino nickte und sagte:  
 „Ich bin Dino Dino, der große Geduld-Dino!“ 🦖✨
 
-Und seit diesem Tag konnte er viel besser warten –
+Und seit diesem Tag konnte er viel besser warten –  
 na ja… fast immer. 😉
