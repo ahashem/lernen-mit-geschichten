@@ -1748,7 +1748,7 @@ const description = summary || `${title} | ${t('siteName')}`;
     gap: var(--s-3);
     inline-size: var(--spread);
     margin-inline: auto;
-    padding: var(--s-2) var(--gutter) var(--s-4);
+    padding: var(--s-2) var(--gutter) var(--pagebar-end, var(--s-4));
   }
 
   .nav-label {
@@ -1885,20 +1885,25 @@ const description = summary || `${title} | ${t('siteName')}`;
     display: none;
   }
 
+  /* "Start again" rests in the page bar, over the dots, for the few seconds it is offered: in the bar it never covers
+     a line of the story. */
   .restart {
     position: absolute;
     inset-inline-start: 50%;
-    inset-block-end: calc(var(--tap-child) + var(--s-7));
-    translate: -50% 0;
+    inset-block-end: calc(var(--pagebar-end, var(--s-4)) + var(--tap-child) / 2);
+    translate: -50% 50%;
     z-index: 4;
+    max-inline-size: calc(100% - 2 * (var(--gutter) + var(--tap-child) + var(--s-2)));
     min-block-size: var(--tap-adult);
-    padding-inline: var(--s-4);
+    padding-inline: var(--s-3);
     border: 0;
-    background: none;
+    border-radius: var(--r-m);
+    background: var(--paper);
     color: var(--lagoon);
+    font-size: var(--t-ui-sm);
+    line-height: 1.2;
     text-decoration: underline;
   }
-
   [dir='rtl'] .restart {
     translate: 50% 0;
   }
@@ -2007,6 +2012,60 @@ const description = summary || `${title} | ${t('siteName')}`;
 
   :global(:root[data-theme='lamp']) .frame :global(img) {
     filter: brightness(0.62) sepia(0.35) saturate(0.8);
+  }
+
+  /* Phones (portrait and small): the page is the whole width, so the picture is as large as the screen allows and is
+     never cropped; the bars keep their child-sized buttons with less air around them. */
+  @media (max-width: 599px) {
+    .view.book {
+      --pagebar-end: var(--s-3);
+    }
+    .topbar {
+      padding-block: var(--s-2);
+    }
+    .pages {
+      padding-inline: 0;
+    }
+    .page {
+      padding-block: 0;
+    }
+    .sheet {
+      inline-size: 100cqi;
+      border-inline: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .texts {
+      padding: var(--s-4) var(--gutter) var(--s-3);
+    }
+
+    /* Two languages: each in its own tinted block, so the eye finds its language without reading labels; the picture
+       takes at most two fifths of the page and steps back to a strip once the text is scrolled (reader.ts). */
+    .story-app[data-pair] .frame {
+      max-block-size: 40cqb;
+    }
+    .story-app[data-pair] .page[data-compact] .frame {
+      max-block-size: 20cqb;
+      min-block-size: 20cqb;
+    }
+    .story-app[data-pair] .texts {
+      gap: var(--s-3);
+      padding-block-start: var(--s-3);
+    }
+    .story-app[data-pair] .text-block {
+      padding: var(--s-3) var(--s-4);
+      border-radius: var(--r-m);
+      background: color-mix(in srgb, var(--lagoon-tint) 45%, transparent);
+    }
+    .story-app[data-pair] .text-block + .text-block:not([hidden]) {
+      padding-block-start: var(--s-3);
+      border-block-start: 0;
+      background: color-mix(in srgb, var(--honey-tint) 55%, transparent);
+    }
+    .story-app[data-pair] .lang-label {
+      margin-block-end: var(--s-1);
+      background: var(--card);
+    }
   }
 
   /* The cover splits once there is room, whatever the window's shape. */

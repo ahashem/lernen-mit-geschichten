@@ -78,6 +78,22 @@ export function startReader() {
     box.toggleAttribute('data-more', box.scrollTop + box.clientHeight < box.scrollHeight - 4);
     box.toggleAttribute('data-scrolled', box.scrollTop > 4);
   };
+  // Two languages on a phone: once the reader scrolls into the text, the picture steps back to a strip (StoryPage,
+  // .page[data-compact]) and returns at the top of the text or on the next page. It only steps back when the text
+  // would still need scrolling afterwards; otherwise the scroll would snap to the top and the picture bounce back.
+  const phone = matchMedia('(max-width: 599px)');
+  const COMPACT_SHARE = 0.2;
+  const yieldPicture = (page: HTMLElement, box: HTMLElement) => {
+    if (!phone.matches || !app.hasAttribute('data-pair') || box.scrollTop <= 0) {
+      page.removeAttribute('data-compact');
+      return;
+    }
+    if (page.hasAttribute('data-compact') || box.scrollTop < 16) return;
+    const frame = $<HTMLElement>(page, '.frame');
+    const freed = (frame?.offsetHeight ?? 0) - page.clientHeight * COMPACT_SHARE;
+    if (freed > 0 && box.scrollHeight - box.clientHeight > freed + 24)
+      page.setAttribute('data-compact', '');
+  };
   if (typeof ResizeObserver !== 'undefined') {
     const watch = new ResizeObserver(entries =>
       entries.forEach(e => markOverflow(e.target.closest<HTMLElement>('.texts')!))
@@ -87,7 +103,14 @@ export function startReader() {
       if (!box) return;
       watch.observe(box);
       box.querySelectorAll<HTMLElement>('.text-block').forEach(b => watch.observe(b));
-      box.addEventListener('scroll', () => markOverflow(box), { passive: true });
+      box.addEventListener(
+        'scroll',
+        () => {
+          markOverflow(box);
+          yieldPicture(page, box);
+        },
+        { passive: true }
+      );
     });
   }
   let current = 0;
@@ -197,6 +220,7 @@ export function startReader() {
     // A page always opens at its first line, even if the reader scrolled it on an earlier visit.
     const intoText = $<HTMLElement>(into, '.texts');
     if (intoText) intoText.scrollTop = 0;
+    into.removeAttribute('data-compact');
     into.focus({ preventScroll: true });
     if (narrating && !keyboardTurn) window.setTimeout(() => startNarration(), 400);
     else if (keyboardTurn && narrating) setNarrating(false);
