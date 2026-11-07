@@ -100,6 +100,7 @@ questions:
     type: fillinblank
     correctAnswer: We should express wishes and feelings clearly and kindly.
 keyMessage: It is important to express feelings and wishes clearly. We should always speak kindly and respectfully. When we listen well, we can find solutions that make both sides happy. Honest words make friendship stronger.
+summary: "Mila wants to play tag, but her friend Hoppel the bunny would rather play with his balloon. When both say honestly how they feel, they find a game that makes them both happy."
 ---
 
 ## The Story

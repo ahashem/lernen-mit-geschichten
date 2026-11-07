@@ -18,6 +18,8 @@ art:
   reviewedAt: 2026-10-28
 narration:
   timing: false
+summary: "Das Eichhörnchen Fritzchen findet eine goldene Nuss, doch Niko will sie wütend für sich. Fritzchen bleibt ruhig, versteht Nikos Wut und teilt – so werden die beiden Freunde."
+keyMessage: "Wenn jemand wütend ist, bleib ruhig und versuch zu verstehen, warum. Freundlichkeit ist stärker als Wut."
 ---
 ## Die Geschichte
 

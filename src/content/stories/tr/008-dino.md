@@ -79,6 +79,8 @@ questions:
       - "Sabırlı olmanın değerli olduğunu."
     correctAnswer: "Sabırlı olmanın değerli olduğunu."
 status: published
+summary: "Dino Dino büyükannesinin taze kurabiyelerini hemen yemek ister ama önce soğumaları gerekir. Zamanı komik oyunlarla geçirir – ve beklemeye değer."
+keyMessage: "Bekleyebilen, sonunda en güzel tadı alır."
 ---
 
 ## Hikâye

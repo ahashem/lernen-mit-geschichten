@@ -53,6 +53,7 @@ questions:
     correctAnswer: "true"
 status: published
 keyMessage: "Die Kinder lernen spielerisch, dass Nachdenken über mögliche Folgen zu klügeren und sichereren Entscheidungen führt."
+summary: "Der Waschbär Timmi klettert ohne nachzudenken auf einen wackligen Ast. Seine Freundin Lilli bringt ihn zum Nachdenken, und mit einem Stock findet er eine bessere Lösung."
 ---
 Es war einmal ein kleiner Waschbär namens Timmi.
 Timmi war neugierig, frech und hatte immer viele Ideen. Doch manchmal machte er Dinge, ohne vorher nachzudenken.

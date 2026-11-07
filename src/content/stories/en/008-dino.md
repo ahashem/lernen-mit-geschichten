@@ -79,6 +79,8 @@ questions:
       - "That patience is worth it."
     correctAnswer: "That patience is worth it."
 status: published
+summary: "Dino Dino wants to eat Grandma’s fresh cookies right away, but they have to cool down first. He passes the time with funny games – and the wait is worth it."
+keyMessage: "If you can wait, you get the best taste in the end."
 ---
 
 ## The Story

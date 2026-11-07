@@ -43,6 +43,8 @@ questions:
       - "Dancing"
     correctAnswer: "Dancing"
 status: published
+summary: "Fritz the flamingo wants to do everything at once and ends up in the water. Susi the spider shows him how to sort out his time, his behaviour and his feelings."
+keyMessage: "Self-organisation means putting our time, our behaviour and our feelings in order."
 ---
 
 ## The Story

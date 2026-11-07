@@ -63,6 +63,8 @@ questions:
     type: fillinblank
     correctAnswer: Together we are stronger! / Teamwork is fun!
 status: published
+summary: "Finn, a little raccoon, finds a giant nut that he cannot move alone. Together with Mila the squirrel, Kiko the bird and lots of ants, he manages it."
+keyMessage: "When we work together, we can do even the biggest jobs – and have fun doing it."
 ---
 
 ## The Story

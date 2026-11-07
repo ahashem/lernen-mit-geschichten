@@ -80,6 +80,7 @@ questions:
     type: truefalse
     correctAnswer: "true"
 keyMessage: Zamanını düzenleyen biri, öğrenmeye, oynamaya ve dinlenmeye her zaman vakit bulur.
+summary: "Timmi sadece oyun oynamak ister. Konuşan oyuncak kedisi Minka ona, gününü öğrenme, oyun ve dinlenme olarak bölen sihirli bir saat verir."
 ---
 Bir zamanlar, yalnızca bütün gün oynamak isteyen neşeli bir çocuk vardı. Onun adı Timmi idi.
 Oyuncakları her yere dağılmıştı: Yatakta bloklar, masanın altında arabalar ve hatta ayakkabılarının içinde boyama kalemleri vardı!

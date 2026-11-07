@@ -85,6 +85,7 @@ questions:
       - Man sollte immer alles genauso machen wie früher.
     correctAnswer: Wenn etwas nicht klappt, muss man anders denken.
 keyMessage: Manchmal läuft nicht alles so, wie wir es geplant haben. Aber wenn wir neue Wege ausprobieren und anders denken, können wir tolle Lösungen finden – oft sogar noch bessere!
+summary: "Emil will einen Apfelkuchen backen, doch der Ofen ist kaputt. Mit seiner Freundin Leni denkt er um und erfindet ganz neue Apfel-Leckereien."
 ---
 
 ## Die Geschichte

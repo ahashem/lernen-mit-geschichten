@@ -85,6 +85,7 @@ questions:
     correctAnswer: "Wer seine Zeit gut teilt, schafft alles"
 status: published
 keyMessage: "Wenn man seine Zeit einteilt, bleibt Platz für alles: Lernen, Spielen und Ausruhen."
+summary: "Timmi will nur spielen. Seine sprechende Kuscheltierkatze Minka schenkt ihm eine Zauberuhr, die seinen Tag in Lernen, Spielen und Ausruhen teilt."
 ---
 Es war einmal ein fröhlicher Junge namens Timmi, der den ganzen Tag nur spielen wollte.
 Seine Spielsachen lagen überall im Zimmer – die Bauklötze auf dem Bett, die Autos unter dem Tisch und die Malstifte sogar in den Schuhen!
