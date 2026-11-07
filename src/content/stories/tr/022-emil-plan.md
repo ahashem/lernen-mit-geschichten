@@ -6,42 +6,6 @@ storyId: "022-emil-plan"
 publishDate: 2024-01-15
 difficulty: "beginner"
 questions:
-  - id: "tf1"
-    text: "Emil büyük bir çikolatalı pasta yapmak istedi."
-    type: "truefalse"
-    correctAnswer: "false"
-  - id: "tf2"
-    text: "Fırın bozulmuştu."
-    type: "truefalse"
-    correctAnswer: "true"
-  - id: "tf3"
-    text: "Leni dedi ki: Belki turtayı başka türlü yapabiliriz."
-    type: "truefalse"
-    correctAnswer: "true"
-  - id: "mc1"
-    text: "Emil ne yapmak istedi?"
-    type: "multiplechoice"
-    options:
-      - "Çikolatalı pasta"
-      - "Elmalı turta"
-      - "Peynirli kek"
-    correctAnswer: "Elmalı turta"
-  - id: "mc2"
-    text: "Emil'e kim yardım etti?"
-    type: "multiplechoice"
-    options:
-      - "Kedisi Minka"
-      - "Arkadaşı Tom"
-      - "Arkadaşı Leni"
-    correctAnswer: "Arkadaşı Leni"
-  - id: "mc3"
-    text: "Emil sonunda ne öğrendi?"
-    type: "multiplechoice"
-    options:
-      - "Fırın olmadan turta olmaz"
-      - "Bir şey işe yaramazsa, farklı düşünmelisin"
-      - "Hep eskisi gibi yapmalısın"
-    correctAnswer: "Bir şey işe yaramazsa, farklı düşünmelisin"
   - id: q1
     text: Emil büyük bir çikolatalı pasta yapmak istedi.
     type: truefalse

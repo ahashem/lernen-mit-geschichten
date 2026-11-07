@@ -51,10 +51,6 @@ questions:
     text: Wer hat die Nuss zuerst gefunden?
     type: fillinblank
     correctAnswer: Finn, der kleine Waschbär.
-  - id: q2
-    text: Wem begegnete Finn als Erstes?
-    type: fillinblank
-    correctAnswer: Mila, das Eichhörnchen.
   - id: q3
     text: Wer hat noch geholfen?
     type: fillinblank
@@ -63,10 +59,6 @@ questions:
     text: Was passierte, als alle zusammenarbeiteten?
     type: fillinblank
     correctAnswer: Sie konnten die große Nuss bewegen und essen.
-  - id: q5
-    text: Was lernen wir aus der Geschichte?
-    type: fillinblank
-    correctAnswer: Gemeinsam sind wir stärker! / Teamarbeit macht Spaß!
 status: published
 summary: "Der kleine Waschbär Finn findet eine riesige Nuss, die er allein nicht bewegen kann. Mit dem Eichhörnchen Mila, dem Vogel Kiko und vielen Ameisen schafft er es gemeinsam."
 keyMessage: "Wer zusammenarbeitet, schafft auch die größten Aufgaben – und hat dabei Spaß."
