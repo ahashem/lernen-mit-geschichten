@@ -83,16 +83,40 @@ export function startReader() {
   // would still need scrolling afterwards; otherwise the scroll would snap to the top and the picture bounce back.
   const phone = matchMedia('(max-width: 599px) and (orientation: portrait)');
   const COMPACT_SHARE = 0.2;
+  // The strip is a layout change, which CSS may not transition (ux/04 allows transform and opacity only), so it is
+  // played the FLIP way: the text box starts where it was and glides into place, the picture starts at its old size.
+  const setCompact = (page: HTMLElement, on: boolean) => {
+    if (page.hasAttribute('data-compact') === on) return;
+    const frame = $<HTMLElement>(page, '.frame');
+    const box = $<HTMLElement>(page, '.texts');
+    const art = frame?.firstElementChild as HTMLElement | null;
+    const before = frame?.getBoundingClientRect().height ?? 0;
+    page.toggleAttribute('data-compact', on);
+    if (!frame || !box || reduceMotion.matches || typeof box.animate !== 'function') return;
+    const after = frame.getBoundingClientRect().height;
+    if (!before || !after || before === after) return;
+    const timing = { duration: dur(), easing: 'cubic-bezier(0.4, 0, 0.2, 1)' };
+    box.animate(
+      [{ transform: `translateY(${before - after}px)` }, { transform: 'translateY(0)' }],
+      timing
+    );
+    art?.animate(
+      [
+        { transform: `scale(${before / after})`, transformOrigin: '50% 0' },
+        { transform: 'scale(1)', transformOrigin: '50% 0' },
+      ],
+      timing
+    );
+  };
   const yieldPicture = (page: HTMLElement, box: HTMLElement) => {
     if (!phone.matches || !app.hasAttribute('data-pair') || box.scrollTop <= 0) {
-      page.removeAttribute('data-compact');
+      setCompact(page, false);
       return;
     }
     if (page.hasAttribute('data-compact') || box.scrollTop < 16) return;
     const frame = $<HTMLElement>(page, '.frame');
     const freed = (frame?.offsetHeight ?? 0) - page.clientHeight * COMPACT_SHARE;
-    if (freed > 0 && box.scrollHeight - box.clientHeight > freed + 24)
-      page.setAttribute('data-compact', '');
+    if (freed > 0 && box.scrollHeight - box.clientHeight > freed + 24) setCompact(page, true);
   };
   if (typeof ResizeObserver !== 'undefined') {
     const watch = new ResizeObserver(entries =>
@@ -221,6 +245,8 @@ export function startReader() {
     const intoText = $<HTMLElement>(into, '.texts');
     if (intoText) intoText.scrollTop = 0;
     into.removeAttribute('data-compact');
+    // A message belongs to what was just tried on the page left behind.
+    status('');
     into.focus({ preventScroll: true });
     if (narrating && !keyboardTurn) window.setTimeout(() => startNarration(), 400);
     else if (keyboardTurn && narrating) setNarrating(false);

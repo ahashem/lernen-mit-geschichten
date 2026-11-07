@@ -21,9 +21,11 @@ interface Props {
   shelf?: string;
   /** Phones: cover beside the text instead of above it, so a list of stories stays short. */
   row?: boolean;
+  /** A tile on the first screen: its cover loads with the page, so it is there when the page arrives. */
+  eager?: boolean;
 }
 
-const { locale, slug, storyId, title, meta, emoji, summary, skill, minutes, shelf, row } =
+const { locale, slug, storyId, title, meta, emoji, summary, skill, minutes, shelf, row, eager } =
   Astro.props;
 const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
 const href =
@@ -37,6 +39,7 @@ const library = locale === 'de' ? `${BASE_PATH}/library` : `${BASE_PATH}/${local
       picture={coverOf(meta, locale)}
       emoji={emoji ?? meta?.emoji ?? '📖'}
       palette={paletteFor(storyId, meta)}
+      eager={eager}
     />
   </a>
   <div class="tile-body">
