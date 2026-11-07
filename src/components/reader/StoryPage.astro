@@ -2043,7 +2043,6 @@ const description = summary || `${title} | ${t('siteName')}`;
        takes at most two fifths of the page and steps back to a strip once the text is scrolled (reader.ts). */
     .story-app[data-pair] .frame {
       max-block-size: 40cqb;
-      transition: max-block-size var(--dur-base) var(--ease-in-out);
     }
     .story-app[data-pair] .page[data-compact] .frame {
       max-block-size: 20cqb;
@@ -2066,11 +2065,6 @@ const description = summary || `${title} | ${t('siteName')}`;
     .story-app[data-pair] .lang-label {
       margin-block-end: var(--s-1);
       background: var(--card);
-    }
-  }
-  @media (max-width: 599px) and (prefers-reduced-motion: reduce) {
-    .story-app[data-pair] .frame {
-      transition: none;
     }
   }
 
