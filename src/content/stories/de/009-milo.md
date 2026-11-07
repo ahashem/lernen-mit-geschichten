@@ -7,6 +7,8 @@ skills:
 ageGroup: 3-7
 band: "1"
 storyId: 009-milo
+cover:
+  src: /assets/stories/009-milo/cover.webp
 difficulty: beginner
 publishDate: 2024-01-15
 questions:
