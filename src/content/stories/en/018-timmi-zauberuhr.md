@@ -80,6 +80,7 @@ questions:
     type: truefalse
     correctAnswer: "true"
 keyMessage: "When you organize your time, you always have space for everything: learning, playing, and resting."
+summary: "Timmy only wants to play. His talking cuddly cat Minka gives him a magic clock that divides his day into learning, playing and resting."
 ---
 Once upon a time, there was a cheerful boy named Timmy who only wanted to play all day long.
 His toys were scattered everywhere: the building blocks on the bed, the cars under the table, and even the coloring pencils inside his shoes!

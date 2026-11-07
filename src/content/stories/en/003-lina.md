@@ -89,6 +89,7 @@ questions:
       - She shared it with her friends
     correctAnswer: She shared it with her friends
 keyMessage: If the first solution doesn’t work, try another way. With friends, every problem becomes easier and more fun.
+summary: "Lina the mouse wants a huge cookie on a high table. With Pico the sparrow and Tilda the turtle she builds a ladder, climbs up and shares the cookie."
 ---
 
 🐭 "Lina and the Big Cookie"

@@ -52,6 +52,8 @@ questions:
       - "Die Maus mit den schnellen Füßen"
     correctAnswer: "Die kleine Maus mit dem großen Herzen"
 status: published
+summary: "Die kleine Maus Moritz lacht den Igel Fritz aus, der sich an einem Dorn gepiekt hat. Dann merkt er, wie weh das tut, entschuldigt sich und hilft ihm."
+keyMessage: "Wer die Gefühle anderer ernst nimmt, macht sie froh – und wird selbst froh."
 ---
 
 ## Die Geschichte

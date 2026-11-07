@@ -79,6 +79,8 @@ questions:
       - He eats the apple alone
       - He shares the apple with the squirrel
     correctAnswer: He shares the apple with the squirrel
+summary: "Fritzchen is eating an apple under a tree when a squirrel snatches a piece. Instead of shouting, he breathes deeply, counts to five and ends up sharing his apple."
+keyMessage: "Whoever stays calm has more fun in the end – and maybe even makes a new friend."
 ---
 🐿️ The Story of Fritzchen and the Angry Squirrel
 

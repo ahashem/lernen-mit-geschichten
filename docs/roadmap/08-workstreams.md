@@ -14,8 +14,9 @@ $9.** A run stops when its scope is done or its budget is spent, whichever is fi
 - Every new page ships in all 5 locales. New UI keys go in all five locales; list the `ar`/`tr`/`ur` keys in
   `src/locales/review-queue.json` (`AGENTS.md`) and add a small script that reports the queue per locale.
 - No backend, accounts, personal data or third-party requests. State stays on the device.
-- **You do not write or edit story content.** Stories, translations, `band` values, art, audio and alt text for
-  published art are the owner's and the moderators'. You may draft alt text from images for review.
+- **Story text is the owner's and the moderators'.** Stories, translations, `band` values, art and audio are theirs.
+  You write `summary`, `keyMessage`, alt text, `feelings` and page breaks directly in the story files, through a pull
+  request into `main` that the owner reviews (owner decision 2026-11-07).
 - Skip a feature rather than stub it. No new documentation beyond keeping `AGENTS.md` and `docs/roadmap/` true. No
   tests unless they guard data loss, filtering or the publish gates.
 - The old backlog (`origin/catchup/44-commits`) is a quarry for ideas and code to rewrite, never to merge (`09`).
@@ -212,10 +213,6 @@ Handover state after Run 6 and the moderator work (2026-10-18), updated 2026-10-
 - **Outcome for the next 4-6 weeks: more stories live, then polish for the five test families.** Their main
   complaint is too few stories. Publish what is ready now and already has good structure (below); stories can still be
   improved after they are live. The agent publishes through pull requests into `main`, not `editorial`.
-- **Machine drafts go straight into the story files.** The agent writes `summary`, `keyMessage`, alt text,
-  `feelings` and page breaks in the story files themselves, through a pull request into `main`; the owner approving
-  that pull request is the review (owner decision 2026-11-07, replacing the separate drafts files). A story that is not
-  ready to go live keeps `status: draft`.
 - **Translations that tell a different story are adaptations.** They stay published, are marked as adaptations and
   are never offered beside the German in Two languages (known issue 11).
 - **A lightweight feedback round** with the five families, through the existing feedback link.
@@ -299,8 +296,8 @@ true`) so the reader never pairs it with the German and readiness stops asking f
    feedback mail with three short questions (did the child finish, what did they like, what was hard) in the story's
    language. Owner: a short check-in with each family about two weeks after the batch is live: which stories, which
    language, which device, what was hard, what they would want next. In the same visit, try "Read it in my voice" on a real tablet and the first-tap labels with the device voices in `ar`, `tr` and `ur`.
-4. **Agent: machine drafts.** A suggested `summary`, `keyMessage`, alt text, `feelings` and page breaks per story
-   and language, written into the story files through a reviewed pull request (owner decision 2026-11-07).
+4. **Agent: summaries, key messages, alt text, `feelings` and page breaks** per story and language, written in the
+   story files.
    `feelings` unlocks Find by feeling.
    Done: 60 summaries and 14 key messages for the translations of the 16 stories published on 2026-11-04 (moved from
    the retired `drafts/` folder on 2026-11-07), and cover alt text for all 40 stories. Next: `feelings` and page

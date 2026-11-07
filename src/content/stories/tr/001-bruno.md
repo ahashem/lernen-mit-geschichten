@@ -68,6 +68,7 @@ questions:
     type: fillinblank
     correctAnswer: Duygularını bildiğinde, ne yapacağına daha iyi karar verebileceğini öğrendi.
 keyMessage: "Vücuduma dikkat ettiğimde (kalbim hızlı atıyor, karnım garip hissediyor …) fark ederim: Bir şey hissediyorum. Duyguyu adlandırdığımda (korkmuş, kızgın, mutlu …), daha iyi tepki vermeyi seçebilirim. Bu, öz-farkındalık süper gücüdür!"
+summary: "Küçük ayı Bruno ağaca tırmanırken kayar ve korktuğunu fark eder. Baykuş Mila ile duygularını tanımayı ve onlarla iyi başa çıkmayı öğrenir."
 ---
 
 # 🐻 Bruno'nun Renkli Duyguları

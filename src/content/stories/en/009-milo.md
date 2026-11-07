@@ -96,6 +96,8 @@ questions:
     text: "Milo learned: Change can be __________."
     type: fillinblank
     correctAnswer: good / beautiful / exciting
+summary: "Milo the cat’s favourite blanket has disappeared. With encouragement from Lina the spider he tries a pillow and a cardboard box – and finds new favourite places."
+keyMessage: "Change can feel strange at first, but if we are brave and try something new, we may find something even better."
 ---
 
 🐾 Story: Milo Learns to Adapt

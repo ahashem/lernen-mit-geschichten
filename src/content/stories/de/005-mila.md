@@ -52,6 +52,8 @@ questions:
       - "Ballons sind lustiger als Fangen."
     correctAnswer: "Man soll Wünsche und Gefühle klar und freundlich sagen."
 status: published
+summary: "Mila will Fangen spielen, ihr Freund, der Hase Hoppel, lieber mit seinem Ballon. Als beide ehrlich sagen, was sie fühlen, finden sie ein Spiel, das beide glücklich macht."
+keyMessage: "Wenn wir Wünsche und Gefühle klar und freundlich sagen, verstehen andere uns besser."
 ---
 
 ## Die Geschichte

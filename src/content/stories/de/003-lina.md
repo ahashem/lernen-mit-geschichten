@@ -11,6 +11,8 @@ cover:
 difficulty: "beginner"
 publishDate: 2024-01-15
 status: published
+summary: "Die kleine Maus Lina soll zehn Minuten auf Mamas frische Kekse warten. Sie widersteht der Versuchung, wartet geduldig und bekommt zwei extra große Kekse."
+keyMessage: "Warten ist manchmal schwer, aber Geduld wird belohnt."
 ---
 
 ## Die Geschichte

@@ -76,6 +76,8 @@ questions:
       - Elmayı tek başına yiyor
       - Elmayı sincapla paylaşıyor
     correctAnswer: Elmayı sincapla paylaşıyor
+summary: "Fritzchen bir ağacın altında elma yerken bir sincap elmasından bir parça kapar. Bağırmak yerine derin nefes alır, beşe kadar sayar ve sonunda elmasını paylaşır."
+keyMessage: "Sakin kalan, sonunda daha çok eğlenir – belki de yeni bir arkadaş bulur."
 ---
 
 🐿️ Fritzchen ve Kızgın Sincap Hikâyesi

@@ -68,6 +68,8 @@ questions:
     type: fillinblank
     correctAnswer: Gemeinsam sind wir stärker! / Teamarbeit macht Spaß!
 status: published
+summary: "Der kleine Waschbär Finn findet eine riesige Nuss, die er allein nicht bewegen kann. Mit dem Eichhörnchen Mila, dem Vogel Kiko und vielen Ameisen schafft er es gemeinsam."
+keyMessage: "Wer zusammenarbeitet, schafft auch die größten Aufgaben – und hat dabei Spaß."
 ---
 
 ## Die Geschichte

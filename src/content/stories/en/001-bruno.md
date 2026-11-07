@@ -71,6 +71,7 @@ questions:
     type: fillinblank
     correctAnswer: He learned that if he knows his feelings, he can better decide what to do.
 keyMessage: "When I pay attention to my body (my heart beats fast, my tummy feels strange …), I notice: I feel something. When I name the feeling (scared, angry, happy …), I can choose a better way to react. This is the superpower of self-awareness!"
+summary: "Bruno, a little bear, slips while climbing and notices that he is scared. With Mila the owl he learns to recognise his feelings and deal with them well."
 ---
 
 # 🐻 Bruno's Colorful Feelings
