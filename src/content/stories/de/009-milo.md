@@ -1,52 +1,60 @@
 ---
-title: "Milo lernt, sich anzupassen"
-emoji: "🐾"
-skills: ["adaptability", "problem-solving"]
-ageGroup: "3-7"
+title: Milo lernt, sich anzupassen
+emoji: 🐾
+skills:
+  - adaptability
+  - problem-solving
+ageGroup: 3-7
 band: "1"
-storyId: "009-milo"
-difficulty: "beginner"
+storyId: 009-milo
+difficulty: beginner
 publishDate: 2024-01-15
 questions:
-  - id: "tf1"
-    text: "Milo hatte sein ganzes Leben in einem gemütlichen Haus verbracht."
-    type: "truefalse"
+  - id: tf1
+    text: Milo hatte sein ganzes Leben in einem gemütlichen Haus verbracht.
+    type: truefalse
     correctAnswer: "true"
-  - id: "tf2"
-    text: "Der rote Ball war nicht verloren gegangen."
-    type: "truefalse"
+  - id: tf2
+    text: Der rote Ball war nicht verloren gegangen.
+    type: truefalse
     correctAnswer: "false"
-  - id: "tf3"
-    text: "Nina war eine Maus."
-    type: "truefalse"
+  - id: tf3
+    text: Nina war eine Maus.
+    type: truefalse
     correctAnswer: "true"
-  - id: "mc1"
-    text: "Welche drei Dinge liebte Milo in seinem alten Haus?"
-    type: "multiplechoice"
+  - id: mc1
+    text: Welche drei Dinge liebte Milo in seinem alten Haus?
+    type: multiplechoice
+    correctAnswer: Weichen Teppich, roten Ball, warmen Platz auf dem Sofa
     options:
-      - "Weichen Teppich, roten Ball, warmen Platz auf dem Sofa"
-      - "Blauen Ball, Hängematte, glatten Teppich"
-      - "Garten, Fenster, Tür"
-    correctAnswer: "Weichen Teppich, roten Ball, warmen Platz auf dem Sofa"
-  - id: "mc2"
-    text: "Was fand Milo im neuen Haus anstatt des roten Balls?"
-    type: "multiplechoice"
+      - Weichen Teppich, roten Ball, warmen Platz auf dem Sofa
+      - Blauen Ball, Hängematte, glatten Teppich
+      - Garten, Fenster, Tür
+  - id: mc2
+    text: Was fand Milo im neuen Haus anstatt des roten Balls?
+    type: multiplechoice
+    correctAnswer: Einen blauen Ball
     options:
-      - "Einen grünen Ball"
-      - "Einen blauen Ball"
-      - "Einen gelben Ball"
-    correctAnswer: "Einen blauen Ball"
-  - id: "mc3"
-    text: "Was lernte Milo am Ende?"
-    type: "multiplechoice"
+      - Einen grünen Ball
+      - Einen blauen Ball
+      - Einen gelben Ball
+  - id: mc3
+    text: Was lernte Milo am Ende?
+    type: multiplechoice
+    correctAnswer: Man kann sich anpassen und neue Lieblingssachen finden
     options:
-      - "Veränderungen sind immer schlecht"
-      - "Man kann sich anpassen und neue Lieblingssachen finden"
-      - "Das alte Haus war besser"
-    correctAnswer: "Man kann sich anpassen und neue Lieblingssachen finden"
+      - Veränderungen sind immer schlecht
+      - Man kann sich anpassen und neue Lieblingssachen finden
+      - Das alte Haus war besser
 status: published
+cover:
+  src: /assets/stories/008-dino/dino.webp
+art:
+  reviewedAt: 2026-11-07
+  aiGenerated: false
+narration:
+  timing: false
 ---
-
 ## Die Geschichte
 
 Milo war ein kleiner Kater, der sein ganzes Leben in einem gemütlichen Haus verbracht hatte. Er liebte seinen weichen Teppich, seinen roten Ball und den warmen Platz auf dem Sofa.
@@ -70,3 +78,4 @@ Und Milo schlief glücklich in seiner neuen Hängematte ein.
 - Veränderungen fühlen sich manchmal komisch oder schwierig an – das ist normal.
 - Wenn ich offen für Neues bin, kann ich tolle Dinge entdecken.
 - Anpassen bedeutet: Ich probiere aus und finde neue Wege, glücklich zu sein!
+
