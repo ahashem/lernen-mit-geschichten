@@ -1,5 +1,7 @@
 ---
 storyId: "026-timo-schildkroete"
+cover:
+  src: /assets/stories/026-timo-schildkroete/026-timo-schildkroete_cover.webp
 status: published
 title: "Die Geschichte von Timo, der kleine Schildkröte"
 emoji: "🐢"

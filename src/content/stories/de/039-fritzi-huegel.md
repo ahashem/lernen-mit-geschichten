@@ -1,5 +1,7 @@
 ---
 storyId: "039-fritzi-huegel"
+cover:
+  src: /assets/stories/039-fritzi-huegel/039-fritzi-huegel_cover.webp
 status: published
 title: "Die Geschichte von Fritzi und dem Hügel"
 emoji: "🛴"

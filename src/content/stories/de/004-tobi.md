@@ -5,6 +5,8 @@ skills: ["decision-making", "cooperation", "effective-communication"]
 ageGroup: "3-7"
 band: "1"
 storyId: "004-tobi"
+cover:
+  src: /assets/stories/004-tobi/004-tobi_cover.webp
 difficulty: "beginner"
 publishDate: 2024-01-15
 status: published

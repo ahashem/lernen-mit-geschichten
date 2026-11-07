@@ -1,5 +1,7 @@
 ---
 storyId: "017-benni-marmeladenbrot"
+cover:
+  src: /assets/stories/017-benni-marmeladenbrot/017-benni-marmeladenbrot_cover.webp
 status: draft
 title: "Benni und das fliegende Marmeladenbrot"
 emoji: "🐻"

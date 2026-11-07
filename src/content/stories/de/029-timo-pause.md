@@ -1,5 +1,7 @@
 ---
 storyId: "029-timo-pause"
+cover:
+  src: /assets/stories/029-timo-pause/029-timo-pause_cover.webp
 status: draft
 title: "Die Geschichte von Timo und der großen Pause"
 emoji: "🐿️"

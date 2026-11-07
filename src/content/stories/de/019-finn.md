@@ -5,6 +5,8 @@ skills: [ "cooperation" ]
 ageGroup: "3-7"
 band: "2"
 storyId: "019-finn"
+cover:
+  src: /assets/stories/019-finn/019-finn_cover.webp
 publishDate: 2024-01-15
 difficulty: "beginner"
 questions:

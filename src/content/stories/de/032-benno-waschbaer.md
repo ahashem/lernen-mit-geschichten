@@ -1,5 +1,7 @@
 ---
 storyId: "032-benno-waschbaer"
+cover:
+  src: /assets/stories/032-benno-waschbaer/032-benno-waschbaer_cover.webp
 status: published
 title: "Die Geschichte von Benno, dem neugierigen Waschbär"
 emoji: "🦝"

@@ -1,5 +1,7 @@
 ---
 storyId: "027-benno-zauberspiegel"
+cover:
+  src: /assets/stories/027-benno-zauberspiegel/027-benno-zauberspiegel_cover.webp
 status: published
 title: "Die Geschichte von Benno und dem Zauberspiegel"
 emoji: "🪞"

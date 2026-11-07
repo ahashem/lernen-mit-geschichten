@@ -88,7 +88,7 @@ art:
 narration:
   timing: false
 cover:
-  src: /assets/stories/dino.webp
+  src: /assets/stories/008-dino/dino.webp
 ---
 ## Die Geschichte
 
