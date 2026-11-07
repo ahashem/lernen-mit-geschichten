@@ -8,7 +8,7 @@ ageGroup: 3-7
 band: "1"
 cover:
   src: /assets/stories/001-bruno/001-bruno_cover.webp
-  alt: "Bruno, der kleine Bär, hält ängstlich seinen Honigtopf fest. Über ihm schwebt ein Herz, und die Eule Mila sitzt auf dem Ast."
+  alt: "Bruno, der kleine Bär, sitzt ängstlich unter dem Baum, die Pfote auf dem Bauch. Über ihm schwebt ein Herz, die Eule Mila sitzt auf dem Ast."
 frames:
   - src: /assets/stories/001-bruno/001-bruno_frame-01_colour.png
 storyId: 001-bruno
