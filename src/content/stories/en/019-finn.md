@@ -46,10 +46,6 @@ questions:
     text: Who found the nut first?
     type: fillinblank
     correctAnswer: Finn, the little raccoon.
-  - id: q2
-    text: Who did Finn meet first?
-    type: fillinblank
-    correctAnswer: Mila, the squirrel.
   - id: q3
     text: Who else helped?
     type: fillinblank
@@ -58,10 +54,6 @@ questions:
     text: What happened when everyone worked together?
     type: fillinblank
     correctAnswer: They could move the giant nut and eat it.
-  - id: q5
-    text: What do we learn from the story?
-    type: fillinblank
-    correctAnswer: Together we are stronger! / Teamwork is fun!
 status: published
 summary: "Finn, a little raccoon, finds a giant nut that he cannot move alone. Together with Mila the squirrel, Kiko the bird and lots of ants, he manages it."
 keyMessage: "When we work together, we can do even the biggest jobs – and have fun doing it."
