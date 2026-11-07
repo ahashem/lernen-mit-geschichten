@@ -47,8 +47,6 @@ questions:
       - Man kann sich anpassen und neue Lieblingssachen finden
       - Das alte Haus war besser
 status: published
-cover:
-  src: /assets/stories/008-dino/dino.webp
 art:
   reviewedAt: 2026-11-07
   aiGenerated: false
