@@ -2,6 +2,7 @@
 storyId: "028-timmy-morgen"
 status: published
 title: "Timmy ve Kayıp Sabah"
+coverAlt: "Timmy küçük ayı dişini fırçalıyor ve elinde ballı ekmeği var. Baykuş Frieda dalından bakıyor."
 keyMessage: "Günlük rutin, istikrar kulesini inşa eden taşlar gibidir. Ona uyan herkes kendini güçlü ve mutlu hisseder."
 questions:
   - id: "q1"

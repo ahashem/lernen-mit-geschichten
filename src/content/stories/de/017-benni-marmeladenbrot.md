@@ -2,6 +2,7 @@
 storyId: "017-benni-marmeladenbrot"
 cover:
   src: /assets/stories/017-benni-marmeladenbrot/cover.webp
+  alt: "Benni, der kleine Bär, schaut erschrocken auf die Marmeladenflecken auf dem Tisch. Mama Bär lacht, das Glas „Marmelade“ steht daneben."
 status: draft
 title: "Benni und das fliegende Marmeladenbrot"
 emoji: "🐻"

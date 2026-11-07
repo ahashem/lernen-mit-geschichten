@@ -2,6 +2,7 @@
 storyId: "026-timo-schildkroete"
 status: published
 title: "Küçük Kaplumbağa Timo’nun Hikâyesi"
+coverAlt: "Timo kaplumbağa adım adım bitiş çizgisine yürüyor, tavşan ve ayı onu alkışlıyor."
 keyMessage: "Her çocuk özeldir. En hızlı, en güçlü ya da en gürültülü olmak gerekmez. Önemli olan kendine inanmak ve kendinle gurur duymaktır."
 questions:
   - id: "q1"

@@ -13,6 +13,7 @@ publishDate: 2024-01-15
 status: published
 cover:
   src: /assets/stories/002-fritz/002-fritz_frame-01_colour.webp
+  alt: "Unter einem Baum schreit ein wütender Junge, der einen Apfel hält, ein Eichhörnchen an, das eine Nuss festhält."
 art:
   reviewedAt: 2026-10-28
 narration:

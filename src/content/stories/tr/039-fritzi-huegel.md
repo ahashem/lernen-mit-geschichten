@@ -2,6 +2,7 @@
 storyId: "039-fritzi-huegel"
 status: published
 title: "Fritzi ve Tepe’nin Hikâyesi"
+coverAlt: "Fritzi rakun scooter’ıyla tepeden aşağı hızla iniyor, baykuş Lotte dalından onu izliyor."
 keyMessage: "Çocuklar öğrenir ki hatalar normaldir, bazen komik bile olabilir, ve her başarısızlık yeni bir şey öğrenmek için fırsattır."
 questions:
   - id: "q1"

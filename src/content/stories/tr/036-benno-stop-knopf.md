@@ -2,6 +2,7 @@
 storyId: "036-benno-stop-knopf"
 status: published
 title: "Benno ve Sihirli Durdurma Düğmesi"
+coverAlt: "Benno gözleri kapalı, göğsündeki sihirli durdurma düğmesine basıyor. Lilli onu izliyor, top suda duruyor."
 keyMessage: "Sihirli Durdurma Düğmesi gerçek bir düğme değildi. Onun kalbindeydi – ve herkesin de olabilirdi."
 questions:
   - id: "q1"

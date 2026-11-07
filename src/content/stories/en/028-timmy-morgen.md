@@ -2,6 +2,7 @@
 storyId: "028-timmy-morgen"
 status: published
 title: "Timmy and the Missing Morning"
+coverAlt: "Timmy the little bear brushes his teeth, holding a honey sandwich, his backpack on. Frieda the owl watches from a branch."
 keyMessage: "The daily routine is like the stones that build the tower of stability. Whoever keeps it feels strong and happy."
 questions:
   - id: "q1"

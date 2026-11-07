@@ -2,6 +2,7 @@
 storyId: "037-timo-zahnputz"
 status: published
 title: "Timo ve Komik Diş Fırçası Çalar Saati"
+coverAlt: "Timo pijamalarıyla dişlerini fırçalıyor, raftaki sincap-çalar saat gülümseyerek ona el sallıyor."
 keyMessage: "Ve böylece Timo, küçük alışkanlıkların her gün bizi daha güçlü kıldığını öğrendi – ve bazen komik bir çalar saatin en iyi arkadaş olabileceğini."
 questions:
   - id: "q1"

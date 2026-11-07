@@ -2,6 +2,7 @@
 storyId: "039-fritzi-huegel"
 status: published
 title: "The Story of Fritzi and the Hill"
+coverAlt: "Fritzi the raccoon speeds down the hill on his scooter, cheering, while Lotte the owl watches from her branch."
 keyMessage: "Children learn that mistakes are normal, can even be funny, and that every failed attempt is a chance to learn something new."
 questions:
   - id: "q1"

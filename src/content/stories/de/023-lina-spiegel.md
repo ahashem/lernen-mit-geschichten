@@ -2,6 +2,7 @@
 storyId: "023-lina-spiegel"
 cover:
   src: /assets/stories/023-lina-spiegel/cover.webp
+  alt: "Lina fährt fröhlich auf ihrem Fahrrad. Der singende Spiegel ruft ihr zu: „Ich bin stark, ich probier’s nochmal!“"
 status: published
 title: "Lina und der singende Spiegel"
 emoji: "🪞"

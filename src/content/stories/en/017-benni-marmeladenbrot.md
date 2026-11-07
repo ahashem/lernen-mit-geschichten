@@ -2,6 +2,7 @@
 storyId: "017-benni-marmeladenbrot"
 status: draft
 title: "Benni and the Flying Jam Sandwich"
+coverAlt: "Benni the little bear stares in dismay at the jam splashes on the table. Mama Bear laughs, and a jar labeled “jam” stands nearby."
 keyMessage: "Mistakes are not the end of the world – they are the beginning of learning. And sometimes… they’re even a little funny!"
 questions:
   - id: "q1"

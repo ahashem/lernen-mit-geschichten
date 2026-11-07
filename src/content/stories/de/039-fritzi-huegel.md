@@ -2,6 +2,7 @@
 storyId: "039-fritzi-huegel"
 cover:
   src: /assets/stories/039-fritzi-huegel/cover.webp
+  alt: "Fritzi, der Waschbär, rast auf seinem Roller den Hügel hinunter und jubelt. Die Eule Lotte sitzt auf dem Ast und schaut ihm zu."
 status: published
 title: "Die Geschichte von Fritzi und dem Hügel"
 emoji: "🛴"

@@ -2,6 +2,7 @@
 storyId: "032-benno-waschbaer"
 status: published
 title: "Benno’nun Hikâyesi: Meraklı Rakun"
+coverAlt: "Rakun Benno ilk balığını gururla tutuyor. Ördek Lilli ağzında bir balık taşıyor, kurbağa Fritz nilüfer yaprağında oturuyor."
 questions:
   - id: "q1"
     text: "Benno küçük bir rakundur."

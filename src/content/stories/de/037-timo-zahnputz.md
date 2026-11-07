@@ -2,6 +2,7 @@
 storyId: "037-timo-zahnputz"
 cover:
   src: /assets/stories/037-timo-zahnputz/cover.webp
+  alt: "Timo putzt sich in seinem Schlafanzug die Zähne. Der Eichhörnchen-Wecker auf dem Regal ruft ihm etwas zu und winkt mit der Pfote."
 status: published
 title: "Timo und der lustige Zahnputz-Wecker"
 emoji: "🪥"

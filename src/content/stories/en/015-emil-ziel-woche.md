@@ -2,6 +2,7 @@
 storyId: "015-emil-ziel-woche"
 status: draft
 title: "Emil’s Super Goal Week!"
+coverAlt: "Emil bites into his broccoli. In a thought bubble he sees himself as a superhero with a cape, and the board behind him reads “Goals”."
 keyMessage: "Small goals can lead to big success – especially when you choose them yourself and make it fun! 🎯"
 questions:
   - id: "q1"
