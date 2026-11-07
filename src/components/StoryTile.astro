@@ -1,7 +1,7 @@
 ---
 import StoryArt from '@components/reader/StoryArt.astro';
 import { coverOf, paletteFor } from '@utils/story-art';
-import { getTranslation, type Locale } from '@utils/i18n';
+import { fmt, getTranslation, type Locale } from '@utils/i18n';
 import type { StoryMeta } from '@utils/stories';
 import { BASE_PATH } from '@utils/site';
 
@@ -14,8 +14,8 @@ interface Props {
   emoji?: string;
   /** One line under the title; omitted on the home shelves. */
   summary?: string;
-  /** The first is the story's main skill; only it is shown. */
-  skillLabels?: string[];
+  /** The story's main skill, shown as a tag that opens the Library on that skill ("more like this"). */
+  skill?: { id: string; label: string };
   minutes?: number;
   /** The shelf name, e.g. "Chapter stories". */
   shelf?: string;
@@ -23,11 +23,12 @@ interface Props {
   row?: boolean;
 }
 
-const { locale, slug, storyId, title, meta, emoji, summary, skillLabels, minutes, shelf, row } =
+const { locale, slug, storyId, title, meta, emoji, summary, skill, minutes, shelf, row } =
   Astro.props;
 const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
 const href =
   locale === 'de' ? `${BASE_PATH}/stories/${slug}` : `${BASE_PATH}/${locale}/stories/${slug}`;
+const library = locale === 'de' ? `${BASE_PATH}/library` : `${BASE_PATH}/${locale}/library`;
 ---
 
 <article class:list={['tile', 'lift', { 'tile--row': row }]}>
@@ -56,7 +57,18 @@ const href =
           </span>
         )
       }
-      {skillLabels && skillLabels.length > 0 && <span>{skillLabels[0]}</span>}
+      {
+        skill && (
+          <a
+            class="tile-skill"
+            href={`${library}?skill=${skill.id}`}
+            data-skill={skill.id}
+            aria-label={fmt(t('moreAboutSkill'), { skill: skill.label })}
+          >
+            {skill.label}
+          </a>
+        )
+      }
     </p>
   </div>
 </article>
@@ -147,9 +159,27 @@ const href =
   .tile-meta {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: var(--s-1) var(--s-3);
     font-size: var(--t-ui-sm);
     color: var(--ink-2);
+  }
+  /* The skill tag is its own small target above the card's link: "more stories like this". */
+  .tile-skill {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 32px;
+    padding-inline: var(--s-2);
+    margin-inline-start: calc(-1 * var(--s-2));
+    border-radius: var(--r-s);
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: underline dotted;
+    text-underline-offset: 0.25em;
+  }
+  .tile-skill:hover {
+    background: var(--paper-2);
   }
   @media (max-width: 599px) {
     .tile--row {
