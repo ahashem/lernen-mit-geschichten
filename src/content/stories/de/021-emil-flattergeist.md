@@ -1,5 +1,5 @@
 ---
-title: "Emil und dem Flattergeist"
+title: "Emil und der Flattergeist"
 emoji: "👻"
 skills: ["focus"]
 ageGroup: "3-7"
@@ -7,7 +7,7 @@ band: "2"
 storyId: "021-emil-flattergeist"
 cover:
   src: /assets/stories/021-emil-flattergeist/cover.webp
-  alt: "Emil zeichnet konzentriert ein Schloss. Der kleine Flattergeist schwebt über ihm, und Hund Bello schaut gespannt zu."
+  alt: "Emil malt konzentriert ein Schloss. Die Fokus-Fliege schwirrt über ihm, und sein Hund Bello schaut gespannt zu."
 publishDate: 2024-01-15
 difficulty: "beginner"
 questions:
@@ -52,103 +52,33 @@ status: draft
 
 ## Die Geschichte
 
+In einem kleinen Dorf lebte ein Junge namens Emil. Emil war sehr neugierig. Aber – oh je! – er ließ sich immer schnell ablenken.
 
-Küçük bir köyde Emil adında bir çocuk yaşardı.
-Emil neşeliydi ve çok meraklıydı ama – ah vah! – çok çabuk dikkati dağılırdı.
+Wenn er Hausaufgaben machte, hörte er plötzlich das Zwitschern eines Vogels und vergaß sofort die Mathematik.
+Wenn er ein Bild malte, fiel ihm ein, dass er lieber ein Spiel spielen wollte.
 
-Ödev yaparken kuş cıvıltısı duyar, hemen matematiği unuturdu.
-Resim çizerken birden oyun oynamak isterdi.
+Alle nannten ihn lachend „Flattergeist-Emil“.
+Eines Tages bekam Emil eine Aufgabe von seiner Lehrerin Frau Sommer:
+„Emil, du sollst ein Bild von einem Schloss malen. Und zwar ganz fertig, ohne Pausen.“
 
-Arkadaşları ona gülerek “Dikkati Dağılan Emil” derlerdi.
+Emil begann zu malen. Doch plötzlich rief sein Hund Bello: „Wuff, Wuff!“
+Emil wollte aufspringen, aber da kam eine kleine Fliege angeflogen und sprach mit feiner Stimme:
 
-Bir gün öğretmeni Bayan Sommer ona bir görev verdi:
-“Emil, bir şato resmi çizeceksin. Ama tamamen bitirmelisin, hiç ara vermeden!”
+„Hallo Emil! Ich bin Fokus-Fliege. Ich helfe Kindern, die sich leicht ablenken lassen.“
 
-Emil çizmeye başladı. O sırada köpeği Bello havladı: “Hav, hav!”
-Emil kalkıp oynamak istedi ama küçük bir sinek uçup geldi ve ince bir sesle dedi ki:
+Emil staunte. „Eine sprechende Fliege? Was kannst du denn?“
 
-“Merhaba Emil! Ben Dikkat Sineğiyim. Çabuk dikkati dağılan çocuklara yardım ederim.”
+Die Fliege setzte sich auf seine Nase und kicherte:
+„Immer wenn du abgelenkt wirst, sagst du laut: ‚Erst fertig, dann Spaß!‘ Und dann machst du einfach weiter.“
 
-Emil şaşırdı. “Konuşan bir sinek mi? Sen ne yapabilirsin?”
+Emil probierte es.
+Bello bellte wieder – Emil rief: „Erst fertig, dann Spaß!“ und malte weiter.
+Draußen flatterte ein Schmetterling – Emil sagte: „Erst fertig, dann Spaß!“ und malte weiter.
 
-Sinek onun burnuna kondu ve gülerek dedi ki:
-“Ne zaman dikkatin dağılırsa yüksek sesle şunu söyle:
-‘Önce bitiririm, sonra oynarım!’
-Ve hemen devam et.”
+Nach einer Weile schaute er stolz auf sein Schloss. Es war wunderschön!
 
-Emil denedi.
-Bello yine havladı – Emil dedi: “Önce bitiririm, sonra oynarım!” ve resme devam etti.
-Bir kelebek uçtu – Emil dedi: “Önce bitiririm, sonra oynarım!” ve çizimi sürdürdü.
+Frau Sommer lobte ihn: „Emil, du hast gelernt, wie man aufmerksam bleibt. Bravo!“
 
-Bir süre sonra resmine baktı: Kocaman, güzel bir şato tamamlanmıştı.
-
-Bayan Sommer gülümseyerek dedi:
-“Aferin Emil! Dikkatini toplamayı öğrendin.”
-
-O günden sonra Emil, dikkati dağılınca coşkuyla bağırdı:
-“Önce bitiririm, sonra oynarım!”
-
-Ve anladı ki dikkatli olmak hiç sıkıcı değilmiş, aksine harika ve eğlenceliymiş!
-
-📝 Doğru – Yanlış Soruları
-
-1. Emil’in dikkati kolayca dağılırdı.
-✔️ Doğru
-
-2. Emil’in köpeğinin adı Bello’dur.
-✔️ Doğru
-
-3. Öğretmeni Emil’den bir şato çizmesini istedi.
-✔️ Doğru
-
-4. Dikkat Sineği Emil’e yardımcı oldu.
-✔️ Doğru
-
-5. Emil dedi ki: “Önce oynarım, sonra bitiririm!”
-❌ Yanlış (Doğrusu: “Önce bitiririm, sonra oynarım!”)
-
-6. Sonunda Emil güzel bir şato çizdi.
-✔️ Doğru
-
-7. Bayan Sommer Emil’in resminden memnun kalmadı.
-❌ Yanlış (O çok memnun kaldı ve Emil’i övdü.)
-
-8. Emil şunu öğrendi: “Önce bitiririm, sonra oynarım!”
-✔️ Doğru
-
-🎯 Çoktan Seçmeli Sorular
-
-1. Hikâyenin başkahramanı kimdir?
-a) Max
-b) Emil ✅
-c) Leo
-
-2. Emil ödev yaparken genellikle ne yapar?
-a) Bırakır ve oynar. ✅
-b) Hep dikkatli kalır.
-c) Hemen uyur.
-
-3. Emil’in köpeğinin adı nedir?
-a) Lupo
-b) Bello ✅
-c) Fido
-
-4. Öğretmen Emil’den ne çizmesini istedi?
-a) Bir kelebek
-b) Bir şato ✅
-c) Bir köpek
-
-5. Emil’e dikkati toplaması için kim yardımcı oldu?
-a) Bayan Sommer
-b) Dikkat Sineği ✅
-c) Köpeği
-
-6. Emil’in dikkati dağılınca ne dedi?
-a) “Önce oynarım, sonra bitiririm!”
-b) “Önce bitiririm, sonra oynarım!” ✅
-c) “Çizmek istemiyorum!”
-
-7. Öğretmen sonunda nasıl hissetti?
-a) Memnun değildi
-b) Emil ile gurur duydu ✅
-c) Yorgundu
+Seit diesem Tag rief Emil jedes Mal, wenn er sich ablenken lassen wollte:
+„Erst fertig, dann Spaß!“
+Und er merkte, dass konzentriert zu sein gar nicht langweilig, sondern richtig toll ist.
