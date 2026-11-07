@@ -87,6 +87,8 @@ art:
   aiGenerated: false
 narration:
   timing: false
+cover:
+  src: /assets/stories/dino.webp
 ---
 ## Die Geschichte
 
