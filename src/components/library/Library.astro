@@ -523,6 +523,19 @@ const strings = {
     outline: 3px solid var(--focus);
     outline-offset: 2px;
   }
+  /* The narrowest phones give the field the room the gaps took, and a hint that still does not fit ends in "…". */
+  .search input {
+    text-overflow: ellipsis;
+  }
+  @media (max-width: 379px) {
+    .search {
+      gap: var(--s-2);
+    }
+    .search input,
+    .search .btn {
+      padding-inline: var(--s-3);
+    }
+  }
   fieldset {
     border: 0;
     padding: 0;

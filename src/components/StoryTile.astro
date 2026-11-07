@@ -94,10 +94,14 @@ const library = locale === 'de' ? `${BASE_PATH}/library` : `${BASE_PATH}/${local
     border-block-end: var(--outline);
     text-decoration: none;
   }
+  /* min-inline-size and the wrapping keep a long German word ("Entscheidungsfindung") inside a narrow phone's card. */
   .tile-body {
     padding: var(--s-4);
     display: grid;
     gap: var(--s-2);
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+    hyphens: auto;
   }
   .tile-title {
     font-family: var(--font-ui);
@@ -169,8 +173,9 @@ const library = locale === 'de' ? `${BASE_PATH}/library` : `${BASE_PATH}/${local
     position: relative;
     display: inline-flex;
     align-items: center;
-    min-block-size: 32px;
+    min-block-size: var(--tap-adult);
     padding-inline: var(--s-2);
+    margin-block: calc((32px - var(--tap-adult)) / 2);
     margin-inline-start: calc(-1 * var(--s-2));
     border-radius: var(--r-s);
     color: var(--ink);
@@ -195,6 +200,7 @@ const library = locale === 'de' ? `${BASE_PATH}/library` : `${BASE_PATH}/${local
       min-block-size: 7rem;
     }
     .tile--row .tile-body {
+      flex: 1 1 auto;
       padding: var(--s-3);
       align-content: center;
     }
