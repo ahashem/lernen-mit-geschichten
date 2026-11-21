@@ -8,7 +8,7 @@ import { getSkillsByCategory } from '@utils/skills-taxonomy';
 import { endonyms, fmt, getTranslation, isRTL, type Locale } from '@utils/i18n';
 import { coverOf } from '@utils/story-art';
 import { talkPrompts } from '@utils/story-pages';
-import { localePrefix, storyNumber } from '@utils/site';
+import { FEEDBACK_EMAIL, localePrefix, storyNumber } from '@utils/site';
 import { LOCALES } from '@utils/story-availability';
 
 interface Props {
@@ -45,15 +45,14 @@ const stories = await Promise.all(
   })
 );
 
-// Every printed page carries the site name and the AI-illustration note (ux/03 section 11) at its foot, the page
-// number on the outer side, and on a story's pages a running head with its number and title, so a loose sheet in a
-// binder can always be put back. Each story is its own named page; margin boxes do not inherit the page's font, so
+// Every printed page carries the site name at its foot and the page number on the outer side, and on a story's pages a running head with its number and title, so a loose sheet in a
+// binder can always be put back. The AI-illustration note, the licence and the rest are said once, on the last page. Each story is its own named page; margin boxes do not inherit the page's font, so
 // each names the reading face, which also shapes Arabic and Urdu properly. Right-to-left pages mirror the sides.
 const cssText = (text: string) => text.replace(/[\\"]/g, '').replace(/\s+/g, ' ');
 const [start, end] = isRTL(locale) ? ['right', 'left'] : ['left', 'right'];
 const box = `font-family: var(--font-read); color: #444;`;
 const foot =
-  `@bottom-${start} { content: "${cssText(`${t('siteName')} · ${t('footerArt')}`)}"; ${box} font-size: 8pt; width: 84%; text-align: ${start}; } ` +
+  `@bottom-${start} { content: "${cssText(t('siteName'))}"; ${box} font-size: 8pt; width: 84%; text-align: ${start}; } ` +
   `@bottom-${end} { content: counter(page); ${box} font-size: 9pt; width: 12%; text-align: ${end}; }`;
 const pageBox = `size: A4; margin: 15mm 12mm 18mm;`;
 const pageRules = [
@@ -99,6 +98,7 @@ const data = {
   },
 };
 const others = LOCALES.filter(l => l !== locale);
+const website = `${origin}${prefix}/`;
 ---
 
 <BaseLayout title={t('folioTitle')} locale={locale} noindex>
@@ -309,9 +309,34 @@ const others = LOCALES.filter(l => l !== locale);
                     )}
                   </div>
                 )}
+                <p class="colophon-line" data-colophon-line>
+                  {t('footerArt')} {t('folioLicence')}
+                </p>
               </article>
             )
           )}
+
+          <section class="sheet colophon" data-front>
+            <h2>{t('folioAboutTitle')}</h2>
+            <p>{t('footerArt')}</p>
+            <p>{t('folioLicence')}</p>
+            <p>
+              {t('folioWebsite')}{' '}
+              <a href={website} dir="ltr">
+                {website.replace(/^https?:\/\//, '')}
+              </a>
+            </p>
+            {FEEDBACK_EMAIL && (
+              <p>
+                {t('folioFeedback')
+                  .split('{email}')
+                  .flatMap((part, i) =>
+                    i ? [<bdi dir="ltr">{FEEDBACK_EMAIL}</bdi>, part] : [part]
+                  )}
+              </p>
+            )}
+            <p class="as-of">{asOf}</p>
+          </section>
         </div>
       )
     }
@@ -398,7 +423,9 @@ const others = LOCALES.filter(l => l !== locale);
       let pages = 0;
       let used = room;
       for (const sheet of visible) {
-        if (sheet.classList.contains('title-sheet')) pages += 1;
+        // The cover and the last page each fill exactly one page by design.
+        if (sheet.classList.contains('title-sheet') || sheet.classList.contains('colophon'))
+          pages += 1;
         else if (withText.checked || sheet.hasAttribute('data-front'))
           pages += Math.max(1, Math.ceil(height(sheet) / room));
         else {
@@ -434,6 +461,10 @@ const others = LOCALES.filter(l => l !== locale);
         el.hidden = on.length < 2 || (!withText.checked && el.classList.contains('title-sheet'));
       });
       sheets!.toggleAttribute('data-notext', !withText.checked);
+      // A single story carries the colophon in small print at its end instead of a page of its own.
+      sheets!
+        .querySelectorAll<HTMLElement>('[data-colophon-line]')
+        .forEach(p => (p.hidden = on.length >= 2));
       // The jump back to the contents only makes sense when the contents print.
       sheets!
         .querySelectorAll<HTMLElement>('[data-to-contents]')
@@ -782,6 +813,31 @@ const others = LOCALES.filter(l => l !== locale);
     border-block-start: 1px solid #ccc;
     text-align: start;
   }
+  /* The last page, the same in every folio: what a printed copy needs to say once (pictures, licence, where it
+     comes from), set at the foot like a book's imprint. */
+  .colophon {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 3mm;
+    min-block-size: 255mm;
+    font-size: 10pt;
+    line-height: 1.45;
+  }
+  .colophon h2 {
+    font-family: var(--font-display);
+    font-size: 14pt;
+    margin: 0 0 2mm;
+  }
+  .colophon p {
+    margin: 0;
+    max-inline-size: 150mm;
+  }
+  .colophon-line {
+    margin-block-start: 6mm;
+    font-size: 8pt;
+    color: #555;
+  }
   .as-of {
     margin: 0;
     color: #444;
@@ -1025,6 +1081,9 @@ const others = LOCALES.filter(l => l !== locale);
       padding-block-end: 6mm;
       margin-block-end: 6mm;
       border-block-end: 1px solid #999;
+    }
+    [data-folio] .colophon {
+      break-before: page;
     }
     [data-folio] .story-sheet h2,
     [data-folio] .story-sheet h3 {
