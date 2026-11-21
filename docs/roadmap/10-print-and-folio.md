@@ -20,8 +20,7 @@ Every print answers two questions: who is it for, and how many stories?
 | **A finished little book** (fold and staple)         | "Export as Booklet" (A5, with pictures)   | —                     |
 
 So a story page offers "Print story & prompts", the print pack and the booklet. The booklet stays because it is
-the one print that will carry the story's pictures page by page; today it exports blank white pages, which is
-investigated on its own. The Library finds the
+the one print that carries the story's pictures page by page (rebuilt in item 5 below). The Library finds the
 stories; the folio prints them. The folio reads the Library's own URL parameters, so a filtered Library is one link
 away from paper.
 
@@ -79,12 +78,12 @@ own running header, and `<a href>` (internal and external) survives a saved PDF.
 
 ## Work, in order
 
-Items 1-4 are built (PRs 171, 172, 173 and the one after). The booklet investigation is still open.
+Items 1-5 are built (PRs 171-174 and the booklet PR after them).
 
-| #   | Change                                                                                                                                                                                                       |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | Fixes: the Arabic 018 code block, a content check for indented lines, the layout guard, `noindex` and no sitemap entry, the footer font, page breaks and tighter type, honest lead text, a print-width check |
-| 2   | Sheets print only; one list; footer and title page; the English label "Print stories"                                                                                                                        |
-| 3   | Selection in the URL shared with the Library, the Library and story-page links, the prep sheet replaced, other languages, All/None, the page estimate, the text option                                       |
-| 4   | Running headers, notes apart from the read-aloud text, PDF links, short URL, title-page QR, cover thumbnails                                                                                                 |
-| —   | Separately: why "Export as Booklet" exports blank white pages                                                                                                                                                |
+| #   | Change                                                                                                                                                                                                                                                                                                                                                                                                        |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Fixes: the Arabic 018 code block, a content check for indented lines, the layout guard, `noindex` and no sitemap entry, the footer font, page breaks and tighter type, honest lead text, a print-width check                                                                                                                                                                                                  |
+| 2   | Sheets print only; one list; footer and title page; the English label "Print stories"                                                                                                                                                                                                                                                                                                                         |
+| 3   | Selection in the URL shared with the Library, the Library and story-page links, the prep sheet replaced, other languages, All/None, the page estimate, the text option                                                                                                                                                                                                                                        |
+| 4   | Running headers, notes apart from the read-aloud text, PDF links, short URL, title-page QR, cover thumbnails                                                                                                                                                                                                                                                                                                  |
+| 5   | "Export as Booklet" rebuilt: it exported a cover and blank pages (the placement check ignored the cover, the capture saw only the visible part of a scroll box, and the "imposition" shuffled single A5 pages). Now one A5 page per storybook page, picture above text, two to an A4 sheet in fold-and-staple order, mirrored for right-to-left; chaptered stories are cut into pages of about 650 characters |

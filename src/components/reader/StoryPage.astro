@@ -276,6 +276,10 @@ const description = summary || `${title} | ${t('siteName')}`;
                 type="button"
                 data-story-title={title}
                 data-locale={locale}
+                data-rtl={isRTL(locale) ? '' : undefined}
+                data-slug={story.id.replace(`${locale}/`, '')}
+                data-cover={cover?.src}
+                data-site={t('siteName')}
                 data-progress={t('exportingBooklet')}>{t('exportBooklet')}</button
               >
             </div>
@@ -885,27 +889,60 @@ const description = summary || `${title} | ${t('siteName')}`;
 
   startReader();
 
+  // The booklet is built from the storybook's own pages (picture and text); a chaptered story has no book, so its
+  // text is cut into pages of about the same length instead.
+  function bookletPages(locale: string) {
+    const book = [...document.querySelectorAll<HTMLElement>('.pages > .page')];
+    if (book.length) {
+      return book.map(page => ({
+        image: page.querySelector<HTMLImageElement>('.frame img')?.src,
+        paragraphs: [
+          ...page.querySelectorAll<HTMLElement>(
+            `.text-block[data-lang-block="${locale}"] .story-text`
+          ),
+        ].map(p => p.textContent!.replace(/\s+/g, ' ').trim()),
+      }));
+    }
+    const pages: { paragraphs: string[] }[] = [];
+    let current: string[] = [];
+    let length = 0;
+    for (const el of document.querySelectorAll<HTMLElement>(
+      '.story-content > p, .story-content > h2'
+    )) {
+      const text = el.textContent!.replace(/\s+/g, ' ').trim();
+      if (!text) continue;
+      if (length + text.length > 650 && current.length) {
+        pages.push({ paragraphs: current });
+        current = [];
+        length = 0;
+      }
+      current.push(text);
+      length += text.length;
+    }
+    if (current.length) pages.push({ paragraphs: current });
+    return pages;
+  }
+
   document.querySelectorAll<HTMLButtonElement>('.export-booklet-btn').forEach(button => {
     button.addEventListener('click', async () => {
-      const content = document.querySelector<HTMLElement>('.story-content');
-      const view = content?.closest<HTMLElement>('.view');
-      if (!content || !view) return;
-      const wasHidden = view.hidden;
-      view.hidden = false;
+      const { storyTitle, locale, slug, cover, site, progress } = button.dataset;
       // The PDF libraries are most of this page's script; they load only when a grown-up asks for the booklet.
-      const { exportAsBooklet, showExportProgress, hideExportProgress, detectOrientation } =
+      const { exportAsBooklet, showExportProgress, hideExportProgress } =
         await import('@utils/booklet-export');
-      const overlay = showExportProgress(button.dataset.progress ?? '');
+      const overlay = showExportProgress(progress ?? '');
+      button.disabled = true;
       try {
-        await exportAsBooklet(content, {
-          orientation: detectOrientation(content),
-          pageSize: 'a5',
-          title: button.dataset.storyTitle ?? 'Story',
-          addCover: true,
-          addPageNumbers: true,
+        await exportAsBooklet({
+          title: storyTitle ?? '',
+          cover,
+          siteName: site ?? '',
+          lang: locale ?? 'de',
+          rtl: button.hasAttribute('data-rtl'),
+          pages: bookletPages(locale ?? 'de'),
+          filename: slug ?? 'story',
         });
       } finally {
-        view.hidden = wasHidden;
+        button.disabled = false;
         hideExportProgress(overlay);
       }
     });

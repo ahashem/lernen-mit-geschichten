@@ -1,341 +1,232 @@
 /**
- * Booklet Export Utility
+ * "Export as Booklet": a PDF to print on both sides (flip on the short edge), fold in the middle and staple into an
+ * A5 picture book. Each A5 page is one storybook page (its picture above its text), laid out in a clean off-screen
+ * box so no site style or scroll area can leak in, captured with html2canvas, and placed two to an A4 landscape
+ * sheet in booklet order (see booklet-imposition.ts). Page 0 is a cover with the title and the cover picture.
  *
- * Generates print-ready PDF booklets with proper page imposition
- * Supports both LTR and RTL languages with correct binding orientation
+ * The libraries are heavy, so the story page imports this file only when a grown-up asks for the booklet.
  */
-
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { imposition } from './booklet-imposition';
 
-export type BookletOrientation = 'ltr' | 'rtl';
-export type PageSize = 'a5' | 'a4';
-
-interface BookletOptions {
-  orientation: BookletOrientation;
-  pageSize?: PageSize;
-  title?: string;
-  addCover?: boolean;
-  addPageNumbers?: boolean;
+export interface BookletPage {
+  /** The page's picture; a page without one is text only. */
+  image?: string;
+  paragraphs: string[];
 }
 
-interface PageDimensions {
-  width: number;
-  height: number;
-  unit: 'mm' | 'pt';
+export interface BookletInput {
+  title: string;
+  cover?: string;
+  siteName: string;
+  lang: string;
+  rtl: boolean;
+  pages: BookletPage[];
+  /** File name without extension, e.g. the story's slug. */
+  filename: string;
 }
 
-/**
- * Get page dimensions for different sizes
- */
-function getPageDimensions(size: PageSize): PageDimensions {
-  const dimensions = {
-    a5: { width: 148, height: 210, unit: 'mm' as const },
-    a4: { width: 210, height: 297, unit: 'mm' as const },
+// A5 at CSS pixels (96 per inch), drawn at twice that for print sharpness.
+const PAGE_W = 559;
+const PAGE_H = 794;
+const SCALE = 2;
+const SHEET_W = 297;
+const SHEET_H = 210;
+
+function css(el: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
+  Object.assign(el.style, styles);
+  return el;
+}
+
+function fonts() {
+  const root = getComputedStyle(document.documentElement);
+  return {
+    read: root.getPropertyValue('--font-read').trim() || 'sans-serif',
+    display: root.getPropertyValue('--font-display').trim() || 'sans-serif',
   };
-  return dimensions[size];
 }
 
-/**
- * Calculate booklet page order (imposition)
- * For saddle-stitch binding, pages must be arranged as:
- * - Sheet 1: [n, 1, 2, n-1]
- * - Sheet 2: [n-2, 3, 4, n-3]
- * - etc.
- */
-function calculateImposition(totalPages: number, isRTL: boolean): number[][] {
-  // Ensure we have a multiple of 4 pages
-  const pagesNeeded = Math.ceil(totalPages / 4) * 4;
-  const blankPages = pagesNeeded - totalPages;
-
-  // Create page array (1-indexed)
-  const pages: (number | null)[] = Array.from({ length: totalPages }, (_, i) => i + 1);
-
-  // Add blank pages at the end
-  for (let i = 0; i < blankPages; i++) {
-    pages.push(null);
-  }
-
-  const sheets: number[][] = [];
-  const numSheets = pagesNeeded / 4;
-
-  for (let i = 0; i < numSheets; i++) {
-    const frontLeft = pagesNeeded - i * 2;
-    const frontRight = i * 2 + 1;
-    const backLeft = i * 2 + 2;
-    const backRight = pagesNeeded - i * 2 - 1;
-
-    if (isRTL) {
-      // RTL: Flip the order for right-to-left reading
-      sheets.push([
-        frontRight,
-        frontLeft, // Front of sheet (swapped)
-        backRight,
-        backLeft, // Back of sheet (swapped)
-      ]);
-    } else {
-      // LTR: Standard left-to-right order
-      sheets.push([
-        frontLeft,
-        frontRight, // Front of sheet
-        backLeft,
-        backRight, // Back of sheet
-      ]);
-    }
-  }
-
-  return sheets;
+async function picture(src: string, maxHeight: string): Promise<HTMLImageElement> {
+  const img = css(document.createElement('img'), {
+    display: 'block',
+    inlineSize: '100%',
+    maxBlockSize: maxHeight,
+    objectFit: 'contain',
+    flex: '0 1 auto',
+    minBlockSize: '0',
+  });
+  img.src = src;
+  img.alt = '';
+  await img.decode().catch(() => undefined);
+  return img;
 }
 
-/**
- * Capture HTML element as image
- */
-async function captureElement(element: HTMLElement): Promise<HTMLCanvasElement> {
-  return await html2canvas(element, {
-    scale: 2, // Higher quality
+function blankPage(input: BookletInput, family: string): HTMLElement {
+  const page = css(document.createElement('div'), {
+    position: 'relative',
+    boxSizing: 'border-box',
+    inlineSize: `${PAGE_W}px`,
+    blockSize: `${PAGE_H}px`,
+    padding: '36px 36px 52px',
+    background: '#ffffff',
+    color: '#111111',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px',
+    fontFamily: family,
+    direction: input.rtl ? 'rtl' : 'ltr',
+  });
+  page.lang = input.lang;
+  return page;
+}
+
+async function coverPage(input: BookletInput): Promise<HTMLElement> {
+  const { read, display } = fonts();
+  const page = blankPage(input, read);
+  page.style.justifyContent = 'center';
+  page.style.textAlign = 'center';
+  const title = css(document.createElement('h1'), {
+    margin: '0',
+    fontFamily: display,
+    fontSize: '34px',
+    lineHeight: '1.2',
+  });
+  title.textContent = input.title;
+  page.append(title);
+  if (input.cover) page.append(await picture(input.cover, '62%'));
+  const site = css(document.createElement('p'), {
+    margin: '0',
+    fontSize: '14px',
+    color: '#555555',
+  });
+  site.textContent = input.siteName;
+  page.append(site);
+  return page;
+}
+
+async function storyPage(
+  input: BookletInput,
+  story: BookletPage,
+  number: number
+): Promise<HTMLElement> {
+  const { read } = fonts();
+  const page = blankPage(input, read);
+  if (story.image) page.append(await picture(story.image, '56%'));
+  const text = css(document.createElement('div'), {
+    flex: '1 1 auto',
+    minBlockSize: '0',
+    overflow: 'hidden',
+    fontSize: story.image ? '18px' : '21px',
+    lineHeight: input.rtl ? '1.8' : '1.55',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: story.image ? 'flex-start' : 'center',
+  });
+  for (const paragraph of story.paragraphs) {
+    const p = css(document.createElement('p'), { margin: '0 0 0.6em' });
+    p.textContent = paragraph;
+    text.append(p);
+  }
+  page.append(text);
+  const folio = css(document.createElement('p'), {
+    position: 'absolute',
+    insetBlockEnd: '18px',
+    insetInline: '0',
+    margin: '0',
+    textAlign: 'center',
+    fontSize: '12px',
+    color: '#777777',
+  });
+  folio.textContent = String(number);
+  page.append(folio);
+  return page;
+}
+
+/** Shrinks the text of a page until it fits, so a long page never loses its last lines. */
+function fit(page: HTMLElement) {
+  const text = page.querySelector<HTMLElement>('div');
+  if (!text) return;
+  let size = parseFloat(text.style.fontSize);
+  while (text.scrollHeight > text.clientHeight + 1 && size > 11) {
+    size -= 1;
+    text.style.fontSize = `${size}px`;
+  }
+}
+
+async function capture(page: HTMLElement, stage: HTMLElement): Promise<string> {
+  stage.replaceChildren(page);
+  fit(page);
+  const canvas = await html2canvas(page, {
+    scale: SCALE,
+    backgroundColor: '#ffffff',
     useCORS: true,
     logging: false,
-    backgroundColor: '#ffffff',
-    removeContainer: false,
   });
+  return canvas.toDataURL('image/jpeg', 0.9);
 }
 
-/**
- * Create a cover page
- */
-function addCoverPage(pdf: jsPDF, title: string, dimensions: PageDimensions, isRTL: boolean): void {
-  const { width, height } = dimensions;
-  const centerX = width / 2;
-  const centerY = height / 2;
-
-  // Set font
-  pdf.setFontSize(24);
-  pdf.setFont('helvetica', 'bold');
-
-  // Add title (centered)
-  pdf.text(title, centerX, centerY - 20, {
-    align: 'center',
-    maxWidth: width - 40,
+export async function exportAsBooklet(input: BookletInput): Promise<void> {
+  await document.fonts.ready;
+  // On screen but out of view: html2canvas needs real layout, and a hidden box has none.
+  const stage = css(document.createElement('div'), {
+    position: 'fixed',
+    insetBlockStart: '0',
+    insetInlineStart: '-10000px',
+    pointerEvents: 'none',
   });
-
-  // Add subtitle
-  pdf.setFontSize(12);
-  pdf.setFont('helvetica', 'normal');
-  pdf.text('Lernen mit Geschichten', centerX, centerY + 10, { align: 'center' });
-
-  // Add decorative line
-  pdf.setLineWidth(0.5);
-  pdf.line(30, centerY - 5, width - 30, centerY - 5);
-}
-
-/**
- * Add page numbers
- */
-function addPageNumber(
-  pdf: jsPDF,
-  pageNum: number | null,
-  dimensions: PageDimensions,
-  isRTL: boolean,
-  position: 'left' | 'right'
-): void {
-  if (pageNum === null) return;
-
-  const { width, height } = dimensions;
-  const y = height - 10;
-  const x = position === 'left' ? 10 : width - 10;
-
-  pdf.setFontSize(9);
-  pdf.setTextColor(100, 100, 100);
-  pdf.text(pageNum.toString(), x, y, {
-    align: position === 'left' ? 'left' : 'right',
-  });
-}
-
-/**
- * Export story as booklet PDF
- */
-export async function exportAsBooklet(
-  storyElement: HTMLElement,
-  options: BookletOptions
-): Promise<void> {
-  const {
-    orientation,
-    pageSize = 'a5',
-    title = 'Story Booklet',
-    addCover = false,
-    addPageNumbers = true,
-  } = options;
-
-  const isRTL = orientation === 'rtl';
-  const dimensions = getPageDimensions(pageSize);
-
-  // Initialize PDF
-  const pdf = new jsPDF({
-    orientation: 'portrait',
-    unit: dimensions.unit,
-    format: [dimensions.width, dimensions.height],
-  });
-
-  // Add cover page if requested
-  let startPage = 1;
-  if (addCover) {
-    addCoverPage(pdf, title, dimensions, isRTL);
-    pdf.addPage();
-    startPage = 2;
-  }
-
-  // Capture story content
-  console.log('Capturing story content...');
-  const canvas = await captureElement(storyElement);
-  const imgData = canvas.toDataURL('image/png');
-
-  // Calculate how many pages we need
-  const pageHeight = dimensions.height - 30; // Leave margins
-  const imgHeight = (canvas.height * dimensions.width) / canvas.width;
-  const numPages = Math.ceil(imgHeight / pageHeight);
-
-  console.log(`Story will span ${numPages} pages`);
-
-  // Split content into pages
-  const pages: string[] = [];
-  for (let i = 0; i < numPages; i++) {
-    // Create temporary canvas for this page
-    const pageCanvas = document.createElement('canvas');
-    pageCanvas.width = canvas.width;
-    pageCanvas.height = (canvas.width * pageHeight) / dimensions.width;
-
-    const ctx = pageCanvas.getContext('2d');
-    if (!ctx) continue;
-
-    // Draw slice of original canvas
-    const sy = i * pageCanvas.height;
-    ctx.drawImage(
-      canvas,
-      0,
-      sy,
-      canvas.width,
-      pageCanvas.height,
-      0,
-      0,
-      canvas.width,
-      pageCanvas.height
-    );
-
-    pages.push(pageCanvas.toDataURL('image/png'));
-  }
-
-  // Calculate imposition
-  const totalPages = addCover ? pages.length + 1 : pages.length;
-  const sheets = calculateImposition(totalPages, isRTL);
-
-  console.log('Booklet layout:', sheets);
-
-  // Add pages in booklet order
-  let isFirstPage = !addCover;
-
-  for (let sheetIdx = 0; sheetIdx < sheets.length; sheetIdx++) {
-    const sheet = sheets[sheetIdx];
-
-    // Front of sheet (2 pages side by side)
-    for (let i = 0; i < 2; i++) {
-      const pageNum = sheet[i];
-
-      if (!isFirstPage) {
-        pdf.addPage();
-      }
-      isFirstPage = false;
-
-      if (pageNum && pageNum <= pages.length) {
-        // Add page content
-        const pageIdx = addCover ? pageNum - 2 : pageNum - 1;
-        if (pageIdx >= 0 && pageIdx < pages.length) {
-          pdf.addImage(
-            pages[pageIdx],
-            'PNG',
-            15,
-            15,
-            dimensions.width - 30,
-            dimensions.height - 30,
-            undefined,
-            'FAST'
-          );
-        }
-
-        // Add page number
-        if (addPageNumbers) {
-          addPageNumber(pdf, pageNum, dimensions, isRTL, i === 0 ? 'left' : 'right');
-        }
-      }
+  stage.setAttribute('aria-hidden', 'true');
+  document.body.append(stage);
+  try {
+    const images: string[] = [await capture(await coverPage(input), stage)];
+    for (const [i, story] of input.pages.entries()) {
+      images.push(await capture(await storyPage(input, story, i + 1), stage));
     }
 
-    // Back of sheet (2 pages side by side)
-    for (let i = 2; i < 4; i++) {
-      const pageNum = sheet[i];
-
-      pdf.addPage();
-
-      if (pageNum && pageNum <= pages.length) {
-        // Add page content
-        const pageIdx = addCover ? pageNum - 2 : pageNum - 1;
-        if (pageIdx >= 0 && pageIdx < pages.length) {
-          pdf.addImage(
-            pages[pageIdx],
-            'PNG',
-            15,
-            15,
-            dimensions.width - 30,
-            dimensions.height - 30,
-            undefined,
-            'FAST'
-          );
-        }
-
-        // Add page number
-        if (addPageNumbers) {
-          addPageNumber(pdf, pageNum, dimensions, isRTL, i === 2 ? 'left' : 'right');
-        }
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const half = SHEET_W / 2;
+    const place = (index: number | null, x: number) => {
+      if (index !== null)
+        pdf.addImage(images[index], 'JPEG', x, 0, half, SHEET_H, undefined, 'FAST');
+    };
+    // A short tick at the top and bottom of the fold shows where to fold and staple.
+    const foldMarks = () => {
+      pdf.setDrawColor(170);
+      pdf.setLineWidth(0.2);
+      pdf.line(half, 0, half, 4);
+      pdf.line(half, SHEET_H - 4, half, SHEET_H);
+    };
+    imposition(images.length, input.rtl).forEach((sheet, i) => {
+      for (const [side, [left, right]] of [sheet.front, sheet.back].entries()) {
+        if (i > 0 || side > 0) pdf.addPage('a4', 'landscape');
+        place(left, 0);
+        place(right, half);
+        foldMarks();
       }
-    }
+    });
+    pdf.save(`${input.filename}-booklet.pdf`);
+  } finally {
+    stage.remove();
   }
-
-  // Generate filename
-  const filename = `${title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-booklet-${isRTL ? 'rtl' : 'ltr'}.pdf`;
-
-  // Save PDF
-  console.log('Saving PDF...');
-  pdf.save(filename);
 }
 
-/**
- * Show loading indicator during export
- */
+/** A small overlay while the booklet is made; it can take a few seconds on a phone. */
 export function showExportProgress(message: string): HTMLElement {
   const overlay = document.createElement('div');
   overlay.className = 'export-overlay';
-  overlay.innerHTML = `
-    <div class="export-modal">
-      <div class="spinner"></div>
-      <p>${message}</p>
-    </div>
-  `;
+  overlay.setAttribute('role', 'status');
+  const modal = document.createElement('div');
+  modal.className = 'export-modal';
+  const spinner = document.createElement('div');
+  spinner.className = 'spinner';
+  const text = document.createElement('p');
+  text.textContent = message;
+  modal.append(spinner, text);
+  overlay.append(modal);
   document.body.appendChild(overlay);
   return overlay;
 }
 
-/**
- * Hide loading indicator
- */
 export function hideExportProgress(overlay: HTMLElement): void {
   overlay.remove();
-}
-
-/**
- * Detect language orientation from element
- */
-export function detectOrientation(element: HTMLElement): BookletOrientation {
-  const dir =
-    element.getAttribute('dir') ||
-    element.closest('[dir]')?.getAttribute('dir') ||
-    document.documentElement.getAttribute('dir');
-  return dir === 'rtl' ? 'rtl' : 'ltr';
 }
