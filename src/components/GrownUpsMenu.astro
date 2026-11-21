@@ -1,7 +1,7 @@
 ---
 import Icon from '@components/reader/Icon.astro';
 import { getTranslation, type Locale } from '@utils/i18n';
-import { BASE_PATH as base } from '@utils/site';
+import { localePrefix } from '@utils/site';
 
 interface Props {
   locale: Locale;
@@ -9,7 +9,7 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
-const prefix = locale === 'de' ? base : `${base}/${locale}`;
+const prefix = localePrefix(locale);
 const links = [
   { href: `${prefix}/about`, label: t('about') },
   { href: `${prefix}/settings`, label: t('settings') },

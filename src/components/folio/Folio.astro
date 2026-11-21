@@ -3,11 +3,11 @@ import { render } from 'astro:content';
 import qrcode from 'qrcode-generator';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { getCatalogue, SHELF_KEY } from '@utils/catalogue';
-import { getPublishedStories } from '@utils/stories';
 import { getSkillsByCategory } from '@utils/skills-taxonomy';
-import { getTranslation, type Locale } from '@utils/i18n';
+import { endonyms, getTranslation, type Locale } from '@utils/i18n';
 import { talkPrompts } from '@utils/story-pages';
-import { BASE_PATH } from '@utils/site';
+import { localePrefix, storyNumber } from '@utils/site';
+import { LOCALES } from '@utils/story-availability';
 
 interface Props {
   locale: Locale;
@@ -15,34 +15,24 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
-const prefix = locale === 'de' ? BASE_PATH : `${BASE_PATH}/${locale}`;
+const prefix = localePrefix(locale);
+// SITE_URL is required for every build, so the origin is always known.
+const origin = Astro.site!.origin;
 
 const catalogue = (await getCatalogue(locale)).sort((a, b) => a.storyId.localeCompare(b.storyId));
-const entries = await getPublishedStories(({ id }) => id.startsWith(`${locale}/`));
-// The number printed in the index is the one in the story id (001, 002...), the same in every language.
-const numberOf = (storyId: string) => storyId.split('-')[0];
-
 const stories = await Promise.all(
   catalogue.map(async item => {
-    const entry = entries.find(e => e.id === `${locale}/${item.slug}`)!;
-    const { Content } = await render(entry);
-    const origin = Astro.site?.origin;
-    let code = '';
-    if (origin) {
-      const url = `${origin}${prefix}/stories/${item.slug}`;
-      const qr = qrcode(0, 'M');
-      qr.addData(url);
-      qr.make();
-      code = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
-    }
-    const prompts = talkPrompts(entry.data, 4);
+    const { Content } = await render(item.entry);
+    const qr = qrcode(0, 'M');
+    qr.addData(`${origin}${prefix}/stories/${item.slug}`);
+    qr.make();
     return {
       item,
       Content,
-      code,
-      prompts,
-      summary: entry.data.summary,
-      keyMessage: entry.data.keyMessage,
+      code: qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true }),
+      prompts: talkPrompts(item.entry.data, 4),
+      summary: item.entry.data.summary,
+      keyMessage: item.entry.data.keyMessage,
     };
   })
 );
@@ -52,13 +42,35 @@ const note = `${t('siteName')} · ${t('footerArt')}`.replace(/[\\"]/g, '');
 // Margin boxes do not inherit the page's font, so the note names it; the reading face shapes Arabic and Urdu properly.
 const pageNote = `@page folio { @bottom-left { content: "${note}"; font-family: var(--font-read); font-size: 8pt; color: #444; width: 84%; text-align: start; } }`;
 
-const groups = (await getSkillsByCategory(locale)).map(group => ({
+const allGroups = await getSkillsByCategory(locale);
+const groups = allGroups.map(group => ({
   ...group,
   skills: group.skills
     .map(skill => ({ ...skill, stories: catalogue.filter(i => i.skills.includes(skill.id)) }))
     .filter(skill => skill.stories.length > 0),
 }));
 const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id === id)?.label ?? id;
+const shelf = (band: number) => t(SHELF_KEY[band as 1 | 2 | 3 | 4]);
+
+// What the chooser needs to read the Library's filters: the same fields the Library filters on, in list order.
+const data = {
+  stories: catalogue.map(i => ({
+    no: storyNumber(i.storyId),
+    title: i.title,
+    text: `${i.summary} ${i.skills.map(labelOf).join(' ')}`,
+    skills: i.skills,
+    languages: i.languages,
+    band: i.band,
+    minutes: i.minutes,
+  })),
+  areaOf: Object.fromEntries(allGroups.flatMap(g => g.skills.map(s => [s.id, g.id]))),
+  strings: {
+    chosen: t('folioChosen'),
+    pagesOne: t('folioPagesOne'),
+    pagesMany: t('folioPagesMany'),
+  },
+};
+const others = LOCALES.filter(l => l !== locale);
 ---
 
 <BaseLayout title={t('folioTitle')} locale={locale} noindex>
@@ -72,22 +84,64 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
           <p>{t('folioNoStories')}</p>
         ) : (
           <>
+            <div class="tools">
+              <button class="btn" type="button" data-all data-js-only>
+                {t('folioAll')}
+              </button>
+              <button class="btn" type="button" data-none data-js-only>
+                {t('folioNone')}
+              </button>
+              <a class="change" href={`${prefix}/library`} data-library>
+                {t('folioChangeInLibrary')}
+              </a>
+            </div>
+            <label class="with-text">
+              <input type="checkbox" checked data-with-text />
+              <span>
+                <strong>{t('folioWithText')}</strong>
+                <span class="hint">{t('folioWithTextHint')}</span>
+              </span>
+            </label>
             <fieldset>
-              <legend>{t('folioSelect')}</legend>
+              <legend class="visually-hidden">{t('folioSelect')}</legend>
               <ul class="picks">
                 {catalogue.map(item => (
                   <li>
                     <label>
                       <input type="checkbox" checked data-pick={item.slug} />
-                      {numberOf(item.storyId)} {item.title}
+                      <span class="no">{storyNumber(item.storyId)}</span>
+                      <span class="name">{item.title}</span>
                     </label>
+                    <span class="mins">
+                      {item.minutes} {t('minutes')}
+                    </span>
+                    <a class="open" href={`${prefix}/stories/${item.slug}`}>
+                      {t('folioOpen')}
+                      <span class="visually-hidden">: {item.title}</span>
+                    </a>
                   </li>
                 ))}
               </ul>
             </fieldset>
-            <button class="btn btn--primary" type="button" data-print hidden>
-              {t('folioPrint')}
-            </button>
+            <p class="others" data-others hidden>
+              <span>{t('folioOtherLanguages')}</span>
+              {others.map(l => (
+                <a
+                  data-other={l}
+                  href={`${localePrefix(l)}/folio`}
+                  data-folio-href={`${localePrefix(l)}/folio`}
+                  hreflang={l}
+                >
+                  <bdi lang={l}>{endonyms[l]}</bdi> <span data-other-count />
+                </a>
+              ))}
+            </p>
+            <div class="print-bar" data-js-only>
+              <p class="summary" data-summary aria-live="polite" />
+              <button class="btn btn--primary" type="button" data-print>
+                {t('folioPrint')}
+              </button>
+            </div>
           </>
         )
       }
@@ -96,22 +150,22 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
     {
       stories.length > 0 && (
         <div class="sheets" lang={locale}>
-          <section class="sheet title-sheet">
+          <section class="sheet title-sheet" data-front>
             <p class="site">{t('siteName')}</p>
             <h2 class="title">{t('folioTitle')}</h2>
             <p>{t('tagline')}</p>
           </section>
 
-          <section class="sheet index-sheet">
+          <section class="sheet index-sheet" data-front>
             <h2>{t('folioIndex')}</h2>
             <h3>{t('stories')}</h3>
             <ol class="overview">
               {catalogue.map(item => (
                 <li data-story={item.slug}>
-                  <span class="no">{numberOf(item.storyId)}</span>
+                  <span class="no">{storyNumber(item.storyId)}</span>
                   <span class="name">{item.title}</span>
                   <span class="meta">
-                    {t(SHELF_KEY[item.band as 1 | 2 | 3 | 4])} · {item.minutes} {t('minutes')}
+                    {shelf(item.band)} · {item.minutes} {t('minutes')}
                   </span>
                 </li>
               ))}
@@ -119,7 +173,7 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
             {groups
               .filter(g => g.skills.length > 0)
               .map(group => (
-                <div class="group">
+                <div class="group" data-group>
                   <h3>{group.label}</h3>
                   <ul>
                     {group.skills.map(skill => (
@@ -127,7 +181,7 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
                         <span class="skill">{skill.label}</span>
                         <span class="where">
                           {skill.stories.map(s => (
-                            <span data-story={s.slug}>{numberOf(s.storyId)}</span>
+                            <span data-story={s.slug}>{storyNumber(s.storyId)}</span>
                           ))}
                         </span>
                       </li>
@@ -142,20 +196,18 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
               <div class="story-head">
                 <div>
                   <h2 class="story-title">
-                    <span class="no">{numberOf(item.storyId)}</span>
+                    <span class="no">{storyNumber(item.storyId)}</span>
                     {item.title}
                   </h2>
                   <p class="meta">
-                    {t(SHELF_KEY[item.band as 1 | 2 | 3 | 4])} · {item.minutes} {t('minutes')}
+                    {shelf(item.band)} · {item.minutes} {t('minutes')}
                     {item.skills.length > 0 && <> · {item.skills.map(labelOf).join(' · ')}</>}
                   </p>
                 </div>
-                {code && (
-                  <div class="qr">
-                    <div class="qr-code" set:html={code} aria-hidden="true" />
-                    <p>{t('folioScan')}</p>
-                  </div>
-                )}
+                <div class="qr">
+                  <div class="qr-code" set:html={code} aria-hidden="true" />
+                  <p>{t('folioScan')}</p>
+                </div>
               </div>
               {summary && <p class="lead">{summary}</p>}
               <div class="body">
@@ -181,29 +233,160 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
         </div>
       )
     }
+    <script type="application/json" id="folio-data" set:html={JSON.stringify(data)} />
   </div>
 </BaseLayout>
 
 <script>
+  import { matchesFilter, skillsForAreas, type LengthBucket } from '@utils/filter-stories';
+
+  interface Story {
+    no: string;
+    title: string;
+    text: string;
+    skills: string[];
+    languages: string[];
+    band: number;
+    minutes: number;
+  }
+
   const root = document.querySelector<HTMLElement>('[data-folio]');
-  if (root) {
+  const sheets = root?.querySelector<HTMLElement>('.sheets');
+  if (root && sheets) {
+    const { stories, areaOf, strings } = JSON.parse(
+      document.getElementById('folio-data')!.textContent!
+    ) as { stories: Story[]; areaOf: Record<string, string>; strings: Record<string, string> };
+    const fill = (text: string, values: Record<string, number>) =>
+      text.replace(/\{(\w+)\}/g, (_, k: string) => String(values[k] ?? ''));
     const picks = [...root.querySelectorAll<HTMLInputElement>('[data-pick]')];
-    const sync = () => {
-      const on = new Set(picks.filter(p => p.checked).map(p => p.dataset.pick));
-      root
-        .querySelectorAll<HTMLElement>('[data-story]')
-        .forEach(el => (el.hidden = !on.has(el.dataset.story)));
-      // A skill none of the chosen stories practise drops out of the index.
-      root.querySelectorAll<HTMLElement>('[data-skill]').forEach(row => {
+    const withText = root.querySelector<HTMLInputElement>('[data-with-text]')!;
+    const summary = root.querySelector<HTMLElement>('[data-summary]')!;
+    const print = root.querySelector<HTMLButtonElement>('[data-print]')!;
+    const others = root.querySelector<HTMLElement>('[data-others]')!;
+    const library = root.querySelector<HTMLAnchorElement>('[data-library]')!;
+
+    // The selection comes from the link: an explicit list (`s=002,008`), the Library's own filters, or every story.
+    const LIBRARY_KEYS = ['q', 'skill', 'area', 'shelf', 'length', 'lang'];
+    const params = new URLSearchParams(location.search);
+    const list = (key: string) => (params.get(key) ?? '').split(',').filter(Boolean);
+    const libraryQuery = new URLSearchParams(
+      LIBRARY_KEYS.filter(k => params.has(k)).map(k => [k, params.get(k)!])
+    );
+    if (params.has('s')) {
+      const wanted = new Set(list('s'));
+      picks.forEach((p, i) => (p.checked = wanted.has(stories[i].no)));
+    } else if ([...libraryQuery.keys()].length) {
+      const criteria = {
+        searchQuery: params.get('q') ?? '',
+        selectedSkills: skillsForAreas(list('area'), list('skill'), areaOf),
+        selectedBands: list('shelf').map(Number),
+        selectedLengths: list('length') as LengthBucket[],
+        selectedLanguages: list('lang'),
+      };
+      picks.forEach((p, i) => (p.checked = matchesFilter(stories[i], criteria)));
+    }
+    withText.checked = params.get('text') !== '0';
+    library.search = libraryQuery.toString();
+
+    const chosen = () => picks.flatMap((p, i) => (p.checked ? [i] : []));
+
+    function writeUrl(on: number[]) {
+      const next = new URLSearchParams(libraryQuery);
+      if (on.length !== picks.length) next.set('s', on.map(i => stories[i].no).join(','));
+      if (!withText.checked) next.set('text', '0');
+      const query = next.toString().replace(/%2C/g, ',');
+      history.replaceState(null, '', location.pathname + (query ? `?${query}` : ''));
+    }
+
+    // About how many A4 pages print: the sheets are laid out off screen at the page's width in print type, and each
+    // story starts a new page unless the text is left out. Chromium breaks a little earlier than the bare height says,
+    // hence the 4% margin. Only an estimate; the print dialog has the real count.
+    const PAGE = (264 / 25.4) * 96;
+    function estimate(): number {
+      sheets!.classList.add('measuring');
+      const visible = [...sheets!.querySelectorAll<HTMLElement>('.sheet')].filter(s => !s.hidden);
+      const height = (el: HTMLElement) => el.getBoundingClientRect().height;
+      const room = PAGE * 0.96;
+      // Without the text, stories never split: each goes on the current page if it fits (with the 12 mm rule and gap
+      // the print stylesheet adds), otherwise it starts the next one.
+      const GAP = (12 / 25.4) * 96;
+      let pages = 0;
+      let used = room;
+      for (const sheet of visible) {
+        if (sheet.classList.contains('title-sheet')) pages += 1;
+        else if (withText.checked || sheet.hasAttribute('data-front'))
+          pages += Math.max(1, Math.ceil(height(sheet) / room));
+        else {
+          const h = height(sheet) + GAP;
+          if (used + h > room) {
+            pages += 1;
+            used = 0;
+          }
+          used += h;
+        }
+      }
+      sheets!.classList.remove('measuring');
+      return pages;
+    }
+
+    function sync() {
+      const on = chosen();
+      const slugs = new Set(on.map(i => picks[i].dataset.pick));
+      root!
+        .querySelectorAll<HTMLElement>('.sheets [data-story]')
+        .forEach(el => (el.hidden = !slugs.has(el.dataset.story)));
+      // A skill none of the chosen stories practise drops out of the index, and so does an empty area.
+      root!.querySelectorAll<HTMLElement>('[data-skill]').forEach(row => {
         row.hidden = ![...row.querySelectorAll<HTMLElement>('[data-story]')].some(s => !s.hidden);
       });
-    };
-    picks.forEach(p => p.addEventListener('change', sync));
-    const print = root.querySelector<HTMLButtonElement>('[data-print]');
-    if (print) {
-      print.hidden = false;
-      print.addEventListener('click', () => window.print());
+      root!.querySelectorAll<HTMLElement>('[data-group]').forEach(group => {
+        group.hidden = ![...group.querySelectorAll<HTMLElement>('[data-skill]')].some(
+          r => !r.hidden
+        );
+      });
+      // One story needs no title page or contents; an overview without the text needs no title page.
+      root!.querySelectorAll<HTMLElement>('[data-front]').forEach(el => {
+        el.hidden = on.length < 2 || (!withText.checked && el.classList.contains('title-sheet'));
+      });
+      sheets!.toggleAttribute('data-notext', !withText.checked);
+
+      // The same stories in another language: story numbers are shared, so the selection carries over.
+      let anyOther = false;
+      root!.querySelectorAll<HTMLAnchorElement>('[data-other]').forEach(a => {
+        const there = on.filter(i => stories[i].languages.includes(a.dataset.other!));
+        a.hidden = there.length === 0;
+        anyOther ||= !a.hidden;
+        const query = `s=${there.map(i => stories[i].no).join(',')}${withText.checked ? '' : '&text=0'}`;
+        a.href = `${a.dataset.folioHref}?${query}`;
+        a.querySelector('[data-other-count]')!.textContent = `(${there.length}/${on.length})`;
+      });
+      others.hidden = !anyOther;
+
+      const pages = on.length ? estimate() : 0;
+      summary.textContent = [
+        fill(strings.chosen, { n: on.length, total: picks.length }),
+        on.length ? fill(pages === 1 ? strings.pagesOne : strings.pagesMany, { n: pages }) : '',
+      ]
+        .filter(Boolean)
+        .join(' · ');
+      print.disabled = on.length === 0;
+      writeUrl(on);
     }
+
+    picks.forEach(p => p.addEventListener('change', sync));
+    withText.addEventListener('change', sync);
+    root.querySelector('[data-all]')!.addEventListener('click', () => {
+      picks.forEach(p => (p.checked = true));
+      sync();
+    });
+    root.querySelector('[data-none]')!.addEventListener('click', () => {
+      picks.forEach(p => (p.checked = false));
+      sync();
+    });
+    print.addEventListener('click', () => window.print());
+    sync();
+    // The estimate depends on the print faces; measure again once they have arrived.
+    document.fonts.ready.then(sync);
   }
 </script>
 
@@ -220,34 +403,158 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
     line-height: var(--lh-display);
     margin-block-end: var(--s-3);
   }
-  fieldset {
-    border: 2px solid var(--ink);
-    padding: var(--s-3) var(--s-4);
-    margin-block: var(--s-4);
+  .controls .lead {
+    max-inline-size: var(--measure-prose);
   }
-  legend {
+  .tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2) var(--s-3);
+    margin-block-start: var(--s-5);
+  }
+  .change {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-adult);
+    margin-inline-start: auto;
+    color: var(--ink);
     font-weight: 700;
-    padding-inline: var(--s-2);
+    text-underline-offset: 0.2em;
+  }
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin-block: var(--s-3) var(--s-4);
   }
   .picks {
     list-style: none;
     padding: 0;
-    display: grid;
-    gap: var(--s-1);
+    margin: 0;
+  }
+  .picks li {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    border-block-end: 1px solid var(--rule);
   }
   .picks label {
+    flex: 1;
     display: flex;
     gap: var(--s-2);
     align-items: center;
     min-block-size: var(--tap-adult);
+    padding-block: var(--s-1);
   }
-  .controls .btn {
+  .picks input,
+  .with-text input {
+    inline-size: 1.2em;
+    block-size: 1.2em;
+    flex: none;
+    accent-color: var(--accent);
+  }
+  .picks .no {
+    min-inline-size: 2.4em;
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .mins {
+    color: var(--ink-2);
+    white-space: nowrap;
+    font-size: var(--t-ui-sm);
+  }
+  .open {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-adult);
+    color: var(--ink);
+    font-size: var(--t-ui-sm);
+    text-underline-offset: 0.2em;
+  }
+  .with-text {
+    display: flex;
+    gap: var(--s-3);
+    align-items: flex-start;
+    margin-block-start: var(--s-3);
+    padding: var(--s-3);
+    background: var(--card);
+    border-radius: var(--r-m);
+  }
+  .with-text input {
+    margin-block-start: 0.25em;
+  }
+  .hint {
+    display: block;
+    color: var(--ink-2);
+    font-size: var(--t-ui-sm);
+  }
+  .others {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-1) var(--s-3);
     margin-block-start: var(--s-3);
   }
+  .others a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    min-block-size: var(--tap-adult);
+    color: var(--ink);
+    font-weight: 700;
+    text-underline-offset: 0.2em;
+  }
+  /* The print button stays in reach however long the list is. */
+  .print-bar {
+    position: sticky;
+    inset-block-end: 0;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2) var(--s-4);
+    margin-block-start: var(--s-4);
+    padding: var(--s-3) var(--s-4);
+    background: var(--card);
+    border: 2px solid var(--edge);
+    border-radius: var(--r-m);
+    box-shadow: var(--e-1);
+  }
+  .summary {
+    flex: 1 1 14ch;
+    margin: 0;
+    font-weight: 700;
+  }
+  .print-bar .btn {
+    flex: none;
+  }
+  @media (width < 560px) {
+    .print-bar {
+      flex-wrap: nowrap;
+      padding: var(--s-2) var(--s-3);
+    }
+    .summary {
+      font-size: var(--t-ui-sm);
+      line-height: 1.3;
+    }
+  }
 
-  /* The sheets exist only on paper; the browser's print preview is the preview. */
+  /* The sheets exist only on paper; the browser's print preview is the preview. They carry print type even here, so
+     the chooser can lay them out off screen to estimate the page count. */
   .sheets {
     display: none;
+    font-size: 11pt;
+    line-height: 1.45;
+  }
+  .sheets.measuring {
+    display: block;
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 186mm;
+    visibility: hidden;
+    pointer-events: none;
   }
   .sheet {
     background: #fff;
@@ -262,7 +569,7 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
     font-size: 2.2rem;
     margin-block: var(--s-3);
   }
-  .no {
+  .sheet .no {
     display: inline-block;
     min-inline-size: 2.6em;
     font-weight: 700;
@@ -308,7 +615,7 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
   }
   .story-title {
     font-family: var(--font-display);
-    font-size: 1.8rem;
+    font-size: 18pt;
     line-height: 1.2;
     margin-block-end: var(--s-1);
   }
@@ -318,7 +625,8 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
   }
   .body :global(p),
   .body :global(li) {
-    line-height: 1.6;
+    line-height: 1.45;
+    margin-block: 0 0.55em;
   }
   /* The title is in the sheet head; a translation's leading `# Title` line would repeat it. */
   .body :global(h1) {
@@ -338,6 +646,10 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
   .body :global(hr) {
     border: 0;
     margin-block: var(--s-3);
+  }
+  /* Without the text a story is its notes: summary, key message, prompts and QR code. */
+  .sheets[data-notext] .body {
+    display: none;
   }
   .story-end {
     margin-block-start: var(--s-4);
@@ -369,6 +681,10 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
   [hidden] {
     display: none !important;
   }
+  /* Choosing and printing need scripts; without them the list and the browser's own Print still work. */
+  :global(:root:not([data-js])) [data-js-only] {
+    display: none;
+  }
 </style>
 
 <style is:global>
@@ -393,23 +709,9 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
     [data-folio] {
       page: folio;
     }
-    /* Print size, not the screen's reading size: most picture-book stories then fit on one sheet. */
     /* body raises specificity over the scoped screen rule that hides the sheets. */
     body [data-folio] .sheets {
       display: block;
-      font-size: 11pt;
-      line-height: 1.45;
-    }
-    [data-folio] .sheet .body p,
-    [data-folio] .sheet .body li {
-      line-height: 1.45;
-      margin-block: 0 0.55em;
-    }
-    [data-folio] .story-title {
-      font-size: 18pt;
-    }
-    [data-folio] .story-sheet .lead {
-      font-size: 11pt;
     }
     [data-folio] .sheet {
       break-after: page;
@@ -419,6 +721,15 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
     }
     [data-folio] .story-sheet {
       break-before: page;
+    }
+    /* Without the text, stories follow one another, a rule between them, as many to a page as fit. */
+    [data-folio] .sheets[data-notext] .story-sheet {
+      break-before: auto;
+      break-after: auto;
+      break-inside: avoid;
+      padding-block-end: 6mm;
+      margin-block-end: 6mm;
+      border-block-end: 1px solid #999;
     }
     [data-folio] .story-sheet h2,
     [data-folio] .story-sheet h3 {

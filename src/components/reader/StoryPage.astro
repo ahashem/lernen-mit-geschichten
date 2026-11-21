@@ -4,7 +4,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import { getPublishedStories, getStoryMeta, readMinutes } from '@utils/stories';
 import { endonyms, fmt, getTranslation, isRTL, skillGroupLabel, type Locale } from '@utils/i18n';
 import { getSkillsByIds } from '@utils/skills-taxonomy';
-import { BASE_PATH } from '@utils/site';
+import { BASE_PATH, localePrefix, storyNumber } from '@utils/site';
 import {
   alignTo,
   chapterTitles,
@@ -251,7 +251,12 @@ const description = summary || `${title} | ${t('siteName')}`;
                   </>
                 )
               }
-              <EducatorTools locale={locale} url={storyUrl} hasPack={true} />
+              <EducatorTools
+                locale={locale}
+                url={storyUrl}
+                folioHref={`${localePrefix(locale)}/folio?s=${storyNumber(storyId)}`}
+                hasPack={true}
+              />
               {
                 (hasBook || chapters.length > 0) && (
                   <button class="btn" type="button" data-action="class-room" data-js-only>
@@ -788,10 +793,7 @@ const description = summary || `${title} | ${t('siteName')}`;
     <PrintSheets
       locale={locale}
       title={title}
-      summary={summary}
-      skills={skills.map(s => s.label)}
       prompts={prompts}
-      url={storyUrl}
       cover={cover}
       frames={colouring}
       emoji={emoji}

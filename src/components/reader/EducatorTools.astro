@@ -6,10 +6,12 @@ interface Props {
   locale: Locale;
   /** The story's absolute URL; the class link adds its parameters to it. */
   url: string;
+  /** The folio with just this story: its text, prompts and QR code on A4 (what the prep sheet used to be). */
+  folioHref: string;
   hasPack: boolean;
 }
 
-const { locale, url, hasPack } = Astro.props;
+const { locale, url, folioHref, hasPack } = Astro.props;
 const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
 const shelves = [
   ['picture', 'shelfPicture'],
@@ -22,7 +24,7 @@ const shelves = [
 <div class="educator" data-educator data-url={url} data-js-only>
   <h2 class="small-heading">{t('forEducators')}</h2>
   <div class="tools">
-    <button class="btn" type="button" data-print="prep">{t('printPrep')}</button>
+    <a class="btn" href={folioHref}>{t('printStory')}</a>
     {
       hasPack && (
         <button class="btn" type="button" data-print="pack">
@@ -98,6 +100,10 @@ const shelves = [
     display: flex;
     flex-wrap: wrap;
     gap: var(--s-2);
+  }
+  /* The link and the button sit as equals: same width when they share a row, full width when they wrap. */
+  .tools .btn {
+    flex: 1 1 14rem;
   }
   .class-link {
     display: grid;

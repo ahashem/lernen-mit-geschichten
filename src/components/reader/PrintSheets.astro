@@ -1,5 +1,4 @@
 ---
-import qrcode from 'qrcode-generator';
 import StoryArt from './StoryArt.astro';
 import { getTranslation, type Locale } from '@utils/i18n';
 import type { Picture } from '@utils/story-art';
@@ -7,56 +6,18 @@ import type { Picture } from '@utils/story-art';
 interface Props {
   locale: Locale;
   title: string;
-  summary: string;
-  skills: string[];
   prompts: string[];
-  /** Absolute URL of the story, derived from the deploy's SITE_URL. */
-  url: string;
   cover?: Picture;
   frames: Picture[];
   emoji: string;
   palette: [string, string];
 }
 
-const { locale, title, summary, skills, prompts, url, cover, frames, emoji, palette } = Astro.props;
+const { locale, title, prompts, cover, frames, emoji, palette } = Astro.props;
 const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(locale, key);
-const qr = qrcode(0, 'M');
-qr.addData(url);
-qr.make();
-const code = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
 ---
 
 <div class="print-only" lang={locale}>
-  <section class="sheet" data-sheet="prep">
-    <h1>{title}</h1>
-    {summary && <p class="lead">{summary}</p>}
-    {
-      skills.length > 0 && (
-        <>
-          <h2>{t('skills')}</h2>
-          <p>{skills.join(' · ')}</p>
-        </>
-      )
-    }
-    {
-      prompts.length > 0 && (
-        <>
-          <h2>{t('talkPrompts')}</h2>
-          <ol>
-            {prompts.map(p => (
-              <li>{p}</li>
-            ))}
-          </ol>
-        </>
-      )
-    }
-    <div class="qr">
-      <div class="qr-code" set:html={code} aria-hidden="true" />
-      <p>{url}</p>
-    </div>
-    <p class="foot">{title} · {t('siteName')} · {t('footerArt')}</p>
-  </section>
-
   <section class="sheet" data-sheet="pack">
     <h1>{title}</h1>
     <div class="cover-art"><StoryArt picture={cover} emoji={emoji} palette={palette} /></div>
@@ -108,7 +69,6 @@ const code = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
     body[data-print] .print-only {
       display: block;
     }
-    body[data-print='prep'] .sheet:not([data-sheet='prep']),
     body[data-print='pack'] .sheet:not([data-sheet='pack']) {
       display: none;
     }
@@ -132,9 +92,6 @@ const code = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
     .print-only h2 {
       font-size: 14pt;
       margin: 6mm 0 2mm;
-    }
-    .print-only .qr-code {
-      inline-size: 32mm;
     }
     .print-only .cover-art,
     .print-only .frame-art {
@@ -174,7 +131,7 @@ const code = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
 </style>
 
 <script>
-  // Any `[data-print="prep|pack"]` button prints that sheet; the attribute is what the print stylesheet keys on.
+  // Any `[data-print="pack"]` button prints that sheet; the attribute is what the print stylesheet keys on.
   document.addEventListener('click', e => {
     const button = (e.target as HTMLElement).closest<HTMLElement>('[data-print]');
     if (!button?.dataset.print) return;
