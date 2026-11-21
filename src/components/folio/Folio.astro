@@ -2,6 +2,7 @@
 import { render } from 'astro:content';
 import qrcode from 'qrcode-generator';
 import BaseLayout from '@layouts/BaseLayout.astro';
+import Logo from '@components/Logo.astro';
 import { getCatalogue, SHELF_KEY } from '@utils/catalogue';
 import { getSkillsByCategory } from '@utils/skills-taxonomy';
 import { endonyms, fmt, getTranslation, isRTL, type Locale } from '@utils/i18n';
@@ -178,29 +179,52 @@ const others = LOCALES.filter(l => l !== locale);
       stories.length > 0 && (
         <div class="sheets" lang={locale}>
           <section class="sheet title-sheet" data-front>
-            <p class="site">{t('siteName')}</p>
+            <div class="brand">
+              <Logo size={52} />
+              <span class="wordmark">{t('siteName')}</span>
+            </div>
+            <div class="cover-art" aria-hidden="true">
+              <svg class="hills" viewBox="0 0 200 60" preserveAspectRatio="none">
+                <path
+                  class="hill-back"
+                  d="M0 34 C40 14 80 16 120 30 C150 40 175 28 200 22 V60 H0 Z"
+                />
+                <path
+                  class="hill-front"
+                  d="M0 46 C50 30 95 34 140 44 C165 50 185 44 200 40 V60 H0 Z"
+                />
+              </svg>
+              <Logo size={260} />
+            </div>
             <h2 class="title">{t('folioTitle')}</h2>
-            <p>{t('tagline')}</p>
-            <p class="as-of">{asOf}</p>
-            <div class="newest">
-              <div class="qr-code" data-newest-code aria-hidden="true" />
-              <p>
-                {t('folioNewest')}
-                <br />
-                <a class="url" data-newest-link href={`${origin}${prefix}/folio`}>
-                  {`${origin}${prefix}/folio`.replace(/^https?:\/\//, '')}
-                </a>
-              </p>
+            <p class="cover-lang" lang={locale}>
+              {endonyms[locale]}
+            </p>
+            <p class="tagline">{t('tagline')}</p>
+            <div class="cover-foot">
+              <div class="newest">
+                <div class="qr-code" data-newest-code aria-hidden="true" />
+                <p>
+                  {t('folioNewest')}
+                  <br />
+                  <a class="url" data-newest-link href={`${origin}${prefix}/folio`}>
+                    {`${origin}${prefix}/folio`.replace(/^https?:\/\//, '')}
+                  </a>
+                </p>
+              </div>
+              <p class="as-of">{asOf}</p>
             </div>
           </section>
 
-          <section class="sheet index-sheet" data-front>
+          <section class="sheet index-sheet" id="contents" data-front>
             <h2>{t('folioContents')}</h2>
             <p class="numbers-note">{t('folioNumbersNote')}</p>
             <ol class="overview">
               {catalogue.map(item => (
                 <li data-story={item.slug}>
-                  <span class="no">{storyNumber(item.storyId)}</span>
+                  <a class="no" href={`#s-${storyNumber(item.storyId)}`}>
+                    {storyNumber(item.storyId)}
+                  </a>
                   <a class="name" href={`#s-${storyNumber(item.storyId)}`}>
                     {item.title}
                   </a>
@@ -244,9 +268,12 @@ const others = LOCALES.filter(l => l !== locale);
                     <img class="cover" src={cover.src} alt="" loading="lazy" decoding="async" />
                   )}
                   <div class="head-text">
+                    <a class="to-contents" href="#contents" data-to-contents>
+                      ↑ {t('folioContents')}
+                    </a>
                     <h2 class="story-title">
                       <span class="no">{no}</span>
-                      <a href={url}>{item.title}</a>
+                      {item.title}
                     </h2>
                     <div class="notes">
                       <p class="meta">
@@ -407,6 +434,10 @@ const others = LOCALES.filter(l => l !== locale);
         el.hidden = on.length < 2 || (!withText.checked && el.classList.contains('title-sheet'));
       });
       sheets!.toggleAttribute('data-notext', !withText.checked);
+      // The jump back to the contents only makes sense when the contents print.
+      sheets!
+        .querySelectorAll<HTMLElement>('[data-to-contents]')
+        .forEach(a => (a.hidden = on.length < 2));
 
       // The same stories in another language: story numbers are shared, so the selection carries over.
       let anyOther = false;
@@ -444,17 +475,17 @@ const others = LOCALES.filter(l => l !== locale);
 
     // Covers are lazy, and a hidden sheet never scrolls into view; load the chosen ones before the dialog opens.
     async function loadCovers() {
-      const covers = [
-        ...sheets!.querySelectorAll<HTMLImageElement>('.story-sheet:not([hidden]) img'),
-      ];
+      const covers = [...sheets!.querySelectorAll<HTMLImageElement>('img')].filter(
+        img => !img.hidden && !img.closest('[hidden]')
+      );
       covers.forEach(img => (img.loading = 'eager'));
       const loaded = Promise.all(covers.map(img => img.decode().catch(() => undefined)));
       await Promise.race([loaded, new Promise(done => setTimeout(done, 4000))]);
     }
     window.addEventListener('beforeprint', () => {
-      sheets!
-        .querySelectorAll<HTMLImageElement>('.story-sheet:not([hidden]) img')
-        .forEach(img => (img.loading = 'eager'));
+      sheets!.querySelectorAll<HTMLImageElement>('img').forEach(img => {
+        if (!img.hidden && !img.closest('[hidden]')) img.loading = 'eager';
+      });
     });
 
     picks.forEach(p => p.addEventListener('change', sync));
@@ -666,25 +697,124 @@ const others = LOCALES.filter(l => l !== locale);
   .skill-groups .group:first-child {
     margin-block-start: 0;
   }
-  .as-of {
+  /* The cover: the site's mark and name, the chosen stories' pictures, the title and language, and at the foot the
+     date and the way back to this selection. It fills the page; its band prints even with background graphics off. */
+  .title-sheet {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6mm;
+    /* A hair under the 264 mm the page leaves, or the foot spills onto a page of its own. */
+    min-block-size: 255mm;
+    text-align: center;
+    /* Paper is light whatever theme the screen is in, so the cover keeps the light palette. */
+    --paper: #fbf0de;
+    --card: #fff9ef;
+    --ink: #24212e;
+    --sun: #f2b33d;
+    --hill-back: #dce8cf;
+    --hill-front: #f5e4ca;
+    --poppy-ink: #a3311f;
+  }
+  .brand {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3mm;
+    padding: 6mm;
+    background: var(--paper);
+    border-radius: 4mm;
+    print-color-adjust: exact;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: 20pt;
+    font-weight: 700;
+    color: var(--poppy-ink);
+  }
+  /* One fixed picture for every folio: the site's mark drawn large over its hills, in vector so it prints sharp. */
+  .cover-art {
+    position: relative;
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+    block-size: 105mm;
+    margin-block-start: 4mm;
+    print-color-adjust: exact;
+  }
+  .hills {
+    position: absolute;
+    inset: auto 0 0;
+    inline-size: 100%;
+    block-size: 45mm;
+  }
+  .hill-back {
+    fill: var(--hill-back);
+  }
+  .hill-front {
+    fill: var(--hill-front);
+  }
+  .cover-art :global(.logo) {
+    position: relative;
+    inline-size: 80mm;
+    block-size: 80mm;
+    margin-block-end: 18mm;
+  }
+  .cover-lang {
+    margin: 0;
+    font-size: 16pt;
+    font-weight: 700;
+  }
+  .tagline {
+    margin: 0;
+    font-size: 12pt;
     color: #444;
+  }
+  .cover-foot {
+    margin-block-start: auto;
+    align-self: stretch;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 6mm;
+    padding-block-start: 5mm;
+    border-block-start: 1px solid #ccc;
+    text-align: start;
+  }
+  .as-of {
+    margin: 0;
+    color: #444;
+    font-size: 9.5pt;
   }
   .newest {
     display: flex;
-    gap: 5mm;
+    gap: 4mm;
     align-items: center;
-    margin-block-start: 30mm;
-    font-size: 9.5pt;
+    font-size: 9pt;
     color: #444;
   }
   .newest .qr-code {
     flex: none;
-    inline-size: 24mm;
+    inline-size: 22mm;
     margin: 0;
   }
   .newest p {
     flex: 0 1 90mm;
     margin: 0;
+  }
+  /* Index entries and the jump back are links inside the PDF; a dotted line says so on screen and on paper. */
+  .overview a,
+  .where a,
+  .to-contents {
+    text-decoration: underline dotted #999;
+    text-underline-offset: 0.2em;
+  }
+  .to-contents {
+    display: inline-block;
+    font-size: 8pt;
+    color: #666;
+    margin-block-end: 1mm;
   }
   .url {
     font-size: 7pt;
@@ -704,8 +834,9 @@ const others = LOCALES.filter(l => l !== locale);
   }
   .title-sheet .title {
     font-family: var(--font-display);
-    font-size: 2.2rem;
-    margin-block: var(--s-3);
+    font-size: 34pt;
+    line-height: 1.1;
+    margin: 6mm 0 0;
   }
   .sheet .no {
     display: inline-block;
