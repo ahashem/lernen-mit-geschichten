@@ -4,7 +4,8 @@ import qrcode from 'qrcode-generator';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { getCatalogue, SHELF_KEY } from '@utils/catalogue';
 import { getSkillsByCategory } from '@utils/skills-taxonomy';
-import { endonyms, getTranslation, type Locale } from '@utils/i18n';
+import { endonyms, fmt, getTranslation, isRTL, type Locale } from '@utils/i18n';
+import { coverOf } from '@utils/story-art';
 import { talkPrompts } from '@utils/story-pages';
 import { localePrefix, storyNumber } from '@utils/site';
 import { LOCALES } from '@utils/story-availability';
@@ -23,12 +24,18 @@ const catalogue = (await getCatalogue(locale)).sort((a, b) => a.storyId.localeCo
 const stories = await Promise.all(
   catalogue.map(async item => {
     const { Content } = await render(item.entry);
+    const url = `${origin}${prefix}/stories/${item.slug}`;
     const qr = qrcode(0, 'M');
-    qr.addData(`${origin}${prefix}/stories/${item.slug}`);
+    qr.addData(url);
     qr.make();
     return {
       item,
       Content,
+      no: storyNumber(item.storyId),
+      url,
+      // Printed under the QR code for a grown-up at a computer, who cannot scan their own paper.
+      shortUrl: url.replace(/^https?:\/\//, ''),
+      cover: coverOf(item.meta, locale),
       code: qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true }),
       prompts: talkPrompts(item.entry.data, 4),
       summary: item.entry.data.summary,
@@ -37,10 +44,30 @@ const stories = await Promise.all(
   })
 );
 
-// The line every printed page carries in its bottom margin (ux/03 section 11: the AI-illustration note).
-const note = `${t('siteName')} · ${t('footerArt')}`.replace(/[\\"]/g, '');
-// Margin boxes do not inherit the page's font, so the note names it; the reading face shapes Arabic and Urdu properly.
-const pageNote = `@page folio { @bottom-left { content: "${note}"; font-family: var(--font-read); font-size: 8pt; color: #444; width: 84%; text-align: start; } }`;
+// Every printed page carries the site name and the AI-illustration note (ux/03 section 11) at its foot, the page
+// number on the outer side, and on a story's pages a running head with its number and title, so a loose sheet in a
+// binder can always be put back. Each story is its own named page; margin boxes do not inherit the page's font, so
+// each names the reading face, which also shapes Arabic and Urdu properly. Right-to-left pages mirror the sides.
+const cssText = (text: string) => text.replace(/[\\"]/g, '').replace(/\s+/g, ' ');
+const [start, end] = isRTL(locale) ? ['right', 'left'] : ['left', 'right'];
+const box = `font-family: var(--font-read); color: #444;`;
+const foot =
+  `@bottom-${start} { content: "${cssText(`${t('siteName')} · ${t('footerArt')}`)}"; ${box} font-size: 8pt; width: 84%; text-align: ${start}; } ` +
+  `@bottom-${end} { content: counter(page); ${box} font-size: 9pt; width: 12%; text-align: ${end}; }`;
+const pageBox = `size: A4; margin: 15mm 12mm 18mm;`;
+const pageRules = [
+  `@page folio { ${pageBox} ${foot} }`,
+  ...stories.map(
+    ({ no, item }) =>
+      `@page s${no} { ${pageBox} ${foot} @top-${start} { content: "${cssText(`${no} · ${item.title}`)}"; ${box} font-size: 8pt; width: 100%; text-align: ${start}; } }`
+  ),
+  `@media print { ${stories.map(({ no }) => `[data-folio] .sheets:not([data-notext]) #s-${no} { page: s${no}; }`).join(' ')} ` +
+    // Without the text, stories share pages, so they cannot each be their own named page.
+    `[data-folio] .sheets[data-notext] .story-sheet { page: folio; } }`,
+].join('\n');
+const asOf = fmt(t('folioAsOf'), {
+  date: new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(new Date()),
+});
 
 const allGroups = await getSkillsByCategory(locale);
 const groups = allGroups.map(group => ({
@@ -74,7 +101,7 @@ const others = LOCALES.filter(l => l !== locale);
 ---
 
 <BaseLayout title={t('folioTitle')} locale={locale} noindex>
-  <style is:inline set:html={pageNote}></style>
+  <style is:inline set:html={pageRules}></style>
   <div class="container folio" data-folio>
     <section class="controls">
       <h1>{t('folioTitle')}</h1>
@@ -154,82 +181,110 @@ const others = LOCALES.filter(l => l !== locale);
             <p class="site">{t('siteName')}</p>
             <h2 class="title">{t('folioTitle')}</h2>
             <p>{t('tagline')}</p>
+            <p class="as-of">{asOf}</p>
+            <div class="newest">
+              <div class="qr-code" data-newest-code aria-hidden="true" />
+              <p>
+                {t('folioNewest')}
+                <br />
+                <a class="url" data-newest-link href={`${origin}${prefix}/folio`}>
+                  {`${origin}${prefix}/folio`.replace(/^https?:\/\//, '')}
+                </a>
+              </p>
+            </div>
           </section>
 
           <section class="sheet index-sheet" data-front>
-            <h2>{t('folioIndex')}</h2>
-            <h3>{t('stories')}</h3>
+            <h2>{t('folioContents')}</h2>
+            <p class="numbers-note">{t('folioNumbersNote')}</p>
             <ol class="overview">
               {catalogue.map(item => (
                 <li data-story={item.slug}>
                   <span class="no">{storyNumber(item.storyId)}</span>
-                  <span class="name">{item.title}</span>
+                  <a class="name" href={`#s-${storyNumber(item.storyId)}`}>
+                    {item.title}
+                  </a>
                   <span class="meta">
                     {shelf(item.band)} · {item.minutes} {t('minutes')}
                   </span>
                 </li>
               ))}
             </ol>
-            {groups
-              .filter(g => g.skills.length > 0)
-              .map(group => (
-                <div class="group" data-group>
-                  <h3>{group.label}</h3>
-                  <ul>
-                    {group.skills.map(skill => (
-                      <li data-skill>
-                        <span class="skill">{skill.label}</span>
-                        <span class="where">
-                          {skill.stories.map(s => (
-                            <span data-story={s.slug}>{storyNumber(s.storyId)}</span>
-                          ))}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+            <h2 class="skills-title">{t('skills')}</h2>
+            <div class="skill-groups">
+              {groups
+                .filter(g => g.skills.length > 0)
+                .map(group => (
+                  <div class="group" data-group>
+                    <h3>{group.label}</h3>
+                    <ul>
+                      {group.skills.map(skill => (
+                        <li data-skill>
+                          <span class="skill">{skill.label}</span>
+                          <span class="where">
+                            {skill.stories.map(s => (
+                              <a data-story={s.slug} href={`#s-${storyNumber(s.storyId)}`}>
+                                {storyNumber(s.storyId)}
+                              </a>
+                            ))}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+            </div>
           </section>
 
-          {stories.map(({ item, Content, code, prompts, summary, keyMessage }) => (
-            <article class="sheet story-sheet" data-story={item.slug}>
-              <div class="story-head">
-                <div>
-                  <h2 class="story-title">
-                    <span class="no">{storyNumber(item.storyId)}</span>
-                    {item.title}
-                  </h2>
-                  <p class="meta">
-                    {shelf(item.band)} · {item.minutes} {t('minutes')}
-                    {item.skills.length > 0 && <> · {item.skills.map(labelOf).join(' · ')}</>}
-                  </p>
-                </div>
-                <div class="qr">
-                  <div class="qr-code" set:html={code} aria-hidden="true" />
-                  <p>{t('folioScan')}</p>
-                </div>
-              </div>
-              {summary && <p class="lead">{summary}</p>}
-              <div class="body">
-                <Content />
-              </div>
-              {(keyMessage || prompts.length > 0) && (
-                <div class="story-end">
-                  {keyMessage && <p class="key-message">{keyMessage}</p>}
-                  {prompts.length > 0 && (
-                    <section class="prompts">
-                      <h3>{t('talkPrompts')}</h3>
-                      <ol>
-                        {prompts.map(p => (
-                          <li>{p}</li>
-                        ))}
-                      </ol>
-                    </section>
+          {stories.map(
+            ({ item, Content, no, url, shortUrl, cover, code, prompts, summary, keyMessage }) => (
+              <article class="sheet story-sheet" id={`s-${no}`} data-story={item.slug}>
+                <div class="story-head">
+                  {cover && (
+                    <img class="cover" src={cover.src} alt="" loading="lazy" decoding="async" />
                   )}
+                  <div class="head-text">
+                    <h2 class="story-title">
+                      <span class="no">{no}</span>
+                      <a href={url}>{item.title}</a>
+                    </h2>
+                    <div class="notes">
+                      <p class="meta">
+                        {shelf(item.band)} · {item.minutes} {t('minutes')}
+                        {item.skills.length > 0 && <> · {item.skills.map(labelOf).join(' · ')}</>}
+                      </p>
+                      {summary && <p class="summary-text">{summary}</p>}
+                    </div>
+                  </div>
+                  <div class="qr">
+                    <div class="qr-code" set:html={code} aria-hidden="true" />
+                    <p>{t('folioScan')}</p>
+                    <a class="url" href={url} dir="ltr">
+                      {shortUrl}
+                    </a>
+                  </div>
                 </div>
-              )}
-            </article>
-          ))}
+                <div class="body">
+                  <Content />
+                </div>
+                {(keyMessage || prompts.length > 0) && (
+                  <div class="story-end notes">
+                    {keyMessage && <p class="key-message">{keyMessage}</p>}
+                    {prompts.length > 0 && (
+                      <section class="prompts">
+                        <h3>{t('talkPrompts')}</h3>
+                        <ol>
+                          {prompts.map(p => (
+                            <li>{p}</li>
+                          ))}
+                        </ol>
+                      </section>
+                    )}
+                  </div>
+                )}
+              </article>
+            )
+          )}
         </div>
       )
     }
@@ -238,6 +293,7 @@ const others = LOCALES.filter(l => l !== locale);
 </BaseLayout>
 
 <script>
+  import qrcode from 'qrcode-generator';
   import { matchesFilter, skillsForAreas, type LengthBucket } from '@utils/filter-stories';
 
   interface Story {
@@ -264,6 +320,8 @@ const others = LOCALES.filter(l => l !== locale);
     const print = root.querySelector<HTMLButtonElement>('[data-print]')!;
     const others = root.querySelector<HTMLElement>('[data-others]')!;
     const library = root.querySelector<HTMLAnchorElement>('[data-library]')!;
+    const newestLink = root.querySelector<HTMLAnchorElement>('[data-newest-link]')!;
+    const newestCode = root.querySelector<HTMLElement>('[data-newest-code]')!;
 
     // The selection comes from the link: an explicit list (`s=002,008`), the Library's own filters, or every story.
     const LIBRARY_KEYS = ['q', 'skill', 'area', 'shelf', 'length', 'lang'];
@@ -371,7 +429,33 @@ const others = LOCALES.filter(l => l !== locale);
         .join(' · ');
       print.disabled = on.length === 0;
       writeUrl(on);
+
+      // The title page points back to exactly this selection, so a binder can be refreshed or reprinted later.
+      const here = location.href;
+      if (newestLink.href !== here) {
+        newestLink.href = here;
+        newestLink.textContent = here.replace(/^https?:\/\//, '');
+        const qr = qrcode(0, 'M');
+        qr.addData(here);
+        qr.make();
+        newestCode.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+      }
     }
+
+    // Covers are lazy, and a hidden sheet never scrolls into view; load the chosen ones before the dialog opens.
+    async function loadCovers() {
+      const covers = [
+        ...sheets!.querySelectorAll<HTMLImageElement>('.story-sheet:not([hidden]) img'),
+      ];
+      covers.forEach(img => (img.loading = 'eager'));
+      const loaded = Promise.all(covers.map(img => img.decode().catch(() => undefined)));
+      await Promise.race([loaded, new Promise(done => setTimeout(done, 4000))]);
+    }
+    window.addEventListener('beforeprint', () => {
+      sheets!
+        .querySelectorAll<HTMLImageElement>('.story-sheet:not([hidden]) img')
+        .forEach(img => (img.loading = 'eager'));
+    });
 
     picks.forEach(p => p.addEventListener('change', sync));
     withText.addEventListener('change', sync);
@@ -383,7 +467,12 @@ const others = LOCALES.filter(l => l !== locale);
       picks.forEach(p => (p.checked = false));
       sync();
     });
-    print.addEventListener('click', () => window.print());
+    print.addEventListener('click', async () => {
+      print.disabled = true;
+      await loadCovers();
+      print.disabled = false;
+      window.print();
+    });
     sync();
     // The estimate depends on the print faces; measure again once they have arrived.
     document.fonts.ready.then(sync);
@@ -560,6 +649,55 @@ const others = LOCALES.filter(l => l !== locale);
     background: #fff;
     color: #000;
   }
+  /* Links stay clickable in a saved PDF; on paper they read as plain text. */
+  .sheet a {
+    color: inherit;
+    text-decoration: none;
+  }
+  /* The site's print style spells out every link's address after it; the folio prints its own short ones. */
+  .sheet a::after {
+    content: none !important;
+  }
+  /* Two columns keep the skill index on one page for a whole language's library. */
+  .skill-groups {
+    columns: 2;
+    column-gap: 8mm;
+  }
+  .skill-groups .group:first-child {
+    margin-block-start: 0;
+  }
+  .as-of {
+    color: #444;
+  }
+  .newest {
+    display: flex;
+    gap: 5mm;
+    align-items: center;
+    margin-block-start: 30mm;
+    font-size: 9.5pt;
+    color: #444;
+  }
+  .newest .qr-code {
+    flex: none;
+    inline-size: 24mm;
+    margin: 0;
+  }
+  .newest p {
+    flex: 0 1 90mm;
+    margin: 0;
+  }
+  .url {
+    font-size: 7pt;
+    overflow-wrap: anywhere;
+  }
+  .numbers-note {
+    color: #444;
+    font-size: 9.5pt;
+    margin-block-end: var(--s-3);
+  }
+  .skills-title {
+    margin-block-start: 8mm;
+  }
   .site,
   .meta {
     color: #444;
@@ -623,6 +761,10 @@ const others = LOCALES.filter(l => l !== locale);
     font-size: 1.2rem;
     margin-block: var(--s-4) var(--s-2);
   }
+  /* The text to read aloud is the largest type on the sheet. */
+  .body {
+    font-size: 11pt;
+  }
   .body :global(p),
   .body :global(li) {
     line-height: 1.45;
@@ -652,27 +794,60 @@ const others = LOCALES.filter(l => l !== locale);
     display: none;
   }
   .story-end {
-    margin-block-start: var(--s-4);
+    margin-block-start: 5mm;
   }
   .key-message {
     font-weight: 700;
   }
-  .prompts {
-    margin-block-start: var(--s-4);
+  .prompts h3 {
+    font-size: 10pt;
+    margin-block: 2mm 1mm;
   }
+  .prompts ol {
+    margin: 0;
+    padding-inline-start: 5mm;
+  }
+  /* The head is the grown-up's: cover to recognise it by, title, and notes (shelf, minutes, skills, summary). */
   .story-head {
     display: flex;
-    gap: var(--s-4);
-    justify-content: space-between;
+    gap: 4mm;
     align-items: flex-start;
+    margin-block-end: 4mm;
+  }
+  .cover {
+    flex: none;
+    inline-size: 22mm;
+    block-size: 22mm;
+    object-fit: cover;
+    border-radius: 2mm;
+  }
+  .head-text {
+    flex: 1;
+    min-inline-size: 0;
+  }
+  .notes {
+    border: 1px solid #bbb;
+    border-radius: 2mm;
+    padding: 2.5mm 3mm;
+    font-size: 9.5pt;
+    line-height: 1.4;
+  }
+  .notes p {
+    margin: 0;
+  }
+  .notes .meta + .summary-text {
+    margin-block-start: 1.5mm;
   }
   .qr {
     flex: none;
-    inline-size: 24mm;
-    font-size: 0.7rem;
+    inline-size: 26mm;
+    font-size: 7pt;
     line-height: 1.2;
     text-align: center;
     color: #444;
+  }
+  .qr p {
+    margin-block: 1mm 0.5mm;
   }
   .qr-code {
     inline-size: 20mm;
@@ -688,19 +863,8 @@ const others = LOCALES.filter(l => l !== locale);
 </style>
 
 <style is:global>
-  @page folio {
-    size: A4;
-    margin: 15mm 12mm 18mm;
-    @bottom-right {
-      content: counter(page);
-      font-family: var(--font-read);
-      font-size: 9pt;
-      color: #444;
-      width: 12%;
-    }
-  }
   @media print {
-    body:has([data-folio]) header,
+    body:has([data-folio]) > header,
     body:has([data-folio]) > footer,
     body:has([data-folio]) .controls,
     body:has([data-folio]) [data-offline-bar] {

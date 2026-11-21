@@ -64,6 +64,13 @@ A short chooser, not a preview:
 Chromium was checked for the two techniques this needs: named `@page` rules with margin boxes give each story its
 own running header, and `<a href>` (internal and external) survives a saved PDF.
 
+## Open
+
+- Stories without `discussion` print their multiple-choice and fill-in-the-blank quiz items as talk prompts ("Benno
+  ist ein kleiner ___."). On paper a blank can be filled in, so it stays; the real fix is `discussion` prompts per
+  story (`readiness` could ask for them). Dropping blanks from `talkPrompts` would remove the end-of-story talk cards
+  of 5 German, 8 Arabic and 7 English stories.
+
 ## Not now
 
 - A teacher sheet with quiz answers: when band 3-4 stories exist in German.
@@ -71,6 +78,8 @@ own running header, and `<a href>` (internal and external) survives a saved PDF.
 - Letter paper, bilingual sheets (BR-8), real double-sided control.
 
 ## Work, in order
+
+Items 1-4 are built (PRs 171, 172, 173 and the one after). The booklet investigation is still open.
 
 | #   | Change                                                                                                                                                                                                       |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
