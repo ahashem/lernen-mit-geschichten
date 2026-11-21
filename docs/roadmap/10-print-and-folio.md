@@ -55,8 +55,10 @@ A short chooser, not a preview:
   row and number jumps to that story's page in the PDF (the QR codes are the way online), and each story sheet has
   a "↑ Contents" link back.
 - Each story starts on a new page with a running header ("018 · Timmi und die Zauberuhr") on every one of its
-  pages, so a loose sheet stays identifiable. The footer is the site name, the AI-illustration note and the page
-  number.
+  pages, so a loose sheet stays identifiable. The footer is only the site name and the page
+  number. What a printed copy must say once (the AI-illustration note, the licence, the website, the feedback
+  address when the deploy sets one, the date) is on one fixed last page, "About this folio"; a single story carries
+  it as one small line at its end instead. This replaces the per-page footer note of `ux/03` §11.
 - A story sheet keeps the grown-up's notes (summary, skills, minutes, QR with its short URL; at the end the key
   message and talk prompts) visibly apart from the text to read aloud, which is set larger. A small cover
   thumbnail helps children recognise the story.
