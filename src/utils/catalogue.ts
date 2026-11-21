@@ -21,6 +21,8 @@ export interface CatalogueItem {
   skills: string[];
   emoji?: string;
   meta?: StoryMeta;
+  /** The story file itself, for pages that render its text (the folio). */
+  entry: Awaited<ReturnType<typeof getPublishedStories>>[number];
 }
 
 /** Every published story in one language, with what the library and the home shelves both need. */
@@ -45,6 +47,7 @@ export async function getCatalogue(locale: Locale): Promise<CatalogueItem[]> {
       skills: s.data.skills ?? meta?.skills ?? [],
       emoji: s.data.emoji ?? meta?.emoji,
       meta,
+      entry: s,
     };
   });
 }

@@ -12,7 +12,7 @@ import GTMTracking from '@components/GTMTracking.astro';
 import ConsentBanner from '@components/ConsentBanner.astro';
 import type { Locale } from '@utils/i18n';
 import { getTranslation, isRTL } from '@utils/i18n';
-import { BASE_PATH as base, OFFLINE } from '@utils/site';
+import { BASE_PATH as base, OFFLINE, localePrefix } from '@utils/site';
 import { buildMarker } from '@utils/build-marker';
 import { LOCALES } from '@utils/story-availability';
 import balooLatin from '@fontsource/baloo-2/files/baloo-2-latin-700-normal.woff2?url';
@@ -348,9 +348,7 @@ const jsonLd =
       <div class="container foot">
         <ul class="foot-links">
           <li>
-            <a href={locale === 'de' ? `${base}/folio` : `${base}/${locale}/folio`}
-              >{getTranslation(locale, 'folioNav')}</a
-            >
+            <a href={`${localePrefix(locale)}/folio`}>{getTranslation(locale, 'folioNav')}</a>
           </li>
           <li>
             <a href={locale === 'de' ? `${base}/privacy` : `${base}/${locale}/privacy`}

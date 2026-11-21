@@ -520,8 +520,9 @@ elapsed-time display. The audience window shows only the frame and an optional c
 
 ### Educator prep (from the cover's grown-ups panel)
 
-- **Prep sheet (print, 1 A4 page):** summary, skill and why it matters, 5 key words, all prompts by
-  page, a 10-minute follow-up activity, and the matching colouring pages listed.
+- **Prep sheet (print):** "Print story & prompts" opens the folio with this one story (`/folio?s=018`): the text,
+  summary, skills, key message, prompts and QR code on A4; without the text it is a one-page prep sheet. See
+  `../10-print-and-folio.md`.
 - **Circle folder:** "Add to my circle folder" keeps a local list of stories with an order. It can
   be exported as a `.json` file and imported on another device (no server). The list is shown at
   Grown-ups → For educators.
