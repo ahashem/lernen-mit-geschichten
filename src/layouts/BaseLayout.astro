@@ -32,9 +32,19 @@ interface Props {
   type?: 'website' | 'article';
   /** Story pages: this story's own path in each language it exists in (slugs can differ between translations). */
   storyHrefs?: Partial<Record<Locale, string>>;
+  /** A page that should never be a search result (the print folio), whatever the deploy. */
+  noindex?: boolean;
 }
 
-const { title, description, locale = 'de', image, type = 'website', storyHrefs } = Astro.props;
+const {
+  title,
+  description,
+  locale = 'de',
+  image,
+  type = 'website',
+  storyHrefs,
+  noindex: pageNoindex,
+} = Astro.props;
 const dir = isRTL(locale) ? 'rtl' : 'ltr';
 // The faces a first screen is set in, per language. Preloaded, they arrive with the page instead of after the CSS
 // is read; until they do, Latin text sits in a metric-matched stand-in (font-fallbacks.css), so nothing reflows.
@@ -95,7 +105,13 @@ const jsonLd =
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="build" content={build} />
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {
+      noindex ? (
+        <meta name="robots" content="noindex, nofollow" />
+      ) : (
+        pageNoindex && <meta name="robots" content="noindex, follow" />
+      )
+    }
 
     <script is:inline>
       // Scripts are on: pages can lay out their script-only controls in the first frame instead of jumping later.

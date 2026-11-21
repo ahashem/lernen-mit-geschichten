@@ -59,6 +59,8 @@ export default defineConfig({
     mdx(),
     react(),
     sitemap({
+      // The folio repeats every story's text for printing; search results should land on the stories themselves.
+      filter: page => !/\/folio\/?$/.test(page),
       i18n: {
         defaultLocale: 'de',
         locales: {

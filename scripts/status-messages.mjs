@@ -103,6 +103,11 @@ export const MESSAGES = {
     de: p => `${p.n} ${n(p.n, 'Aufnahme', 'Aufnahmen')} für ${p.pages} ${n(p.pages, 'Seite', 'Seiten')}.`,
     ar: p => `${p.n} تسجيلات لـ ${p.pages} صفحات.`,
   },
+  indentedLines: {
+    en: p => `The line starting "${p.start}" begins with a tab or spaces, so it shows as a grey code box. Remove the indent; start a list item with "- ".`,
+    de: p => `Die Zeile „${p.start}“ beginnt mit einem Tabulator oder Leerzeichen und erscheint deshalb als graue Code-Box. Den Einzug entfernen; einen Listenpunkt mit „- “ beginnen.`,
+    ar: p => `السطر الذي يبدأ بـ «${p.start}» مسبوق بمسافة جدولة أو مسافات، فيظهر كمربع رمادي. احذفوا المسافة في أوله؛ وابدؤوا عنصر القائمة بـ «- ».`,
+  },
   ownSkills: {
     en: () => 'This language has its own skills; leave them empty unless the story really differs.',
     de: () => 'Diese Sprache hat eigene Fähigkeiten; leer lassen, außer die Geschichte unterscheidet sich wirklich.',
