@@ -5,6 +5,7 @@ import { getCatalogue, SHELF_KEY } from '@utils/catalogue';
 import { getSkillsByCategory, getSkillsByIds, getSkills } from '@utils/skills-taxonomy';
 import { endonyms, fmt, getTranslation, type Locale } from '@utils/i18n';
 import { LOCALES } from '@utils/story-availability';
+import { localePrefix } from '@utils/site';
 
 interface Props {
   locale: Locale;
@@ -131,6 +132,9 @@ const strings = {
         }
         <p class="count" role="status" data-count>{countText(items.length)}</p>
         <button class="btn" type="button" data-clear hidden>{t('clearFilters')}</button>
+        <a class="print-these" href={`${localePrefix(locale)}/folio`} data-print-these>
+          {t('printTheseStories')}
+        </a>
       </div>
 
       <div id="pick-topic" class="picker picker--topic" popover aria-labelledby="pick-topic-title">
@@ -305,6 +309,7 @@ const strings = {
   const areaBoxes = boxes.filter(b => b.name === 'area');
   const tiles = [...root.querySelectorAll<HTMLElement>('[data-grid] > li')];
   const count = root.querySelector<HTMLElement>('[data-count]')!;
+  const printThese = root.querySelector<HTMLAnchorElement>('[data-print-these]')!;
   const clear = root.querySelector<HTMLButtonElement>('[data-clear]')!;
   const topic = root.querySelector<HTMLButtonElement>('[data-topic]')!;
   const shelf = root.querySelector<HTMLButtonElement>('[data-shelf]');
@@ -423,6 +428,9 @@ const strings = {
     tiles.forEach(li => (li.hidden = !shown[Number(li.dataset.i)]));
     const n = shown.filter(Boolean).length;
     count.textContent = fmt(n === 1 ? s.countOne : s.count, { n });
+    // The folio reads the same filters, so the stories shown here are the ones it starts with.
+    printThese.href = printThese.pathname + location.search;
+    printThese.hidden = n === 0;
     grid.hidden = n === 0;
     for (const b of shows) b.textContent = n === 1 ? s.showOne : fmt(s.show, { n });
 
@@ -599,6 +607,14 @@ const strings = {
     align-items: center;
     gap: var(--s-3);
     margin-inline-start: auto;
+  }
+  .print-these {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-adult);
+    font-weight: 700;
+    color: var(--ink);
+    text-underline-offset: 0.2em;
   }
   .count {
     font-weight: 700;
