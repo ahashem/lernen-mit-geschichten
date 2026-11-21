@@ -5,7 +5,8 @@
  *   SITE_URL=https://example.com npm run build && node scripts/check-print.mjs
  *
  * One wide line (a stray code block, a long unbroken word) used to widen every sheet, and in Arabic and Urdu the
- * overflow is cut off on the left, where the story numbers sit. Needs Playwright with Chromium, which CI does not
+ * overflow is cut off on the left, where the story numbers sit. It also checks that the screen's theme (Lamp, high
+ * contrast) never reaches the paper. Needs Playwright with Chromium, which CI does not
  * install, so this is a local check; without Playwright it says so and exits 0.
  */
 import { createServer } from 'node:http';
@@ -73,6 +74,26 @@ for (const path of folios) {
     failures++;
     console.log(`✗ /${path}/ is wider than A4:\n    ${wide.join('\n    ')}`);
   } else console.log(`✓ /${path}/`);
+}
+// Paper does not change with the screen's theme: every colour on the sheets must be the same in Lamp and the
+// high-contrast themes as in the default one.
+const THEMES = ['lamp', 'hc-light', 'hc-dark'];
+const colours = () =>
+  [...document.querySelectorAll('.sheets *')]
+    .slice(0, 400)
+    .map(e => {
+      const cs = getComputedStyle(e);
+      return `${cs.color}|${cs.backgroundColor}|${cs.borderTopColor}|${cs.fill}`;
+    })
+    .join(';');
+await page.goto(`${origin}/folio/`, { waitUntil: 'load' });
+const plain = await page.evaluate(colours);
+for (const theme of THEMES) {
+  await page.evaluate(t => (document.documentElement.dataset.theme = t), theme);
+  if ((await page.evaluate(colours)) !== plain) {
+    failures++;
+    console.log(`✗ the printed folio changes colour in the ${theme} theme`);
+  } else console.log(`✓ the ${theme} theme leaves the print alone`);
 }
 await browser.close();
 server.close();
