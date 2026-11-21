@@ -264,6 +264,7 @@
   "voiceDenied": "The microphone is not available. Nothing was recorded.",
   "voiceFailed": "Could not save the recording on this device.",
   "folioTitle": "Story folio",
+  "folioNav": "Print stories",
   "folioLead": "Choose stories and print them on A4, each with talk prompts and a QR code to the picture version. A contents page and the skills each story practises come first.",
   "folioSelect": "Stories in the folio",
   "folioPrint": "Print the folio",
