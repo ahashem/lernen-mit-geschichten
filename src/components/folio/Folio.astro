@@ -183,18 +183,18 @@ const others = LOCALES.filter(l => l !== locale);
               <Logo size={52} />
               <span class="wordmark">{t('siteName')}</span>
             </div>
-            <div class="mosaic" aria-hidden="true">
-              {stories
-                .filter(st => st.cover)
-                .map(st => (
-                  <img
-                    data-story={st.item.slug}
-                    src={st.cover!.src}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ))}
+            <div class="cover-art" aria-hidden="true">
+              <svg class="hills" viewBox="0 0 200 60" preserveAspectRatio="none">
+                <path
+                  class="hill-back"
+                  d="M0 34 C40 14 80 16 120 30 C150 40 175 28 200 22 V60 H0 Z"
+                />
+                <path
+                  class="hill-front"
+                  d="M0 46 C50 30 95 34 140 44 C165 50 185 44 200 40 V60 H0 Z"
+                />
+              </svg>
+              <Logo size={260} />
             </div>
             <h2 class="title">{t('folioTitle')}</h2>
             <p class="cover-lang" lang={locale}>
@@ -438,15 +438,6 @@ const others = LOCALES.filter(l => l !== locale);
       sheets!
         .querySelectorAll<HTMLElement>('[data-to-contents]')
         .forEach(a => (a.hidden = on.length < 2));
-      // The cover shows at most six of the chosen stories' pictures.
-      [...sheets!.querySelectorAll<HTMLElement>('.mosaic [data-story]')]
-        .filter(img => !img.hidden)
-        .slice(6)
-        .forEach(img => (img.hidden = true));
-      const mosaic = sheets!.querySelector<HTMLElement>('.mosaic');
-      if (mosaic) {
-        mosaic.dataset.count = String(mosaic.querySelectorAll('[data-story]:not([hidden])').length);
-      }
 
       // The same stories in another language: story numbers are shared, so the selection carries over.
       let anyOther = false;
@@ -716,6 +707,14 @@ const others = LOCALES.filter(l => l !== locale);
     /* A hair under the 264 mm the page leaves, or the foot spills onto a page of its own. */
     min-block-size: 255mm;
     text-align: center;
+    /* Paper is light whatever theme the screen is in, so the cover keeps the light palette. */
+    --paper: #fbf0de;
+    --card: #fff9ef;
+    --ink: #24212e;
+    --sun: #f2b33d;
+    --hill-back: #dce8cf;
+    --hill-front: #f5e4ca;
+    --poppy-ink: #a3311f;
   }
   .brand {
     align-self: stretch;
@@ -734,25 +733,33 @@ const others = LOCALES.filter(l => l !== locale);
     font-weight: 700;
     color: var(--poppy-ink);
   }
-  .mosaic {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 4mm;
-    max-inline-size: 134mm;
-    margin-block-start: 6mm;
+  /* One fixed picture for every folio: the site's mark drawn large over its hills, in vector so it prints sharp. */
+  .cover-art {
+    position: relative;
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+    block-size: 105mm;
+    margin-block-start: 4mm;
+    print-color-adjust: exact;
   }
-  /* Two or four pictures sit as a square, never three over one. */
-  .mosaic[data-count='2'],
-  .mosaic[data-count='4'] {
-    max-inline-size: 88mm;
+  .hills {
+    position: absolute;
+    inset: auto 0 0;
+    inline-size: 100%;
+    block-size: 45mm;
   }
-  .mosaic img {
-    inline-size: 42mm;
-    block-size: 42mm;
-    object-fit: cover;
-    border-radius: 3mm;
-    border: 1px solid #ddd;
+  .hill-back {
+    fill: var(--hill-back);
+  }
+  .hill-front {
+    fill: var(--hill-front);
+  }
+  .cover-art :global(.logo) {
+    position: relative;
+    inline-size: 80mm;
+    block-size: 80mm;
+    margin-block-end: 18mm;
   }
   .cover-lang {
     margin: 0;

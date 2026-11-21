@@ -48,8 +48,8 @@ A short chooser, not a preview:
 
 ## The printed folio
 
-- A cover and a contents page only when more than one story is chosen. The cover carries the site's mark and name,
-  up to six of the chosen stories' pictures, the title and language, the build date, and a QR code and link to this
+- A cover and a contents page only when more than one story is chosen. The cover is the same for every folio: the site's
+  mark drawn large over its hills (vector, no picture to load), the title and language, the build date, and a QR code and link to this
   exact selection ("newest version").
 - Contents (number, title, minutes) and the skill index (skill, story numbers) are separate; in a saved PDF every
   row and number jumps to that story's page in the PDF (the QR codes are the way online), and each story sheet has
