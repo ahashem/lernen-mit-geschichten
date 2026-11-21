@@ -271,7 +271,7 @@ Other:
 
 5. **Library performance** was Lighthouse mobile 72 in Run 3 and has not been re-measured (no Lighthouse in the sandbox).
 6. **About copy is stale** (standard and interactive formats, old features) and the cover's grown-ups panel sits under "Für Pädagoginnen und Pädagogen" although parents use it too.
-7. **Folio:** text only (no pictures); checked as Chromium PDFs only (Chromium ignores right-hand page breaks, so no double-sided control); not tried on a printer, Safari or Firefox.
+7. **Folio:** text only (no pictures); checked as Chromium PDFs only (Chromium ignores right-hand page breaks, so no double-sided control); not tried on a printer, Safari or Firefox. The rework is planned in `10-print-and-folio.md`.
 8. **Older stories without page breaks.** Done for 001, 010, 018 and 020 (2026-11-04). 005, 006, 008, 019 and 022 pair through derived pages and need breaks only when recordings arrive. Bruno still lacks alt texts, and its colour frame is a 1.3 MB PNG.
 9. **Machine drafts:** `ar`/`tr`/`ur` UI strings (`src/locales/review-queue.json`), the German and Arabic wording of the status page, and the privacy text all need a native read.
 10. **Device voices misread Arabic and Urdu**, mostly by ignoring harakat. The reader now ranks voices as in `ux/04` Narration ("Natural", "Enhanced", "Premium" first, looked up before each sentence), the `ar`/`ur` grown-ups panel says where a better voice is, and the privacy page names Edge's online voices. Still open: the one listening check in `ux/07` #19, and whether Edge on Android offers its online voices to web pages (unverified, so the hint names only Edge on a computer).

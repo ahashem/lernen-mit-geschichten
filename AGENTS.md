@@ -69,7 +69,7 @@ review, which the owner has accepted for interface labels (never for story text)
 `src/locales/review-queue.json` (`{ "ar": ["key", …], "tr": […], "ur": […] }`) and removed once a native speaker
 signs it off. Outside the roadmap work, a change that adds keys still needs a native reviewer on the PR.
 
-**Folio.** `/folio` (and `/{locale}/folio`) lays out every published story of that language as A4 sheets for printing: a title page, an index of skills with the story numbers that practise them, then each story with its talk prompts and a QR code. It is built from the same catalogue as the Library, so it needs no upkeep; the browser's print dialog handles single- or double-sided.
+**Folio.** `/folio` (and `/{locale}/folio`) lays out every published story of that language as A4 sheets for printing: a title page, an index of skills with the story numbers that practise them, then each story with its talk prompts and a QR code. It is built from the same catalogue as the Library, so it needs no upkeep. It is never indexed and stays out of the sitemap, since it repeats every story's text. What prints, for whom, and where the folio is heading is `docs/roadmap/10-print-and-folio.md`. After touching it, `node scripts/check-print.mjs` (needs Playwright, so local only) prints each folio as Chromium would and names anything wider than A4.
 
 **Feedback.** `PUBLIC_FEEDBACK_EMAIL` at build time turns on the "Tell us about this story" `mailto:` link on story pages and About; unset, nothing renders. The address never enters source.
 

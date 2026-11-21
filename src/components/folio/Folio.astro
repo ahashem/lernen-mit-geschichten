@@ -49,7 +49,8 @@ const stories = await Promise.all(
 
 // The line every printed page carries in its bottom margin (ux/03 section 11: the AI-illustration note).
 const note = `${t('siteName')} · ${t('footerArt')}`.replace(/[\\"]/g, '');
-const pageNote = `@page folio { @bottom-left { content: "${note}"; font-size: 8pt; color: #444; width: 84%; text-align: left; } }`;
+// Margin boxes do not inherit the page's font, so the note names it; the reading face shapes Arabic and Urdu properly.
+const pageNote = `@page folio { @bottom-left { content: "${note}"; font-family: var(--font-read); font-size: 8pt; color: #444; width: 84%; text-align: start; } }`;
 
 const groups = (await getSkillsByCategory(locale)).map(group => ({
   ...group,
@@ -60,7 +61,7 @@ const groups = (await getSkillsByCategory(locale)).map(group => ({
 const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id === id)?.label ?? id;
 ---
 
-<BaseLayout title={t('folioTitle')} locale={locale}>
+<BaseLayout title={t('folioTitle')} locale={locale} noindex>
   <style is:inline set:html={pageNote}></style>
   <div class="container folio" data-folio>
     <section class="controls">
@@ -161,16 +162,20 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
               <div class="body">
                 <Content />
               </div>
-              {keyMessage && <p class="key-message">{keyMessage}</p>}
-              {prompts.length > 0 && (
-                <section class="prompts">
-                  <h3>{t('talkPrompts')}</h3>
-                  <ol>
-                    {prompts.map(p => (
-                      <li>{p}</li>
-                    ))}
-                  </ol>
-                </section>
+              {(keyMessage || prompts.length > 0) && (
+                <div class="story-end">
+                  {keyMessage && <p class="key-message">{keyMessage}</p>}
+                  {prompts.length > 0 && (
+                    <section class="prompts">
+                      <h3>{t('talkPrompts')}</h3>
+                      <ol>
+                        {prompts.map(p => (
+                          <li>{p}</li>
+                        ))}
+                      </ol>
+                    </section>
+                  )}
+                </div>
               )}
             </article>
           ))}
@@ -206,6 +211,8 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
 <style>
   .folio {
     display: grid;
+    /* minmax keeps one wide line (say a stray code block) from widening every sheet past the page. */
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s-6);
   }
   .controls h1 {
@@ -319,13 +326,25 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
   .body :global(h1) {
     display: none;
   }
+  /* An indented line in a story file renders as a code block; on paper it is just text. */
+  .body :global(pre) {
+    background: none !important;
+    color: inherit !important;
+    font: inherit;
+    white-space: pre-wrap;
+    overflow: visible !important;
+    padding: 0;
+    margin: 0;
+  }
   /* Storybook page breaks are only a pause on paper. */
   .body :global(hr) {
     border: 0;
     margin-block: var(--s-3);
   }
-  .key-message {
+  .story-end {
     margin-block-start: var(--s-4);
+  }
+  .key-message {
     font-weight: 700;
   }
   .prompts {
@@ -360,6 +379,7 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
     margin: 15mm 12mm 18mm;
     @bottom-right {
       content: counter(page);
+      font-family: var(--font-read);
       font-size: 9pt;
       color: #444;
       width: 12%;
@@ -374,7 +394,22 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
     }
     [data-folio] {
       page: folio;
-      display: block;
+    }
+    /* Print size, not the screen's reading size: most picture-book stories then fit on one sheet. */
+    [data-folio] .sheets {
+      font-size: 11pt;
+      line-height: 1.45;
+    }
+    [data-folio] .sheet .body p,
+    [data-folio] .sheet .body li {
+      line-height: 1.45;
+      margin-block: 0 0.55em;
+    }
+    [data-folio] .story-title {
+      font-size: 18pt;
+    }
+    [data-folio] .story-sheet .lead {
+      font-size: 11pt;
     }
     [data-folio] .sheet {
       border: 0;
@@ -392,9 +427,13 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
     [data-folio] .story-sheet h3 {
       break-after: avoid;
     }
-    [data-folio] .prompts,
+    [data-folio] .story-end,
+    [data-folio] .group,
     [data-folio] .qr {
       break-inside: avoid;
+    }
+    [data-folio] .group h3 {
+      break-after: avoid;
     }
     body:has([data-folio]) {
       background: #fff;
