@@ -100,7 +100,6 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
             <p class="site">{t('siteName')}</p>
             <h2 class="title">{t('folioTitle')}</h2>
             <p>{t('tagline')}</p>
-            <p class="art-note">{t('footerArt')}</p>
           </section>
 
           <section class="sheet index-sheet">
@@ -246,16 +245,15 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
     margin-block-start: var(--s-3);
   }
 
-  /* The sheets are shown on screen as a preview of what prints. */
+  /* The sheets exist only on paper; the browser's print preview is the preview. */
+  .sheets {
+    display: none;
+  }
   .sheet {
     background: #fff;
     color: #000;
-    border: 2px solid var(--ink);
-    padding: var(--s-5);
-    margin-block-end: var(--s-4);
   }
   .site,
-  .art-note,
   .meta {
     color: #444;
   }
@@ -396,7 +394,9 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
       page: folio;
     }
     /* Print size, not the screen's reading size: most picture-book stories then fit on one sheet. */
-    [data-folio] .sheets {
+    /* body raises specificity over the scoped screen rule that hides the sheets. */
+    body [data-folio] .sheets {
+      display: block;
       font-size: 11pt;
       line-height: 1.45;
     }
@@ -412,9 +412,6 @@ const labelOf = (id: string) => groups.flatMap(g => g.skills).find(s => s.id ===
       font-size: 11pt;
     }
     [data-folio] .sheet {
-      border: 0;
-      padding: 0;
-      margin: 0;
       break-after: page;
     }
     [data-folio] .sheet:last-child {

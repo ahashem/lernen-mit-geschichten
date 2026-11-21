@@ -264,6 +264,7 @@
   "voiceDenied": "Mikrofon kullanılamıyor. Hiçbir şey kaydedilmedi.",
   "voiceFailed": "Kayıt bu cihaza kaydedilemedi.",
   "folioTitle": "Hikaye dosyası",
+  "folioNav": "Hikâyeleri yazdır",
   "folioLead": "Hikâyeleri seçip A4'e yazdırın; her birinde sohbet soruları ve resimli sürüme götüren bir QR kodu var. Başta bir içindekiler sayfası ve her hikâyenin çalıştırdığı beceriler yer alır.",
   "folioSelect": "Dosyadaki hikâyeler",
   "folioPrint": "Dosyayı yazdır",
