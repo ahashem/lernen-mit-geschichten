@@ -48,10 +48,12 @@ A short chooser, not a preview:
 
 ## The printed folio
 
-- A title page and a contents page only when more than one story is chosen. The title page carries the date of the
-  build and a QR code and link to this exact selection ("newest version").
+- A cover and a contents page only when more than one story is chosen. The cover carries the site's mark and name,
+  up to six of the chosen stories' pictures, the title and language, the build date, and a QR code and link to this
+  exact selection ("newest version").
 - Contents (number, title, minutes) and the skill index (skill, story numbers) are separate; in a saved PDF every
-  row and number jumps to its story.
+  row and number jumps to that story's page in the PDF (the QR codes are the way online), and each story sheet has
+  a "↑ Contents" link back.
 - Each story starts on a new page with a running header ("018 · Timmi und die Zauberuhr") on every one of its
   pages, so a loose sheet stays identifiable. The footer is the site name, the AI-illustration note and the page
   number.
