@@ -14,6 +14,7 @@ Pick the file for the job; each stands on its own and links to the others where 
 | [07-community-and-growth.md](07-community-and-growth.md)   | Contributors, feedback, partners, measuring without tracking             |
 | [08-workstreams.md](08-workstreams.md)                     | Ordered, budgeted work for a coding agent                                |
 | [09-parked-ideas.md](09-parked-ideas.md)                   | Ideas deliberately not now, with where the old code lives                |
+| [10-print-and-folio.md](10-print-and-folio.md)             | What prints, for whom, and the folio's chooser and sheets                |
 | [ux/](ux/)                                                 | UX direction: principles, visual language, screens, motion, art style    |
 
 ## Milestones

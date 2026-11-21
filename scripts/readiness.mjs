@@ -28,6 +28,20 @@ function readStory(path) {
 const filled = v => (Array.isArray(v) ? v.length > 0 : v !== undefined && v !== null && String(v).trim() !== '');
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
+/** Body lines that start a code block by accident: a tab or four spaces after a blank line, outside a fenced block. */
+export function indentedLines(body) {
+  const lines = [];
+  let fenced = false;
+  let previousBlank = true;
+  body.split(/\r?\n/).forEach(line => {
+    if (/^\s*(```|~~~)/.test(line)) fenced = !fenced;
+    // Only a line after a blank one starts a code block; an indented line inside a list or paragraph continues it.
+    else if (!fenced && previousBlank && /^(\t| {4})\s*\S/.test(line)) lines.push(line.trim());
+    previousBlank = line.trim() === '';
+  });
+  return lines;
+}
+
 /** @returns {Map<string, {id: string, title: string, band: number|undefined, locales: Record<string, {status: string, must: string[], should: string[]} | null>}>} */
 export function readiness(root = '.') {
   const storiesDir = join(root, 'src/content/stories');
@@ -148,6 +162,9 @@ export function readiness(root = '.') {
       } else {
         must.push(M('noGerman'));
       }
+      // Markdown turns an indented line into a grey code box, on the story page and in the folio.
+      const indented = indentedLines(f.body);
+      if (indented.length) should.push(M('indentedLines', { start: [...indented[0]].slice(0, 30).join('') }));
       if (!strictPublishing) {
         should.unshift(...must.filter(i => !ALWAYS_MUST.has(i.code)));
         must.splice(0, must.length, ...must.filter(i => ALWAYS_MUST.has(i.code)));
